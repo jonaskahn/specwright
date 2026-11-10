@@ -54,7 +54,7 @@ def text(x, y, value, cls="", anchor="start"):
     return f'<text x="{x:g}" y="{y:g}" class="{cls}" text-anchor="{anchor}">{esc(value)}</text>'
 
 
-def rect(x, y, w, h, cls="box", radius=8):
+def rect(x, y, w, h, cls="box", radius=12):
     return f'<rect x="{x:g}" y="{y:g}" width="{w:g}" height="{h:g}" rx="{radius}" class="{cls}"/>'
 
 

@@ -142,7 +142,7 @@ def render(spec):
         f'<title id="diagram-title">{esc(spec["title"])}</title>'
         f'<desc id="diagram-desc">{desc}</desc>'
         f"<style>{style}</style>{MARKERS}"
-        f'<rect width="100%" height="100%" class="paper"/>{body}</svg>'
+        f'<rect width="100%" height="100%" rx="18" class="paper"/>{body}</svg>'
     )
     links = "".join(
         f'<li><a href="#node-{n["id"]}">{esc(n["label"])}: '
