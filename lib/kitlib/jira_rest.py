@@ -20,11 +20,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from urllib import error, parse, request
 
-_here = Path(__file__).resolve().parent
-for _base in (_here, *_here.parents):
-    if (_base / "kitlib").is_dir() or (_base / "lib" / "kitlib").is_dir():
-        sys.path.insert(0, str(_base if (_base / "kitlib").is_dir() else _base / "lib"))
-        break
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from kitlib.jira_port import (  # noqa: E402
     Conflict,
     JiraError,

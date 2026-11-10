@@ -16,8 +16,8 @@ Per-type references add fields. No coordinates, CSS, HTML or URLs come from JSON
 Labels with <, controls, network references or active content are rejected; other
 punctuation is escaped. Reference a BR rather than shorten a guard's meaning.
 
-Run python3 scripts/render_diagram.py input.json output.html from the skill folder
-or use absolute paths. Exit 0 means written; 2 means invalid input or I/O failure;
+Run the shipped render_diagram.py from the loaded skill's scripts directory with
+absolute input and output paths; never resolve it from the session working directory. Exit 0 means written; 2 means invalid input or I/O failure;
 3 means write a paragraph, with no new output. Both checkers return 0 clean,
 1 findings, 2 usage or I/O error. Findings go to stdout, errors to stderr.
 Every script has --help. Files are individually replaced atomically, not as a

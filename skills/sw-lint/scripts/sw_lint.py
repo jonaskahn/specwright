@@ -13,13 +13,11 @@ import re
 import sys
 from dataclasses import asdict, dataclass, replace
 from pathlib import Path
-from urllib.parse import urlsplit
 
 _here = Path(__file__).resolve().parent
-for _base in (_here, *_here.parents):
-    if (_base / "kitlib").is_dir() or (_base / "lib" / "kitlib").is_dir():
-        sys.path.insert(0, str(_base if (_base / "kitlib").is_dir() else _base / "lib"))
-        break
+if str(_here) not in sys.path:
+    sys.path.insert(0, str(_here))
+from urllib.parse import urlsplit
 
 from kitlib import borders, frontmatter, fsio, hashing, ids, markdown, schema, tables, workspace  # noqa: E402
 

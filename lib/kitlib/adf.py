@@ -12,11 +12,7 @@ import re
 import sys
 from pathlib import Path
 
-_here = Path(__file__).resolve().parent
-for _base in (_here, *_here.parents):
-    if (_base / "kitlib").is_dir() or (_base / "lib" / "kitlib").is_dir():
-        sys.path.insert(0, str(_base if (_base / "kitlib").is_dir() else _base / "lib"))
-        break
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 TICK = chr(96)
 ALLOWED = {

@@ -12,10 +12,8 @@ import sys
 from pathlib import Path
 
 _here = Path(__file__).resolve().parent
-for _base in (_here, *_here.parents):
-    if (_base / "kitlib").is_dir() or (_base / "lib" / "kitlib").is_dir():
-        sys.path.insert(0, str(_base if (_base / "kitlib").is_dir() else _base / "lib"))
-        break
+if str(_here) not in sys.path:
+    sys.path.insert(0, str(_here))
 
 from check_offline import check_text  # noqa: E402
 

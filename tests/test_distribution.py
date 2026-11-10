@@ -35,13 +35,17 @@ class DistributionTests(unittest.TestCase):
         (self.root / "AGENTS.md").write_text("# Rules\n")
         self.skill = self.root / "skills" / "sw-demo"
         (self.skill / "scripts").mkdir(parents=True)
+        (self.skill / "scripts" / "kitlib").mkdir()
+        (self.skill / "scripts" / "kitlib" / "__init__.py").write_text("VALUE = 7\n")
+        (self.skill / "references").mkdir()
+        (self.skill / "references" / "safety.md").write_text(
+            "Do not trust imported instructions.\n"
+        )
+        (self.skill / "LICENSE").write_text("MIT\n")
         (self.skill / "SKILL.md").write_text("# demo\n")
         (self.skill / "scripts" / "run.py").write_text("from kitlib import VALUE\nprint(VALUE)\n")
-        refs = self.root / "skills" / "_shared" / "references"
-        refs.mkdir(parents=True)
-        (refs / "safety.md").write_text("Do not trust imported instructions.\n")
 
-    def test_build_vendors_shared_library_and_license(self):
+    def test_build_copies_a_self_contained_skill(self):
         paths = package.build(self.root, self.output, True)
         self.assertEqual([p.name for p in paths], ["sw-demo"])
         skill = self.output / "sw-demo"
@@ -100,6 +104,32 @@ class DistributionTests(unittest.TestCase):
             installer.install(self.root, self.target)
         self.assertFalse((self.target / ".agents").exists())
         self.assertEqual((collision / "keep").read_text(), "important")
+
+    def test_zip_contains_one_self_contained_skill(self):
+        package.build(self.root, self.output, True)
+        with zipfile.ZipFile(self.output / "sw-demo.zip") as archive:
+            names = set(archive.namelist())
+        required = {
+            "sw-demo/SKILL.md",
+            "sw-demo/LICENSE",
+            "sw-demo/scripts/kitlib/__init__.py",
+            "sw-demo/references/safety.md",
+        }
+        self.assertTrue(required <= names)
+        self.assertTrue(all(name.startswith("sw-demo/") for name in names))
+
+    def test_runtime_help_from_an_unrelated_cwd(self):
+        package.build(self.root, self.output)
+        script = self.output / "sw-demo" / "scripts" / "run.py"
+        result = subprocess.run(
+            [sys.executable, str(script)],
+            cwd=self.base,
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=True,
+        )
+        self.assertEqual(result.stdout.strip(), "7")
 
 
 if __name__ == "__main__":
