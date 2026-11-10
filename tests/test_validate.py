@@ -34,22 +34,17 @@ class ValidateTests(unittest.TestCase):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         self.root = Path(tmp.name)
-        self.root.joinpath("lib/kitlib").mkdir(parents=True)
-        self.root.joinpath("lib/kitlib/a.py").write_text("VALUE = 1\n")
-        self.root.joinpath("lib/shared-references").mkdir(parents=True)
+        self.root.joinpath("skills/_shared/scripts/kitlib").mkdir(parents=True)
+        self.root.joinpath("skills/_shared/scripts/kitlib/a.py").write_text("VALUE = 1\n")
+        self.root.joinpath("skills/_shared/references").mkdir(parents=True)
         for name in validate.SHARED_REFERENCES:
-            (self.root / "lib" / "shared-references" / name).write_text(f"# {name}\n")
+            (self.root / "skills/_shared/references" / name).write_text(f"# {name}\n")
         (self.root / "LICENSE").write_text("MIT\n")
         self.skill = self.root / "skills" / "sw-demo"
         (self.skill / "scripts").mkdir(parents=True)
-        (self.skill / "scripts" / "kitlib").mkdir()
-        (self.skill / "scripts" / "kitlib" / "a.py").write_text("VALUE = 1\n")
         (self.skill / "references").mkdir()
-        (self.skill / "references" / "shared").mkdir()
         (self.skill / "SKILL.md").write_text(GOOD)
         (self.skill / "LICENSE").write_text("MIT\n")
-        for name in validate.SHARED_REFERENCES:
-            (self.skill / "references" / "shared" / name).write_text(f"# {name}\n")
         (self.skill / "scripts" / "run.py").write_text(
             "import argparse\nfrom pathlib import Path\n"
             "_here = Path(__file__).resolve().parent\n"
@@ -126,13 +121,9 @@ class ValidateTests(unittest.TestCase):
         (self.root / "evals" / "sw-demo" / "cases.json").unlink()
         self.assertIn("V045", self.codes(self.run_validate()))
 
-    def test_vendored_copy_must_match(self):
-        (self.skill / "scripts" / "kitlib" / "a.py").write_text("VALUE = 2\n")
-        self.assertIn("V055", self.codes(self.run_validate()))
-
-    def test_missing_vendored_runtime(self):
-        (self.skill / "scripts" / "kitlib" / "a.py").unlink()
-        self.assertIn("V053", self.codes(self.run_validate()))
+    def test_source_skill_must_not_vendor_shared(self):
+        (self.skill / "_shared").mkdir()
+        self.assertIn("V052", self.codes(self.run_validate()))
 
     def test_missing_license(self):
         (self.skill / "LICENSE").unlink()
@@ -159,7 +150,7 @@ class ReleaseSurfaceTests(unittest.TestCase):
         self.addCleanup(tmp.cleanup)
         self.root = Path(tmp.name)
         source = Path(__file__).resolve().parent.parent
-        for name in ("lib", "skills", "evals", "LICENSE", "AGENTS.md"):
+        for name in ("skills", "evals", "LICENSE", "AGENTS.md"):
             src = source / name
             dst = self.root / name
             if src.is_dir():
@@ -208,16 +199,23 @@ class ReleaseSurfaceTests(unittest.TestCase):
         path.write_text(text)
         self.assertIn("V094", self.check(lambda r: validate._check_commands(self.root, r)))
 
-    def test_skills_shared_is_rejected(self):
-        (self.root / "skills/_shared").mkdir()
+    def test_shared_tree_must_not_be_a_registered_skill(self):
+        (self.root / "skills/_shared" / "SKILL.md").write_text("# shared\n")
+        self.assertIn("V100", self.check(lambda r: validate._check_source_tree(self.root, r)))
+
+    def test_shared_tree_is_required(self):
+        import shutil
+
+        shutil.rmtree(self.root / "skills/_shared")
         self.assertIn("V100", self.check(lambda r: validate._check_source_tree(self.root, r)))
 
 
 class InstalledTargetTests(unittest.TestCase):
     def setUp(self):
         tmp = tempfile.TemporaryDirectory()
+        self._tmp = tmp
         self.addCleanup(tmp.cleanup)
-        self.root = Path(tmp.name)
+        self.root = Path(tmp.name) / "target"
         (self.root / ".agents/skills").mkdir(parents=True)
 
     def report(self):
@@ -226,8 +224,17 @@ class InstalledTargetTests(unittest.TestCase):
         return report
 
     def test_missing_license_fails(self):
-        source = Path(__file__).resolve().parent.parent / "skills/sw-start"
-        shutil.copytree(source, self.root / ".agents/skills/sw-start")
+        import importlib.util
+
+        tools = Path(__file__).resolve().parent.parent / "tools"
+        spec = importlib.util.spec_from_file_location("package_for_validate", tools / "package.py")
+        package = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(package)
+        out = Path(self._tmp.name) / "out"
+        package.build(Path(__file__).resolve().parent.parent, out)
+        for skill in out.iterdir():
+            if skill.is_dir():
+                shutil.copytree(skill, self.root / ".agents/skills" / skill.name)
         (self.root / ".agents/skills/sw-start/LICENSE").unlink()
         self.assertIn("V050", {finding.code for finding in self.report().errors})
 

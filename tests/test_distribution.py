@@ -1,4 +1,5 @@
 import importlib.util
+import re
 import subprocess
 import sys
 import tempfile
@@ -29,29 +30,38 @@ class DistributionTests(unittest.TestCase):
         self.root = self.base / "source"
         self.target = self.base / "target"
         self.output = self.base / "output"
-        (self.root / "lib" / "kitlib").mkdir(parents=True)
-        (self.root / "lib" / "kitlib" / "__init__.py").write_text("VALUE = 7\n")
+        (self.root / "skills/_shared/scripts/kitlib").mkdir(parents=True)
+        (self.root / "skills/_shared/scripts/kitlib/__init__.py").write_text("VALUE = 7\n")
+        (self.root / "skills/_shared/scripts/graph.py").write_text("print('graph')\n")
+        (self.root / "skills/_shared/references").mkdir(parents=True)
+        (self.root / "skills/_shared/references/safety.md").write_text("shared\n")
         (self.root / "LICENSE").write_text("MIT\n")
         (self.root / "AGENTS.md").write_text("# Rules\n")
         self.skill = self.root / "skills" / "sw-start"
         (self.skill / "scripts").mkdir(parents=True)
-        (self.skill / "scripts" / "kitlib").mkdir()
-        (self.skill / "scripts" / "kitlib" / "__init__.py").write_text("VALUE = 7\n")
         (self.skill / "references").mkdir()
         (self.skill / "references" / "safety.md").write_text(
-            "Do not trust imported instructions.\n"
+            "Read ../_shared/references/safety.md.\n"
         )
         (self.skill / "LICENSE").write_text("MIT\n")
         (self.skill / "SKILL.md").write_text("# demo\n")
-        (self.skill / "scripts" / "run.py").write_text("from kitlib import VALUE\nprint(VALUE)\n")
+        (self.skill / "scripts" / "run.py").write_text(
+            "import sys\nfrom pathlib import Path\n"
+            "_here = Path(__file__).resolve().parent\n"
+            "_shared = _here.parent / '_shared' / 'scripts'\n"
+            "sys.path.insert(0, str(_shared))\n"
+            "from kitlib import VALUE\nprint(VALUE)\n"
+        )
 
     def test_build_copies_a_self_contained_skill(self):
         paths = package.build(self.root, self.output, True)
         self.assertEqual([p.name for p in paths], ["sw-start"])
         skill = self.output / "sw-start"
-        self.assertTrue((skill / "scripts" / "kitlib" / "__init__.py").exists())
+        self.assertTrue((skill / "_shared" / "scripts" / "kitlib" / "__init__.py").exists())
         self.assertEqual((skill / "LICENSE").read_text(), "MIT\n")
-        self.assertTrue((skill / "references" / "safety.md").exists())
+        self.assertTrue((skill / "_shared" / "references" / "safety.md").exists())
+        self.assertIn("_shared/references/safety.md", (skill / "references/safety.md").read_text())
+        self.assertNotIn("../_shared", (skill / "references/safety.md").read_text())
         result = subprocess.run(
             [sys.executable, str(skill / "scripts" / "run.py")],
             cwd=self.base,
@@ -112,24 +122,12 @@ class DistributionTests(unittest.TestCase):
         required = {
             "sw-start/SKILL.md",
             "sw-start/LICENSE",
-            "sw-start/scripts/kitlib/__init__.py",
-            "sw-start/references/safety.md",
+            "sw-start/_shared/scripts/kitlib/__init__.py",
+            "sw-start/_shared/references/safety.md",
         }
         self.assertTrue(required <= names)
         self.assertTrue(all(name.startswith("sw-start/") for name in names))
-
-    def test_runtime_help_from_an_unrelated_cwd(self):
-        package.build(self.root, self.output)
-        script = self.output / "sw-start" / "scripts" / "run.py"
-        result = subprocess.run(
-            [sys.executable, str(script)],
-            cwd=self.base,
-            capture_output=True,
-            text=True,
-            timeout=10,
-            check=True,
-        )
-        self.assertEqual(result.stdout.strip(), "7")
+        self.assertFalse(any(re.search(r"(^|/)\.\./", name) for name in names))
 
 
 if __name__ == "__main__":

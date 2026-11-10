@@ -2,9 +2,10 @@
 
 ## Universal installation
 
-Specwright ships standard `skills/<name>/SKILL.md` folders. Each skill carries its own
-scripts, private `scripts/kitlib`, references, assets and MIT license, so a normal skills
-installer can copy one folder atomically without a Python pre-step.
+Specwright ships seven public `skills/<name>/SKILL.md` folders: `sw-start`, `sw-shape`,
+`sw-ingest`, `sw-spec`, `sw-plan`, `sw-review` and `sw-publish`. Shared runtime and
+references live once in `skills/_shared/`. Packaging embeds a local `_shared/` copy in
+each shipped folder, so an uploaded ZIP is self-contained and never depends on a sibling.
 
 Project install:
 
@@ -25,7 +26,7 @@ Claude Code plugin marketplace:
 /plugin install specwright@specwright
 ```
 
-The plugin manifests declare all fifteen skills and fifteen command wrappers. Commands
+The plugin manifests declare all seven public skills and seven command wrappers. Commands
 carry Claude-specific `${CLAUDE_PLUGIN_ROOT}` paths; skill folders themselves remain
 host-neutral. Installation writes only skill files and client metadata. It never writes
 to Jira, Confluence or a Specwright workspace.
@@ -62,7 +63,7 @@ duplicate names at user scope; lifecycle, update and removal belong to the `skil
 Then initialize a workspace using the absolute path to the installed script:
 
 ```sh
-python3 /absolute/path/to/spec-repo/.agents/skills/sw-init/scripts/workspace.py init \
+python3 /absolute/path/to/spec-repo/.agents/skills/sw-start/scripts/workspace.py init \
   --root /absolute/path/to/spec-repo --mode flat --scope REF --name Refunds \
   --jira-site https://example.atlassian.net --project-key PROJ
 ```
@@ -73,10 +74,12 @@ python3 /absolute/path/to/spec-repo/.agents/skills/sw-init/scripts/workspace.py 
 python3 tools/package.py --zip --out dist
 ```
 
-Packaging is a plain copy of each already self-contained folder; it does not vendor code
-or reach the network. Each zip contains one skill folder with its `LICENSE`, references,
-assets, scripts and private `kitlib`. Release output is excluded from version control.
-Existing output is never replaced; choose a fresh `--out` directory for another build.
+Packaging copies each public skill and the canonical `skills/_shared/` tree, rewrites
+`../_shared/` references to local `_shared/`, and writes a self-contained ZIP. It does
+not reach the network. Each zip contains exactly one skill folder with its `LICENSE`,
+references, assets, scripts and an embedded `_shared/kitlib`. Release output is excluded
+from version control. Existing output is never replaced; choose a fresh `--out` directory
+for another build.
 
 ## Optional converters
 
@@ -89,7 +92,7 @@ Run the gate list in [conventions](conventions.md) before packaging.
 
 ## Diagrams
 
-The installed skill renders 41 validated JSON types and ships four
+The installed `sw-spec` skill renders 41 validated JSON types and ships four
 illustration templates for embedding. `.svg` output is self-contained; `.html`
 adds the source-value table and local spec links. Both follow system light/dark
 themes. New structured types optionally use bounded CSS-only motion; no JavaScript

@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRIPT = ROOT / "skills/sw-start/scripts/trace.py"
+SCRIPT = ROOT / "skills/_shared/scripts/trace.py"
 
 
 class TraceCliTests(unittest.TestCase):

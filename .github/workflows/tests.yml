@@ -27,7 +27,7 @@ jobs:
           ruff check .
       - name: Unit tests
         run: python -m unittest discover -s tests -t .
-      - name: Validate sources and vendored copies
+      - name: Validate sources
         run: |
           python tools/validate.py
           python tools/vendor.py --check
@@ -39,19 +39,18 @@ jobs:
           python tools/package.py --zip --out "$tmp/dist"
           python tools/install.py --target "$tmp/target"
           python tools/validate.py --installed "$tmp/target"
-          python "$tmp/target/.agents/skills/sw-init/scripts/workspace.py" --help
-          python "$tmp/target/.agents/skills/sw-start/scripts/render_diagram.py" --help
-          python "$tmp/target/.agents/skills/sw-start/scripts/start.py" --help
-          python "$tmp/target/.agents/skills/sw-start/scripts/graph.py" --help
-          python "$tmp/target/.agents/skills/sw-plan/scripts/check_tasks.py" --help
-          python "$tmp/target/.agents/skills/sw-init/scripts/workspace.py" init \
+          S="$tmp/target/.agents/skills"
+          python "$S/sw-start/scripts/workspace.py" --help
+          python "$S/sw-start/scripts/start.py" --help
+          python "$S/sw-start/_shared/scripts/graph.py" --help
+          python "$S/sw-spec/scripts/render_diagram.py" --help
+          python "$S/sw-plan/scripts/check_tasks.py" --help
+          python "$S/sw-start/scripts/workspace.py" init \
             --root "$tmp/workspace" --mode flat --scope REF --name Refunds --project-key PROJ
-          python "$tmp/target/.agents/skills/sw-lint/scripts/sw_lint.py" \
+          python "$S/sw-start/_shared/scripts/sw_lint.py" \
             --root "$tmp/workspace" --gate draft
-          python "$tmp/target/.agents/skills/sw-start/scripts/graph.py" \
-            build --cwd "$tmp/workspace"
-          python "$tmp/target/.agents/skills/sw-start/scripts/graph.py" \
-            check --cwd "$tmp/workspace"
+          python "$S/sw-start/_shared/scripts/graph.py" build --cwd "$tmp/workspace"
+          python "$S/sw-start/_shared/scripts/graph.py" check --cwd "$tmp/workspace"
 
   docker:
     runs-on: ubuntu-latest
@@ -69,7 +68,7 @@ jobs:
           ruff check .
       - name: Unit tests
         run: python -m unittest discover -s tests -t .
-      - name: Validate sources and vendored copies
+      - name: Validate sources
         run: |
           python tools/validate.py
           python tools/vendor.py --check

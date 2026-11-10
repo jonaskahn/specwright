@@ -7,7 +7,7 @@
 
 <p align="center">
   <strong>From raw idea to implementation-ready work.</strong><br />
-  A portable toolkit of agent skills for shaping, specifying, visualizing, planning and shipping software.
+  A small public toolkit of agent skills for ingesting evidence, shaping, specifying, planning, reviewing and publishing software work.
 </p>
 
 
@@ -47,18 +47,17 @@ Specwright carries a software idea from its first rough notes to implementation-
              GRAPH · TRACE · LINT · STATUS
 ```
 
-| Stage   | Skill           | Output                                           |
-| ------- | --------------- | ------------------------------------------------ |
-| Start   | `sw-start`      | Detected workspace and next route                |
-| Idea    | Shape action    | Shaped concept with open questions               |
-| Spec    | Specify action  | Requirements with observable acceptance criteria; calls the shared visuals capability only when a picture is needed or stale |
-| Visuals | Shared capability | Offline SVG or HTML when a fresh picture clarifies behaviour, or an existing one no longer matches |
-| Plan    | `sw-plan`       | Implementation plans and agent tasks with stable IDs      |
-| Review  | `sw-review`     | Named, evidenced human approval                  |
-| Publish | `sw-publish`    | Markdown, Jira, or both — behind a quality gate  |
-| Baseline | Prepare ingestion | Immutable snapshots supplied and cited, never auto-reconciled |
+| Stage   | Public skill   | Output                                           |
+| ------- | -------------- | ------------------------------------------------ |
+| Start   | `sw-start`     | Detected workspace and next route                |
+| Ingest  | `sw-ingest`    | Immutable, hash-stamped source snapshots         |
+| Shape   | `sw-shape`     | Shaped concept with open questions               |
+| Spec    | `sw-spec`      | Requirements with observable acceptance criteria; bundled visuals render only when needed or stale |
+| Plan    | `sw-plan`      | Implementation plans and traceable tasks; quality gate runs after a saved plan |
+| Review  | `sw-review`    | Named, evidenced human approval                  |
+| Publish | `sw-publish`   | Markdown, Jira, or both — behind a quality gate  |
 
-Knowledge, trace, lint and status are shared capabilities that work across the entire lifecycle. IDs remain stable; withdrawn IDs become tombstones and are never reused.
+Knowledge, trace, lint and status are shared capabilities kept in one source-time `skills/_shared/` tree. Packaging embeds them into each self-contained ZIP. IDs remain stable; withdrawn IDs become tombstones and are never reused.
 
 ## `02` — Install & run
 
@@ -133,7 +132,7 @@ python3 tools/vendor.py --check
 python3 tools/hygiene.py files
 ```
 
-Run `python3 tools/vendor.py --write` after changing `lib/kitlib`, the shared safety references or the repository license.
+The canonical runtime lives in `skills/_shared/`; packaging embeds it into each skill. `tools/vendor.py --check` verifies that no source skill vendors a duplicate.
 
 Trigger evals are fixtures, not a claim of measured model accuracy. The publish protocol and adapters are tested against a local Jira mock; the test suite never touches a real Jira instance. A sandbox trial and human sign-off are required before production use.
 

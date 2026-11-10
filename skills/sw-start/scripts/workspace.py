@@ -9,8 +9,11 @@ import sys
 from pathlib import Path
 
 _here = Path(__file__).resolve().parent
-if str(_here) not in sys.path:
-    sys.path.insert(0, str(_here))
+_source_shared = _here.parent.parent / "_shared" / "scripts"
+_local_shared = _here.parent / "_shared" / "scripts"
+_shared = _source_shared if _source_shared.is_dir() else _local_shared
+if str(_shared) not in sys.path:
+    sys.path.insert(0, str(_shared))
 
 from kitlib import fsio, workspace  # noqa: E402
 

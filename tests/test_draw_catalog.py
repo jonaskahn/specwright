@@ -13,7 +13,7 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = ROOT / "skills/sw-start/scripts"
+SCRIPTS = ROOT / "skills/sw-spec/scripts"
 sys.path.insert(0, str(SCRIPTS))
 SPEC = importlib.util.spec_from_file_location("catalog_draw", SCRIPTS / "render_diagram.py")
 DRAW = importlib.util.module_from_spec(SPEC)
@@ -225,12 +225,12 @@ class CatalogTests(unittest.TestCase):
         from tests.test_validate import validate
 
         with tempfile.TemporaryDirectory() as directory:
-            skill = Path(directory) / "sw-start"
+            skill = Path(directory) / "sw-spec"
             shutil.copytree(
                 SCRIPTS.parent, skill, ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
             )
             for relative, code in (
-                ("references/domain/type-radar.md", "V122"),
+                ("references/type-radar.md", "V122"),
                 ("assets/bar.html", "V123"),
                 ("scripts/draw_types/sankey.py", "V127"),
             ):

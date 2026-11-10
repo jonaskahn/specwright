@@ -7,7 +7,7 @@ from pathlib import Path
 from kitlib import graph, ids, tables
 
 ROOT = Path(__file__).resolve().parent.parent
-STORE = ROOT / "skills/sw-start/scripts/store.py"
+STORE = ROOT / "skills/_shared/scripts/store.py"
 
 
 class AssetStoreTests(unittest.TestCase):

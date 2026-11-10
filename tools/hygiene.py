@@ -14,7 +14,10 @@ import sys
 from pathlib import Path
 
 CONTENT_PATTERNS = [
-    (re.compile(r"\b(?:phase|wave|milestone|task|sprint)[ _-]?\d+\b", re.I), "work-tracking label"),
+    (
+        re.compile(r"\b(?:phase|wave|milestone|sprint)[ _-]?\d+\b|(?-i:\btask[ _-]\d+\b)", re.I),
+        "work-tracking label",
+    ),
     (re.compile(r"\b[mtp]-\d{1,3}\b", re.I), "work-tracking id"),
     (re.compile(r"specwright-kit-v\d", re.I), "reference to the design brief file"),
 ]

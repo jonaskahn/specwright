@@ -1,28 +1,72 @@
 #!/usr/bin/env python3
-"""Build the one self-contained Specwright skill and its reproducible zip file."""
+"""Build each public Specwright skill as a self-contained, reproducible zip.
+
+The repository keeps one canonical ``skills/_shared`` tree. Packaging copies it into
+each public skill and rewrites ``../_shared/`` references to local ``_shared/`` so an
+uploaded folder never depends on a sibling or the source checkout.
+"""
 
 from __future__ import annotations
 
 import argparse
+import re
 import shutil
 import sys
 import zipfile
 from pathlib import Path
 
+SKILL_PREFIX = "sw-"
+SHARED = "_shared"
+SOURCE_REF = re.compile(r"(?<![\w.-])\.\./_shared/")
+TEXT_SUFFIXES = {".md", ".py", ".json", ".jsonl", ".yaml", ".yml", ".toml", ".html", ".css", ".txt"}
 
-def skill_folder(root: Path) -> Path:
-    path = root / "skills" / "sw-start"
-    if not (path / "SKILL.md").is_file():
-        raise ValueError("skills/sw-start/SKILL.md is missing")
+
+def skill_sources(root: Path) -> list[Path]:
+    skills = root / "skills"
+    return sorted(
+        p
+        for p in skills.iterdir()
+        if p.is_dir() and p.name.startswith(SKILL_PREFIX) and (p / "SKILL.md").is_file()
+    )
+
+
+def shared_folder(root: Path) -> Path:
+    path = root / "skills" / SHARED
+    if not path.is_dir():
+        raise ValueError("skills/_shared is missing")
     return path
 
 
-def bundle_skill(root: Path, destination: Path) -> None:
-    """Copy the self-contained skill folder without mutating its contents."""
-    source = skill_folder(root)
+def _rewrite_text(path: Path) -> None:
+    if path.suffix not in TEXT_SUFFIXES:
+        return
+    try:
+        text = path.read_text(encoding="utf-8")
+    except UnicodeError:
+        return
+    rewritten = SOURCE_REF.sub("_shared/", text)
+    if rewritten != text:
+        path.write_text(rewritten, encoding="utf-8")
+
+
+def bundle_skill(root: Path, source: Path, destination: Path) -> None:
+    """Copy one public skill plus the shared tree, then make references local."""
     if destination.exists() or destination.is_symlink():
         raise FileExistsError(f"destination exists: {destination}")
-    shutil.copytree(source, destination, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    shutil.copytree(
+        source,
+        destination,
+        ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"),
+    )
+    embedded = destination / SHARED
+    shutil.copytree(
+        shared_folder(root),
+        embedded,
+        ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"),
+    )
+    for path in sorted(destination.rglob("*")):
+        if path.is_file():
+            _rewrite_text(path)
 
 
 def zip_skill(folder: Path, target: Path) -> None:
@@ -37,21 +81,28 @@ def zip_skill(folder: Path, target: Path) -> None:
 
 
 def build(root: Path, output: Path, zipped: bool = False) -> list[Path]:
-    source = skill_folder(root)
+    sources = skill_sources(root)
+    if not sources:
+        raise ValueError("no public skill folders found")
     if output.resolve() == root.resolve() or root.resolve().is_relative_to(output.resolve()):
         raise ValueError("output must not contain the source repository")
-    paths = [output / source.name]
-    if zipped:
-        paths.append(output / f"{source.name}.zip")
-    for path in paths:
-        if path.exists() or path.is_symlink():
-            raise FileExistsError(f"output exists: {path}; choose a new output directory")
+    # Preflight every path so a collision cannot leave a partial set of packages.
+    for source in sources:
+        paths = [output / source.name]
+        if zipped:
+            paths.append(output / f"{source.name}.zip")
+        for path in paths:
+            if path.exists() or path.is_symlink():
+                raise FileExistsError(f"output exists: {path}; choose a new output directory")
     output.mkdir(parents=True, exist_ok=True)
-    destination = output / source.name
-    bundle_skill(root, destination)
-    if zipped:
-        zip_skill(destination, output / f"{source.name}.zip")
-    return [destination]
+    built = []
+    for source in sources:
+        destination = output / source.name
+        bundle_skill(root, source, destination)
+        built.append(destination)
+        if zipped:
+            zip_skill(destination, output / f"{source.name}.zip")
+    return built
 
 
 def main(argv: list[str] | None = None) -> int:

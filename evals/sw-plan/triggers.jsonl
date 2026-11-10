@@ -1,0 +1,22 @@
+{"query": "plan FEAT-001 into tasks", "should_trigger": true}
+{"query": "break this story into tasks for an AI agent", "should_trigger": true}
+{"query": "create tasks.md for FEAT-002", "should_trigger": true}
+{"query": "check that every AC has a task", "should_trigger": true}
+{"query": "prepare FEAT-001 for the dev team as an implementation plan", "should_trigger": true}
+{"query": "are the tasks for FEAT-001 stale", "should_trigger": true}
+{"query": "make an agent-ready task list for the refund story", "should_trigger": true}
+{"query": "add a plan.md for FEAT-003", "should_trigger": true}
+{"query": "which acceptance criteria have no task", "should_trigger": true}
+{"query": "turn the reviewed story into traceable tasks", "should_trigger": true}
+{"query": "regenerate tasks after the story changed", "should_trigger": true}
+{"query": "Write the story and acceptance criteria for FEAT-001", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Shape the idea and split features", "should_trigger": false, "near_miss_of": "sw-shape"}
+{"query": "Publish FEAT-001 to Jira", "should_trigger": false, "near_miss_of": "sw-publish"}
+{"query": "Create Jira sub-tasks for FEAT-001", "should_trigger": false, "near_miss_of": "sw-publish"}
+{"query": "Record PO approval for FEAT-001", "should_trigger": false, "near_miss_of": "sw-review"}
+{"query": "Show what links to BR-001", "should_trigger": false, "near_miss_of": "knowledge query"}
+{"query": "Show the status of all features", "should_trigger": false, "near_miss_of": "status capability"}
+{"query": "Draw a dependency diagram", "should_trigger": false, "near_miss_of": "sw-spec visuals"}
+{"query": "Lint the story for the review gate", "should_trigger": false, "near_miss_of": "lint capability"}
+{"query": "Pull PROJ-14 into a snapshot", "should_trigger": false, "near_miss_of": "ingestion"}
+{"query": "Ingest this requirements PDF", "should_trigger": false, "near_miss_of": "sw-ingest"}

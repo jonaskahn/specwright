@@ -15,69 +15,37 @@ class VendorTests(unittest.TestCase):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         self.root = Path(tmp.name)
-        (self.root / "lib/kitlib").mkdir(parents=True)
-        (self.root / "lib/kitlib/__init__.py").write_text("VALUE = 1\n")
-        (self.root / "lib/shared-references").mkdir(parents=True)
-        (self.root / "lib/shared-references/stop-and-ask.md").write_text("ask\n")
-        (self.root / "LICENSE").write_text("MIT\n")
-        (self.root / "AGENTS.md").write_text("# Rules\n")
-        self.skill = self.root / "skills/sw-start"
+        (self.root / "skills/_shared/scripts/kitlib").mkdir(parents=True)
+        (self.root / "skills/_shared/scripts/kitlib/__init__.py").write_text("VALUE = 1\n")
+        (self.root / "skills/_shared/scripts/graph.py").write_text("print('graph')\n")
+        (self.root / "skills/_shared/references").mkdir(parents=True)
+        (self.root / "skills/_shared/references/stop-and-ask.md").write_text("ask\n")
+        self.skill = self.root / "skills/sw-demo"
         (self.skill / "scripts").mkdir(parents=True)
         (self.skill / "SKILL.md").write_text("# demo\n")
-        (self.root / "skills/sw-start/assets").mkdir(parents=True)
-        (self.root / "skills/sw-start/assets/standing-rules.md").write_text("# Rules\n")
 
-    def test_write_is_idempotent_and_check_passes(self):
-        vendor.write(self.root)
-        first = {p: p.read_bytes() for p in self.root.rglob("*") if p.is_file()}
-        vendor.write(self.root)
-        second = {p: p.read_bytes() for p in self.root.rglob("*") if p.is_file()}
-        self.assertEqual(first, second)
+    def test_source_layout_is_clean(self):
         self.assertEqual(vendor.check(self.root), [])
+        self.assertEqual(vendor.write(self.root), [])
 
-    def test_check_rejects_missing_divergent_and_extra_files(self):
-        vendor.write(self.root)
-        (self.skill / "scripts/kitlib/__init__.py").unlink()
-        (self.skill / "assets/standing-rules.md").write_text("different\n")
-        (self.skill / "scripts/kitlib/extra.py").write_text("x = 1\n")
+    def test_missing_shared_tree_is_reported(self):
+        import shutil
+
+        shutil.rmtree(self.root / "skills/_shared/scripts/kitlib")
         problems = vendor.check(self.root)
-        self.assertTrue(any("missing vendored file" in item for item in problems))
-        self.assertTrue(any("divergent vendored file" in item for item in problems))
-        self.assertTrue(any("unexpected vendored file" in item for item in problems))
+        self.assertIn("skills/_shared/scripts/kitlib is missing", problems)
 
-    def test_write_removes_unexpected_vendored_files(self):
-        vendor.write(self.root)
-        extra = self.skill / "scripts/kitlib/extra.py"
-        extra.write_text("x = 1\n")
-        vendor.write(self.root)
-        self.assertFalse(extra.exists())
-
-    def test_license_and_standing_rules_are_required(self):
-        vendor.write(self.root)
-        (self.skill / "LICENSE").unlink()
-        (self.skill / "assets/standing-rules.md").write_text("changed\n")
+    def test_source_skill_must_not_vendor_shared(self):
+        (self.skill / "_shared").mkdir()
         problems = vendor.check(self.root)
-        self.assertIn(f"missing vendored file: {self.skill / 'LICENSE'}", problems)
+        self.assertIn(f"source skill must not vendor _shared: {self.skill / '_shared'}", problems)
+
+    def test_source_skill_must_not_vendor_kitlib(self):
+        (self.skill / "scripts/kitlib").mkdir()
+        problems = vendor.check(self.root)
         self.assertIn(
-            f"divergent vendored file: {self.skill / 'assets/standing-rules.md'}", problems
+            f"source skill must not vendor kitlib: {self.skill / 'scripts/kitlib'}", problems
         )
-
-    def test_write_embeds_drawing_theme_bytes(self):
-        assets = self.root / "skills/sw-start/assets"
-        assets.mkdir(parents=True, exist_ok=True)
-        theme = "\n:root { --sw-bg: #fff; }\n"
-        (assets / "theme.css").write_text(theme)
-        shell = assets / "er.html"
-        shell.write_text(
-            "<html><style>\n        :root { --sw-bg: #000; }\n"
-            "        svg {\n            max-width: none;\n"
-            "            min-width: 960px;\n        }\n    </style></html>\n"
-        )
-        vendor.write(self.root)
-        text = shell.read_text()
-        self.assertIn(theme, text)
-        self.assertIn("min-width: 960px", text)
-        self.assertEqual(vendor.check(self.root), [])
 
 
 if __name__ == "__main__":

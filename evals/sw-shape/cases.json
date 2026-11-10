@@ -1,0 +1,23 @@
+{
+  "skill": "sw-shape",
+  "cases": [
+    {
+      "id": "good",
+      "prompt": "Use sw-shape on the accepted refund split",
+      "fixture": "fixtures/refund/ideas",
+      "assertions": [
+        "Output uses the documented template",
+        "No implementation detail leaks into the problem"
+      ]
+    },
+    {
+      "id": "bad",
+      "prompt": "Use sw-shape with a UI-specific problem statement",
+      "fixture": "fixtures/refund/ideas",
+      "assertions": [
+        "The quality gate reports the leak",
+        "The draft stays unapproved"
+      ]
+    }
+  ]
+}

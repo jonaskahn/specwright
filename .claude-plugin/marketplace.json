@@ -18,7 +18,13 @@
         "name": "Jonas Kahn"
       },
       "skills": [
-        "./skills/sw-start"
+        "./skills/sw-start",
+        "./skills/sw-shape",
+        "./skills/sw-ingest",
+        "./skills/sw-spec",
+        "./skills/sw-plan",
+        "./skills/sw-review",
+        "./skills/sw-publish"
       ],
       "commands": [
         "./commands/"

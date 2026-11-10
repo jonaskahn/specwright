@@ -1,0 +1,16 @@
+{"query": "sw-shape for REF:FEAT-001 using the refund sources", "should_trigger": true}
+{"query": "sw-shape for REF:FEAT-002 using the refund sources", "should_trigger": true}
+{"query": "sw-shape for REF:FEAT-003 using the refund sources", "should_trigger": true}
+{"query": "sw-shape for REF:FEAT-004 using the refund sources", "should_trigger": true}
+{"query": "sw-shape for REF:FEAT-005 using the refund sources", "should_trigger": true}
+{"query": "sw-shape for REF:FEAT-006 using the refund sources", "should_trigger": true}
+{"query": "sw-shape for REF:FEAT-007 using the refund sources", "should_trigger": true}
+{"query": "sw-shape for REF:FEAT-008 using the refund sources", "should_trigger": true}
+{"query": "Publish FEAT-001", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Sync PROJ-14", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Review FEAT-001 approval", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Ingest a refund policy PDF", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Draw the refund state diagram", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Shape the unaccepted refund idea", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Write concrete ACs for FEAT-001", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Update the RTM manually", "should_trigger": false, "near_miss_of": "sw-spec"}

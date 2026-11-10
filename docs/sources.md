@@ -8,11 +8,11 @@ templates and instructions in Specwright were independently authored.
 - [Agent Skills specification](https://agentskills.io/specification) and the
   [Vercel skills CLI](https://github.com/vercel-labs/skills): standard
   `skills/<name>/SKILL.md` discovery and `npx skills add` installation. Specwright ships
-  self-contained skill folders so generic installers can copy one folder without a
+  public skill folders plus one canonical `_shared` source tree so generic installers and packaging can produce self-contained folders without a
   sibling runtime.
 - [Claude Code plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces):
   `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` expose the same
-  fifteen skills through the marketplace route. Host-specific command placeholders stay in
+  seven public skills through the marketplace route. Host-specific command placeholders stay in
   `commands/`; skills remain host-neutral.
 - [Agent Skills specification](https://agentskills.io/specification): required name and
   description; optional license, compatibility, metadata and experimental allowed-tools.

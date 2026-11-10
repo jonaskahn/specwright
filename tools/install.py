@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install the single Specwright skill without overwriting existing rules."""
+"""Install the public Specwright skills without overwriting existing rules."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from package import bundle_skill, skill_folder
+from package import bundle_skill, skill_sources
 
 
 def _put_if_absent(path: Path, content: str, created: list[str], target: Path) -> None:
@@ -23,30 +23,37 @@ def _put_if_absent(path: Path, content: str, created: list[str], target: Path) -
 
 
 def install(root: Path, target: Path, copy_mirror: bool = False) -> dict[str, list[str]]:
-    source = skill_folder(root)
+    sources = skill_sources(root)
+    if not sources:
+        raise ValueError("no public skill folders found")
     target = target.resolve()
     canonical = target / ".agents" / "skills"
     mirror = target / ".claude" / "skills"
-    for base in (canonical, mirror):
-        path = base / source.name
-        if path.exists() or path.is_symlink():
-            raise FileExistsError(f"refusing to replace existing skill: {path}")
+    for source in sources:
+        for base in (canonical, mirror):
+            path = base / source.name
+            if path.exists() or path.is_symlink():
+                raise FileExistsError(f"refusing to replace existing skill: {path}")
     created: list[str] = []
     skipped: list[str] = []
     with tempfile.TemporaryDirectory(prefix="specwright-install-") as raw:
         staging = Path(raw)
-        bundle_skill(root, staging / source.name)
+        for source in sources:
+            bundle_skill(root, source, staging / source.name)
         canonical.mkdir(parents=True, exist_ok=True)
         mirror.mkdir(parents=True, exist_ok=True)
-        destination = canonical / source.name
-        shutil.copytree(staging / source.name, destination)
-        created.append(str(destination.relative_to(target)))
-        alias = mirror / source.name
-        if copy_mirror or os.name == "nt":
-            shutil.copytree(destination, alias)
-        else:
-            alias.symlink_to(os.path.relpath(destination, alias.parent), target_is_directory=True)
-        created.append(str(alias.relative_to(target)))
+        for source in sources:
+            destination = canonical / source.name
+            shutil.copytree(staging / source.name, destination)
+            created.append(str(destination.relative_to(target)))
+            alias = mirror / source.name
+            if copy_mirror or os.name == "nt":
+                shutil.copytree(destination, alias)
+            else:
+                alias.symlink_to(
+                    os.path.relpath(destination, alias.parent), target_is_directory=True
+                )
+            created.append(str(alias.relative_to(target)))
     rules = (root / "AGENTS.md").read_text(encoding="utf-8")
     agents = target / "AGENTS.md"
     if agents.exists() and agents.read_text(encoding="utf-8") != rules:

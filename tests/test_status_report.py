@@ -11,7 +11,7 @@ from pathlib import Path
 from kitlib import frontmatter, hashing, rtm, workspace
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRIPT = ROOT / "skills/sw-start/scripts/status.py"
+SCRIPT = ROOT / "skills/_shared/scripts/status.py"
 SPEC = importlib.util.spec_from_file_location("refund_status", SCRIPT)
 status = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(status)

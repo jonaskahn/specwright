@@ -14,7 +14,7 @@ from unittest import mock
 from kitlib import frontmatter, graph, hashing, schema, tables, workspace
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "skills/sw-start/scripts/sw_lint.py"
+SCRIPT = ROOT / "skills/_shared/scripts/sw_lint.py"
 module_spec = importlib.util.spec_from_file_location("specwright_lint", SCRIPT)
 lint = importlib.util.module_from_spec(module_spec)
 sys.modules[module_spec.name] = lint

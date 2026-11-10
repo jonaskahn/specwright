@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRIPTS = ROOT / "skills" / "sw-start" / "scripts"
+SCRIPTS = ROOT / "skills"
 
 
 def load(name, path):
@@ -18,9 +18,9 @@ def load(name, path):
     return module
 
 
-leakage = load("leakage", SCRIPTS / "leakage.py")
-card_gen = load("card_gen", SCRIPTS / "card_gen.py")
-new_story = load("new_story", SCRIPTS / "new_story.py")
+leakage = load("leakage", SCRIPTS / "sw-shape/scripts/leakage.py")
+card_gen = load("card_gen", SCRIPTS / "sw-spec/scripts/card_gen.py")
+new_story = load("new_story", SCRIPTS / "sw-spec/scripts/new_story.py")
 
 BEFORE = """---
 id: IDEA-refunds
@@ -110,9 +110,9 @@ class StoryAllocationTests(unittest.TestCase):
 
     def test_help_is_available(self):
         for script in (
-            SCRIPTS / "leakage.py",
-            SCRIPTS / "card_gen.py",
-            SCRIPTS / "new_story.py",
+            SCRIPTS / "sw-shape/scripts/leakage.py",
+            SCRIPTS / "sw-spec/scripts/card_gen.py",
+            SCRIPTS / "sw-spec/scripts/new_story.py",
         ):
             result = subprocess.run(
                 [sys.executable, str(script), "--help"],
