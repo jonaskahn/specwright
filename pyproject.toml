@@ -1,7 +1,7 @@
 [project]
 name = "specwright"
 version = "0.1.0"
-description = "Portable BA skills with spec-linked diagrams and Jira as the system of record"
+description = "Portable agent skills that take a software idea from source material to implementation-ready work: shaped ideas, testable specs, diagrams and traceable stories or tasks, as detailed Markdown or Jira issues"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 

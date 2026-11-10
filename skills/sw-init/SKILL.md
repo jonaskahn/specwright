@@ -1,11 +1,11 @@
 ---
 name: sw-init
-description: Creates or extends a BA workspace with project manifests, stable ID registries, append-only logs and portable standing rules. Use when starting a spec repository, adding project ORD to a program, or setting up project.yaml. Do NOT use for importing sources (use sw-ingest) or drafting stories (use sw-spec).
+description: Creates or extends a spec workspace with project manifests, stable ID registries, append-only logs and portable standing rules. Use when starting a spec repository, adding project ORD to a program, or setting up project.yaml. Do NOT use for importing sources (use sw-ingest) or drafting stories (use sw-spec).
 ---
 # sw-init
 
 ## Purpose
-Turn the repository into a reliable, auditable BA workspace without inventing approval.
+Turn the repository into a reliable, auditable spec workspace without inventing approval.
 
 ## Reads and writes
 Read local manifests, drafts, records and derived reports. Only the documented script outputs are written; external changes require the explicitly authorized publish flow.

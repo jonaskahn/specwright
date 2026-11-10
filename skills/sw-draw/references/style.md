@@ -20,7 +20,7 @@ JSON. Numeric observations must be finite. New types reject unknown fields;
 per-type references own the additions. Do not fabricate actors to bypass the
 paragraph gate (fewer than five items and one actor). Keep source IDs literal.
 
-The original eight BA types retain their documented contracts. New structured
+The original eight types retain their documented contracts. New structured
 types use motion none, reveal or loop; see references/motion.md. Template types
 are edited from shipped assets and checked, not accepted by the JSON renderer.
 

@@ -1,11 +1,11 @@
 ---
 name: sw-status
-description: Computes a read-only position report for every feature, including state, gate result, linked Jira key, open records, drift, sign-off freshness and the next skill. Use when asked where the BA work stands, what blocks publication, or which story is ready for Dev. Do NOT use to repair findings (use sw-lint's owning skill) or publish (use sw-publish).
+description: Computes a read-only position report for every feature, including state, gate result, linked Jira key, open records, drift, sign-off freshness and the next skill. Use when asked where the spec work stands, what blocks publication, or which story is ready for Dev. Do NOT use to repair findings (use sw-lint's owning skill) or publish (use sw-publish).
 ---
 # sw-status
 
 ## Purpose
-Turn the repository into a reliable, auditable BA workspace without inventing approval.
+Turn the repository into a reliable, auditable spec workspace without inventing approval.
 
 ## Reads and writes
 Read local manifests, drafts, records and derived reports. Only the documented script outputs are written; external changes require the explicitly authorized publish flow.

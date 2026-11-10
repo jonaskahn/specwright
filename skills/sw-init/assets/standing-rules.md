@@ -1,9 +1,10 @@
 # Specwright workspace rules
 
-- BA artifacts are a contract for product owners, developers and testers. Make each
-  acceptance criterion observable and trace each feature to a business objective.
-- BA prepares the requirement contract; PO approves it; Dev and QA consume it.
-- Jira is authoritative for story text after publication. Work from immutable local
+- Spec artifacts are a contract between product, engineering and QA, from idea to
+  task. Make each acceptance criterion observable and trace each feature to a business objective.
+- The author prepares the requirement contract; the product owner approves it;
+  Dev and QA consume it. Deliver it as detailed Markdown, as Jira issues, or both.
+- Once a story is published to Jira, Jira is authoritative for its text. Work from immutable local
   snapshots and raise a change request before revising published requirements.
 - Only sw-publish may write to Jira or Confluence. Require a successful quality gate,
   a three-way dry-run report and fresh typed confirmation for the exact plan in the

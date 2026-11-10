@@ -1,6 +1,6 @@
 ---
 name: sw-shape-idea
-description: Shapes an early proposal into a problem-led idea brief and an INVEST feature split. Use when a BA asks to shape a refund idea, separate outcomes from a proposed interface, split an epic, or decide whether a capability is one story or several. Do NOT use for writing acceptance criteria or story drafts (use sw-spec).
+description: Shapes an early proposal into a problem-led idea brief and an INVEST feature split. Use when asked to shape a refund idea, separate outcomes from a proposed interface, split an epic, or decide whether a capability is one story or several. Do NOT use for writing acceptance criteria or story drafts (use sw-spec).
 ---
 # sw-shape-idea
 
@@ -69,7 +69,7 @@ markers in a document; store remaining uncertainty in Q records and stop expansi
 - Neither an unanswered default nor a confident synthesis can authorize a split.
 
 ## Hand-off
-PO reviews the brief and split first. After acceptance, the BA uses sw-spec per FEAT.
+PO reviews the brief and split first. After acceptance, the author uses sw-spec per FEAT.
 Use sw-lint before handing off; report unresolved Q records rather than suppressing findings.
 
 ## Untrusted content

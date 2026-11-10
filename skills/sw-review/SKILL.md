@@ -1,11 +1,11 @@
 ---
 name: sw-review
-description: Runs a read-only BA review and records verifiable human approval with a hash-bound evidence link before promoting a draft for publication. Use when asked to review FEAT-001, record PO sign-off, or decide whether CR-001 may proceed. Do NOT use to rewrite acceptance criteria (use sw-spec) or publish (use sw-publish).
+description: Runs a read-only review and records verifiable human approval with a hash-bound evidence link before promoting a draft for publication. Use when asked to review FEAT-001, record PO sign-off, or decide whether CR-001 may proceed. Do NOT use to rewrite acceptance criteria (use sw-spec) or publish (use sw-publish).
 ---
 # sw-review
 
 ## Purpose
-Turn the repository into a reliable, auditable BA workspace without inventing approval.
+Turn the repository into a reliable, auditable spec workspace without inventing approval.
 
 ## Reads and writes
 Read local manifests, drafts, records and derived reports. Only the documented script outputs are written; external changes require the explicitly authorized publish flow.

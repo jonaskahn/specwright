@@ -54,7 +54,7 @@ Ask for missing evidence, type, audience, units or boundaries. Never silently dr
 observations or replace UNKNOWN with a convenient default. Rendering is not acceptance.
 
 ## Gotchas
-The original eight BA contracts remain compatible. New types reject unknown keys.
+The original eight contracts remain compatible. New types reject unknown keys.
 Standalone SVG contains its own theme and source chips; host embedding may override
 colour-scheme behavior. A Mermaid companion is editable, not a pixel-identical export.
 A geometry or offline pass cannot prove semantics, full accessibility or safe

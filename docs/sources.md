@@ -58,7 +58,7 @@ upstream when inspected. Pagination guards remain useful, but those bugs are not
 presented as current platform defects. Absence of Jira ETag support was not proven;
 timestamp rechecks reduce races but do not establish atomic concurrency control.
 
-## BA methods
+## Requirement methods
 
 - [EARS](https://alistairmavin.com/ears/): ubiquitous, state-driven, event-driven,
   optional-feature, unwanted-behaviour and combined sentence patterns.

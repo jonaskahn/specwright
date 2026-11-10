@@ -5,7 +5,7 @@ description: Prepares and, only after explicit typed confirmation, executes one 
 # sw-publish
 
 ## Purpose
-Turn the repository into a reliable, auditable BA workspace without inventing approval.
+Turn the repository into a reliable, auditable spec workspace without inventing approval.
 
 ## Reads and writes
 Read local manifests, drafts, records and derived reports. Only the documented script outputs are written; external changes require the explicitly authorized publish flow.
