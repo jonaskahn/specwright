@@ -1,0 +1,16 @@
+{"query": "save this figma link for the refund project", "should_trigger": true}
+{"query": "store this mockup as an asset", "should_trigger": true}
+{"query": "keep this raw idea for later", "should_trigger": true}
+{"query": "attach this diagram to FEAT-001", "should_trigger": true}
+{"query": "here is a screenshot of the current flow", "should_trigger": true}
+{"query": "save this export in the project assets", "should_trigger": true}
+{"query": "I have a figma frame for the new page", "should_trigger": true}
+{"query": "store this document as reference", "should_trigger": true}
+{"query": "add this asset to the plan", "should_trigger": false}
+{"query": "write acceptance criteria for FEAT-001", "should_trigger": false}
+{"query": "import this policy PDF and extract the rules", "should_trigger": false}
+{"query": "publish FEAT-001 to Jira", "should_trigger": false}
+{"query": "draw a sequence diagram for FEAT-001", "should_trigger": false}
+{"query": "what is the next step", "should_trigger": false}
+{"query": "lint the refund drafts", "should_trigger": false}
+{"query": "rebuild the knowledge graph", "should_trigger": false}

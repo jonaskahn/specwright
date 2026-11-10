@@ -1,0 +1,24 @@
+{
+  "skill": "sw-asset",
+  "cases": [
+    {
+      "id": "link",
+      "prompt": "Save this Figma link for the refund project",
+      "fixture": "fixtures/refund/after-spec",
+      "assertions": [
+        "A new ASSET-NNN.url is written under assets/",
+        "The asset registry row records the kind and hash",
+        "The remote link is not fetched"
+      ]
+    },
+    {
+      "id": "raw-idea",
+      "prompt": "Keep this raw idea: users want refunds in one tap",
+      "fixture": "fixtures/refund/after-spec",
+      "assertions": [
+        "The idea is stored verbatim as ASSET-NNN.md",
+        "The idea is not promoted to a requirement"
+      ]
+    }
+  ]
+}
