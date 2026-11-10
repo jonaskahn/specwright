@@ -150,7 +150,7 @@ def _check_body(skill: Path, parsed: frontmatter.Parsed, report: Report) -> None
             )
 
 
-def _stdlib_only(tree: ast.AST) -> list[str]:
+def _stdlib_only(tree: ast.AST, local: set[str]) -> list[str]:
     bad = []
     stdlib = set(sys.stdlib_module_names)
     for node in ast.walk(tree):
@@ -159,7 +159,7 @@ def _stdlib_only(tree: ast.AST) -> list[str]:
             names = [alias.name.split(".")[0] for alias in node.names]
         elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
             names = [node.module.split(".")[0]]
-        bad += [n for n in names if n not in stdlib and n != "kitlib"]
+        bad += [n for n in names if n not in stdlib and n != "kitlib" and n not in local]
     return bad
 
 
@@ -174,7 +174,8 @@ def _check_scripts(skill: Path, report: Report) -> None:
         except SyntaxError as exc:
             report.add(script, exc.lineno or 1, "V030", f"syntax error: {exc.msg}")
             continue
-        for module in sorted(set(_stdlib_only(tree))):
+        siblings = {p.stem for p in folder.glob("*.py")}
+        for module in sorted(set(_stdlib_only(tree, siblings))):
             report.add(
                 script, 1, "V031", f"imports '{module}', which is not in the standard library"
             )
