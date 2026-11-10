@@ -414,7 +414,7 @@ def _check_draw_contract(skill: Path, report: Report) -> None:
             report.add(asset, 1, "V123", "missing drawing shell/template")
         else:
             content = asset.read_text(encoding="utf-8")
-            if kind not in legacy and theme not in content:
+            if theme not in content:
                 report.add(asset, 1, "V124", "embedded theme differs from assets/theme.css")
             if "<script" in content.lower() or "@import" in content.lower():
                 report.add(asset, 1, "V125", "drawing assets must be script-free and offline")

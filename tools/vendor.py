@@ -45,8 +45,18 @@ def expected_copies(root: Path) -> dict[Path, Path]:
     return copies
 
 
+def theme_shells(root: Path) -> list[Path]:
+    """Drawing shells that must embed assets/theme.css byte for byte."""
+    assets = root / "skills" / "sw-draw" / "assets"
+    return sorted(assets.glob("*.html")) if (assets / "theme.css").is_file() else []
+
+
 def check(root: Path) -> list[str]:
     problems: list[str] = []
+    for shell in theme_shells(root):
+        theme = (shell.parent / "theme.css").read_text(encoding="utf-8")
+        if theme not in shell.read_text(encoding="utf-8"):
+            problems.append(f"stale embedded theme: {shell}")
     copies = expected_copies(root)
     if (root / "skills" / "_shared").exists():
         problems.append("skills/_shared must not exist")
