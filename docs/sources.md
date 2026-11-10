@@ -91,3 +91,14 @@ Useful ideas were stable IDs, one-owner trace columns, mechanical gates, read-be
 human evidence, capability-based integration and per-type diagram conventions. We do
 not distribute their prose, templates or code. In particular the diagram implementation
 uses new offline theme-aware templates rather than upstream fonts or CSS.
+
+## Diagram-design comparison
+
+The installed cathrynlavery/diagram-design catalog informed type coverage,
+semantic-before-layout selection and static-first review. Specwright's renderer,
+contracts, templates, palette and instructions are independently implemented.
+Its web fonts, import tools, motion controller and source code are not bundled.
+Forty-five primary types group close variants, including marimekko under treemap.
+Source-ID chips, exact value tables, offline Python rendering and approval-safe
+handoffs are Specwright-specific. Full client/embedding and accessibility review
+remain manual; automated geometry checks are not semantic certification.

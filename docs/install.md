@@ -82,3 +82,12 @@ No converter is bundled. Missing tools produce explicit degraded results, not in
 document text. Review OCR output against the original, especially amounts and dates.
 
 Run the gate list in [conventions](conventions.md) before packaging.
+
+## Diagrams
+
+The installed sw-draw skill renders 41 validated JSON types and ships four
+illustration templates for embedding. `.svg` output is self-contained; `.html`
+adds the source-value table and local spec links. Both follow system light/dark
+themes. New structured types optionally use bounded CSS-only motion; no JavaScript
+is shipped or executed. Re-run the skill's offline and border checkers after any
+render or template edit.

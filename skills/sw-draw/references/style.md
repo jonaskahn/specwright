@@ -1,49 +1,57 @@
 # Offline drawing contract
 
+## Runtime and files
+Resolve all paths from the loaded skill directory, never the session working
+directory. Run the absolute scripts/render_diagram.py with absolute input JSON
+and approved output paths. Exit 0 written, 2 invalid input/I/O, 3 use a paragraph.
+Outputs can be .html or standalone .svg, with .mmd only for the nine direct
+Mermaid grammars in type-picker.md. No external renderer is invoked.
+Files are individually atomically replaced, not a multi-file transaction.
+An old .mmd is not deleted when a basename is reused for another type.
+
 ## Common JSON
-A UTF-8 object has type, title (96 characters), actors (one to six unique names),
-nodes, and edges (defaults to empty). Each node has a short local id (letters
-first, then letters/digits/underscore), label (32 characters), and spec_ids (zero
-to three valid kit references; 36 displayed characters combined). Use empty IDs
-only where no rule or AC applies. Qualified references are allowed.
-An edge has from, to, and a nonempty label (48 characters).
+A UTF-8 object supplies type, title (96 characters), actors (one to six unique
+names of 24 characters), nodes and optional edges. Each node has a local id
+(letter then letters/digits/underscore, at most 24), label (32 characters), and
+spec_ids (zero to three valid qualified or local kit references, 36 combined
+visible characters). Edge from/to name nodes; label is explicit, at most 48.
+Labels are data, never markup. No CSS, SVG coordinates, HTML or URLs come from
+JSON. Numeric observations must be finite. New types reject unknown fields;
+per-type references own the additions. Do not fabricate actors to bypass the
+paragraph gate (fewer than five items and one actor). Keep source IDs literal.
 
-Supply actual actor names even when not displayed. The paragraph gate uses node
-count and actor count, not arrow count. Actor names allow 24 characters. Arrays
-retain narrative order. The first state is initial; the last is the displayed
-terminal state. Split if several terminal outcomes would make this misleading.
-Per-type references add fields. No coordinates, CSS, HTML or URLs come from JSON.
-Labels with <, controls, network references or active content are rejected; other
-punctuation is escaped. Reference a BR rather than shorten a guard's meaning.
+The original eight BA types retain their documented contracts. New structured
+types use motion none, reveal or loop; see references/motion.md. Template types
+are edited from shipped assets and checked, not accepted by the JSON renderer.
 
-Run the shipped render_diagram.py from the loaded skill's scripts directory with
-absolute input and output paths; never resolve it from the session working directory. Exit 0 means written; 2 means invalid input or I/O failure;
-3 means write a paragraph, with no new output. Both checkers return 0 clean,
-1 findings, 2 usage or I/O error. Findings go to stdout, errors to stderr.
-Every script has --help. Files are individually replaced atomically, not as a
-multi-file transaction. Do not reuse a basename for another type: an older Mermaid
-companion is not deleted when switching to HTML-only output.
-
-## Templates and geometry
-Each asset opens as a complete worked refund example. Replaceable regions use
-paired HTML comment markers title, body and links. Rendering replaces those and
-the viewBox, leaving inline CSS and legend intact. Only shipped shells are used.
-Outputs have an accessible SVG title and description, visible ID chips with
-data-spec and data-spec-ids, local node anchors, and a Spec links list.
-Grid/lane layout favours space over compactness. Outside gutters keep connections
-away from boxes where possible. Crossing-free routing is not promised: inspect
-arrows and labels, and split crowded branches. Keep one SVG per document.
-System sans and monospace only; no external fonts, scripts, stylesheets or images.
-
-## Colour and lines
-Nine role tokens are set in :root and overridden in prefers-color-scheme:dark:
+## Theme owner
+assets/theme.css owns the new shell skin. Each self-contained shell and SVG
+embeds those bytes; checks reject stale shells. Nine existing roles are retained:
 --sw-bg, --sw-surface, --sw-tint, --sw-ink, --sw-muted, --sw-hair, --sw-accent,
---sw-accent-tint and --sw-link. Text targets 4.5:1 against its actual background;
-meaningful marks target 3:1. At most the first two spec-linked nodes use accent (one cell for blueprints);
-shapes and IDs carry meaning without colour. No decorative texture is used.
-Connector labels use paint-order:stroke and an opaque background-colour halo.
-Use full borders, outlines, tints or SVG lines. L-024 wraps shared CSS shorthand
-checks, not a full CSS parser; avoid all one-sided longhands too.
-Offline checks deliberately reject even local images and font-face declarations.
-The checker is a conservative lint, not an HTML sanitizer. Do not trust arbitrary
-shells merely because they pass it.
+--sw-accent-tint, --sw-link. Chart-only --series-1 through --series-5 distinguish
+series with numeric keys and an exact data table. --sw-motion-fast and
+--sw-motion-total bound optional motion. Both themes follow prefers-color-scheme.
+Use system sans for names, mono only for IDs. No external fonts or images.
+
+## Geometry and accessibility
+One SVG per document has a title and description linked by aria-labelledby.
+Standalone SVG has its namespace, inline stylesheet, paper background and all
+source chips; it never depends on HTML CSS. ViewBox changes never resize markers.
+Plot marks have a numbered evidence key so labels are not shrunk into tiny cells.
+Exact source values and connection/change ledgers expose aggregation and meaning.
+Use the data table and caption to interpret values; colour is supplementary.
+
+Use full borders, outlines, tints and SVG lines. Keep at most two focal source-linked
+cards; never invent an ID for emphasis. Standard diagram connectors use outside
+tracks with distinct ports, readable ledgers and arrow markers. Radial, set and
+quantitative grammars use their own geometry, not arbitrary box-to-box arrows.
+Split crowded pictures rather than shrinking type. Automated checks do not prove
+semantic fidelity, crossing-free routing or full WCAG conformance.
+
+## Safety and review
+Run absolute scripts/check_borders.py and scripts/check_offline.py paths on every
+artifact. Both accept directories. Border findings are L-024; offline findings
+reject active content and remote resources. The SVG namespace is metadata, not a
+network request. The checker is a conservative lint, not a general sanitizer.
+Inspect light/dark, narrow viewports, print and reduced motion; compare every
+branch, quantity, date, cardinality and source ID with saved evidence.

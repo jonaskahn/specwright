@@ -14,3 +14,7 @@
 {"query": "Ingest this refund policy email before drafting anything.", "should_trigger": false, "near_miss_of": "sw-ingest"}
 {"query": "Shape the initial refund idea into one or several features.", "should_trigger": false, "near_miss_of": "sw-shape-idea"}
 {"query": "Create the workspace manifest for the refunds repository.", "should_trigger": false, "near_miss_of": "sw-init"}
+{"query": "Draw the saved deployment topology with hosts and replica counts.", "should_trigger": true}
+{"query": "Plot the supplied refund measurements as a light/dark SVG bar chart.", "should_trigger": true}
+{"query": "Show before and after architecture from the approved change evidence.", "should_trigger": true}
+{"query": "Make a bounded CSS-motion process diagram with reduced-motion fallback.", "should_trigger": true}

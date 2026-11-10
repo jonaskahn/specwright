@@ -17,7 +17,7 @@ cell accented; never invent a source reference for emphasis.
 Nine stages, five layers; one focal cell at most during manual editing.
 
 ## JSON additions
-Node cells map layer names to text. Omitted cells display n/a; ask before treating unknown as not applicable. HTML only.
+Node cells map layer names to text. Omitted cells display n/a; ask before treating unknown as not applicable. HTML or standalone SVG.
 The common contract and CLI codes are in style.md. The matching JSON in
 fixtures/refund/diagrams is illustrative, not approved policy.
 

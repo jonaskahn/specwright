@@ -83,3 +83,19 @@ These rules apply to every file in the kit.
   python3 tools/vendor.py --check
   python3 tools/hygiene.py files
   ```
+
+## Diagram production
+
+sw-draw exposes 45 primary types: 41 validated JSON renderers plus four original
+illustration templates. The type picker chooses one grammar from saved evidence;
+the matching reference owns schema and budgets. Chart variants do not silently
+increase the primary-type count. Prefer self-contained SVG for embedding and
+HTML for exact data tables. Both remain offline and theme-aware. No browser, third-party renderer, JavaScript controller or remote fonts run
+at skill runtime. The renderer accepts only JSON; illustration templates are
+copied and checked rather than evaluated.
+
+New type adapters delegate to shared validation, notation geometry and page
+assembly rather than duplicate code. assets/theme.css owns the new skin; embedded
+copies are checked for drift. Standalone SVG retains styles, background, title,
+description and source chips. CSS-only motion is bounded; reduced-motion and print
+are complete static frames. Read the motion reference before opting in.

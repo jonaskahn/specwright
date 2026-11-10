@@ -17,7 +17,7 @@ nodes accented; never invent a source reference for emphasis.
 Five activities, three slices, twelve cards.
 
 ## JSON additions
-Declare activities and slices arrays. Every node needs activity and slice matching those names. Cards sharing a cell stack. Edges are forbidden. HTML only.
+Declare activities and slices arrays. Every node needs activity and slice matching those names. Cards sharing a cell stack. Edges are forbidden. HTML or standalone SVG.
 The common contract and CLI codes are in style.md. The matching JSON in
 fixtures/refund/diagrams is illustrative, not approved policy.
 

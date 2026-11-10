@@ -11,6 +11,19 @@ keep stable traceability, and prepare safe, explicitly approved Jira changes.
 Use `sw-status`, `sw-trace` and `sw-lint` throughout. Jira becomes the system of record
 for published story text; the repository holds source snapshots, drafts and evidence.
 
+## Diagrams and illustrations
+
+sw-draw routes 45 primary types: 41 structured JSON renderers and four original
+illustration templates. Use standalone SVG for embedding or offline HTML for
+source-value tables and spec navigation. Both support light/dark themes; new
+structured types optionally use bounded, reduced-motion-safe CSS cues, never JS.
+Marimekko, dumbbell, funnel and distribution/rank variants are grouped within
+primary chart types. No source quantity, policy or approval is inferred.
+
+See the installed skill's type-picker reference for the full catalog, contracts,
+complexity limits and template routing. sw-trace supplies authoritative RTM facts;
+a diagram never changes requirement status or authorizes a remote write.
+
 ## Install
 
 Requires Python 3.10 or newer for runtime scripts. Runtime code uses only the standard
