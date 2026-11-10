@@ -152,7 +152,16 @@ class Outcome:
 
 
 def apply_plan(
-    port, plan, writelog_path, run_id, scope_id, *, sleep=time.sleep, max_retries=0, max_delay=30.0
+    port,
+    plan,
+    writelog_path,
+    run_id,
+    scope_id,
+    *,
+    sleep=time.sleep,
+    max_retries=0,
+    max_delay=30.0,
+    plan_hash=None,
 ):
     """Stop at the first uncertainty; recovery is evidence, not permission to continue.
 
@@ -169,6 +178,7 @@ def apply_plan(
         raise ValueError("retry bounds must not be negative")
     outcome = Outcome("ok")
     serial = 0
+    log_hash = (plan_hash or frozen.short_hash)[:8]
     methods = {
         "create": port.create_issue,
         "edit": port.edit_issue,
@@ -193,7 +203,7 @@ def apply_plan(
                     "sw-publish",
                     op.kind,
                     op.payload.get("key", scope_id),
-                    f"plan={frozen.short_hash}",
+                    f"plan={log_hash}",
                     f"index={index}",
                     op.idempotency_note,
                 )

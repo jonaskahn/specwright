@@ -191,7 +191,12 @@ def execute(
         if created_key:
             operation = substitute(operation, created_key)
         outcome = jira_port.apply_plan(
-            port, jira_port.Plan([operation]), ctx.log, run, ctx.scope_id
+            port,
+            jira_port.Plan([operation]),
+            ctx.log,
+            run,
+            ctx.scope_id,
+            plan_hash=plan.short_hash,
         )
         if not outcome.ok:
             return outcome

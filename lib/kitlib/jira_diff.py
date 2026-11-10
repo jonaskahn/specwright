@@ -190,7 +190,7 @@ def classify(base, current):
     bf, cf = base.get("fields", base), current.get("fields", current)
     if any(bf.get(k) != cf.get(k) for k in ("description", "summary")):
         found.append("content-edited")
-    if bf.get("status") != cf.get("status"):
+    if _status(bf.get("status")) != _status(cf.get("status")):
         found.append("status-changed")
     old_ids = {str(c.get("id")) for c in base.get("comments", [])}
     if any(str(c.get("id")) not in old_ids for c in current.get("comments", [])):
@@ -208,6 +208,11 @@ def classify(base, current):
     if base.get("identity") != current.get("identity"):
         found.append("identity")
     return found
+
+
+def _status(value):
+    """Jira statuses arrive as objects; saved snapshots keep their display name."""
+    return value.get("name") if isinstance(value, dict) else value
 
 
 def main(argv=None):
