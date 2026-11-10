@@ -24,6 +24,9 @@ The original eight BA types retain their documented contracts. New structured
 types use motion none, reveal or loop; see references/motion.md. Template types
 are edited from shipped assets and checked, not accepted by the JSON renderer.
 
+## Look
+Soft white cards with hairline edges and a gentle shadow on a grouped grey ground, rounded 12/18px corners, muted connectors, one crimson focal tint, blue for focus and links, and shape-coded status marks (.mk-ok circle, .mk-fail triangle, .mk-stop square, .mk-run diamond). Dark theme is derived, not inverted.
+
 ## Theme owner
 assets/theme.css owns the new shell skin. Each self-contained shell and SVG
 embeds those bytes; checks reject stale shells. Nine existing roles are retained:

@@ -10,7 +10,7 @@ logic here are original; only general diagram conventions are reused.
 
 ## Reads and writes
 Read the local feature draft and linked BR, AC and stakeholder cards.
-Write approved diagrams/FEAT-NNN-<type>.html and supported .mmd companions only.
+Write approved diagrams/FEAT-NNN-<type>.html or standalone .svg, and supported .mmd companions only.
 With permission, add their paths to the draft's Context or UI/UX link line;
 otherwise return the link text for sw-spec. Do not change rules or approval status.
 No Jira capability is needed for local rendering.

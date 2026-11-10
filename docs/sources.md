@@ -102,3 +102,7 @@ Forty-five primary types group close variants, including marimekko under treemap
 Source-ID chips, exact value tables, offline Python rendering and approval-safe
 handoffs are Specwright-specific. Full client/embedding and accessibility review
 remain manual; automated geometry checks are not semantic certification.
+
+## Drawing look
+
+The diagram theme follows the visual rules of the maintainer's Kumo Cockpit design notes (neutral cool palette, soft cards, one brand tint, shape-coded status). Only token values and rules were used; no logo, font, CSS or markup was copied.
