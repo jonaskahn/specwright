@@ -36,7 +36,7 @@ class RtmTests(unittest.TestCase):
         path = self.root / "_meta/rtm.md"
         before = path.read_bytes()
         with self.assertRaises(rtm.OwnershipError):
-            rtm.set_cell(self.root, "REF", "FEAT-001", "Jira", "PROJ-14", "sw-trace")
+            rtm.set_cell(self.root, "REF", "FEAT-001", "Jira", "PROJ-14", "shared-trace")
         self.assertEqual(path.read_bytes(), before)
         with self.assertRaises(rtm.OwnershipError):
             rtm.registry_upsert(
