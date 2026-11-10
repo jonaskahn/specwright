@@ -7,6 +7,8 @@ import json
 import re
 import sys
 from dataclasses import asdict, dataclass
+from pathlib import Path
+
 from kitlib import (
     adf,
     frontmatter,
@@ -17,7 +19,6 @@ from kitlib import (
     tables,
     workspace,
 )
-from pathlib import Path
 
 CONFIRM = re.compile(r"^PUBLISH ([A-Z]{2,5}:FEAT-\d{3}) ([0-9a-f]{8})$")
 PROPERTY = "specwright.identity"
@@ -71,8 +72,8 @@ def preconditions(ctx: Context, lint_report: str = "") -> list[str]:
         errors.append("draft is not ready-to-publish")
     signoffs = fm.get("signoffs") or []
     if not any(
-            "https://" in str(x) and hashing.short(hashing.draft_hash(draft)) in str(x)
-            for x in signoffs
+        "https://" in str(x) and hashing.short(hashing.draft_hash(draft)) in str(x)
+        for x in signoffs
     ):
         errors.append("signoff is absent, stale or unverifiable")
     report = ctx.base / "_meta/lint-report.md"
@@ -123,7 +124,7 @@ def payload(ctx: Context, fields: dict) -> dict:
 
 
 def operations(
-        ctx: Context, action: str, fields: dict, key: str, updated: str
+    ctx: Context, action: str, fields: dict, key: str, updated: str
 ) -> list[jira_port.Operation]:
     """Include dependent property writes in the same hash-bound plan."""
     if action == "no-op":
@@ -179,7 +180,7 @@ def confirmed(token: str, result: dict) -> bool:
 
 
 def execute(
-        ctx: Context, port: jira_port.Port, plan: jira_port.Plan, run: str
+    ctx: Context, port: jira_port.Port, plan: jira_port.Plan, run: str
 ) -> jira_port.Outcome:
     """Bind every dependent operation to the original confirmed plan hash."""
     original = [asdict(operation) for operation in plan.operations]

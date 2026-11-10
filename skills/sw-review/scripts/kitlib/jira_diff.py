@@ -45,21 +45,21 @@ def unified(theirs, ours):
 
 
 def plan(
-        base,
-        theirs,
-        ours,
-        *,
-        base_fields=None,
-        their_fields=None,
-        our_fields=None,
-        scope_id="",
-        jira_key="NEW",
-        project="",
-        sandbox=False,
-        updated="",
-        links=None,
-        attachments=None,
-        calls=None,
+    base,
+    theirs,
+    ours,
+    *,
+    base_fields=None,
+    their_fields=None,
+    our_fields=None,
+    scope_id="",
+    jira_key="NEW",
+    project="",
+    sandbox=False,
+    updated="",
+    links=None,
+    attachments=None,
+    calls=None,
 ):
     """Hash all visible decisions and execution preconditions, not just the new draft."""
     b, t, o = map(by_section, (base, theirs, ours))
@@ -158,8 +158,8 @@ def render_plan(result):
     for row in result["sections"]:
         if row["diff"]:
             fence = "~" * (
-                    max([len(line) for line in row["diff"].splitlines() if set(line) == {"~"}] + [2])
-                    + 1
+                max([len(line) for line in row["diff"].splitlines() if set(line) == {"~"}] + [2])
+                + 1
             )
             lines.extend(
                 [f"### {row['section']}", "", fence + "diff", row["diff"].rstrip("\n"), fence, ""]
@@ -194,9 +194,9 @@ def classify(base, current):
     if bf.get("issuelinks", base.get("links")) != cf.get("issuelinks", current.get("links")):
         found.append("links-changed")
     if (
-            current.get("deleted")
-            or base.get("key") != current.get("key")
-            or bf.get("project") != cf.get("project")
+        current.get("deleted")
+        or base.get("key") != current.get("key")
+        or bf.get("project") != cf.get("project")
     ):
         found.append("moved/deleted")
     if base.get("linked_version") != current.get("linked_version"):

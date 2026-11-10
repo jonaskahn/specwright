@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from kitlib import frontmatter, fsio, ids, markdown, schema, tables, workspace
 from pathlib import Path
 from typing import Any
+
+from kitlib import frontmatter, fsio, ids, markdown, schema, tables, workspace
 
 
 class OwnershipError(ValueError):
@@ -63,7 +64,7 @@ def scan(root: Path) -> tuple[dict[str, Entity], list[str]]:
             if previous:
                 # A summary and its story share identity; two stories do not.
                 if kind == previous.kind == "feature" and bool(fm.get("card")) != bool(
-                        previous.fm.get("card")
+                    previous.fm.get("card")
                 ):
                     if fm.get("card"):
                         continue
@@ -264,8 +265,8 @@ def check(root: Path, scope: str | None = None) -> list[str]:
             continue
         base = workspace.scope_dir(root, scope_name)
         for filename, header in (
-                ("rtm.md", rtm_header()),
-                ("id-registry.md", list(schema.REGISTRY_COLUMNS)),
+            ("rtm.md", rtm_header()),
+            ("id-registry.md", list(schema.REGISTRY_COLUMNS)),
         ):
             doc = read_table(base / "_meta" / filename, header)
             for row in doc.table.rows:

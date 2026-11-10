@@ -7,8 +7,9 @@ import json
 import re
 import sys
 from dataclasses import dataclass
-from kitlib import frontmatter, hashing, miniyaml
 from pathlib import Path
+
+from kitlib import frontmatter, hashing, miniyaml
 
 MARKER = re.compile(r"\[sw:approve ([A-Z]{2,5}:FEAT-\d{3}) sha256:([0-9a-f]{12})\]")
 SAFE_URL = re.compile(r"^https://[^\s]+$")

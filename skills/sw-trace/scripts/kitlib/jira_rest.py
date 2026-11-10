@@ -55,28 +55,28 @@ class _NoRedirect(request.HTTPRedirectHandler):
 
 class JiraREST(Port):
     def __init__(
-            self,
-            site=None,
-            email=None,
-            token=None,
-            *,
-            timeout=15,
-            attachment_cap=10 * 1024 * 1024,
-            max_pages=100,
-            allow_http=False,
+        self,
+        site=None,
+        email=None,
+        token=None,
+        *,
+        timeout=15,
+        attachment_cap=10 * 1024 * 1024,
+        max_pages=100,
+        allow_http=False,
     ):
         self.site = (site or os.environ.get("SPECWRIGHT_JIRA_SITE", "")).rstrip("/")
         email = email or os.environ.get("SPECWRIGHT_JIRA_EMAIL", "")
         token = token or os.environ.get("SPECWRIGHT_JIRA_TOKEN", "")
         parts = parse.urlsplit(self.site)
         if (
-                parts.scheme not in ({"http", "https"} if allow_http else {"https"})
-                or not parts.netloc
-                or parts.username
-                or parts.password
-                or parts.query
-                or parts.fragment
-                or parts.path
+            parts.scheme not in ({"http", "https"} if allow_http else {"https"})
+            or not parts.netloc
+            or parts.username
+            or parts.password
+            or parts.query
+            or parts.fragment
+            or parts.path
         ):
             raise ValueError(
                 "site must be an HTTPS origin (HTTP requires explicit local testing opt-in)"
@@ -146,9 +146,9 @@ class JiraREST(Port):
     def search_jql(self, jql):
         # Only the conservative bounded dialect is accepted; OR can escape a project bound.
         if not re.match(
-                r'^\s*project\s*=\s*(?:"[A-Za-z][A-Za-z0-9_]*"|[A-Za-z][A-Za-z0-9_]*)\s*(?:AND\b|ORDER\s+BY\b|$)',
-                jql,
-                re.I,
+            r'^\s*project\s*=\s*(?:"[A-Za-z][A-Za-z0-9_]*"|[A-Za-z][A-Za-z0-9_]*)\s*(?:AND\b|ORDER\s+BY\b|$)',
+            jql,
+            re.I,
         ) or re.search(r"\bOR\b", jql, re.I):
             raise ValueError("bounded JQL must begin with project = KEY and contain no OR")
         issues, token, seen = [], None, set()
@@ -211,12 +211,12 @@ class JiraREST(Port):
         boundary = "specwright-" + uuid.uuid4().hex
         mime = mimetypes.guess_type(filename)[0] or "application/octet-stream"
         body = (
-                (
-                    f'--{boundary}\r\nContent-Disposition: form-data; name="file"; '
-                    f'filename="{filename}"\r\nContent-Type: {mime}\r\n\r\n'
-                ).encode()
-                + data
-                + f"\r\n--{boundary}--\r\n".encode()
+            (
+                f'--{boundary}\r\nContent-Disposition: form-data; name="file"; '
+                f'filename="{filename}"\r\nContent-Type: {mime}\r\n\r\n'
+            ).encode()
+            + data
+            + f"\r\n--{boundary}--\r\n".encode()
         )
         return self._request(
             "POST",
@@ -238,8 +238,8 @@ class JiraREST(Port):
         if not property_key or len(property_key.encode()) > 255:
             raise ValueError("property key must be 1..255 bytes")
         if (
-                not isinstance(value, dict)
-                or len(json.dumps(value, ensure_ascii=False).encode("utf-8")) > 32768
+            not isinstance(value, dict)
+            or len(json.dumps(value, ensure_ascii=False).encode("utf-8")) > 32768
         ):
             raise ValueError("property must be a JSON object of at most 32768 bytes")
         return self._request("PUT", f"issue/{_quote(key)}/properties/{_quote(property_key)}", value)

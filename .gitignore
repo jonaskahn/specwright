@@ -2,6 +2,7 @@ __pycache__/
 *.pyc
 .ruff_cache/
 dist/
+*.zip
 .DS_Store
 .idea/
 .claude/worktrees/
