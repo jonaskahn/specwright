@@ -55,7 +55,9 @@ def find_root(start: Path) -> Path | None:
 def mode_of(root: Path | None) -> str:
     if root is None:
         return "none"
-    return "program" if (root / PROGRAM_MANIFEST).is_file() else "flat"
+    if (root / PROGRAM_MANIFEST).is_file():
+        return "program"
+    return "flat" if (root / FLAT_MANIFEST).is_file() else "none"
 
 
 def list_scopes(root: Path) -> list[str]:
@@ -68,6 +70,8 @@ def list_scopes(root: Path) -> list[str]:
 
 
 def scope_dir(root: Path, scope: str) -> Path:
+    if not ids.is_scope(scope):
+        raise WorkspaceError(f"invalid scope: {scope!r}")
     return root / "projects" / scope if mode_of(root) == "program" else root
 
 
@@ -171,9 +175,13 @@ def init(
         raise WorkspaceError("mode must be 'flat' or 'program'")
     if not ids.is_scope(scope):
         raise WorkspaceError(f"scope must be 2-5 uppercase letters, got '{scope}'")
-    existing = mode_of(find_root(root)) if (root / FLAT_MANIFEST).exists() else "none"
-    if mode == "flat" and (existing != "none" or (root / PROGRAM_MANIFEST).exists()):
+    root = root.resolve()
+    existing = mode_of(root)
+    if existing == "flat" or (mode == "flat" and existing != "none"):
         raise WorkspaceError(f"{root} already holds a workspace manifest")
+    base = root / "projects" / scope if mode == "program" else root
+    if (base / FLAT_MANIFEST).exists():
+        raise WorkspaceError(f"{base} already holds a project manifest")
     root.mkdir(parents=True, exist_ok=True)
     created: list[str] = []
     manifest = project_manifest(scope, name, site, project_key, epic, approvers or [])
@@ -187,9 +195,6 @@ def init(
         data.setdefault("default_scope", scope)
         fsio.atomic_write(program_file, miniyaml.dumps(data))
         created.append(PROGRAM_MANIFEST)
-    base = scope_dir(root, scope) if mode == "program" else root
-    if mode == "program" and (base / FLAT_MANIFEST).exists():
-        raise WorkspaceError(f"{base} already holds a project manifest")
     _write_new(base / FLAT_MANIFEST, miniyaml.dumps(manifest), created, root)
     for folder in schema.SCOPE_DIRS:
         (base / folder).mkdir(parents=True, exist_ok=True)

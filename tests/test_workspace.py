@@ -60,6 +60,19 @@ class FlatTests(WorkspaceTestCase):
         with self.assertRaises(workspace.WorkspaceError):
             workspace.init(self.root, "flat", "ref", "x")
 
+    def test_program_init_does_not_convert_a_flat_workspace(self):
+        self.init_flat()
+        with self.assertRaises(workspace.WorkspaceError):
+            workspace.init(self.root, "program", "ORD", "Orders")
+        self.assertFalse((self.root / "workspace.yaml").exists())
+
+    def test_no_manifest_means_no_mode(self):
+        self.assertEqual(workspace.mode_of(self.root), "none")
+
+    def test_path_traversal_scope_is_rejected(self):
+        with self.assertRaises(workspace.WorkspaceError):
+            workspace.scope_dir(self.root, "../../outside")
+
     def test_detect_and_resolve_in_flat_mode(self):
         self.assertEqual(workspace.detect(self.root)["mode"], "none")
         self.init_flat()
@@ -86,6 +99,15 @@ class ProgramTests(WorkspaceTestCase):
     def test_duplicate_scope_is_rejected(self):
         with self.assertRaises(workspace.WorkspaceError):
             workspace.init(self.root, "program", "REF", "Again")
+
+    def test_existing_project_does_not_partially_update_program_manifest(self):
+        before = (self.root / "workspace.yaml").read_bytes()
+        orphan = self.root / "projects" / "PAY"
+        orphan.mkdir()
+        (orphan / "project.yaml").write_text("scope: PAY\n")
+        with self.assertRaises(workspace.WorkspaceError):
+            workspace.init(self.root, "program", "PAY", "Payments")
+        self.assertEqual((self.root / "workspace.yaml").read_bytes(), before)
 
     def test_root_is_found_from_a_nested_project_folder(self):
         nested = self.root / "projects" / "ORD" / "02-drafts"
