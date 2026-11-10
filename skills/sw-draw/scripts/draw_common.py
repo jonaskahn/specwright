@@ -7,6 +7,7 @@ import math
 from pathlib import Path
 
 from check_offline import check_text
+
 from kitlib.ids import parse_ref
 
 ASSETS = Path(__file__).resolve().parent.parent / "assets"
@@ -39,9 +40,9 @@ def number(value, key, low=None, high=None):
 def refs(node):
     values = node.get("spec_ids", [])
     if (
-            not isinstance(values, list)
-            or len(values) > 3
-            or any(not isinstance(value, str) or not parse_ref(value) for value in values)
+        not isinstance(values, list)
+        or len(values) > 3
+        or any(not isinstance(value, str) or not parse_ref(value) for value in values)
     ):
         raise ValueError("spec_ids must contain up to three valid spec references")
     if len(" · ".join(values)) > 36:

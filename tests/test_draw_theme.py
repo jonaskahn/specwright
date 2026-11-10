@@ -19,14 +19,16 @@ def ratio(a, b):
 
 
 def tokens(block):
-    return dict(re.findall(r"--([a-z0-9-]+):(#[0-9a-f]{6})", block))
+    return dict(re.findall(r"--([a-z0-9-]+)\s*:\s*(#[0-9a-f]{6})", block))
 
 
 class ThemeContrast(unittest.TestCase):
     def test_both_themes_meet_contrast(self):
         text = CSS.read_text(encoding="utf-8")
-        light, dark = text.split("@media (prefers-color-scheme:dark)")
-        for theme in (tokens(light), tokens(dark.split("body {")[0])):
+        light, dark = re.split(
+            r"@media\s*\(\s*prefers-color-scheme\s*:\s*dark\s*\)", text, maxsplit=1
+        )
+        for theme in (tokens(light), tokens(re.split(r"\bbody\s*\{", dark, maxsplit=1)[0])):
             theme = {**tokens(light), **theme}
             for ground in ("sw-bg", "sw-surface"):
                 for name in ("sw-ink", "sw-muted", "sw-link", "sw-accent"):

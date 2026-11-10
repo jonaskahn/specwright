@@ -47,9 +47,9 @@ def render(text, name):
 def with_header(body, source_hash):
     own = hashing.text_hash(body)
     return (
-            "# generated; edit the story, not this file\n"
-            f"# source-hash: {source_hash}\n"
-            f"# content-hash: {own}\n" + body
+        "# generated; edit the story, not this file\n"
+        f"# source-hash: {source_hash}\n"
+        f"# content-hash: {own}\n" + body
     )
 
 

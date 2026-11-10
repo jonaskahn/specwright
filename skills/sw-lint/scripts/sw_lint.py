@@ -211,10 +211,10 @@ def https(value):
     try:
         url = urlsplit(str(value))
         return (
-                url.scheme == "https"
-                and bool(url.netloc)
-                and not url.username
-                and not re.search(r"\s", str(value))
+            url.scheme == "https"
+            and bool(url.netloc)
+            and not url.username
+            and not re.search(r"\s", str(value))
         )
     except ValueError:
         return False
@@ -305,16 +305,16 @@ class Finding:
 
 class Context:
     def __init__(
-            self,
-            base,
-            scope="REF",
-            gate="review",
-            program=False,
-            docs=(),
-            manifest=None,
-            definitions=None,
-            registry=None,
-            built=None,
+        self,
+        base,
+        scope="REF",
+        gate="review",
+        program=False,
+        docs=(),
+        manifest=None,
+        definitions=None,
+        registry=None,
+        built=None,
     ):
         self.base, self.scope, self.gate, self.program = Path(base), scope, gate, program
         self.docs = list(docs)
@@ -426,13 +426,13 @@ def lint_document(doc, ctx):
             d
             for d in ctx.docs
             if d.spec_id == doc.spec_id
-               and ("card" if d.card else "snapshot" if d.snapshot else "definition") == role
+            and ("card" if d.card else "snapshot" if d.snapshot else "definition") == role
         ]
         if len(peers) > 1:
             emit("L-003", "ID has multiple definitions in this representation")
     for ref in ids.find_refs(doc.raw):
         if (not ref.scope or ref.scope == ctx.scope) and (
-                ref.id == doc.spec_id or ref.id in doc.ac or ref.id in ids.tombstones(doc.body)
+            ref.id == doc.spec_id or ref.id in doc.ac or ref.id in ids.tombstones(doc.body)
         ):
             continue
         if ids.qualify(ref.scope or ctx.scope, ref.id) not in ctx.definitions:
@@ -461,7 +461,7 @@ def lint_document(doc, ctx):
                 if url_required and not https(val):
                     emit("L-043", f"{key} requires an https URL")
         if key in {"bo", "br", "nfr", "sources", "applies_to", "affected_ids"} and (
-                not isinstance(value, list) or any(ids.parse_ref(str(v)) is None for v in values)
+            not isinstance(value, list) or any(ids.parse_ref(str(v)) is None for v in values)
         ):
             emit("L-043", f"{key} must be a list of spec references")
     for number, line in enumerate(doc.body.splitlines(), doc.parsed.body_line):
@@ -470,12 +470,12 @@ def lint_document(doc, ctx):
     if doc.card:
         summary = doc.text("Summary")
         if (
-                fm.get("card") is not True
-                or not fm.get("home")
-                or not sequence(fm.get("links"))
-                or len(doc.raw.splitlines()) > 80
-                or not summary
-                or len(summary.split()) > 150
+            fm.get("card") is not True
+            or not fm.get("home")
+            or not sequence(fm.get("links"))
+            or len(doc.raw.splitlines()) > 80
+            or not summary
+            or len(summary.split()) > 150
         ):
             emit(
                 "L-040",
@@ -516,9 +516,9 @@ def lint_document(doc, ctx):
                     acid,
                 )
         if numbers and (
-                len(numbers) != len(set(numbers))
-                or min(numbers) != 1
-                or len(set(numbers)) != max(numbers)
+            len(numbers) != len(set(numbers))
+            or min(numbers) != 1
+            or len(set(numbers)) != max(numbers)
         ):
             emit(
                 "L-017",
@@ -534,16 +534,16 @@ def lint_document(doc, ctx):
                 re.search(rf"\b{word}\b", ac.text, re.I) for word in ("Given", "When", "Then")
             ]
             if any(p is None for p in positions) or [p.start() for p in positions if p] != sorted(
-                    p.start() for p in positions if p
+                p.start() for p in positions if p
             ):
                 emit("L-007", f"{acid}: put Given, When, Then in order", ac.line, acid)
             if not re.search(
-                    r'\d|"[^"\n]+"|“[^”\n]+”|(?<!\w)\x27[^\x27\n]+\x27|\x60[^\x60\n]+\x60', ac.text
+                r'\d|"[^"\n]+"|“[^”\n]+”|(?<!\w)\x27[^\x27\n]+\x27|\x60[^\x60\n]+\x60', ac.text
             ):
                 emit("L-008", f"{acid}: add a number or observable literal", ac.line, acid)
         ui = doc.text("UI/UX")
         if not re.search(r"\bNone\s*[—–-]\s*\S", ui, re.I) and not all(
-                re.search(rf"\b{s}\b", ui, re.I) for s in ("default", "empty", "loading", "error")
+            re.search(rf"\b{s}\b", ui, re.I) for s in ("default", "empty", "loading", "error")
         ):
             emit("L-012", "list four UI states or None with a reason", doc.line("UI/UX"))
         items = [
@@ -552,8 +552,8 @@ def lint_document(doc, ctx):
         if not items or any(not re.search(r"reason:\s*\S", line, re.I) for line in items):
             emit("L-013", "add at least one exclusion with reason:", doc.line("Out of scope"))
         if (
-                fm["status"] in {"ready-to-publish", "published", "ready-for-dev"}
-                and doc.text("Open questions").strip() != "None"
+            fm["status"] in {"ready-to-publish", "published", "ready-for-dev"}
+            and doc.text("Open questions").strip() != "None"
         ):
             emit("L-018", "resolve Open questions to None", doc.line("Open questions"))
     markers = doc.body.count("[NEEDS CLARIFICATION")
@@ -596,14 +596,14 @@ def lint_document(doc, ctx):
                     number,
                 )
         if re.match(
-                r"^\s*(?:[-*]\s+)?(?:Given |When |Then )?(?:it|they|this|that)\s+"
-                r"(?:shall|must|will|is|are|can)\b",
-                prose,
-                re.I,
+            r"^\s*(?:[-*]\s+)?(?:Given |When |Then )?(?:it|they|this|that)\s+"
+            r"(?:shall|must|will|is|are|can)\b",
+            prose,
+            re.I,
         ):
             emit("L-009", "name the subject instead of an ambiguous pronoun", number)
         if re.search(r"\bsecure\b", prose, re.I) and not re.search(
-                r"\b(tls|encrypt\w*|role|mfa|owasp)\b", prose, re.I
+            r"\b(tls|encrypt\w*|role|mfa|owasp)\b", prose, re.I
         ):
             emit("L-009", "qualify secure with a control and measurable scope", number)
         if section in {"Goal", "Acceptance criteria", "Business rules"} or fm["type"] in {
@@ -645,9 +645,9 @@ def lint_document(doc, ctx):
         got = [s.name for s in markdown.iter_sections(doc.body) if s.name in schema.STORY_SECTIONS]
         identity = doc.text("Identity")
         if (
-                got != schema.STORY_SECTIONS
-                or not re.search(r"Spec ID:\s*(?:[A-Z]{2,5}:)?FEAT-\d{3}\b", identity)
-                or not re.search(r"Draft hash:\s*sha256:[0-9a-f]{64}\b", identity)
+            got != schema.STORY_SECTIONS
+            or not re.search(r"Spec ID:\s*(?:[A-Z]{2,5}:)?FEAT-\d{3}\b", identity)
+            or not re.search(r"Draft hash:\s*sha256:[0-9a-f]{64}\b", identity)
         ):
             emit(
                 "L-038", "snapshot needs ordered story sections and Identity spec ID and draft hash"
@@ -706,10 +706,10 @@ def lint_document(doc, ctx):
                 if role and name and https(evidence) and signed_hash == digest:
                     valid_roles.add(role)
             required = {
-                           a.get("role")
-                           for a in sequence(ctx.manifest.get("approvers"))
-                           if isinstance(a, dict) and a.get("role")
-                       } or {"PO"}
+                a.get("role")
+                for a in sequence(ctx.manifest.get("approvers"))
+                if isinstance(a, dict) and a.get("role")
+            } or {"PO"}
             if not required <= valid_roles:
                 emit(
                     "L-045",
@@ -720,9 +720,9 @@ def lint_document(doc, ctx):
         first = summary.split()[0].lower() if summary.split() else ""
         need = {"specwright", f"feat:{doc.spec_id}", f"proj:{ctx.scope}"}
         if (
-                len(summary) > 100
-                or first not in VERBS
-                or not need <= set(str(v) for v in sequence(fm.get("jira_labels")))
+            len(summary) > 100
+            or first not in VERBS
+            or not need <= set(str(v) for v in sequence(fm.get("jira_labels")))
         ):
             emit(
                 "L-046",
@@ -753,7 +753,7 @@ def discover(base):
     for path in sorted(base.rglob("*")):
         parts = path.relative_to(base).parts
         if any(
-                p in {"_meta", "raw", ".git", ".agents", ".claude", "skills", "projects"} for p in parts
+            p in {"_meta", "raw", ".git", ".agents", ".claude", "skills", "projects"} for p in parts
         ):
             continue
         if path.name in {"AGENTS.md", "CLAUDE.md", "GEMINI.md", "README.md"}:
@@ -822,9 +822,9 @@ def registry_findings(ctx):
                     )
         for doc in ctx.docs:
             if (
-                    doc.fm.get("type") == "feature"
-                    and doc.fm.get("status") in {"published", "ready-for-dev"}
-                    and doc.spec_id not in by_feature
+                doc.fm.get("type") == "feature"
+                and doc.fm.get("status") in {"published", "ready-for-dev"}
+                and doc.spec_id not in by_feature
             ):
                 out.append(
                     Finding(
@@ -844,10 +844,10 @@ def load_waivers(ctx):
     """Only decision records with explicit targets and evidence can excuse findings."""
     for doc in ctx.docs:
         if (
-                not re.fullmatch(r"records/DEC-\d{3}\.md", doc.path)
-                or doc.fm.get("type") != "dec"
-                or doc.fm.get("status") != "accepted"
-                or doc.parsed.error
+            not re.fullmatch(r"records/DEC-\d{3}\.md", doc.path)
+            or doc.fm.get("type") != "dec"
+            or doc.fm.get("status") != "accepted"
+            or doc.parsed.error
         ):
             continue
         evidence = doc.fm.get("evidence_url", doc.fm.get("evidence", ""))
@@ -938,7 +938,7 @@ def graph_findings(ctx):
             continue
         if e.rel == "member_of" and e.cls == "declared":
             if e.res == "unresolved" or (
-                    e.dst in built.nodes and built.nodes[e.dst].kind != "epic"
+                e.dst in built.nodes and built.nodes[e.dst].kind != "epic"
             ):
                 add(
                     "L-050",
@@ -1066,9 +1066,9 @@ def run(root, gate="review", scope=None):
     selected = workspace.resolve(workspace_root, arg=scope, cwd=start, write=True)
     base = workspace.scope_dir(workspace_root, selected)
     if (
-            base.is_symlink()
-            or (base / "_meta").is_symlink()
-            or (base / "_meta/lint-report.md").is_symlink()
+        base.is_symlink()
+        or (base / "_meta").is_symlink()
+        or (base / "_meta/lint-report.md").is_symlink()
     ):
         raise workspace.WorkspaceError("report destination must not be a symbolic link")
     manifest = workspace.load(base / workspace.FLAT_MANIFEST)

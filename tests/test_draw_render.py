@@ -59,8 +59,8 @@ class DrawRenderTests(unittest.TestCase):
                     for xx, yy, ww, hh in boxes[i + 1 :]:
                         self.assertTrue(x + w <= xx or xx + ww <= x or y + h <= yy or yy + hh <= y)
                 self.assertEqual(source is not None, kind in DRAW.MERMAID)
-                self.assertIn("prefers-color-scheme:dark", page)
-                self.assertIn("paint-order:stroke", page)
+                self.assertRegex(page, r"prefers-color-scheme\s*:\s*dark")
+                self.assertRegex(page, r"paint-order\s*:\s*stroke")
                 self.assertIn('role="img"', page)
 
     def test_plain_hostile_punctuation_is_escaped(self):

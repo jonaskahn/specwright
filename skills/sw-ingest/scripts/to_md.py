@@ -162,7 +162,7 @@ def ocr(path: Path, pages: int, locale: str) -> tuple[str, str]:
 
 
 def convert(
-        path: Path, data: bytes, locale: str = "en"
+    path: Path, data: bytes, locale: str = "en"
 ) -> tuple[str, str, str, list[str], bool, str]:
     ext = path.suffix.lower()
     warnings: list[str] = []
@@ -194,11 +194,11 @@ def convert(
             message = BytesParser(policy=policy.default).parsebytes(data)
             body = message.get_body(preferencelist=("plain", "html"))
             text = (
-                    "\n".join(
-                        f"{key}: {message.get(key, 'UNKNOWN')}"
-                        for key in ("Subject", "From", "To", "Date")
-                    )
-                    + "\n\n"
+                "\n".join(
+                    f"{key}: {message.get(key, 'UNKNOWN')}"
+                    for key in ("Subject", "From", "To", "Date")
+                )
+                + "\n\n"
             )
             if body:
                 content = body.get_content()
@@ -207,9 +207,9 @@ def convert(
         elif ext == ".json":
             issue = json.loads(data)
             if (
-                    not isinstance(issue, dict)
-                    or not isinstance(issue.get("fields"), dict)
-                    or "key" not in issue
+                not isinstance(issue, dict)
+                or not isinstance(issue.get("fields"), dict)
+                or "key" not in issue
             ):
                 raise ValueError("not Jira issue JSON")
             kind = "jira-issue"
@@ -296,14 +296,14 @@ def clean(text: str, warnings: list[str]) -> str:
 
 
 def ingest(
-        path: Path,
-        out: Path,
-        *,
-        scope: str | None = None,
-        source: str | None = None,
-        source_version: str | None = None,
-        locale: str = "en",
-        retain_sensitive_raw: bool = False,
+    path: Path,
+    out: Path,
+    *,
+    scope: str | None = None,
+    source: str | None = None,
+    source_version: str | None = None,
+    locale: str = "en",
+    retain_sensitive_raw: bool = False,
 ) -> dict:
     path, out = path.resolve(), out.resolve()
     if out.name != "00-inbox":
@@ -422,13 +422,13 @@ def main(argv: list[str] | None = None) -> int:
         print("refused: " + str(exc), file=sys.stderr)
         return 3
     except (
-            TypeError,
-            RecursionError,
-            ValueError,
-            OSError,
-            subprocess.TimeoutExpired,
-            zipfile.BadZipFile,
-            workspace.WorkspaceError,
+        TypeError,
+        RecursionError,
+        ValueError,
+        OSError,
+        subprocess.TimeoutExpired,
+        zipfile.BadZipFile,
+        workspace.WorkspaceError,
     ):
         print(
             "error: unreadable input, invalid metadata or converter failure; "

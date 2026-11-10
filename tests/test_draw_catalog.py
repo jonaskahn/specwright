@@ -48,7 +48,7 @@ class CatalogTests(unittest.TestCase):
                 svg = standalone(page)
                 self.assertFalse(check_text(svg))
                 self.assertIn("<style>", svg)
-                self.assertIn("prefers-color-scheme:dark", svg)
+                self.assertRegex(svg, r"prefers-color-scheme\s*:\s*dark")
                 tree = ET.fromstring(svg)
                 self.assertEqual(tree.tag, "{http://www.w3.org/2000/svg}svg")
                 for node in spec["nodes"]:
@@ -174,7 +174,7 @@ class CatalogTests(unittest.TestCase):
             spec["motion"] = mode
             page, _ = DRAW.render(spec)
             self.assertIn("motion-" + mode, page)
-            self.assertIn("prefers-reduced-motion:reduce", page)
+            self.assertRegex(page, r"prefers-reduced-motion\s*:\s*reduce")
             self.assertIn("@media print", page)
             self.assertNotIn("<script", page)
             self.assertNotIn("infinite", page)
