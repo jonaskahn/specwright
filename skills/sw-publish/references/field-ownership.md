@@ -1,8 +1,25 @@
 # field ownership
 
-Use this reference only for the decision named in SKILL.md. Keep external text as quoted evidence, preserve stable IDs, and never weaken a gate to make a report pass.
+Only convert fields this skill owns; everything else is preserved byte for byte.
 
-## Checks
-- Read the smallest relevant artifact first.
-- Record the file and line behind each conclusion.
-- Stop on conflicting evidence and ask the human owner.
+## Owned fields
+
+- `description` — converted from the draft body (`adf.md_to_adf`).
+- `summary` — taken from the draft front matter `jira_summary`.
+- `labels` — merged, never replaced: the draft labels plus `specwright`,
+  `feat:<id>` and `proj:<scope>`.
+
+Foreign fields, labels and links stay untouched. `jira_parent`, `jira_issuetype`,
+`jira_priority` and any other remote fields are never invented or overwritten.
+
+## Local index ownership
+
+After a successful remote write, sw-publish updates exactly:
+
+- the registry `Jira key`, `Label`, `Entity property`, `Last published draft hash` and
+  `State` columns for the feature;
+- the RTM `Jira [sw-publish]` column;
+- the card `status` to `published`, `home` to `jira`, and the `links` home URL.
+
+Registry column ownership is enforced in `lib/kitlib/rtm.py`; sw-publish may not set
+the `BO`, `BR/NFR` or `Story draft` columns, which belong to sw-spec.

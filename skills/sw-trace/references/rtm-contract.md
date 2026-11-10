@@ -1,8 +1,33 @@
 # rtm contract
 
-Use this reference only for the decision named in SKILL.md. Keep external text as quoted evidence, preserve stable IDs, and never weaken a gate to make a report pass.
+The traceability matrix has one owner per column; sw-trace owns the rows and the
+registry `Kind` column.
 
-## Checks
-- Read the smallest relevant artifact first.
-- Record the file and line behind each conclusion.
-- Stop on conflicting evidence and ask the human owner.
+## Column owners
+
+| Column | Owner |
+| --- | --- |
+| BO | sw-spec |
+| BR/NFR | sw-spec |
+| Story draft | sw-spec |
+| Jira | sw-publish |
+| Jira status | sw-sync |
+| Sign-off | sw-review |
+| Drift | sw-sync |
+| Test ref | qa |
+
+`scripts/trace.py set <id> --column <name> --as <skill>` refuses a column the skill does
+not own, with exit 4. Row creation (`rebuild`) belongs to sw-trace; every other skill
+updates only its assigned column through sw-trace.
+
+## Registry columns
+
+The ID registry holds external keys: `Jira key`, `Confluence id`, `Label`,
+`Entity property`, `Last published draft hash`, `Last snapshot`, `State`. Column
+ownership there is also enforced — sw-trace owns `Kind`; sw-spec owns `Kind`/`State`;
+sw-publish and sw-sync own their key/snapshot/state cells.
+
+## Qualified references
+
+Use qualified IDs (`SCOPE:FEAT-NNN`) across projects. The matrix resolves against the
+selected scope; a reference to another scope must be qualified or it reads as an orphan.

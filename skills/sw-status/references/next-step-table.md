@@ -1,8 +1,20 @@
 # next step table
 
-Use this reference only for the decision named in SKILL.md. Keep external text as quoted evidence, preserve stable IDs, and never weaken a gate to make a report pass.
+`scripts/status.py` recommends the next skill and whose turn it is, from the feature
+state and its signals. The suggestion is a route, not an approval.
 
-## Checks
-- Read the smallest relevant artifact first.
-- Record the file and line behind each conclusion.
-- Stop on conflicting evidence and ask the human owner.
+## Recommendation rules (in the checker's order)
+
+- Drift reported (`drift` not none/clean) → **sw-sync then sw-review**; BA then PO.
+- Open change requests → **sw-review**; PO.
+- Open questions → **sw-review**; PO.
+- Sign-off stale → **sw-review**; PO.
+- State withdrawn/superseded → **sw-trace**; BA.
+- `ready-for-dev` → **implementation**; Dev and QA.
+- `ready-to-publish` with a fresh sign-off → **sw-publish**; BA after PO OK; otherwise
+  **sw-review**; PO.
+- `in-review` → **sw-review**; PO.
+- `published` → **sw-sync**; BA.
+- `draft` with a failing lint → **sw-spec**; BA; otherwise **sw-lint**; BA.
+
+UNKNOWN means the report could not decide; treat it as an open question, not a fact.

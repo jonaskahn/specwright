@@ -1,8 +1,21 @@
 # implementation terms
 
-Use this reference only for the decision named in SKILL.md. Keep external text as quoted evidence, preserve stable IDs, and never weaken a gate to make a report pass.
+`L-015` flags implementation choices that leaked into requirement prose — a solution,
+not a need. The checker matches these exact words in Goal, Acceptance criteria and
+Business rules sections (and BO/BR cards).
 
-## Checks
-- Read the smallest relevant artifact first.
-- Record the file and line behind each conclusion.
-- Stop on conflicting evidence and ask the human owner.
+## The list (as shipped in the checker)
+
+sql, endpoint, microservice, kafka, redis, react, database table, json, http 500.
+
+## Why it matters
+
+Requirements describe what the actor needs and the observable result; the design owns
+how. A "database table" in a business rule freezes an implementation the design has not
+chosen. A story (BA/PO word) and a feature (Dev/QA word) are the same item written
+FEAT-NNN — but its acceptance criteria stay design-free.
+
+## How to resolve
+
+Move the implementation choice to the design/design notes, and re-express the rule as
+actor + observable outcome. Do not remove the word merely to silence the finding.

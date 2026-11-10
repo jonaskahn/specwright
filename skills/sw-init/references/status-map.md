@@ -1,8 +1,24 @@
 # status map
 
-Use this reference only for the decision named in SKILL.md. Keep external text as quoted evidence, preserve stable IDs, and never weaken a gate to make a report pass.
+Feature statuses flow through the repository and map onto Jira statuses.
 
-## Checks
-- Read the smallest relevant artifact first.
-- Record the file and line behind each conclusion.
-- Stop on conflicting evidence and ask the human owner.
+## Repository statuses
+
+`draft`, `in-review`, `ready-to-publish`, `published`, `ready-for-dev`, `superseded`,
+`withdrawn`.
+
+## Default Jira mapping
+
+| Repository | Jira |
+| --- | --- |
+| published | To Do |
+| ready-for-dev | Ready for Dev |
+| in-development | In Progress |
+| superseded | Won't Do |
+| withdrawn | Won't Do |
+
+## Ownership
+
+The manifest `status_map` is the mapping; `sw-sync` checks drift against it, `sw-lint`
+checks status validity, and only `sw-review` moves a draft to `ready-to-publish`.
+A status change never implies approval; approval needs named evidence.
