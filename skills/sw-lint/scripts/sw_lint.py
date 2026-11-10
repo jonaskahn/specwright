@@ -990,7 +990,7 @@ def main(argv=None):
         else:
             print(
                 f"{data['scope']} {data['gate']}: {data['errors']} blocking error(s); "
-                "{data['report']}"
+                f"{data['report']}"
             )
             for f in data["findings"]:
                 print(

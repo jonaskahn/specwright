@@ -137,7 +137,11 @@ def _check_body(skill: Path, parsed: frontmatter.Parsed, report: Report) -> None
         if not folder.is_dir():
             continue
         for item in sorted(folder.iterdir()):
-            if item.name == "kitlib" or item.name.startswith(("_", ".")) or item.is_dir():
+            if (
+                item.name in ("kitlib", "untrusted-content.md", "stop-and-ask.md")
+                or item.name.startswith(("_", "."))
+                or item.is_dir()
+            ):
                 continue
             if f"{sub}/{item.name}" not in referenced:
                 report.add(
