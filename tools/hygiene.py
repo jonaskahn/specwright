@@ -49,6 +49,11 @@ def staged_files() -> list[str]:
     except FileNotFoundError:
         print("hygiene: git not found; scanning no files", file=sys.stderr)
         return []
+    except subprocess.CalledProcessError:
+        # A CI checkout that predates git (REST download) has no repository, so
+        # git falls back to --no-index mode and rejects --cached with exit 129.
+        print("hygiene: not a git repository; scanning no files", file=sys.stderr)
+        return []
     return [line for line in out.stdout.splitlines() if line]
 
 
