@@ -1,0 +1,10 @@
+From: Product Owner <owner@example.test>
+To: Business Analyst <analyst@example.test>
+Subject: Refund window and tiers
+Date: Tue, 10 Nov 2026 10:00:00 +0700
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+
+The refund window is 14 days after delivery.
+Refund 100% in the first week, and half after that until day 14.
+Please clarify the older policy before writing acceptance criteria.
