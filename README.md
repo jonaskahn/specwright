@@ -24,8 +24,8 @@ same workflow without changing the IDs, traceability or safety rules.
 
 ## Workflow
 
-`sw-init` → `sw-ingest` → `sw-shape-idea` → `sw-spec` → `sw-draw` (when useful)
-→ `sw-review` → `sw-publish` → `sw-sync`.
+`sw-start` → `sw-init` → `sw-ingest` → `sw-shape-idea` → `sw-spec` → `sw-draw` (when useful)
+→ `sw-review` → `sw-publish` → `sw-sync`, with `sw-plan` for agent tasks and `sw-graph` to map every link.
 
 Use `sw-status`, `sw-trace` and `sw-lint` throughout. Work stays in Markdown until you
 choose to publish. Once a story is published, Jira is the system of record for its text;
@@ -68,7 +68,7 @@ Claude Code users can install the plugin marketplace route:
 /plugin install specwright@specwright
 ```
 
-Both routes expose the same eleven `sw-*` skills. Verify skill discovery in your agent
+Both routes expose the same fourteen `sw-*` skills. Start with `sw-start`; it detects the workspace and hands over to the right skill. Verify skill discovery in your agent
 client and version; selection behavior is client-specific and manual.
 
 ### Offline fallback

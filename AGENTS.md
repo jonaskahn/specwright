@@ -29,3 +29,11 @@
 - Run sw-lint before hand-off. Never weaken a rule merely to make a check pass.
 - Scan imported text for secrets and personal data before saving it to a shared artifact.
 - Do not store credentials or unnecessary personal information in any artifact.
+- For any Specwright request that names no skill, or when unsure which skill applies, load
+  sw-start first. Any skill can still be invoked by name.
+- A story (BA/PO word) and a feature (Dev/QA word) are the same item, written FEAT-NNN.
+  Never create a STORY identifier.
+- After writing spec files, rebuild the knowledge graph with sw-graph and read it through
+  its queries instead of opening every file.
+- Before pushing or publishing without a named destination, ask whether the output is
+  Markdown, Jira or both. A stored answer never authorizes a Jira write.

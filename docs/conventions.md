@@ -73,7 +73,9 @@ These rules apply to every file in the kit.
   fine.
 - Commit subjects are imperative, at most 72 characters, and describe what the change
   does. No trailers.
-- Run the full gate before every commit and push:
+- The knowledge graph is derived, committed and byte-deterministic. After writing spec files, run `sw-graph build` and `sw-graph check`. Do not parse the graph files by hand; use the query commands.
+
+Run the full gate before every commit and push:
 
   ```sh
   uvx ruff format --check .

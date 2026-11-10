@@ -25,10 +25,14 @@ Claude Code plugin marketplace:
 /plugin install specwright@specwright
 ```
 
-The plugin manifests declare all eleven skills and eleven command wrappers. Commands
+The plugin manifests declare all fourteen skills and fourteen command wrappers. Commands
 carry Claude-specific `${CLAUDE_PLUGIN_ROOT}` paths; skill folders themselves remain
 host-neutral. Installation writes only skill files and client metadata. It never writes
-to Jira, Confluence or a Specwright workspace. Opening a skill in a client and checking
+to Jira, Confluence or a Specwright workspace.
+
+A workspace may live at the repository root (docs-only) or under `.specwright/` inside a code
+repository (embedded), for one project or a program of several. See the Layouts section of
+the README and `docs/conventions.md`. Opening a skill in a client and checking
 discovery remains a manual compatibility check because client support varies by version.
 
 Python 3.10 or newer is required to run the shipped scripts. Runtime code uses only the
