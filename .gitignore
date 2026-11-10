@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.ruff_cache/
+dist/
+# Build output: package.py vendors the shared library into every skill.
+skills/*/scripts/kitlib/
+.DS_Store
