@@ -11,7 +11,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from kitlib import frontmatter, hashing, schema, tables, workspace
+from kitlib import frontmatter, graph, hashing, schema, tables, workspace
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "skills/sw-lint/scripts/sw_lint.py"
@@ -234,6 +234,149 @@ class RuleTests(unittest.TestCase):
 
     def test_l046(self):
         self.check_rule("L-046", doc(update(jira_summary="Beautiful return form")))
+
+    def graph_ctx(self, built, root=False):
+        if root:
+            self.base.mkdir(parents=True, exist_ok=True)
+            (self.base / "project.yaml").write_text("scope: REF\n")
+            (self.base / "_meta").mkdir(parents=True, exist_ok=True)
+            (self.base / "02-drafts").mkdir(parents=True, exist_ok=True)
+            (self.base / "02-drafts/FEAT-001.story.md").write_text(GOOD)
+        return self.context([doc()], built=built)
+
+    def test_l047(self):
+        g = graph.Graph(nodes={}, edges=[], inputs={})
+        g.nodes["REF:feature/FEAT-001"] = graph.Node(
+            "REF:feature/FEAT-001",
+            "feature-file",
+            "-",
+            "x",
+            "02-drafts/FEAT-001.feature",
+            1,
+            1,
+            "-",
+            "REF:FEAT-001",
+            {"source_hash": "sha256:bad"},
+        )
+        g.nodes["REF:FEAT-001"] = graph.Node(
+            "REF:FEAT-001",
+            "feat",
+            "-",
+            "x",
+            "02-drafts/FEAT-001.story.md",
+            1,
+            1,
+            hashing.draft_hash(GOOD),
+            "REF:FEAT-001",
+        )
+        self.assertIn("L-047", {f.rule for f in lint.graph_findings(self.graph_ctx(g, root=True))})
+
+    def test_l048(self):
+        g = graph.Graph(
+            nodes={},
+            edges=[
+                graph.Edge(
+                    "REF:TASK-001-1",
+                    "implements",
+                    "REF:AC-001-1",
+                    "declared",
+                    "03-plan/x.md",
+                    1,
+                    "unresolved",
+                )
+            ],
+            inputs={},
+        )
+        g.nodes["REF:TASK-001-1"] = graph.Node(
+            "REF:TASK-001-1", "task", "-", "x", "03-plan/x.md", 1, 1, "-", "REF:FEAT-001"
+        )
+        self.assertIn("L-048", {f.rule for f in lint.graph_findings(self.graph_ctx(g))})
+
+    def test_l049(self):
+        g = graph.Graph(nodes={}, edges=[], inputs={})
+        (self.base / "_meta").mkdir(parents=True, exist_ok=True)
+        self.assertIn("L-049", {f.rule for f in lint.graph_findings(self.graph_ctx(g, root=True))})
+
+    def test_l050(self):
+        g = graph.Graph(
+            nodes={},
+            edges=[
+                graph.Edge(
+                    "REF:FEAT-001",
+                    "member_of",
+                    "REF:EPIC-001",
+                    "declared",
+                    "02-drafts/x.md",
+                    1,
+                    "unresolved",
+                )
+            ],
+            inputs={},
+        )
+        g.nodes["REF:FEAT-001"] = graph.Node(
+            "REF:FEAT-001", "feat", "-", "x", "02-drafts/x.md", 1, 1, "-", "REF:FEAT-001"
+        )
+        self.assertIn("L-050", {f.rule for f in lint.graph_findings(self.graph_ctx(g))})
+
+    def test_l051(self):
+        g = graph.Graph(
+            nodes={},
+            edges=[
+                graph.Edge(
+                    "REF:FEAT-001",
+                    "member_of",
+                    "REF:EPIC-001",
+                    "declared",
+                    "02-drafts/x.md",
+                    1,
+                    "resolved",
+                )
+            ],
+            inputs={},
+        )
+        g.nodes["REF:FEAT-001"] = graph.Node(
+            "REF:FEAT-001", "feat", "-", "x", "02-drafts/x.md", 1, 1, "-", "REF:FEAT-001"
+        )
+        g.nodes["REF:EPIC-001"] = graph.Node(
+            "REF:EPIC-001",
+            "epic",
+            "-",
+            "x",
+            "01-analysis/epics/EPIC-001.md",
+            1,
+            1,
+            "-",
+            "REF:EPIC-001",
+            {"scopes": ["ORD"]},
+        )
+        self.assertIn("L-051", {f.rule for f in lint.graph_findings(self.graph_ctx(g))})
+
+    def test_l052(self):
+        g = graph.Graph(
+            nodes={},
+            edges=[
+                graph.Edge(
+                    "REF:TASK-001-1",
+                    "touches",
+                    "REF:code/x.py",
+                    "declared",
+                    "03-plan/x.md",
+                    1,
+                    "missing",
+                )
+            ],
+            inputs={},
+        )
+        g.nodes["REF:TASK-001-1"] = graph.Node(
+            "REF:TASK-001-1", "task", "-", "x", "03-plan/x.md", 1, 1, "-", "REF:FEAT-001"
+        )
+        self.assertIn("L-052", {f.rule for f in lint.graph_findings(self.graph_ctx(g))})
+
+    def test_l053(self):
+        reg = tables.Table(list(schema.REGISTRY_COLUMNS))
+        reg.upsert("REF:FEAT-001", {"Last snapshot": "/tmp/x.md"})
+        ctx = self.context([doc()], registry=reg)
+        self.assertIn("L-053", {f.rule for f in lint.graph_findings(ctx)})
 
     def test_every_rule_has_a_named_test(self):
         covered = {"L-" + name.removeprefix("test_l") for name in dir(self) if re_rule(name)}
