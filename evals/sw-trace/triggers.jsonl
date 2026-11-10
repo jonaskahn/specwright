@@ -1,0 +1,16 @@
+{"query": "sw-trace: sw-trace for REF:FEAT-001 with the current project manifest", "should_trigger": true}
+{"query": "run sw-trace on the refund workspace and show the exact result", "should_trigger": true}
+{"query": "I need sw-trace before handing REF:FEAT-002 to the PO", "should_trigger": true}
+{"query": "check sw-trace in projects/ORD and report UNKNOWN fields", "should_trigger": true}
+{"query": "Use sw-trace after the refund source changes", "should_trigger": true}
+{"query": "Please sw-trace for FEAT-003 without guessing the scope", "should_trigger": true}
+{"query": "sw-trace with --scope REF and keep the evidence links", "should_trigger": true}
+{"query": "Give me sw-trace and name the owning sibling skill for each finding", "should_trigger": true}
+{"query": "Write the refund story for FEAT-001", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Publish FEAT-001 to PROJ now", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Pull the latest PROJ-14 text into a snapshot", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Ingest this refund policy PDF as SRC evidence", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Record the PO approval for FEAT-001", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Draw a refund state diagram", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Shape the refund idea before anyone writes ACs", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Update the RTM Jira column manually", "should_trigger": false, "near_miss_of": "sw-spec"}
