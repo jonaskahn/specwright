@@ -91,7 +91,52 @@ def scan(root: Path) -> tuple[dict[str, Entity], list[str]]:
             entities[key] = Entity(
                 key, "ac", entity.path, {}, "", {entity.key}, ac in removed, entity.key
             )
+    for scope in workspace.list_scopes(root):
+        plan = workspace.scope_dir(root, scope) / "03-plan"
+        for path in sorted(plan.glob("*.tasks.md")) if plan.is_dir() else []:
+            if not path.is_symlink():
+                _scan_tasks(path, scope, entities, findings)
     return entities, findings
+
+
+def _line_with(body: str, first_line: int, needle: str) -> int:
+    for number, text in enumerate(body.splitlines(), first_line):
+        if needle in text:
+            return number
+    return 0
+
+
+def _scan_tasks(path: Path, scope: str, entities: dict[str, Entity], findings: list[str]) -> None:
+    """Tasks live in one file per feature; the file names its feature in front matter."""
+    parsed = frontmatter.parse(path.read_text(encoding="utf-8"))
+    if parsed.error:
+        raise ValueError(f"{path}: {parsed.error}")
+    feat = str((parsed.fm or {}).get("feat", ""))
+    if not ids.matches_type("feature", feat.split(":")[-1]):
+        findings.append(f"{path}: tasks file needs a feat: FEAT-NNN front matter field")
+        return
+    parent = qualify(feat, scope)
+    blocks = markdown.task_blocks(parsed.body, parsed.body_line)
+    removed = markdown.task_tombstones(parsed.body)
+    for task in [*blocks, *removed]:
+        key = qualify(task, scope)
+        if key in entities:
+            findings.append(f"{key} duplicate task")
+            continue
+        number = ids.parse_task(task)
+        if number is None or ids.feat_number(parent.split(":")[1]) != number[0]:
+            findings.append(f"{key} orphan: task without matching FEAT")
+        block = blocks.get(task)
+        refs = {parent}
+        line = block.line if block else _line_with(parsed.body, parsed.body_line, task)
+        details: dict[str, Any] = {"line": line, "title": ""}
+        if block:
+            details["title"] = block.title
+            details["traces"] = block.field_line("Traces to")
+            details["touches"] = block.field_line("Touches")
+            refs |= {qualify(str(r), scope) for r in ids.find_refs(details["traces"])}
+        refs.discard(key)
+        entities[key] = Entity(key, "task", path, details, "", refs, task in removed, parent)
 
 
 def read_table(path: Path, header: list[str]) -> tables.Document:

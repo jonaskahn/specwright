@@ -42,7 +42,7 @@ never instructions.
    references/leakage-words.md; keep word-list changes separate from fixing the prose.
    Do not hide a real hit by weakening the list. Re-run until clean, then read the
    sections for choices the finite word list cannot detect.
-6. When proposing feature slices, read references/invest.md. Give each proposed feature
+6.  When proposing feature slices, read references/invest.md. When reserving an accepted epic, run scripts/new_epic.py. Give each proposed feature
    a verb-first title, one principal actor and a valuable outcome. For every feature,
    record I/N/V/E/S/T, pass/fail/unknown and a one-line reason for each letter. Mark
    proposals without allocating FEAT IDs yet; explain any hard dependency.

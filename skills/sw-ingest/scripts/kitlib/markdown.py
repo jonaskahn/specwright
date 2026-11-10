@@ -9,6 +9,11 @@ _FENCE = re.compile(r"^\s*(```|~~~)")
 _HEADING = re.compile(r"^(#{1,6}) +(.+?)\s*#*\s*$")
 _AC_HEADING = re.compile(r"^### +(AC-\d{3}-\d+)\b\s*(?:[—–-]+\s*(.*))?$")
 _AC_TOMBSTONE = re.compile(r"~~(AC-\d{3}-\d+)~~")
+_TASK_HEADING = re.compile(r"^### +(TASK-\d{3}-\d+)\b\s*(?:[—–-]+\s*(.*))?$")
+_TASK_TOMBSTONE = re.compile(r"~~(TASK-\d{3}-\d+)~~")
+_TASK_FIELD = re.compile(
+    r"^\s*(?:[-*]\s+)?(Traces to|Touches|Depends on|Done when|Stop and ask if)\s*:\s*(.*)$"
+)
 
 
 @dataclass
@@ -90,6 +95,49 @@ def ac_tombstones(section: Section | None) -> list[str]:
     if section is None:
         return []
     return [m.group(1) for _, line in section.lines for m in _AC_TOMBSTONE.finditer(line)]
+
+
+@dataclass
+class TaskBlock:
+    id: str
+    line: int
+    title: str
+    end: int = 0
+    fields: dict[str, str] = field(default_factory=dict)
+
+    def field_line(self, name: str) -> str:
+        return self.fields.get(name, "")
+
+
+def task_blocks(body: str, first_line: int = 1) -> dict[str, TaskBlock]:
+    """Parse '### TASK-001-1 — title' blocks and their labelled field lines."""
+    blocks: dict[str, TaskBlock] = {}
+    current: TaskBlock | None = None
+    fenced = False
+    for number, line in enumerate(body.splitlines(), first_line):
+        if _FENCE.match(line):
+            fenced = not fenced
+        if fenced:
+            continue
+        match = _TASK_HEADING.match(line)
+        if match:
+            current = TaskBlock(match.group(1), number, (match.group(2) or "").strip(), number)
+            blocks.setdefault(current.id, current)
+            continue
+        if _HEADING.match(line) and current is not None:
+            current = None
+            continue
+        if current is not None:
+            current.end = number
+            field_match = _TASK_FIELD.match(line)
+            if field_match:
+                current.fields.setdefault(field_match.group(1), field_match.group(2).strip())
+    return blocks
+
+
+def task_tombstones(body: str) -> list[str]:
+    """IDs of withdrawn tasks that are kept as '~~TASK-001-3~~' lines."""
+    return [m.group(1) for line in body.splitlines() for m in _TASK_TOMBSTONE.finditer(line)]
 
 
 def normalise(text: str) -> str:

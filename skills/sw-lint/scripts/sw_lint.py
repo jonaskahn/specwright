@@ -19,13 +19,24 @@ if str(_here) not in sys.path:
     sys.path.insert(0, str(_here))
 from urllib.parse import urlsplit
 
-from kitlib import borders, frontmatter, fsio, hashing, ids, markdown, schema, tables, workspace  # noqa: E402
+from kitlib import (  # noqa: E402
+    borders,
+    frontmatter,
+    fsio,
+    graph,
+    hashing,
+    ids,
+    markdown,
+    schema,
+    tables,
+    workspace,
+)
 
 GATES = {"draft": 10, "review": 20, "publish": 30, "sync": 40}
 REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {"L-017"}
 PUBLISH = {"L-018", "L-037", "L-045", "L-046"}
 SYNC = {f"L-{n:03}" for n in (38, 39, 41, 42, 44)}
-RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 47))}
+RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 54))}
 BANNED = (
     "fast",
     "quick",
@@ -303,6 +314,7 @@ class Context:
         manifest=None,
         definitions=None,
         registry=None,
+        built=None,
     ):
         self.base, self.scope, self.gate, self.program = Path(base), scope, gate, program
         self.docs = list(docs)
@@ -310,6 +322,7 @@ class Context:
         self.definitions = definitions or set()
         self.registry = registry or tables.Table(list(schema.REGISTRY_COLUMNS))
         self.waivers = []
+        self.built = built
 
     def feature(self, doc):
         if not doc.snapshot:
@@ -876,9 +889,141 @@ def apply_waivers(findings, ctx):
     ]
 
 
+def graph_findings(ctx):
+    """Links across epics, tasks, exports and the graph; never trusts the graph blindly."""
+    root = workspace.find_root(ctx.base)
+    out = []
+
+    def add(rule, sev, path, line, msg, subject):
+        gate = rule_gate(rule)
+        if list(GATES).index(gate) <= list(GATES).index(ctx.gate):
+            out.append(Finding(rule, gate, sev, path, line, msg, subject))
+
+    for row in ctx.registry.rows:
+        cell = row[ctx.registry.col("Last snapshot")]
+        if cell.startswith("/") or re.match(r"^[A-Za-z]:[\\/]", cell):
+            add("L-053", "warn", "_meta/id-registry.md", 1, "registry path is absolute", row[0])
+
+    if ctx.built is not None:
+        built = ctx.built
+    else:
+        if root is None:
+            add(
+                "L-049",
+                "warn",
+                "_meta/graph",
+                1,
+                "no workspace manifest; the graph cannot be checked",
+                ctx.scope,
+            )
+            return out
+        known = workspace.list_scopes(root)
+        try:
+            built = graph.build_graph(root, known, known)
+        except (OSError, ValueError):
+            add(
+                "L-049",
+                "warn",
+                "_meta/graph",
+                1,
+                "knowledge graph could not be built; the workspace has unreadable content",
+                ctx.scope,
+            )
+            return out
+
+    prefix = f"{ctx.scope}:"
+    epic_scopes = {k: n.extra.get("scopes", []) for k, n in built.nodes.items() if n.kind == "epic"}
+    for e in built.edges:
+        if not e.src.startswith(prefix) or e.cls == "mentioned":
+            continue
+        if e.rel == "member_of" and e.cls == "declared":
+            if e.res == "unresolved" or (
+                e.dst in built.nodes and built.nodes[e.dst].kind != "epic"
+            ):
+                add(
+                    "L-050",
+                    "error",
+                    e.file,
+                    e.line,
+                    "epic reference does not resolve to an EPIC",
+                    e.src,
+                )
+            elif e.dst in epic_scopes and ctx.scope not in epic_scopes[e.dst]:
+                add(
+                    "L-051",
+                    "error",
+                    e.file,
+                    e.line,
+                    "the epic's scopes list omits this project",
+                    e.src,
+                )
+        if e.rel == "implements" and e.res in ("unresolved", "withdrawn"):
+            add(
+                "L-048", "error", e.file, e.line, f"task traces to {e.dst}, which is {e.res}", e.src
+            )
+        if e.rel == "touches" and e.res in ("missing", "unsafe-path", "no-code-root"):
+            add("L-052", "warn", e.file, e.line, f"Touches path is {e.res}: {e.dst}", e.src)
+
+    for key, node in built.nodes.items():
+        if not key.startswith(prefix):
+            continue
+        if node.kind == "feature-file":
+            owner = built.nodes.get(node.owner)
+            try:
+                draft = (ctx.base / owner.path).read_text(encoding="utf-8") if owner else ""
+            except OSError:
+                draft = ""
+            if owner and draft and node.extra.get("source_hash") != hashing.draft_hash(draft):
+                add(
+                    "L-047",
+                    "warn",
+                    node.path,
+                    1,
+                    ".feature export is stale; regenerate it",
+                    node.owner,
+                )
+
+    if root is not None:
+        out.extend(_graph_state(ctx, root, add))
+    return out
+
+
+def _graph_state(ctx, root, add):
+    if root is None:
+        return []
+    outdir = graph.graph_dir(root, ctx.scope)
+    manifest = outdir / "manifest.json"
+    if not manifest.is_file():
+        add(
+            "L-049",
+            "warn",
+            "_meta/graph",
+            1,
+            "knowledge graph is missing; run graph.py build",
+            ctx.scope,
+        )
+        return []
+    try:
+        recorded = json.loads(manifest.read_text(encoding="utf-8")).get("inputs_digest")
+        current = graph.digest(root, graph.input_files(root, [ctx.scope]))
+    except (OSError, ValueError):
+        recorded, current = None, "x"
+    if recorded != current:
+        add(
+            "L-049",
+            "warn",
+            "_meta/graph",
+            1,
+            "knowledge graph is stale; run graph.py build",
+            ctx.scope,
+        )
+    return []
+
+
 def collect(ctx):
     findings = [f for doc in ctx.docs for f in lint_document(doc, ctx)]
     findings.extend(registry_findings(ctx))
+    findings.extend(graph_findings(ctx))
     # A card and its draft describe the same identity, but independent drafts cannot own an AC.
     owners = {}
     for doc in ctx.docs:

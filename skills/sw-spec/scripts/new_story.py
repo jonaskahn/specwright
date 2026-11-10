@@ -30,6 +30,8 @@ def create(
     template: Path | None = None,
     feature: str | None = None,
     parent: str = "None",
+    epic: list[str] | None = None,
+    idea: list[str] | None = None,
 ) -> Path:
     if not root.is_dir() or (root / "workspace.yaml").exists():
         raise ValueError("scope-root must be an existing, resolved project directory")
@@ -70,6 +72,9 @@ def create(
             "jira_labels": ["specwright", f"feat:{candidate}", f"proj:{scope}"],
         }
     )
+    for key, refs in (("epic", epic), ("idea", idea)):
+        if refs:
+            fm[key] = list(refs)
     output = frontmatter.render(fm, body)
     output = output.replace("<sha256:…>", hashing.draft_hash(output))
     target = root / "02-drafts" / f"{candidate}.story.md"
@@ -88,11 +93,22 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--template", type=Path)
     parser.add_argument("--feature", help="assert the next FEAT id; never selects a used id")
     parser.add_argument("--parent", default="None")
+    parser.add_argument(
+        "--epic", action="append", help="epic this feature belongs to, e.g. REF:EPIC-001"
+    )
+    parser.add_argument("--idea", action="append", help="idea this feature was shaped from")
     args = parser.parse_args(argv)
     try:
         print(
             create(
-                args.scope_root, args.scope, args.summary, args.template, args.feature, args.parent
+                args.scope_root,
+                args.scope,
+                args.summary,
+                args.template,
+                args.feature,
+                args.parent,
+                args.epic,
+                args.idea,
             )
         )
         return 0

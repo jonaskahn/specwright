@@ -20,13 +20,21 @@ TYPE_PATTERNS = {
     "cr": r"CR-\d{3}",
     "risk": r"RISK-\d{3}",
     "idea": r"IDEA-[a-z0-9-]+",
+    "epic": r"EPIC-\d{3}",
+    "task": r"TASK-\d{3}-\d+",
 }
 
-_ID = r"(?:FEAT|BO|BR|STK|DEC|Q|CR|RISK)-\d{3}|SRC-\d{4}|N?FR-[A-Z]{2,5}-\d{3}|AC-\d{3}-\d+"
+_ID = (
+    r"(?:FEAT|BO|BR|STK|DEC|Q|CR|RISK|EPIC)-\d{3}|SRC-\d{4}|N?FR-[A-Z]{2,5}-\d{3}"
+    r"|AC-\d{3}-\d+|TASK-\d{3}-\d+"
+)
 _REF = re.compile(rf"\b(?:([A-Z]{{2,5}}):)?({_ID})\b")
 _REF_FULL = re.compile(rf"^(?:([A-Z]{{2,5}}):)?({_ID})$")
 _AC = re.compile(r"^AC-(\d{3})-(\d+)$")
+_TASK = re.compile(r"^TASK-(\d{3})-(\d+)$")
 _TOMBSTONE = re.compile(r"~~(AC-\d{3}-\d+)~~")
+_TASK_TOMBSTONE = re.compile(r"~~(TASK-\d{3}-\d+)~~")
+_STORY = re.compile(r"^(?:([A-Z]{2,5}):)?STORY-(\d{3})$")
 _SCOPE = re.compile(r"^[A-Z]{2,5}$")
 
 
@@ -95,6 +103,33 @@ def parse_ac(spec_id: str) -> tuple[int, int] | None:
 def tombstones(text: str) -> list[str]:
     """Withdrawn criteria kept as '~~AC-001-3~~' so their numbers are never reused."""
     return _TOMBSTONE.findall(text)
+
+
+def task_id(feat_no: int, n: int) -> str:
+    return f"TASK-{feat_no:03d}-{n}"
+
+
+def parse_task(spec_id: str) -> tuple[int, int] | None:
+    """Return (feature number, task number) for a task id."""
+    match = _TASK.match(spec_id)
+    return (int(match.group(1)), int(match.group(2))) if match else None
+
+
+def task_tombstones(text: str) -> list[str]:
+    """Withdrawn tasks kept as '~~TASK-001-3~~' so their numbers are never reused."""
+    return _TASK_TOMBSTONE.findall(text)
+
+
+def story_alias(text: str) -> str:
+    """Map the BA/PO word STORY-001 to the canonical FEAT-001; other text is unchanged.
+
+    STORY is an input alias only. No STORY id is ever written to an artifact.
+    """
+    match = _STORY.match(text.strip())
+    if not match:
+        return text
+    prefix = f"{match.group(1)}:" if match.group(1) else ""
+    return f"{prefix}FEAT-{match.group(2)}"
 
 
 def next_id(prefix: str, taken: Iterable[str], width: int = 3) -> str:

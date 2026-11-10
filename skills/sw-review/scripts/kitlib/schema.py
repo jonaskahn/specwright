@@ -38,6 +38,8 @@ STATUSES = {
     "cr": ["proposed", "in-review", "approved", "applied", "withdrawn"],
     "dec": ["accepted", "superseded"],
     "idea": ["draft", "accepted", "withdrawn"],
+    "epic": ["draft", "approved", "superseded", "withdrawn"],
+    "task": ["draft", "ready", "withdrawn"],
     "bo": _CARD_STATUSES,
     "br": _CARD_STATUSES,
     "fr": _CARD_STATUSES,
@@ -83,10 +85,39 @@ REGISTRY_COLUMNS = [
 SCOPE_DIRS = [
     "00-inbox/raw",
     "01-analysis/ideas",
+    "01-analysis/epics",
     "02-drafts",
+    "03-plan",
     "diagrams",
     "records",
     "snapshots/jira",
     "snapshots/confluence",
     "_meta",
 ]
+
+OUTPUT_CHOICES = ("ask", "markdown", "jira", "both")
+GRAPH_DIR = "_meta/graph"
+GRAPH_SCHEMA_VERSION = 1
+
+# The closed set of graph relations; a link outside this set is never recorded.
+RELATIONS = (
+    "member_of",
+    "realizes",
+    "governed_by",
+    "sourced_from",
+    "shaped_from",
+    "has_ac",
+    "has_task",
+    "implements",
+    "touches",
+    "affects",
+    "supersedes",
+    "illustrates",
+    "exercises",
+    "derives_from",
+    "published_as",
+    "last_snapshot",
+    "external_parent",
+    "blocks",
+    "mentions",
+)

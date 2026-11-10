@@ -99,7 +99,7 @@ When drafting scenarios, read references/ac-writing.md. When choosing requiremen
 syntax, read references/ears.md. When defining policy, read references/business-rules.md.
 When quantifying quality, read references/nfr-defaults.md. When requesting review,
 read references/dor.md. When reserving a new accepted FEAT, run scripts/new_story.py.
-When refreshing its index, run scripts/card_gen.py.
+ When refreshing its index, run scripts/card_gen.py. When exporting Gherkin, run scripts/export_feature.py.
 
 When creating a draft, read assets/jira-story.md for its structure. When checking
 card layout, read assets/summary-card.md.

@@ -41,6 +41,9 @@ RUNTIME_MARKERS = (
 CWD_COMMAND = re.compile(r"python3\s+(?:scripts/|references/|assets/)")
 EXPECTED_SKILLS = {
     "sw-draw",
+    "sw-graph",
+    "sw-plan",
+    "sw-start",
     "sw-ingest",
     "sw-init",
     "sw-lint",
@@ -553,7 +556,9 @@ def _check_manifests(root: Path, report: Report) -> None:
         report.add(plugin_path, 1, "V078", "author.name must be 'Jonas Kahn'")
     declared = _skill_paths(plugin.get("skills"), plugin_path, report)
     if set(declared) != expected_skills:
-        report.add(plugin_path, 1, "V079", "plugin skills must list all and only the eleven skills")
+        report.add(
+            plugin_path, 1, "V079", "plugin skills must list all and only the fourteen skills"
+        )
     if plugin.get("commands") != ["./commands/"]:
         report.add(plugin_path, 1, "V080", "commands must point to ./commands/")
     for relative in declared:
