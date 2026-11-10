@@ -5,3 +5,5 @@ dist/
 # Build output: package.py vendors the shared library into every skill.
 skills/*/scripts/kitlib/
 .DS_Store
+.idea/
+.claude/worktrees/
