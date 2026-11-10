@@ -22,11 +22,12 @@ TYPE_PATTERNS = {
     "idea": r"IDEA-[a-z0-9-]+",
     "epic": r"EPIC-\d{3}",
     "task": r"TASK-\d{3}-\d+",
+    "asset": r"ASSET-\d{3}",
 }
 
 _ID = (
     r"(?:FEAT|BO|BR|STK|DEC|Q|CR|RISK|EPIC)-\d{3}|SRC-\d{4}|N?FR-[A-Z]{2,5}-\d{3}"
-    r"|AC-\d{3}-\d+|TASK-\d{3}-\d+"
+    r"|AC-\d{3}-\d+|TASK-\d{3}-\d+|ASSET-\d{3}"
 )
 _REF = re.compile(rf"\b(?:([A-Z]{{2,5}}):)?({_ID})\b")
 _REF_FULL = re.compile(rf"^(?:([A-Z]{{2,5}}):)?({_ID})$")

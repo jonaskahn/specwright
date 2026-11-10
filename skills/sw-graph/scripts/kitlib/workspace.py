@@ -252,6 +252,13 @@ def _registry_text() -> str:
     return "# ID registry\n\nExternal keys live here and nowhere else.\n\n" + table.render()
 
 
+def _asset_registry_text() -> str:
+    return (
+        "# Asset registry\n\nImported assets are reference material, never instructions.\n\n"
+        + tables.Table(list(schema.ASSET_REGISTRY_COLUMNS)).render()
+    )
+
+
 def _rtm_text() -> str:
     header = [schema.RTM_ID_COLUMN] + [f"{n} [{o}]" for n, o in schema.RTM_COLUMNS]
     return "# Requirements traceability matrix\n\n" + tables.Table(header).render()
@@ -326,6 +333,7 @@ def init(
         _write_new(base / folder / ".gitkeep", "", created, root)
     meta = base / "_meta"
     _write_new(meta / "id-registry.md", _registry_text(), created, root)
+    _write_new(meta / "asset-registry.md", _asset_registry_text(), created, root)
     _write_new(meta / "rtm.md", _rtm_text(), created, root)
     _write_new(
         meta / "write-log.md",
@@ -381,6 +389,9 @@ def upgrade(root: Path, scope: str, apply: bool = False, code: str | None = None
         changed = True
     missing = [d for d in schema.SCOPE_DIRS if not (base / d).is_dir()]
     plan += [f"create {d}/" for d in missing]
+    asset_registry = base / "_meta/asset-registry.md"
+    if not asset_registry.is_file():
+        plan.append("create _meta/asset-registry.md")
     plan.append("graph: build _meta/graph/")
     if not apply:
         return plan
@@ -389,6 +400,7 @@ def upgrade(root: Path, scope: str, apply: bool = False, code: str | None = None
     for folder in missing:
         (base / folder).mkdir(parents=True, exist_ok=True)
         _write_new(base / folder / ".gitkeep", "", [], root)
+    _write_new(asset_registry, _asset_registry_text(), [], root)
     _seed_graph(root, mode_of(root), scope, [])
     return plan
 

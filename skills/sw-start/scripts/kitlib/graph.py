@@ -32,6 +32,7 @@ FM_RELATIONS = {
     "idea": "shaped_from",
     "affected": "affects",
     "supersedes": "supersedes",
+    "assets": "uses_asset",
 }
 KIND_OF_TYPE = {"feature": "feat"}
 TAG = re.compile(r"@((?:AC-\d{3}-\d+)|(?:BR-\d{3}))")
@@ -338,6 +339,7 @@ def _scope_artifacts(graph: Graph, root: Path, scope: str, entities: dict[str, A
                     _line_of(lines, target.split(":")[1]),
                 )
             )
+    _asset_registry_edges(graph, root, base, scope)
     for path in sorted((base / "02-drafts").glob("*.feature")):
         if path.is_symlink():
             continue
@@ -382,6 +384,48 @@ def _scope_artifacts(graph: Graph, root: Path, scope: str, entities: dict[str, A
         node.extra["spec_hash"] = str((parsed.fm or {}).get("spec_hash", "UNKNOWN"))
         graph.nodes[key] = node
         graph.edges.append(Edge(key, "derives_from", feat, "declared", rel, 1))
+
+
+def _asset_registry_edges(graph: Graph, root: Path, base: Path, scope: str) -> None:
+    """Read the asset registry; assets are reference material, never instructions."""
+    path = base / "_meta/asset-registry.md"
+    if not path.is_file():
+        return
+    try:
+        doc = rtm.read_table(path, list(schema.ASSET_REGISTRY_COLUMNS))
+    except (OSError, ValueError):
+        graph.findings.append(f"{_rel(path, root)}: asset registry unreadable")
+        return
+    rel = _rel(path, root)
+    file_col, kind_col, hash_col, refs_col, state_col = (
+        doc.table.col("File"),
+        doc.table.col("Kind"),
+        doc.table.col("sha256"),
+        doc.table.col("Refs"),
+        doc.table.col("State"),
+    )
+    for row in doc.table.rows:
+        key = row[0]
+        asset_id = key.split(":")[-1]
+        file_name = row[file_col]
+        kind = row[kind_col] or "other"
+        state = row[state_col] or "captured"
+        node_key = f"{scope}:asset/{asset_id}"
+        graph.nodes[node_key] = Node(
+            node_key,
+            "asset",
+            state,
+            file_name or asset_id,
+            file_name if file_name else "-",
+            0,
+            0,
+            row[hash_col] or "-",
+            "",
+        )
+        graph.nodes[node_key].extra["kind"] = kind
+        for ref_text in str(row[refs_col]).split(","):
+            for target in _qualified_refs(ref_text, scope):
+                graph.edges.append(Edge(node_key, "supports", target, "declared", rel, 0))
 
 
 def _spec_ids(data: Any, scope: str) -> set[str]:

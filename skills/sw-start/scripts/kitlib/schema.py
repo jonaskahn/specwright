@@ -33,6 +33,7 @@ STATUSES = {
         "withdrawn",
     ],
     "snapshot": ["raw"],
+    "asset": ["captured", "superseded", "withdrawn"],
     "src": ["raw"],
     "q": ["candidate", "open", "answered", "withdrawn"],
     "cr": ["proposed", "in-review", "approved", "applied", "withdrawn"],
@@ -70,6 +71,17 @@ RTM_COLUMNS = [
     ("Test ref", "qa"),
 ]
 
+ASSET_REGISTRY_COLUMNS = [
+    "Asset ID",
+    "File",
+    "Kind",
+    "sha256",
+    "Captured",
+    "Source",
+    "Refs",
+    "State",
+]
+
 REGISTRY_COLUMNS = [
     "Spec ID",
     "Kind",
@@ -88,6 +100,7 @@ SCOPE_DIRS = [
     "01-analysis/epics",
     "02-drafts",
     "03-plan",
+    "assets",
     "diagrams",
     "records",
     "snapshots/jira",

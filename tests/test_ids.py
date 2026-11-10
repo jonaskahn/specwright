@@ -45,6 +45,11 @@ class IdTests(unittest.TestCase):
         self.assertEqual(ids.next_id("NFR-REF", ["NFR-REF-002"]), "NFR-REF-003")
         self.assertEqual(ids.next_id("SRC", [], width=4), "SRC-0001")
 
+    def test_asset_ids(self):
+        self.assertTrue(ids.matches_type("asset", "ASSET-001"))
+        self.assertFalse(ids.matches_type("asset", "ASSET-01"))
+        self.assertEqual(ids.parse_ref("REF:ASSET-003").qualified, "REF:ASSET-003")
+
     def test_scope_and_prefix(self):
         self.assertTrue(ids.is_scope("REF"))
         self.assertFalse(ids.is_scope("ref"))
