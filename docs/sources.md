@@ -3,12 +3,21 @@
 Accessed 2026-11-10. These are references, not bundled material. Implementations,
 templates and instructions in Specwright were independently authored.
 
-## Portable skills
+## Portable skills and distribution
 
+- [Agent Skills specification](https://agentskills.io/specification) and the
+  [Vercel skills CLI](https://github.com/vercel-labs/skills): standard
+  `skills/<name>/SKILL.md` discovery and `npx skills add` installation. Specwright ships
+  self-contained skill folders so generic installers can copy one folder without a
+  sibling runtime.
+- [Claude Code plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces):
+  `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` expose the same
+  eleven skills through the marketplace route. Host-specific command placeholders stay in
+  `commands/`; skills remain host-neutral.
 - [Agent Skills specification](https://agentskills.io/specification): required name and
   description; optional license, compatibility, metadata and experimental allowed-tools.
-  The shared kit deliberately omits allowed-tools. Names match folders; descriptions
-  remain under 1024 characters, with a tighter 900-character authoring budget here.
+  Specwright uses only portable name and description. Names match folders; descriptions
+  remain under 1024 characters, with a tighter 900-character budget here.
 - [Authoring guidance](https://agentskills.io/skill-creation/best-practices): progressive
   disclosure and concise entrypoints. Trigger data here is authored, not a measured score.
 - [Codex skills](https://developers.openai.com/codex/skills),
@@ -17,7 +26,8 @@ templates and instructions in Specwright were independently authored.
   [Gemini skills](https://geminicli.com/docs/cli/skills/), and
   [Claude Code skills](https://code.claude.com/docs/en/skills). Discovery support changes
   by client version. Project-scope `.agents/skills` plus `.claude/skills` is the intended
-  layout; Copilot documentation inspected chiefly described its cloud agent.
+  layout; Copilot documentation inspected chiefly described its cloud agent. Generic
+  installation routes defer lifecycle, update and removal to the skills CLI.
 
 ## Jira and Confluence
 
