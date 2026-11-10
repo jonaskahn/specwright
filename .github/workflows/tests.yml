@@ -1,0 +1,43 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install lint tooling
+        run: python -m pip install ruff
+      - name: Format and lint
+        run: |
+          ruff format --check .
+          ruff check .
+      - name: Unit tests
+        run: python -m unittest discover -s tests -t .
+      - name: Validate sources and vendored copies
+        run: |
+          python tools/validate.py
+          python tools/vendor.py --check
+          python tools/hygiene.py files
+      - name: Package and install smoke test
+        shell: bash
+        run: |
+          tmp="$(mktemp -d)"
+          python tools/package.py --zip --out "$tmp/dist"
+          python tools/install.py --target "$tmp/target"
+          python tools/validate.py --installed "$tmp/target"
+          (cd "$tmp" && python "$tmp/target/.agents/skills/sw-init/scripts/workspace.py" --help)
+          (cd "$tmp" && python "$tmp/target/.agents/skills/sw-draw/scripts/render_diagram.py" --help)
