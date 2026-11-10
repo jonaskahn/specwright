@@ -22,26 +22,10 @@ def skill_sources(root: Path) -> list[Path]:
 
 
 def bundle_skill(root: Path, source: Path, destination: Path) -> None:
-    """Only build into a new directory; never erase an existing installation."""
+    """Copy a self-contained skill folder without mutating its contents."""
     if destination.exists() or destination.is_symlink():
         raise FileExistsError(f"destination exists: {destination}")
     shutil.copytree(source, destination, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
-    scripts = destination / "scripts"
-    scripts.mkdir(exist_ok=True)
-    vendored = scripts / "kitlib"
-    if vendored.exists():
-        shutil.rmtree(vendored)
-    shutil.copytree(
-        root / "lib" / "kitlib", vendored, ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
-    )
-    shared = root / "skills" / "_shared" / "references"
-    refs = destination / "references"
-    refs.mkdir(exist_ok=True)
-    if shared.exists():
-        for reference in shared.glob("*.md"):
-            if not (refs / reference.name).exists():
-                shutil.copyfile(reference, refs / reference.name)
-    shutil.copyfile(root / "LICENSE", destination / "LICENSE")
 
 
 def zip_skill(folder: Path, target: Path) -> None:
