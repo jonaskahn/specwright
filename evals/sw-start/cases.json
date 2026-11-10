@@ -1,0 +1,24 @@
+{
+  "skill": "sw-start",
+  "cases": [
+    {
+      "id": "fresh",
+      "prompt": "I have an idea and an empty folder",
+      "fixture": "fixtures/refund/after-spec",
+      "assertions": [
+        "Detection script runs read-only",
+        "At most two questions are asked",
+        "The matching skill is loaded and named"
+      ]
+    },
+    {
+      "id": "push",
+      "prompt": "push my work",
+      "fixture": "fixtures/refund/after-spec",
+      "assertions": [
+        "Asks Markdown, Jira or both when no default is stored",
+        "No Jira write happens without typed confirmation"
+      ]
+    }
+  ]
+}
