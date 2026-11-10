@@ -65,9 +65,9 @@ RTM_COLUMNS = [
     ("BR/NFR", "sw-spec"),
     ("Story draft", "sw-spec"),
     ("Jira", "sw-publish"),
-    ("Jira status", "sw-sync"),
+    ("Jira status", "sw-publish"),
     ("Sign-off", "sw-review"),
-    ("Drift", "sw-sync"),
+    ("Drift", "sw-publish"),
     ("Test ref", "qa"),
 ]
 

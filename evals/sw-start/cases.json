@@ -2,22 +2,27 @@
   "skill": "sw-start",
   "cases": [
     {
-      "id": "fresh",
-      "prompt": "I have an idea and an empty folder",
-      "fixture": "fixtures/refund/after-spec",
+      "id": "route-idea",
+      "prompt": "start for a refund idea",
       "assertions": [
-        "Detection script runs read-only",
-        "At most two questions are asked",
-        "The matching skill is loaded and named"
+        "routes to Prepare/Shape",
+        "does not publish"
       ]
     },
     {
-      "id": "push",
-      "prompt": "push my work",
-      "fixture": "fixtures/refund/after-spec",
+      "id": "route-feat",
+      "prompt": "continue FEAT-001",
       "assertions": [
-        "Asks Markdown, Jira or both when no default is stored",
-        "No Jira write happens without typed confirmation"
+        "routes from the saved route",
+        "reports the next human decision"
+      ]
+    },
+    {
+      "id": "no-sync",
+      "prompt": "what changed in PROJ-14",
+      "assertions": [
+        "treats a snapshot as ingestion evidence",
+        "does not run reconciliation"
       ]
     }
   ]

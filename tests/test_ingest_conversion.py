@@ -16,7 +16,7 @@ from unittest.mock import patch
 from kitlib import frontmatter, hashing, schema, tables
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = ROOT / "skills/sw-ingest/scripts"
+SCRIPTS = ROOT / "skills/sw-start/scripts"
 sys.path.insert(0, str(SCRIPTS))
 spec = importlib.util.spec_from_file_location("ingest_conversion", SCRIPTS / "to_md.py")
 mod = importlib.util.module_from_spec(spec)

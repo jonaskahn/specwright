@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Report where a Specwright workspace stands and which skill comes next. Read-only.
+"""Report where a Specwright workspace stands and which action comes next. Read-only.
 
 Exit codes: 0 report produced, 2 usage or unreadable workspace, 3 a choice is required
 (for example two spec roots in one folder). With --hook it prints at most ten lines, and
@@ -76,29 +76,27 @@ def scope_state(root, scope):
 
 
 def route(state):
-    """Deterministic next skill for one scope; each answer carries the evidence behind it."""
+    """Deterministic next action for one scope; each answer carries the evidence behind it."""
     feats, ideas = state["feats"], state["ideas"]
     needs_tasks = [f for f in state["feat_ids"] if f not in state["with_tasks"]]
     if state["graph"] == "missing":
-        return ("workspace upgrade --apply, then sw-graph build", "the knowledge graph is missing")
+        return ("workspace upgrade --apply, then graph build", "the knowledge graph is missing")
     if feats.get("draft") or feats.get("in-review"):
-        return ("sw-lint, then sw-review", "feature drafts are not yet approved")
+        return ("lint, then review", "feature drafts are not yet approved")
     if feats.get("ready-to-publish"):
         return (
-            "delivery-target prompt, then sw-publish",
+            "delivery-target prompt, then publish",
             "a reviewed feature is ready to publish; output default is " + state["output_default"],
         )
     if (feats.get("published") or feats.get("ready-for-dev")) and needs_tasks:
-        return ("sw-plan", "approved features have no tasks file: " + ", ".join(needs_tasks))
-    if feats.get("published"):
-        return ("sw-sync", "published features should be checked for drift")
+        return ("plan", "approved features have no tasks file: " + ", ".join(needs_tasks))
     if ideas.get("accepted") and not feats:
-        return ("sw-spec", "an accepted idea has no feature drafts")
+        return ("specify", "an accepted idea has no feature drafts")
     if ideas.get("draft") and not feats:
-        return ("sw-shape-idea", "an idea is still a draft")
+        return ("shape", "an idea is still a draft")
     if not state["sources"] and not ideas and not feats:
-        return ("sw-ingest or sw-shape-idea", "the project has no sources, ideas or features")
-    return ("sw-status", "no single next step is evident; read the full report")
+        return ("prepare", "the project has no sources, ideas or features")
+    return ("status", "no single next step is evident; read the full report")
 
 
 def default_layout(cwd):
@@ -114,7 +112,7 @@ def report(cwd):
             **info,
             "fresh_setup": True,
             "suggested_layout": default_layout(cwd),
-            "next": ["sw-init", "choose a layout and one of ingest, shape-idea or sync"],
+            "next": ["prepare", "choose a layout and then ingest, shape or supply a baseline"],
             "scopes_state": [],
         }
     root = Path(info["spec_root"])

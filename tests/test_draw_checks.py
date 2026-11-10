@@ -9,7 +9,7 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = ROOT / "skills/sw-draw/scripts"
+SCRIPTS = ROOT / "skills/sw-start/scripts"
 sys.path.insert(0, str(SCRIPTS))
 
 
@@ -32,7 +32,7 @@ class DrawCheckTests(unittest.TestCase):
         return code, stdout.getvalue(), stderr.getvalue()
 
     def test_every_template_passes_both_checks(self):
-        assets = ROOT / "skills/sw-draw/assets"
+        assets = ROOT / "skills/sw-start/assets"
         self.assertEqual(len(list(assets.glob("*.html"))), 45)
         for path in assets.glob("*.html"):
             for tool in (BORDERS, OFFLINE):

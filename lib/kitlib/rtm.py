@@ -205,7 +205,6 @@ REGISTRY_OWNERS = {
         "Last snapshot",
         "State",
     },
-    "sw-sync": {"Jira key", "Last snapshot", "State"},
 }
 
 

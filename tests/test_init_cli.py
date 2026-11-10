@@ -8,7 +8,7 @@ from pathlib import Path
 from kitlib import miniyaml, schema, tables
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRIPT = ROOT / "skills/sw-init/scripts/workspace.py"
+SCRIPT = ROOT / "skills/sw-start/scripts/workspace.py"
 
 
 class InitCliTests(unittest.TestCase):

@@ -33,7 +33,7 @@ class DistributionTests(unittest.TestCase):
         (self.root / "lib" / "kitlib" / "__init__.py").write_text("VALUE = 7\n")
         (self.root / "LICENSE").write_text("MIT\n")
         (self.root / "AGENTS.md").write_text("# Rules\n")
-        self.skill = self.root / "skills" / "sw-demo"
+        self.skill = self.root / "skills" / "sw-start"
         (self.skill / "scripts").mkdir(parents=True)
         (self.skill / "scripts" / "kitlib").mkdir()
         (self.skill / "scripts" / "kitlib" / "__init__.py").write_text("VALUE = 7\n")
@@ -47,8 +47,8 @@ class DistributionTests(unittest.TestCase):
 
     def test_build_copies_a_self_contained_skill(self):
         paths = package.build(self.root, self.output, True)
-        self.assertEqual([p.name for p in paths], ["sw-demo"])
-        skill = self.output / "sw-demo"
+        self.assertEqual([p.name for p in paths], ["sw-start"])
+        skill = self.output / "sw-start"
         self.assertTrue((skill / "scripts" / "kitlib" / "__init__.py").exists())
         self.assertEqual((skill / "LICENSE").read_text(), "MIT\n")
         self.assertTrue((skill / "references" / "safety.md").exists())
@@ -66,10 +66,10 @@ class DistributionTests(unittest.TestCase):
         package.build(self.root, self.output, True)
         other = self.base / "other"
         package.build(self.root, other, True)
-        first = self.output / "sw-demo.zip"
+        first = self.output / "sw-start.zip"
         self.assertEqual(first.read_bytes(), (other / first.name).read_bytes())
         with zipfile.ZipFile(first) as archive:
-            self.assertTrue(all(n.startswith("sw-demo/") for n in archive.namelist()))
+            self.assertTrue(all(n.startswith("sw-start/") for n in archive.namelist()))
 
     def test_build_refuses_existing_output(self):
         package.build(self.root, self.output)
@@ -78,8 +78,8 @@ class DistributionTests(unittest.TestCase):
 
     def test_install_creates_correct_relative_symlink_and_rule_copies(self):
         installer.install(self.root, self.target)
-        canonical = self.target / ".agents" / "skills" / "sw-demo"
-        alias = self.target / ".claude" / "skills" / "sw-demo"
+        canonical = self.target / ".agents" / "skills" / "sw-start"
+        alias = self.target / ".claude" / "skills" / "sw-start"
         self.assertEqual(alias.resolve(), canonical.resolve())
         self.assertEqual(
             (self.target / "CLAUDE.md").read_bytes(), (self.target / "AGENTS.md").read_bytes()
@@ -91,13 +91,13 @@ class DistributionTests(unittest.TestCase):
         (self.target / "AGENTS.md").write_text("# Existing\n")
         report = installer.install(self.root, self.target, copy_mirror=True)
         self.assertTrue(report["preserved"])
-        alias = self.target / ".claude" / "skills" / "sw-demo"
+        alias = self.target / ".claude" / "skills" / "sw-start"
         self.assertTrue(alias.is_dir())
         self.assertFalse(alias.is_symlink())
         self.assertEqual((self.target / "GEMINI.md").read_text(), "# Existing\n")
 
     def test_collision_is_rejected_before_any_skill_is_written(self):
-        collision = self.target / ".claude" / "skills" / "sw-demo"
+        collision = self.target / ".claude" / "skills" / "sw-start"
         collision.mkdir(parents=True)
         (collision / "keep").write_text("important")
         with self.assertRaises(FileExistsError):
@@ -107,20 +107,20 @@ class DistributionTests(unittest.TestCase):
 
     def test_zip_contains_one_self_contained_skill(self):
         package.build(self.root, self.output, True)
-        with zipfile.ZipFile(self.output / "sw-demo.zip") as archive:
+        with zipfile.ZipFile(self.output / "sw-start.zip") as archive:
             names = set(archive.namelist())
         required = {
-            "sw-demo/SKILL.md",
-            "sw-demo/LICENSE",
-            "sw-demo/scripts/kitlib/__init__.py",
-            "sw-demo/references/safety.md",
+            "sw-start/SKILL.md",
+            "sw-start/LICENSE",
+            "sw-start/scripts/kitlib/__init__.py",
+            "sw-start/references/safety.md",
         }
         self.assertTrue(required <= names)
-        self.assertTrue(all(name.startswith("sw-demo/") for name in names))
+        self.assertTrue(all(name.startswith("sw-start/") for name in names))
 
     def test_runtime_help_from_an_unrelated_cwd(self):
         package.build(self.root, self.output)
-        script = self.output / "sw-demo" / "scripts" / "run.py"
+        script = self.output / "sw-start" / "scripts" / "run.py"
         result = subprocess.run(
             [sys.executable, str(script)],
             cwd=self.base,

@@ -6,21 +6,7 @@
     "name": "Jonas Kahn"
   },
   "skills": [
-    "./skills/sw-start",
-    "./skills/sw-asset",
-    "./skills/sw-graph",
-    "./skills/sw-draw",
-    "./skills/sw-ingest",
-    "./skills/sw-init",
-    "./skills/sw-lint",
-    "./skills/sw-plan",
-    "./skills/sw-publish",
-    "./skills/sw-review",
-    "./skills/sw-shape-idea",
-    "./skills/sw-spec",
-    "./skills/sw-status",
-    "./skills/sw-sync",
-    "./skills/sw-trace"
+    "./skills/sw-start"
   ],
   "commands": [
     "./commands/"

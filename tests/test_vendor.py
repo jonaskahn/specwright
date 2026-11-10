@@ -21,11 +21,11 @@ class VendorTests(unittest.TestCase):
         (self.root / "lib/shared-references/stop-and-ask.md").write_text("ask\n")
         (self.root / "LICENSE").write_text("MIT\n")
         (self.root / "AGENTS.md").write_text("# Rules\n")
-        self.skill = self.root / "skills/sw-demo"
+        self.skill = self.root / "skills/sw-start"
         (self.skill / "scripts").mkdir(parents=True)
         (self.skill / "SKILL.md").write_text("# demo\n")
-        (self.root / "skills/sw-init/assets").mkdir(parents=True)
-        (self.root / "skills/sw-init/assets/standing-rules.md").write_text("# Rules\n")
+        (self.root / "skills/sw-start/assets").mkdir(parents=True)
+        (self.root / "skills/sw-start/assets/standing-rules.md").write_text("# Rules\n")
 
     def test_write_is_idempotent_and_check_passes(self):
         vendor.write(self.root)
@@ -38,7 +38,7 @@ class VendorTests(unittest.TestCase):
     def test_check_rejects_missing_divergent_and_extra_files(self):
         vendor.write(self.root)
         (self.skill / "scripts/kitlib/__init__.py").unlink()
-        (self.skill / "references/stop-and-ask.md").write_text("different\n")
+        (self.skill / "assets/standing-rules.md").write_text("different\n")
         (self.skill / "scripts/kitlib/extra.py").write_text("x = 1\n")
         problems = vendor.check(self.root)
         self.assertTrue(any("missing vendored file" in item for item in problems))
@@ -52,19 +52,19 @@ class VendorTests(unittest.TestCase):
         vendor.write(self.root)
         self.assertFalse(extra.exists())
 
-    def test_shared_reference_and_license_are_required(self):
+    def test_license_and_standing_rules_are_required(self):
         vendor.write(self.root)
         (self.skill / "LICENSE").unlink()
-        (self.skill / "references/stop-and-ask.md").write_text("changed\n")
+        (self.skill / "assets/standing-rules.md").write_text("changed\n")
         problems = vendor.check(self.root)
         self.assertIn(f"missing vendored file: {self.skill / 'LICENSE'}", problems)
         self.assertIn(
-            f"divergent vendored file: {self.skill / 'references/stop-and-ask.md'}", problems
+            f"divergent vendored file: {self.skill / 'assets/standing-rules.md'}", problems
         )
 
     def test_write_embeds_drawing_theme_bytes(self):
-        assets = self.root / "skills/sw-draw/assets"
-        assets.mkdir(parents=True)
+        assets = self.root / "skills/sw-start/assets"
+        assets.mkdir(parents=True, exist_ok=True)
         theme = "\n:root { --sw-bg: #fff; }\n"
         (assets / "theme.css").write_text(theme)
         shell = assets / "er.html"

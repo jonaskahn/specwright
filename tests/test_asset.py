@@ -7,7 +7,7 @@ from pathlib import Path
 from kitlib import graph, ids, tables
 
 ROOT = Path(__file__).resolve().parent.parent
-STORE = ROOT / "skills/sw-asset/scripts/store.py"
+STORE = ROOT / "skills/sw-start/scripts/store.py"
 
 
 class AssetStoreTests(unittest.TestCase):
@@ -18,7 +18,7 @@ class AssetStoreTests(unittest.TestCase):
         init = subprocess.run(
             [
                 sys.executable,
-                str(ROOT / "skills/sw-init/scripts/workspace.py"),
+                str(ROOT / "skills/sw-start/scripts/workspace.py"),
                 "init",
                 "--root",
                 str(self.root),

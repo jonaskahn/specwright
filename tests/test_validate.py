@@ -45,10 +45,11 @@ class ValidateTests(unittest.TestCase):
         (self.skill / "scripts" / "kitlib").mkdir()
         (self.skill / "scripts" / "kitlib" / "a.py").write_text("VALUE = 1\n")
         (self.skill / "references").mkdir()
+        (self.skill / "references" / "shared").mkdir()
         (self.skill / "SKILL.md").write_text(GOOD)
         (self.skill / "LICENSE").write_text("MIT\n")
         for name in validate.SHARED_REFERENCES:
-            (self.skill / "references" / name).write_text(f"# {name}\n")
+            (self.skill / "references" / "shared" / name).write_text(f"# {name}\n")
         (self.skill / "scripts" / "run.py").write_text(
             "import argparse\nfrom pathlib import Path\n"
             "_here = Path(__file__).resolve().parent\n"
@@ -191,7 +192,7 @@ class ReleaseSurfaceTests(unittest.TestCase):
         self.assertEqual(report.errors, [])
 
     def test_missing_command_wrapper(self):
-        (self.root / "commands/sw-trace.md").unlink()
+        (self.root / "commands/sw-start.md").unlink()
         self.assertIn("V090", self.check(lambda r: validate._check_commands(self.root, r)))
 
     def test_mismatched_plugin_version(self):
@@ -202,8 +203,8 @@ class ReleaseSurfaceTests(unittest.TestCase):
         self.assertIn("V076", self.check(lambda r: validate._check_manifests(self.root, r)))
 
     def test_mismatched_command_description(self):
-        path = self.root / "commands/sw-init.md"
-        text = path.read_text().replace("Creates or extends", "Describes or extends")
+        path = self.root / "commands/sw-start.md"
+        text = path.read_text().replace("Specwright's single entry.", "Describes or extends")
         path.write_text(text)
         self.assertIn("V094", self.check(lambda r: validate._check_commands(self.root, r)))
 
@@ -225,9 +226,9 @@ class InstalledTargetTests(unittest.TestCase):
         return report
 
     def test_missing_license_fails(self):
-        source = Path(__file__).resolve().parent.parent / "skills/sw-draw"
-        shutil.copytree(source, self.root / ".agents/skills/sw-draw")
-        (self.root / ".agents/skills/sw-draw/LICENSE").unlink()
+        source = Path(__file__).resolve().parent.parent / "skills/sw-start"
+        shutil.copytree(source, self.root / ".agents/skills/sw-start")
+        (self.root / ".agents/skills/sw-start/LICENSE").unlink()
         self.assertIn("V050", {finding.code for finding in self.report().errors})
 
 

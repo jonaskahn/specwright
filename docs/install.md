@@ -15,7 +15,7 @@ npx skills add jonaskahn/specwright
 Global install, skipping prompts:
 
 ```sh
-npx skills add jonaskahn/specwright -g -y
+npx skills add jonaskahn/specwright -g
 ```
 
 Claude Code plugin marketplace:
@@ -89,7 +89,7 @@ Run the gate list in [conventions](conventions.md) before packaging.
 
 ## Diagrams
 
-The installed sw-draw skill renders 41 validated JSON types and ships four
+The installed skill renders 41 validated JSON types and ships four
 illustration templates for embedding. `.svg` output is self-contained; `.html`
 adds the source-value table and local spec links. Both follow system light/dark
 themes. New structured types optionally use bounded CSS-only motion; no JavaScript

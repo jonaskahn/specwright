@@ -40,17 +40,17 @@ jobs:
           python tools/install.py --target "$tmp/target"
           python tools/validate.py --installed "$tmp/target"
           python "$tmp/target/.agents/skills/sw-init/scripts/workspace.py" --help
-          python "$tmp/target/.agents/skills/sw-draw/scripts/render_diagram.py" --help
+          python "$tmp/target/.agents/skills/sw-start/scripts/render_diagram.py" --help
           python "$tmp/target/.agents/skills/sw-start/scripts/start.py" --help
-          python "$tmp/target/.agents/skills/sw-graph/scripts/graph.py" --help
+          python "$tmp/target/.agents/skills/sw-start/scripts/graph.py" --help
           python "$tmp/target/.agents/skills/sw-plan/scripts/check_tasks.py" --help
           python "$tmp/target/.agents/skills/sw-init/scripts/workspace.py" init \
             --root "$tmp/workspace" --mode flat --scope REF --name Refunds --project-key PROJ
           python "$tmp/target/.agents/skills/sw-lint/scripts/sw_lint.py" \
             --root "$tmp/workspace" --gate draft
-          python "$tmp/target/.agents/skills/sw-graph/scripts/graph.py" \
+          python "$tmp/target/.agents/skills/sw-start/scripts/graph.py" \
             build --cwd "$tmp/workspace"
-          python "$tmp/target/.agents/skills/sw-graph/scripts/graph.py" \
+          python "$tmp/target/.agents/skills/sw-start/scripts/graph.py" \
             check --cwd "$tmp/workspace"
 
   docker:

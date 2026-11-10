@@ -1,22 +1,16 @@
-{"query": "I have an idea for a refund feature, where do I begin", "should_trigger": true}
-{"query": "help me get started with specs for this repo", "should_trigger": true}
-{"query": "continue my spec work", "should_trigger": true}
-{"query": "what should I do next on the refund project", "should_trigger": true}
-{"query": "I am new here, how do I use this", "should_trigger": true}
-{"query": "start a new spec project in this code repository", "should_trigger": true}
-{"query": "I have a PDF and some Jira tickets, what first", "should_trigger": true}
-{"query": "push my work", "should_trigger": true}
-{"query": "ship what we have", "should_trigger": true}
-{"query": "I want to write requirements but do not know the steps", "should_trigger": true}
-{"query": "pick up where I left off on the spec", "should_trigger": true}
-{"query": "Initialize a REF workspace with project.yaml", "should_trigger": false, "near_miss_of": "sw-init"}
-{"query": "Write FEAT-001 acceptance criteria", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Publish FEAT-001 to PROJ with confirmation", "should_trigger": false, "near_miss_of": "sw-publish"}
-{"query": "Draw the refund state diagram", "should_trigger": false, "near_miss_of": "sw-draw"}
-{"query": "Show what links to BR-001", "should_trigger": false, "near_miss_of": "sw-graph"}
-{"query": "Break FEAT-001 into agent tasks", "should_trigger": false, "near_miss_of": "sw-plan"}
-{"query": "Record PO sign-off for FEAT-001", "should_trigger": false, "near_miss_of": "sw-review"}
-{"query": "Pull PROJ-14 into a snapshot", "should_trigger": false, "near_miss_of": "sw-sync"}
-{"query": "Report spec status for every feature", "should_trigger": false, "near_miss_of": "sw-status"}
-{"query": "Shape this idea into an INVEST split", "should_trigger": false, "near_miss_of": "sw-shape-idea"}
-{"query": "Ingest this refund policy PDF", "should_trigger": false, "near_miss_of": "sw-ingest"}
+{"query": "where do we begin with our refund work", "should_trigger": true}
+{"query": "turn this idea into requirements", "should_trigger": true}
+{"query": "continue the spec from where we stopped", "should_trigger": true}
+{"query": "shape the refund idea into features", "should_trigger": true}
+{"query": "break FEAT-001 into tasks", "should_trigger": true}
+{"query": "is FEAT-001 ready to publish", "should_trigger": true}
+{"query": "publish FEAT-001 to Jira", "should_trigger": true}
+{"query": "what changed in PROJ-14", "should_trigger": true}
+{"query": "open jira.com and create an issue", "should_trigger": false}
+{"query": "what is the weather in Hanoi", "should_trigger": false}
+{"query": "write a haiku about refunds", "should_trigger": false}
+{"query": "refactor this Python file", "should_trigger": false}
+{"query": "create a SQL database", "should_trigger": false}
+{"query": "draw a birthday card", "should_trigger": false}
+{"query": "run npm install", "should_trigger": false}
+{"query": "delete every file", "should_trigger": false}

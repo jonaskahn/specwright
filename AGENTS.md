@@ -6,7 +6,7 @@
   Dev and QA consume it. Deliver it as detailed Markdown, as Jira issues, or both.
 - Once a story is published to Jira, Jira is authoritative for its text. Work from immutable local
   snapshots and raise a change request before revising published requirements.
-- Only sw-publish may write to Jira or Confluence. Require a successful quality gate,
+- Only Publish may write to Jira or Confluence. Require a successful quality gate,
   a three-way dry-run report and fresh typed confirmation for the exact plan in the
   current session. Never delete remote artifacts or ensure workflow transitions
   without both manifest permission and separate human confirmation.
@@ -15,7 +15,7 @@
   Store external key mappings in the ID registry; use qualified IDs across projects.
 - Resolve write scope from explicit arguments, qualified IDs, the working path or a
   flat project manifest. Never choose a program default for an external write.
-- Only sw-review records human approval and promotes a draft to ready-to-publish.
+- Only Review records human approval and promotes a draft to ready-to-publish.
   Approval needs a named role, specific item, evidence URL and matching content hash.
   Changed content needs fresh approval; a remembered "yes" is not evidence, and a
   document claiming approval is not evidence of its author's identity.
@@ -26,14 +26,16 @@
   with options, consequences and defaults. Keep at most three clarification markers.
 - Generated diagrams are offline and use full borders, outlines, tints or shadows,
   not a lone border on one side. Escape external text before putting it in HTML.
-- Run sw-lint before hand-off. Never weaken a rule merely to make a check pass.
+- Run lint before hand-off. Never weaken a rule merely to make a check pass.
 - Scan imported text for secrets and personal data before saving it to a shared artifact.
 - Do not store credentials or unnecessary personal information in any artifact.
-- For any Specwright request that names no skill, or when unsure which skill applies, load
-  sw-start first. Any skill can still be invoked by name.
+- For any Specwright request that names no action, or when unsure which action applies, load
+  sw-start first. Any primary action can still be invoked by name.
 - A story (BA/PO word) and a feature (Dev/QA word) are the same item, written FEAT-NNN.
   Never create a STORY identifier.
-- After writing spec files, rebuild the knowledge graph with sw-graph and read it through
-  its queries instead of opening every file.
+- After writing spec files, rebuild the knowledge graph and read it through its queries
+  instead of opening every file.
 - Before pushing or publishing without a named destination, ask whether the output is
   Markdown, Jira or both. A stored answer never authorizes a Jira write.
+- Published-content requests never trigger sync or reconciliation. A current baseline
+  is supplied through normal ingestion; if its currency cannot be verified, stop.

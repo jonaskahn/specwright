@@ -12,7 +12,7 @@
 
 
 <p align="center">
-  <code>IDEA</code> &nbsp;▸&nbsp; <code>SHAPE</code> &nbsp;▸&nbsp; <code>SPEC</code> &nbsp;▸&nbsp; <code>PLAN</code> &nbsp;▸&nbsp; <code>GATE</code> &nbsp;▸&nbsp; <code>REVIEW</code> &nbsp;▸&nbsp; <code>PUBLISH</code> &nbsp;▸&nbsp; <code>SYNC</code>
+  <code>IDEA</code> &nbsp;▸&nbsp; <code>SHAPE</code> &nbsp;▸&nbsp; <code>SPEC</code> &nbsp;▸&nbsp; <code>PLAN</code> &nbsp;▸&nbsp; <code>GATE</code> &nbsp;▸&nbsp; <code>REVIEW</code> &nbsp;▸&nbsp; <code>PUBLISH</code> &nbsp;▸&nbsp; <code>BASELINE</code>
 </p>
 
 
@@ -40,7 +40,7 @@ Specwright carries a software idea from its first rough notes to implementation-
                           └────────┘                │
                                                     │
  ┌────────┐   ┌─────────┐   ┌────────┐   ┌────────┐ │
- │  SYNC  │◀──│ PUBLISH │◀──│ REVIEW │◀──│  GATE  │─┘
+ │  BASELINE  │◀──│ PUBLISH │◀──│ REVIEW │◀──│  GATE  │─┘
  └────────┘   └─────────┘   └────────┘   └────────┘
       │            │            │            │
       └────────────┴────────────┴────────────┘
@@ -50,15 +50,15 @@ Specwright carries a software idea from its first rough notes to implementation-
 | Stage   | Skill           | Output                                           |
 | ------- | --------------- | ------------------------------------------------ |
 | Start   | `sw-start`      | Detected workspace and next route                |
-| Idea    | `sw-shape-idea` | Shaped concept with open questions               |
-| Spec    | `sw-spec`       | Requirements with observable acceptance criteria; calls `sw-draw` only when a picture is needed or stale |
-| Draw    | `sw-draw`       | Offline SVG or HTML when a fresh picture clarifies behaviour, or an existing one no longer matches |
+| Idea    | Shape action    | Shaped concept with open questions               |
+| Spec    | Specify action  | Requirements with observable acceptance criteria; calls the shared visuals capability only when a picture is needed or stale |
+| Visuals | Shared capability | Offline SVG or HTML when a fresh picture clarifies behaviour, or an existing one no longer matches |
 | Plan    | `sw-plan`       | Implementation plans and agent tasks with stable IDs      |
 | Review  | `sw-review`     | Named, evidenced human approval                  |
 | Publish | `sw-publish`    | Markdown, Jira, or both — behind a quality gate  |
-| Sync    | `sw-sync`       | Local snapshots reconciled with Jira             |
+| Baseline | Prepare ingestion | Immutable snapshots supplied and cited, never auto-reconciled |
 
-`sw-graph`, `sw-trace`, `sw-lint` and `sw-status` work across the entire lifecycle. IDs remain stable; withdrawn IDs become tombstones and are never reused.
+Knowledge, trace, lint and status are shared capabilities that work across the entire lifecycle. IDs remain stable; withdrawn IDs become tombstones and are never reused.
 
 ## `02` — Install & run
 

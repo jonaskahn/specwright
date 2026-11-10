@@ -73,7 +73,7 @@ These rules apply to every file in the kit.
   fine.
 - Commit subjects are imperative, at most 72 characters, and describe what the change
   does. No trailers.
-- The knowledge graph is derived, committed and byte-deterministic. After writing spec files, run `sw-graph build` and `sw-graph check`. Do not parse the graph files by hand; use the query commands.
+- The knowledge graph is derived, committed and byte-deterministic. After writing spec files, run `graph build` and `graph check`. Do not parse the graph files by hand; use the query commands.
 
 Run the full gate before every commit and push:
 
@@ -88,7 +88,7 @@ Run the full gate before every commit and push:
 
 ## Diagram production
 
-sw-draw exposes 45 primary types: 41 validated JSON renderers plus four original
+the visuals capability exposes 45 primary types: 41 validated JSON renderers plus four original
 illustration templates. The type picker chooses one grammar from saved evidence;
 the matching reference owns schema and budgets. Chart variants do not silently
 increase the primary-type count. Prefer self-contained SVG for embedding and

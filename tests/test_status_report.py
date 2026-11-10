@@ -11,7 +11,7 @@ from pathlib import Path
 from kitlib import frontmatter, hashing, rtm, workspace
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRIPT = ROOT / "skills/sw-status/scripts/status.py"
+SCRIPT = ROOT / "skills/sw-start/scripts/status.py"
 SPEC = importlib.util.spec_from_file_location("refund_status", SCRIPT)
 status = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(status)
@@ -89,7 +89,7 @@ class StatusTests(unittest.TestCase):
     def test_ready_for_dev_first_drift_and_snapshot_age(self):
         path = self.root / "02-drafts/FEAT-002.story.md"
         path.write_text(frontmatter.update(path.read_text(), {"status": "ready-for-dev"}))
-        rtm.set_cell(self.root, "REF", "FEAT-002", "Drift", "content-edited", "sw-sync")
+        rtm.set_cell(self.root, "REF", "FEAT-002", "Drift", "content-edited", "sw-publish")
         snap = self.root / "snapshots/jira/PROJ-14.md"
         snap.write_text(
             frontmatter.render(
@@ -101,12 +101,12 @@ class StatusTests(unittest.TestCase):
             self.root / "_meta/id-registry.md",
             "REF:FEAT-002",
             {"Last snapshot": "snapshots/jira/PROJ-14.md"},
-            "sw-sync",
+            "sw-publish",
         )
         item = status.build_report(self.root, today=date(2026, 11, 10))["features"][0]
         self.assertEqual(item["id"], "REF:FEAT-002")
         self.assertEqual(item["snapshot_age_days"], 9)
-        self.assertEqual(item["next"], "sw-sync then sw-review")
+        self.assertEqual(item["next"], "review")
         self.assertEqual(status.age_days("invalid", date(2026, 11, 10)), "unknown")
 
     def test_all_program_scopes_without_questions_and_save_refusal(self):
@@ -128,7 +128,7 @@ class StatusTests(unittest.TestCase):
             self.root / "_meta/id-registry.md",
             "REF:FEAT-001",
             {"Last snapshot": "../../outside.md"},
-            "sw-sync",
+            "sw-publish",
         )
         result = self.run_cli("--cwd", str(self.root))
         self.assertEqual(result.returncode, 2)

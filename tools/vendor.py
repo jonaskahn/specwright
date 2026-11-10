@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Mirror canonical runtime files into every self-contained skill folder."""
+"""Verify that the one skill carries the canonical runtime and embedded themes."""
 
 from __future__ import annotations
 
@@ -7,9 +7,6 @@ import argparse
 import re
 import sys
 from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "lib"))
-from kitlib.schema import SKILL_PREFIX  # noqa: E402
 
 STYLE_BLOCK = re.compile(r"(<style>)(.*?)(</style>)", re.S | re.I)
 SVG_SHELL_EXTRA = "\nsvg {\n    max-width: none;\n    min-width: 960px;\n}"
@@ -19,44 +16,33 @@ class VendorError(Exception):
     """A canonical or vendored path cannot satisfy the copy contract."""
 
 
-def skill_folders(root: Path) -> list[Path]:
-    return sorted(
-        path
-        for path in (root / "skills").glob(f"{SKILL_PREFIX}*")
-        if path.is_dir() and (path / "SKILL.md").is_file()
-    )
+def skill_folder(root: Path) -> Path:
+    path = root / "skills" / "sw-start"
+    if not (path / "SKILL.md").is_file():
+        raise VendorError("skills/sw-start/SKILL.md is missing")
+    return path
 
 
 def expected_copies(root: Path) -> dict[Path, Path]:
     """Return vendored destination to canonical source for every required copy."""
-    copies: dict[Path, Path] = {}
-    skills = skill_folders(root)
+    skill = skill_folder(root)
     runtime = sorted((root / "lib" / "kitlib").glob("*.py"))
-    shared = sorted((root / "lib" / "shared-references").glob("*.md"))
     if not runtime:
         raise VendorError("lib/kitlib has no canonical Python modules")
-    if not shared:
-        raise VendorError("lib/shared-references has no canonical references")
-    for skill in skills:
-        for source in runtime:
-            copies[skill / "scripts" / "kitlib" / source.name] = source
-        for source in shared:
-            copies[skill / "references" / source.name] = source
-        copies[skill / "LICENSE"] = root / "LICENSE"
-    standing = root / "skills" / "sw-init" / "assets" / "standing-rules.md"
+    copies = {skill / "scripts" / "kitlib" / source.name: source for source in runtime}
+    copies[skill / "LICENSE"] = root / "LICENSE"
+    standing = skill / "assets" / "standing-rules.md"
     if standing.parent.is_dir():
         copies[standing] = root / "AGENTS.md"
     return copies
 
 
 def theme_shells(root: Path) -> list[Path]:
-    """Drawing shells that must embed assets/theme.css byte for byte."""
-    assets = root / "skills" / "sw-draw" / "assets"
+    assets = skill_folder(root) / "assets"
     return sorted(assets.glob("*.html")) if (assets / "theme.css").is_file() else []
 
 
 def sync_themes(root: Path) -> list[str]:
-    """Embed assets/theme.css into every drawing shell so checks see exact bytes."""
     shells = theme_shells(root)
     if not shells:
         return []
@@ -81,6 +67,7 @@ def sync_themes(root: Path) -> list[str]:
 
 def check(root: Path) -> list[str]:
     problems: list[str] = []
+    skill = skill_folder(root)
     for shell in theme_shells(root):
         theme = (shell.parent / "theme.css").read_text(encoding="utf-8")
         if theme not in shell.read_text(encoding="utf-8"):
@@ -97,11 +84,10 @@ def check(root: Path) -> list[str]:
             continue
         if destination.read_bytes() != source.read_bytes():
             problems.append(f"divergent vendored file: {destination}")
-    for skill in skill_folders(root):
-        vendored = skill / "scripts" / "kitlib"
-        if not vendored.is_dir():
-            problems.append(f"missing vendored runtime: {vendored}")
-            continue
+    vendored = skill / "scripts" / "kitlib"
+    if not vendored.is_dir():
+        problems.append(f"missing vendored runtime: {vendored}")
+    else:
         expected = {source.name for source in (root / "lib" / "kitlib").glob("*.py")}
         actual = {
             path.name
@@ -120,14 +106,11 @@ def write(root: Path) -> list[str]:
             raise VendorError(f"missing canonical file: {source}")
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(source.read_bytes())
+    vendored = skill_folder(root) / "scripts" / "kitlib"
     expected_runtime = {source.name for source in (root / "lib" / "kitlib").glob("*.py")}
-    for skill in skill_folders(root):
-        vendored = skill / "scripts" / "kitlib"
-        if not vendored.is_dir():
-            continue
-        for path in sorted(vendored.iterdir()):
-            if path.is_file() and path.name not in expected_runtime:
-                path.unlink()
+    for path in sorted(vendored.iterdir()):
+        if path.is_file() and path.name not in expected_runtime:
+            path.unlink()
     written = [str(path) for path in copies]
     written.extend(sync_themes(root))
     return written
