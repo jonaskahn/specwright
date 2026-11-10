@@ -62,7 +62,7 @@ def validate(spec):
     names = set()
     for node in nodes:
         if not isinstance(node, dict) or not re.fullmatch(
-            r"[A-Za-z][A-Za-z0-9_]{0,23}", str(node.get("id", ""))
+                r"[A-Za-z][A-Za-z0-9_]{0,23}", str(node.get("id", ""))
         ):
             raise ValueError("node ids must be short letters, digits or underscores")
         if node["id"] in names:
@@ -71,9 +71,9 @@ def validate(spec):
         label(node.get("label"), 32)
         refs = node.get("spec_ids", [])
         if (
-            not isinstance(refs, list)
-            or len(refs) > 3
-            or any(not isinstance(r, str) or not parse_ref(r) for r in refs)
+                not isinstance(refs, list)
+                or len(refs) > 3
+                or any(not isinstance(r, str) or not parse_ref(r) for r in refs)
         ):
             raise ValueError("spec_ids must contain up to three valid spec references")
         if len(" · ".join(refs)) > 36:
@@ -106,8 +106,8 @@ def validate(spec):
             for value in cells.values():
                 label(value, 28)
         if kind == "story-map" and (
-            node.get("activity") not in spec.get("activities", [])
-            or node.get("slice") not in spec.get("slices", [])
+                node.get("activity") not in spec.get("activities", [])
+                or node.get("slice") not in spec.get("slices", [])
         ):
             raise ValueError("cards need a declared activity and outcome slice")
         if kind == "er":
@@ -126,9 +126,9 @@ def validate(spec):
         for key, cap in (("activities", 5), ("slices", 3)):
             values = spec.get(key)
             if (
-                not isinstance(values, list)
-                or not 1 <= len(values) <= cap
-                or len(set(values)) != len(values)
+                    not isinstance(values, list)
+                    or not 1 <= len(values) <= cap
+                    or len(set(values)) != len(values)
             ):
                 raise ValueError(f"{key} must contain unique names within the budget")
             for value in values:
@@ -140,16 +140,16 @@ def validate(spec):
         raise ValueError("this type uses ordered columns, not arrows")
     for edge in edges:
         if (
-            not isinstance(edge, dict)
-            or edge.get("from") not in names
-            or edge.get("to") not in names
+                not isinstance(edge, dict)
+                or edge.get("from") not in names
+                or edge.get("to") not in names
         ):
             raise ValueError("edge endpoint is missing")
         label(edge.get("label"), 48)
         if kind == "sequence" and edge.get("kind", "call") not in {"call", "return", "async"}:
             raise ValueError("unknown sequence message kind")
         if kind == "er" and any(
-            edge.get(k) not in {"1", "N", "0..1", "1..*"} for k in ("from_card", "to_card")
+                edge.get(k) not in {"1", "N", "0..1", "1..*"} for k in ("from_card", "to_card")
         ):
             raise ValueError("ER relationships need cardinality at both ends")
     if kind == "flowchart":
@@ -166,15 +166,15 @@ def validate(spec):
             raise ValueError("sequence frames use alt, opt or loop")
         label(frame.get("label"), 32)
         if (
-            not isinstance(frame.get("start"), int)
-            or not isinstance(frame.get("end"), int)
-            or not 0 <= frame["start"] <= frame["end"] < len(edges)
+                not isinstance(frame.get("start"), int)
+                or not isinstance(frame.get("end"), int)
+                or not 0 <= frame["start"] <= frame["end"] < len(edges)
         ):
             raise ValueError("frame bounds must be message indexes")
     if kind == "journey" and len(actors) != 1:
         raise ValueError("journey requires one persona")
     for i, frame in enumerate(frames):
-        for other in frames[i + 1 :]:
+        for other in frames[i + 1:]:
             if not (frame["end"] < other["start"] or other["end"] < frame["start"]):
                 raise ValueError("sequence frames must not overlap; split alternatives")
     return spec
@@ -225,11 +225,11 @@ def layout(spec):
             x, y, w, h = 200, 80 + i * 152, 320, 96
             if kind == "swimlane":
                 y = (
-                    100
-                    + spec.get("actors", ["Reader"]).index(
-                        node.get("actor", spec.get("actors", ["Reader"])[0])
-                    )
-                    * 176
+                        100
+                        + spec.get("actors", ["Reader"]).index(
+                    node.get("actor", spec.get("actors", ["Reader"])[0])
+                )
+                        * 176
                 )
                 x = 200 + i * 368
             if kind in {"journey", "service-blueprint", "sequence"}:
@@ -331,9 +331,9 @@ def render_svg(spec):
                         "feeling": node["feeling"],
                     }[name]
                 if (
-                    kind == "service-blueprint"
-                    and name == "frontstage"
-                    and node["id"] == next((n["id"] for n in nodes if n.get("spec_ids")), None)
+                        kind == "service-blueprint"
+                        and name == "frontstage"
+                        and node["id"] == next((n["id"] for n in nodes if n.get("spec_ids")), None)
                 ):
                     out.append(rect(x - 8, y + 8, 304, 88, "box focal", 8))
                 out.append(text(x, y + 40, value))
@@ -489,7 +489,7 @@ def mermaid(spec):
             lines.extend(
                 [
                     f"    section {name}",
-                    f"    {name}: { {'high': 5, 'neutral': 3, 'low': 1}[node['feeling']] }: Reader",
+                    f"    {name}: { {'high': 5, 'neutral': 3, 'low': 1}[node['feeling']]}: Reader",
                 ]
             )
     if kind == "state":

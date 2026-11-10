@@ -43,7 +43,7 @@ def _safe_name(asset_id: str, source: str) -> str:
 
 
 def _registry_row(
-    asset_id: str, rel: str, kind: str, digest: str, source: str, refs: str, state: str
+        asset_id: str, rel: str, kind: str, digest: str, source: str, refs: str, state: str
 ) -> list[str]:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     return [asset_id, rel, kind, digest, now, source, refs, state]
@@ -59,7 +59,7 @@ def _append_registry(root: Path, row: list[str]) -> None:
 
 
 def store(
-    root: Path, kind: str, source: str, refs: str = "", out: str | None = None
+        root: Path, kind: str, source: str, refs: str = "", out: str | None = None
 ) -> tuple[str, Path]:
     if not root.is_dir() or not (root / "project.yaml").is_file():
         raise ValueError("root must be an existing, resolved project directory")

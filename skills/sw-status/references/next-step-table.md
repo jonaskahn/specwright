@@ -11,8 +11,7 @@ state and its signals. The suggestion is a route, not an approval.
 - Sign-off stale → **sw-review**; PO.
 - State withdrawn/superseded → **sw-trace**; BA.
 - `ready-for-dev` → **implementation**; Dev and QA.
-- `ready-to-publish` with a fresh sign-off → **sw-publish**; BA after PO OK; otherwise
-  **sw-review**; PO.
+- `ready-to-publish` with a fresh sign-off → **sw-publish**; BA after PO OK; otherwise **sw-review**; PO.
 - `in-review` → **sw-review**; PO.
 - `published` → **sw-sync**; BA.
 - `draft` with a failing lint → **sw-spec**; BA; otherwise **sw-lint**; BA.

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-
 from kitlib import frontmatter, markdown
 
 IDENTITY_SECTION = "Identity"

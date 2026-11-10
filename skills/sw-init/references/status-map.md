@@ -9,13 +9,13 @@ Feature statuses flow through the repository and map onto Jira statuses.
 
 ## Default Jira mapping
 
-| Repository | Jira |
-| --- | --- |
-| published | To Do |
-| ready-for-dev | Ready for Dev |
-| in-development | In Progress |
-| superseded | Won't Do |
-| withdrawn | Won't Do |
+| Repository     | Jira          |
+|----------------|---------------|
+| published      | To Do         |
+| ready-for-dev  | Ready for Dev |
+| in-development | In Progress   |
+| superseded     | Won't Do      |
+| withdrawn      | Won't Do      |
 
 ## Ownership
 

@@ -70,7 +70,7 @@ def edge_routes(spec, boxes):
             "aggregation": "hollow-diamond",
         }.get(rel, "arrow")
         dashed = rel in {"realization", "dependency"} or (
-            spec["type"] == "architecture-delta" and "removed" in e["label"].lower()
+                spec["type"] == "architecture-delta" and "removed" in e["label"].lower()
         )
         attr = (
             f'marker-start="url(#{marker})"'
@@ -104,8 +104,8 @@ def delta(spec):
             e
             for e in spec.get("edges", [])
             if e["from"] in boxes
-            and e["to"] in boxes
-            and e.get("snapshot", "both") in {"both", "before" if side == 0 else "after"}
+               and e["to"] in boxes
+               and e.get("snapshot", "both") in {"both", "before" if side == 0 else "after"}
         ]
         panel = dict(spec, nodes=visible, edges=edges)
         out.append(edge_routes(panel, boxes))

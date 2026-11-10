@@ -7,21 +7,21 @@ Snapshots carry id, type, source_kind, source, source_version, fetched_at, sha25
 converter, status, warnings and degraded. Include scope when resolved. Unknown
 versions stay UNKNOWN, not a guessed timestamp.
 
-| Input | Route | Review |
-| --- | --- | --- |
-| Markdown, UTF-8 text | Native decode | Original front matter remains body evidence |
-| CSV | Native CSV reader to table | Newlines become line breaks |
-| HTML | Native HTML parser | Scripts/styles omitted; layout-lost |
-| Email | Native email parser | Plain preferred; HTML fallback; attachments omitted |
-| Jira issue JSON | Local ADF renderer | Unknown nodes/marks warn; tables and ordered lists lose layout |
-| ZIP | Quoted member listing only | No extraction, even for ordinary member paths |
-| DOCX, ODT, EPUB, RTF | pandoc to GFM | Check headings and tables |
-| XLSX, PPTX | markitdown | Compare cells, order and totals |
-| PDF with fonts | pdfinfo, pdffonts, pdftotext -layout | Verify page count and prose |
-| PDF without usable text | pdftoppm at 300 DPI then tesseract psm 6 | layout-lost, needs-visual-review |
-| PNG, JPEG | tesseract psm 6 | vi locale uses vie+eng |
-| TIFF | Hold for verified page count | Obtain bounded PDF or individual images |
-| DOC, XLS, PPT | Hold for reviewed export | Export without macros in a trusted application |
+| Input                   | Route                                    | Review                                                         |
+|-------------------------|------------------------------------------|----------------------------------------------------------------|
+| Markdown, UTF-8 text    | Native decode                            | Original front matter remains body evidence                    |
+| CSV                     | Native CSV reader to table               | Newlines become line breaks                                    |
+| HTML                    | Native HTML parser                       | Scripts/styles omitted; layout-lost                            |
+| Email                   | Native email parser                      | Plain preferred; HTML fallback; attachments omitted            |
+| Jira issue JSON         | Local ADF renderer                       | Unknown nodes/marks warn; tables and ordered lists lose layout |
+| ZIP                     | Quoted member listing only               | No extraction, even for ordinary member paths                  |
+| DOCX, ODT, EPUB, RTF    | pandoc to GFM                            | Check headings and tables                                      |
+| XLSX, PPTX              | markitdown                               | Compare cells, order and totals                                |
+| PDF with fonts          | pdfinfo, pdffonts, pdftotext -layout     | Verify page count and prose                                    |
+| PDF without usable text | pdftoppm at 300 DPI then tesseract psm 6 | layout-lost, needs-visual-review                               |
+| PNG, JPEG               | tesseract psm 6                          | vi locale uses vie+eng                                         |
+| TIFF                    | Hold for verified page count             | Obtain bounded PDF or individual images                        |
+| DOC, XLS, PPT           | Hold for reviewed export                 | Export without macros in a trusted application                 |
 
 Calls use argv lists, no shell and 120-second timeouts. PATH discovers tools.
 Record the first line of --version or version-unknown. Never echo external stderr:

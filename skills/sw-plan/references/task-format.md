@@ -12,6 +12,7 @@ Each task is a level-three heading followed by labelled lines:
     Stop and ask if: the refund window is not defined in BR-001.
 
 Rules:
+
 - Heading: verb first, one outcome. A parallel-safe task adds [P] at the end of the title.
 - Traces to: at least one AC. Add BR or NFR where the rule drives the task.
 - Done when: copy the observable result of the AC with concrete values.

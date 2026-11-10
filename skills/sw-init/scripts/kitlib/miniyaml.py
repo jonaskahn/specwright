@@ -36,7 +36,7 @@ def _strip_comment(text: str) -> str:
             if ch == "\\" and quote == '"':
                 i += 2
                 continue
-            if ch == "'" and quote == "'" and text[i + 1 : i + 2] == "'":
+            if ch == "'" and quote == "'" and text[i + 1: i + 2] == "'":
                 i += 2
                 continue
             if ch == quote:
@@ -282,7 +282,7 @@ def _dump_seq(items: list[Any], indent: int) -> Iterator[str]:
     for item in items:
         if isinstance(item, dict) and item:
             sub = list(_dump_map(item, indent + 2))
-            sub[0] = f"{pad}- {sub[0][indent + 2 :]}"
+            sub[0] = f"{pad}- {sub[0][indent + 2:]}"
             yield from sub
         elif isinstance(item, list):
             raise TypeError("nested lists are not supported")

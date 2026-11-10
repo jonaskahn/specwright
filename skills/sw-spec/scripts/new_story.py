@@ -24,14 +24,14 @@ def default_template() -> Path | None:
 
 
 def create(
-    root: Path,
-    scope: str,
-    summary: str,
-    template: Path | None = None,
-    feature: str | None = None,
-    parent: str = "None",
-    epic: list[str] | None = None,
-    idea: list[str] | None = None,
+        root: Path,
+        scope: str,
+        summary: str,
+        template: Path | None = None,
+        feature: str | None = None,
+        parent: str = "None",
+        epic: list[str] | None = None,
+        idea: list[str] | None = None,
 ) -> Path:
     if not root.is_dir() or (root / "workspace.yaml").exists():
         raise ValueError("scope-root must be an existing, resolved project directory")

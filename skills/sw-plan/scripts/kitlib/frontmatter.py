@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
-
 from kitlib import miniyaml
+from typing import Any
 
 _FENCE = "---"
 
@@ -29,7 +28,7 @@ def _find_block(text: str) -> tuple[str | None, str, int]:
         return None, text, 1
     for index in range(1, len(lines)):
         if lines[index].strip() in (_FENCE, "..."):
-            return "".join(lines[1:index]), "".join(lines[index + 1 :]), index + 2
+            return "".join(lines[1:index]), "".join(lines[index + 1:]), index + 2
     return None, text, 1
 
 

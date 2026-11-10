@@ -43,7 +43,7 @@ def report_cell(base, filename, key):
             subject = row[doc.table.col("Subject")] if "Subject" in doc.table.header else ""
             location = row[doc.table.col("Location")] if "Location" in doc.table.header else ""
             applies = (
-                subject in (key, key.split(":", 1)[1], "", "—") or key.split(":", 1)[1] in location
+                    subject in (key, key.split(":", 1)[1], "", "—") or key.split(":", 1)[1] in location
             )
             waived = doc.table.get(row[0], "Waiver") if "Waiver" in doc.table.header else None
             if applies and row[doc.table.col("Severity")] == "error" and waived in (None, "", "—"):
@@ -186,7 +186,7 @@ def render(report):
             + f" | next: {item['next']} ({item['turn']})"
             + f" | drift: {item['drift']} | sign-off: {item['signoff']}"
             + f" | snapshot age: {item['snapshot_age_days']} days | idle: "
-            f"{item['idle_days']} days" + (" (14+ days)" if item["idle"] is True else "")
+              f"{item['idle_days']} days" + (" (14+ days)" if item["idle"] is True else "")
         )
     lines.extend(report["findings"])
     return "\n".join(lines) + "\n"
@@ -209,10 +209,10 @@ def main(argv=None):
         if root is None:
             raise ValueError("no workspace; run sw-init first")
         if (
-            args.scope
-            or args.save
-            or workspace.mode_of(root) == "flat"
-            or "projects" in cwd.relative_to(root).parts
+                args.scope
+                or args.save
+                or workspace.mode_of(root) == "flat"
+                or "projects" in cwd.relative_to(root).parts
         ):
             scopes = [workspace.resolve(root, args.scope, cwd=cwd, write=args.save)]
         else:

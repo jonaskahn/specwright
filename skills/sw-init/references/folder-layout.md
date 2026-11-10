@@ -4,8 +4,8 @@ A workspace is one of two layouts, chosen at init.
 
 ## docs
 
-The spec root is the repository root. `project.yaml` sits at the root; all scope folders
-(`00-inbox/`, `01-analysis/`, `02-drafts/`, `03-plan/`, `assets/`, `diagrams/`,
+The spec root is the repository root. `project.yaml` sits at the root; all scope folders (`00-inbox/`, `01-analysis/`,
+`02-drafts/`, `03-plan/`, `assets/`, `diagrams/`,
 `records/`, `snapshots/`, `_meta/`) live beside it. Use this for a spec-only repository.
 
 ## embedded

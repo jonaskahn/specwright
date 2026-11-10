@@ -12,12 +12,12 @@ calendar convention needs confirmation; keep Q-002 open until there is evidence.
 With two independent conditions, enumerate combinations. This alternative practice
 policy is illustrative and must not be mixed into BR-001 without approval:
 
-| Within 30 days? | Unused item? | Result |
-|---|---|---|
-| Yes | Yes | Full refund |
-| Yes | No | Half refund |
-| No | Yes | Store credit |
-| No | No | Refuse |
+| Within 30 days? | Unused item? | Result       |
+|-----------------|--------------|--------------|
+| Yes             | Yes          | Full refund  |
+| Yes             | No           | Half refund  |
+| No              | Yes          | Store credit |
+| No              | No           | Refuse       |
 
 Two binary conditions have four combinations. Confirm there are no gaps and no
 identical inputs with contradictory outputs. Explicitly label impossible combinations

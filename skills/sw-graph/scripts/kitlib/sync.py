@@ -7,9 +7,8 @@ import json
 import re
 import sys
 from datetime import datetime, timezone
-from pathlib import Path
-
 from kitlib import adf, frontmatter, hashing, jira_diff, tables
+from pathlib import Path
 
 INJECTION = re.compile(
     r"ignore (?:all )?previous instructions|run this command|"

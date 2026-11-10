@@ -38,14 +38,14 @@ def _append(path: Path, fields: list[object]) -> None:
 
 
 def intent(
-    path: str | Path,
-    run: str,
-    op: int,
-    skill: str,
-    action: str,
-    target: str,
-    *detail: object,
-    now: datetime | None = None,
+        path: str | Path,
+        run: str,
+        op: int,
+        skill: str,
+        action: str,
+        target: str,
+        *detail: object,
+        now: datetime | None = None,
 ) -> None:
     """Record what is about to happen. Call this before the external request is sent."""
     _append(
@@ -55,12 +55,12 @@ def intent(
 
 
 def result(
-    path: str | Path,
-    run: str,
-    op: int,
-    outcome: str,
-    *detail: object,
-    now: datetime | None = None,
+        path: str | Path,
+        run: str,
+        op: int,
+        outcome: str,
+        *detail: object,
+        now: datetime | None = None,
 ) -> None:
     """Record how the operation ended; outcome is 'ok' or 'error'."""
     _append(Path(path), [utc_stamp(now), "RESULT", f"run={run}", f"op={op}", outcome, *detail])

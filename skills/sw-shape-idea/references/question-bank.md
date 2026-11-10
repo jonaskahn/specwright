@@ -11,6 +11,7 @@ Default if unanswered: retain uncertainty and do not approve dependent work.
 Owner: role. Due: agreed date or Unknown. Evidence checked: source IDs and locations.
 
 Useful prompts:
+
 - Which actor experiences the problem: customer → self-service value; support →
   assisted workflow value; both → separate contexts and potentially separate slices?
 - What counts as a refund request's useful result: recorded pending request → no

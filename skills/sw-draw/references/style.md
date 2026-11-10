@@ -1,6 +1,7 @@
 # Offline drawing contract
 
 ## Runtime and files
+
 Resolve all paths from the loaded skill directory, never the session working
 directory. Run the absolute scripts/render_diagram.py with absolute input JSON
 and approved output paths. Exit 0 written, 2 invalid input/I/O, 3 use a paragraph.
@@ -10,9 +11,10 @@ Files are individually atomically replaced, not a multi-file transaction.
 An old .mmd is not deleted when a basename is reused for another type.
 
 ## Common JSON
+
 A UTF-8 object supplies type, title (96 characters), actors (one to six unique
-names of 24 characters), nodes and optional edges. Each node has a local id
-(letter then letters/digits/underscore, at most 24), label (32 characters), and
+names of 24 characters), nodes and optional edges. Each node has a local id (letter then letters/digits/underscore, at
+most 24), label (32 characters), and
 spec_ids (zero to three valid qualified or local kit references, 36 combined
 visible characters). Edge from/to name nodes; label is explicit, at most 48.
 Labels are data, never markup. No CSS, SVG coordinates, HTML or URLs come from
@@ -25,9 +27,13 @@ types use motion none, reveal or loop; see references/motion.md. Template types
 are edited from shipped assets and checked, not accepted by the JSON renderer.
 
 ## Look
-Soft white cards with hairline edges and a gentle shadow on a grouped grey ground, rounded 12/18px corners, muted connectors, one crimson focal tint, blue for focus and links, and shape-coded status marks (.mk-ok circle, .mk-fail triangle, .mk-stop square, .mk-run diamond). Dark theme is derived, not inverted.
+
+Soft white cards with hairline edges and a gentle shadow on a grouped grey ground, rounded 12/18px corners, muted
+connectors, one crimson focal tint, blue for focus and links, and shape-coded status marks (.mk-ok circle, .mk-fail
+triangle, .mk-stop square, .mk-run diamond). Dark theme is derived, not inverted.
 
 ## Theme owner
+
 assets/theme.css owns the new shell skin. Each self-contained shell and SVG
 embeds those bytes; checks reject stale shells. Nine existing roles are retained:
 --sw-bg, --sw-surface, --sw-tint, --sw-ink, --sw-muted, --sw-hair, --sw-accent,
@@ -37,6 +43,7 @@ series with numeric keys and an exact data table. --sw-motion-fast and
 Use system sans for names, mono only for IDs. No external fonts or images.
 
 ## Geometry and accessibility
+
 One SVG per document has a title and description linked by aria-labelledby.
 Standalone SVG has its namespace, inline stylesheet, paper background and all
 source chips; it never depends on HTML CSS. ViewBox changes never resize markers.
@@ -52,6 +59,7 @@ Split crowded pictures rather than shrinking type. Automated checks do not prove
 semantic fidelity, crossing-free routing or full WCAG conformance.
 
 ## Safety and review
+
 Run absolute scripts/check_borders.py and scripts/check_offline.py paths on every
 artifact. Both accept directories. Border findings are L-024; offline findings
 reject active content and remote resources. The SVG namespace is metadata, not a

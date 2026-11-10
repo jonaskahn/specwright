@@ -10,6 +10,7 @@ revisions. A removed criterion keeps a struck-through ID and withdrawal reason, 
 a CR reference for published changes. Do not reuse it for a different behaviour.
 
 Three useful refund examples:
+
 1. Given delivered order R-240 worth 400,000 VND at age 6 days, When its owner requests
    a refund, Then one request is recorded as “Pending approval” for 400,000 VND.
 2. Given an age-8-day order worth 400,000 VND, When its owner requests a refund,
@@ -18,6 +19,7 @@ Three useful refund examples:
    created and the agreed window-expired message is returned.
 
 Three counterexamples:
+
 - “Refunds are effortless and speedy.” Neither reviewer knows a pass threshold.
 - “Given a customer presses a green control and types a value, When the page opens,
   Then the interface works.” Actions masquerade as state and the result is undefined.

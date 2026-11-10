@@ -28,9 +28,9 @@ def module(kind):
 
 def validate(spec):
     if (
-        not isinstance(spec, dict)
-        or not isinstance(spec.get("type"), str)
-        or spec["type"] not in TYPES
+            not isinstance(spec, dict)
+            or not isinstance(spec.get("type"), str)
+            or spec["type"] not in TYPES
     ):
         raise ValueError("choose one of the supported sw-draw types")
     kind = spec["type"]
@@ -79,8 +79,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         if (
-            args.output.suffix not in {".html", ".svg"}
-            or args.output.resolve() == args.spec.resolve()
+                args.output.suffix not in {".html", ".svg"}
+                or args.output.resolve() == args.spec.resolve()
         ):
             raise ValueError("output must be a separate .html or .svg file")
         spec = json.loads(args.spec.read_text(encoding="utf-8"))

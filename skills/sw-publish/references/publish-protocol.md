@@ -6,8 +6,8 @@ writes to Jira or Confluence; every remote write is bound to a fresh, typed conf
 ## Preconditions (all must hold before a plan is valid)
 
 - The draft front matter status is exactly `ready-to-publish`.
-- At least one sign-off carries an HTTPS evidence URL **and** the current draft hash
-  (`sha256:` short form). A URL without the matching hash is stale.
+- At least one sign-off carries an HTTPS evidence URL **and** the current draft hash (`sha256:` short form). A URL
+  without the matching hash is stale.
 - The publish lint report exists and contains `0 blocking error(s)`. Run the publish
   gate (`scripts/sw_lint.py --gate publish`) to produce it.
 - The manifest `publish.transitions` is false. Workflow transitions stay off unless the

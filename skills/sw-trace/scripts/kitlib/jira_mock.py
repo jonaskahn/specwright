@@ -152,11 +152,11 @@ class MockJira:
                 copy.deepcopy(v)
                 for k, v in sorted(self.issues.items())
                 if k.startswith(project + "-")
-                and (label is None or label in v["fields"].get("labels", []))
+                   and (label is None or label in v["fields"].get("labels", []))
             ]
             start = int(data.get("nextPageToken", 0))
             last = start + self.page_size >= len(issues)
-            page = {"issues": issues[start : start + self.page_size], "isLast": last}
+            page = {"issues": issues[start: start + self.page_size], "isLast": last}
             if not last:
                 page["nextPageToken"] = str(start + self.page_size)
             send(200, page)
@@ -195,7 +195,7 @@ class MockJira:
                     "total": len(items),
                     "isLast": start + self.page_size >= len(items),
                     "comments" if resource == "comment" else "values": items[
-                        start : start + self.page_size
+                        start: start + self.page_size
                     ],
                 },
             )

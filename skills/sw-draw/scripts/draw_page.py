@@ -200,7 +200,7 @@ def _framed(svg):
     new_head = head.replace(box.group(0), f'viewBox="0 0 {total_w:g} {total_h:g}"')
     new_head = re.sub(r'width="[0-9.]+"', f'width="{total_w:g}"', new_head, count=1)
     new_head = new_head.replace("<svg ", '<svg data-framed="1" ', 1)
-    inner = svg[len(head) : svg.rindex("</svg>")]
+    inner = svg[len(head): svg.rindex("</svg>")]
     style_end = inner.index("</style>") + len("</style>")
     prelude, rest = inner[:style_end], inner[style_end:]
     card = (

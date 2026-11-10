@@ -5,12 +5,12 @@ Each finding prints `path:line: L-NNN message`. Choose the gate by what must be 
 
 ## Gates
 
-| Gate | Exit | Blocks when |
-| --- | --- | --- |
-| `draft` | 10 | shape and measurable rules fail |
-| `review` | 20 | sign-off and DoR fail (default) |
-| `publish` | 30 | the publish contract fails |
-| `sync` | 40 | the drift contract fails |
+| Gate      | Exit | Blocks when                     |
+|-----------|------|---------------------------------|
+| `draft`   | 10   | shape and measurable rules fail |
+| `review`  | 20   | sign-off and DoR fail (default) |
+| `publish` | 30   | the publish contract fails      |
+| `sync`    | 40   | the drift contract fails        |
 
 Exit `0` is a pass; `2` is usage or an unexpected checker failure. No network is used.
 

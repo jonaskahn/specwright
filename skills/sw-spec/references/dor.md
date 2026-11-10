@@ -2,6 +2,7 @@
 
 Keep every heading from the story template even when it holds “None — reason”.
 Before requesting review, check:
+
 - Goal names a contextual actor, capability, benefit and resolving BO reference.
 - At least two ACs have concrete G/W/T examples; every rule branch and error row is
   covered, including boundary inputs. Withdrawn IDs remain tombstoned.

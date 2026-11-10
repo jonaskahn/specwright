@@ -167,7 +167,7 @@ def validate(spec, kind):
             raise ValueError("nodes must be objects")
         fields(node, COMMON_NODE | EXTRA_NODE[kind], f"{kind} node")
         if not isinstance(node.get("id"), str) or not re.fullmatch(
-            r"[A-Za-z][A-Za-z0-9_]{0,23}", node["id"]
+                r"[A-Za-z][A-Za-z0-9_]{0,23}", node["id"]
         ):
             raise ValueError("node id must be short letters, digits or underscores")
         if node["id"] in ids:
@@ -215,7 +215,7 @@ def validate(spec, kind):
         if kind == "uml-class" and edge.get("kind") not in RELATIONS:
             raise ValueError("class relationships need a documented kind")
         if kind == "db-schema" and any(
-            edge.get(k) not in {"1", "N", "0..1", "1..*"} for k in ("from_card", "to_card")
+                edge.get(k) not in {"1", "N", "0..1", "1..*"} for k in ("from_card", "to_card")
         ):
             raise ValueError("schema relationships need explicit cardinalities")
     if kind in {"tree", "org-chart"}:
@@ -228,8 +228,8 @@ def validate(spec, kind):
             raise ValueError("unknown containment parent")
         tree_parents(pseudo)
     if (
-        kind in VARIANTS
-        and spec.get("variant", next(iter(sorted(VARIANTS[kind])))) not in VARIANTS[kind]
+            kind in VARIANTS
+            and spec.get("variant", next(iter(sorted(VARIANTS[kind])))) not in VARIANTS[kind]
     ):
         raise ValueError(f"unknown {kind} variant")
     if kind in {"bar", "line", "polar", "pyramid", "treemap", "waterfall", "heatmap", "sankey"}:
@@ -376,20 +376,20 @@ def validate(spec, kind):
         if kind == "venn":
             names(node.get("members"), "members", 1, 9)
         if kind == "heatmap" and (
-            node.get("row") not in spec["rows"] or node.get("column") not in spec["columns"]
+                node.get("row") not in spec["rows"] or node.get("column") not in spec["columns"]
         ):
             raise ValueError("heatmap cell needs a declared row and column")
         if kind == "dp-security-matrix":
             vals = node.get("permissions")
             if (
-                not isinstance(vals, list)
-                or len(vals) != len(spec["columns"])
-                or any(v not in {"allow", "deny", "unknown"} for v in vals)
+                    not isinstance(vals, list)
+                    or len(vals) != len(spec["columns"])
+                    or any(v not in {"allow", "deny", "unknown"} for v in vals)
             ):
                 raise ValueError("matrix needs allow/deny/unknown per column")
         if kind == "kanban" and (
-            node["column"] not in spec["columns"]
-            or node["state"] not in {"queued", "doing", "blocked", "waiting", "done"}
+                node["column"] not in spec["columns"]
+                or node["state"] not in {"queued", "doing", "blocked", "waiting", "done"}
         ):
             raise ValueError("card needs a declared column and known state")
         if kind in {"uml-class", "db-schema"}:
@@ -424,9 +424,9 @@ def validate(spec, kind):
                 raise ValueError("sankey intermediate flow must balance")
     if kind == "loop":
         if len(edges) != len(nodes) or any(
-            sum(e["from"] == n["id"] for e in edges) != 1
-            or sum(e["to"] == n["id"] for e in edges) != 1
-            for n in nodes
+                sum(e["from"] == n["id"] for e in edges) != 1
+                or sum(e["to"] == n["id"] for e in edges) != 1
+                for n in nodes
         ):
             raise ValueError("loop needs one incoming and outgoing edge per node")
         seen = set()

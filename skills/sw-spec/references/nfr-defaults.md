@@ -5,20 +5,21 @@ metric, numeric threshold, operating conditions and verification method. Categor
 below use the familiar ISO/IEC 25010:2011 names as prompts, with Safety added as a
 separate prompt. This is not a claim to reproduce the different 2023 model.
 
-| Area | Questions before agreement |
-|---|---|
-| Functional suitability | Which calculation oracle and correctness cases apply? |
-| Performance efficiency | Which percentile, load, duration and measurement boundary? |
-| Compatibility | Which supported clients and cooperating systems? |
-| Usability | Which actors, completion rate and assisted-use conditions? |
-| Reliability | Which reporting window, exclusions, recovery time and loss tolerance? |
-| Security | Which authentication, authorization and threat cases? |
-| Maintainability | Which change verification and operational diagnostics? |
-| Portability | Which deployment environments must work? |
-| Safety | What harm needs a measurable prevention or detection check? |
-| Other | Which privacy, retention, audit, legal and localization duties apply? |
+| Area                   | Questions before agreement                                            |
+|------------------------|-----------------------------------------------------------------------|
+| Functional suitability | Which calculation oracle and correctness cases apply?                 |
+| Performance efficiency | Which percentile, load, duration and measurement boundary?            |
+| Compatibility          | Which supported clients and cooperating systems?                      |
+| Usability              | Which actors, completion rate and assisted-use conditions?            |
+| Reliability            | Which reporting window, exclusions, recovery time and loss tolerance? |
+| Security               | Which authentication, authorization and threat cases?                 |
+| Maintainability        | Which change verification and operational diagnostics?                |
+| Portability            | Which deployment environments must work?                              |
+| Safety                 | What harm needs a measurable prevention or detection check?           |
+| Other                  | Which privacy, retention, audit, legal and localization duties apply? |
 
 Three concrete candidate NFRs, to confirm with the relevant owners:
+
 - NFR-REF-001: refund submission p95 latency below 2 seconds at 200 concurrent users,
   measured at the submission boundary over 15 minutes in staging with agreed data.
 - Accessibility: refund entry meets WCAG 2.2 A and AA requirements, verified by
@@ -28,6 +29,7 @@ Three concrete candidate NFRs, to confirm with the relevant owners:
   within four hours with no more than fifteen minutes of event loss in a restore test.
 
 Three inadequate alternatives:
+
 - “Very fast under heavy traffic” omits both traffic quantity and a latency measure.
 - “Secure and legally compliant” names neither authorization outcomes nor legal scope.
 - “99.999% available” omits the measurement period, service boundary and exclusions.

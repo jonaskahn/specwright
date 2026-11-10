@@ -3,14 +3,14 @@
 INVEST names six discussion tests introduced by Bill Wake. It does not make story
 quality mechanically decidable. Record one reason per letter for every proposed FEAT:
 
-| Letter | Test | Refund submission example |
-|---|---|---|
-| I — Independent | Can it deliver value without a jointly released slice? | Pass: request can await an existing finance process. |
-| N — Negotiable | Is behaviour fixed while solution choices remain open? | Pass: submission channel is not prescribed. |
-| V — Valuable | Does a named actor gain a useful outcome? | Pass: customer no longer needs support to lodge a request. |
-| E — Estimable | Are major rule uncertainties bounded enough for Dev? | Unknown: delivery-day calculation still needs a decision. |
-| S — Small | Can the team finish and verify it within its agreed delivery window? | Unknown until the team estimates it. |
-| T — Testable | Can QA observe success and refusal with concrete inputs? | Pass: amount and pending state are observable. |
+| Letter          | Test                                                                 | Refund submission example                                  |
+|-----------------|----------------------------------------------------------------------|------------------------------------------------------------|
+| I — Independent | Can it deliver value without a jointly released slice?               | Pass: request can await an existing finance process.       |
+| N — Negotiable  | Is behaviour fixed while solution choices remain open?               | Pass: submission channel is not prescribed.                |
+| V — Valuable    | Does a named actor gain a useful outcome?                            | Pass: customer no longer needs support to lodge a request. |
+| E — Estimable   | Are major rule uncertainties bounded enough for Dev?                 | Unknown: delivery-day calculation still needs a decision.  |
+| S — Small       | Can the team finish and verify it within its agreed delivery window? | Unknown until the team estimates it.                       |
+| T — Testable    | Can QA observe success and refusal with concrete inputs?             | Pass: amount and pending state are observable.             |
 
 A local heuristic of about seven or fewer ACs can prompt a size conversation; it is
 not Wake's definition and not proof that a story fits a team's capacity. Negotiability

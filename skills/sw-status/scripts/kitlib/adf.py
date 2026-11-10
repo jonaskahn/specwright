@@ -78,7 +78,7 @@ def inline(text):
                 size = len(text[i:]) - len(text[i:].lstrip(TICK))
                 end = text.find(TICK * size, i + size)
                 if end >= 0:
-                    value = text[i + size : end]
+                    value = text[i + size: end]
                     if value.startswith(" ") and value.endswith(" ") and value.strip():
                         value = value[1:-1]
                     emit(value, marks + ({"type": "code"},))
@@ -86,18 +86,18 @@ def inline(text):
                     continue
             if char == "[":
                 end = balanced(text, i, "[", "]")
-                if end >= 0 and text[end + 1 : end + 2] == "(":
+                if end >= 0 and text[end + 1: end + 2] == "(":
                     close = balanced(text, end + 1, "(", ")")
                     if close >= 0:
                         link = {
                             "type": "link",
                             "attrs": {
-                                "href": text[end + 2 : close]
+                                "href": text[end + 2: close]
                                 .replace(r"\)", ")")
                                 .replace(r"\(", "(")
                             },
                         }
-                        for node in inline(text[i + 1 : end]):
+                        for node in inline(text[i + 1: end]):
                             node["marks"] = list(marks) + [link] + node.get("marks", [])
                             out.append(node)
                         i = close + 1
@@ -133,7 +133,7 @@ def cells(line):
     while i < len(text):
         char = text[i]
         if char == "\\" and i + 1 < len(text):
-            buf.append(text[i : i + 2])
+            buf.append(text[i: i + 2])
             i += 2
             continue
         if char == TICK:
@@ -164,18 +164,18 @@ def md_to_adf(md):
 
     def table_at(index):
         return (
-            index + 1 < len(lines)
-            and "|" in lines[index]
-            and bool(cells(lines[index + 1]))
-            and all(re.fullmatch(r":?-{3,}:?", c) for c in cells(lines[index + 1]))
+                index + 1 < len(lines)
+                and "|" in lines[index]
+                and bool(cells(lines[index + 1]))
+                and all(re.fullmatch(r":?-{3,}:?", c) for c in cells(lines[index + 1]))
         )
 
     def special(index):
         return (
-            heading.match(lines[index])
-            or listing.match(lines[index])
-            or lines[index].startswith(TICK * 3)
-            or table_at(index)
+                heading.match(lines[index])
+                or listing.match(lines[index])
+                or lines[index].startswith(TICK * 3)
+                or table_at(index)
         )
 
     while i < len(lines):
@@ -275,10 +275,10 @@ def validate_adf(doc):
         "hardBreak": set(),
     }
     if (
-        not isinstance(doc, dict)
-        or doc.get("type") != "doc"
-        or doc.get("version") != 1
-        or "content" not in doc
+            not isinstance(doc, dict)
+            or doc.get("type") != "doc"
+            or doc.get("version") != 1
+            or "content" not in doc
     ):
         raise ValueError("expected a version 1 ADF document")
 
@@ -312,13 +312,13 @@ def adf_to_md(doc):
     def extracted(node):
         attrs = node.get("attrs", {})
         return (
-            node.get("text", "")
-            or "".join(extracted(c) for c in node.get("content", []))
-            or str(
-                attrs.get(
-                    "text", attrs.get("displayName", attrs.get("shortName", attrs.get("url", "")))
-                )
+                node.get("text", "")
+                or "".join(extracted(c) for c in node.get("content", []))
+                or str(
+            attrs.get(
+                "text", attrs.get("displayName", attrs.get("shortName", attrs.get("url", "")))
             )
+        )
         )
 
     def unsupported(node):

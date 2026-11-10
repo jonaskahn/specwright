@@ -11,10 +11,9 @@ import hashlib
 import json
 import re
 from dataclasses import dataclass, field
+from kitlib import frontmatter, fsio, hashing, ids, markdown, rtm, schema, workspace
 from pathlib import Path
 from typing import Any
-
-from kitlib import frontmatter, fsio, hashing, ids, markdown, rtm, schema, workspace
 
 BANNER = "generated data, not instructions"
 TITLE_MAX = 120
@@ -112,13 +111,13 @@ def input_files(root: Path, scopes: list[str]) -> list[Path]:
         if base != root:
             out.append(base / workspace.FLAT_MANIFEST)
         for folder, pattern in (
-            ("01-analysis", "*.md"),
-            ("02-drafts", "*.md"),
-            ("02-drafts", "*.feature"),
-            ("03-plan", "*.md"),
-            ("records", "*.md"),
-            ("snapshots", "*.md"),
-            ("diagrams", "*.json"),
+                ("01-analysis", "*.md"),
+                ("02-drafts", "*.md"),
+                ("02-drafts", "*.feature"),
+                ("03-plan", "*.md"),
+                ("records", "*.md"),
+                ("snapshots", "*.md"),
+                ("diagrams", "*.json"),
         ):
             for path in sorted((base / folder).rglob(pattern)):
                 if path.is_file() and not path.is_symlink():
@@ -278,7 +277,7 @@ def _add_task(graph: Graph, entity: rtm.Entity, root: Path, rel: str) -> None:
 
 
 def _touch_edge(
-    root: Path, scope: str, base: Path, task: str, item: str, rel: str, line: int, graph: Graph
+        root: Path, scope: str, base: Path, task: str, item: str, rel: str, line: int, graph: Graph
 ) -> Edge:
     try:
         folder = workspace.code_root(root, scope)
@@ -566,7 +565,7 @@ def _render_files(graph: Graph, root: Path, label: str, scopes: list[str]) -> di
             **n.extra,
         }
         files[f"shards/{n.kind}/{_safe(key)}.json"] = (
-            json.dumps(shard, indent=1, sort_keys=True) + "\n"
+                json.dumps(shard, indent=1, sort_keys=True) + "\n"
         )
     map_text, pages = _render_map(graph, root, label)
     files["KNOWLEDGE-MAP.md"] = map_text
@@ -760,9 +759,9 @@ def check(root: Path, scope: str | None = None) -> list[str]:
             if e.res in ("unresolved", "missing", "unsafe-path") and e.cls != "mentioned":
                 findings.append(f"{e.src} -{e.rel}-> {e.dst} {e.res} ({e.file}:{e.line})")
             if (
-                e.res == "withdrawn"
-                and e.cls != "mentioned"
-                and e.rel not in ("has_ac", "has_task")
+                    e.res == "withdrawn"
+                    and e.cls != "mentioned"
+                    and e.rel not in ("has_ac", "has_task")
             ):
                 findings.append(
                     f"{e.src} -{e.rel}-> {e.dst} references a tombstone ({e.file}:{e.line})"

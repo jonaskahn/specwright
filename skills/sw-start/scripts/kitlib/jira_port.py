@@ -148,16 +148,16 @@ class Outcome:
 
 
 def apply_plan(
-    port,
-    plan,
-    writelog_path,
-    run_id,
-    scope_id,
-    *,
-    sleep=time.sleep,
-    max_retries=0,
-    max_delay=30.0,
-    plan_hash=None,
+        port,
+        plan,
+        writelog_path,
+        run_id,
+        scope_id,
+        *,
+        sleep=time.sleep,
+        max_retries=0,
+        max_delay=30.0,
+        plan_hash=None,
 ):
     """Stop at the first uncertainty; recovery is evidence, not permission to continue.
 
@@ -219,7 +219,7 @@ def apply_plan(
                     )
                     writelog.result(writelog_path, run_id, serial, "error", detail)
                 if isinstance(exc, RateLimited) and op.kind != "create" and attempts < max_retries:
-                    delay = max(exc.retry_after, 2**attempts)
+                    delay = max(exc.retry_after, 2 ** attempts)
                     if delay <= max_delay:
                         sleep(delay)
                         attempts += 1

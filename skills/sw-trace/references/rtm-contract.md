@@ -5,16 +5,16 @@ registry `Kind` column.
 
 ## Column owners
 
-| Column | Owner |
-| --- | --- |
-| BO | sw-spec |
-| BR/NFR | sw-spec |
-| Story draft | sw-spec |
-| Jira | sw-publish |
-| Jira status | sw-sync |
-| Sign-off | sw-review |
-| Drift | sw-sync |
-| Test ref | qa |
+| Column      | Owner      |
+|-------------|------------|
+| BO          | sw-spec    |
+| BR/NFR      | sw-spec    |
+| Story draft | sw-spec    |
+| Jira        | sw-publish |
+| Jira status | sw-sync    |
+| Sign-off    | sw-review  |
+| Drift       | sw-sync    |
+| Test ref    | qa         |
 
 `scripts/trace.py set <id> --column <name> --as <skill>` refuses a column the skill does
 not own, with exit 4. Row creation (`rebuild`) belongs to sw-trace; every other skill

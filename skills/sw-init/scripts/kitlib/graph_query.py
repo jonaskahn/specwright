@@ -8,9 +8,8 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterator
-from pathlib import Path
-
 from kitlib import graph, hashing, ids, schema, workspace
+from pathlib import Path
 
 DEFAULT_LIMIT = 20
 MAX_LIMIT = 200
@@ -183,13 +182,13 @@ def _chain(store: Store, key: str) -> list[str]:
 
 
 def neighbors(
-    store: Store,
-    key: str,
-    direction: str,
-    rel: str | None,
-    declared_only: bool,
-    offset: int,
-    limit: int,
+        store: Store,
+        key: str,
+        direction: str,
+        rel: str | None,
+        declared_only: bool,
+        offset: int,
+        limit: int,
 ) -> list[str]:
     if store.node(key) is None and not key.startswith(("jira:", "code:")):
         raise QueryError(f"unknown ID: {key}", 3)
@@ -210,7 +209,7 @@ def neighbors(
 
 
 def _walk(
-    store: Store, key: str, allowed: set[tuple[str, str]], depth: int
+        store: Store, key: str, allowed: set[tuple[str, str]], depth: int
 ) -> Iterator[tuple[int, str, str]]:
     seen = {key}
     frontier = {key}
@@ -316,14 +315,14 @@ def impact(store: Store, target: str, include_mentions: bool = False) -> dict[st
 
 
 def find(
-    store: Store,
-    text: str | None,
-    kind: str | None,
-    status: str | None,
-    jira: str | None,
-    epic: str | None,
-    offset: int,
-    limit: int,
+        store: Store,
+        text: str | None,
+        kind: str | None,
+        status: str | None,
+        jira: str | None,
+        epic: str | None,
+        offset: int,
+        limit: int,
 ) -> list[str]:
     allowed: set[str] | None = None
     if jira:
@@ -428,7 +427,7 @@ def context(store: Store, key: str, with_text: bool, budget: int) -> list[str]:
         slice_ = (
             (store.root / file_part)
             .read_text(encoding="utf-8")
-            .splitlines()[max(0, start - 1) : end]
+            .splitlines()[max(0, start - 1): end]
         )
         chunk = "\n".join("  | " + s for s in slice_)
         if used + len(chunk) > budget:
