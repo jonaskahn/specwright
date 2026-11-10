@@ -1,0 +1,24 @@
+{
+  "name": "specwright",
+  "version": "0.1.0",
+  "description": "Portable agent skills for business analysts, with Jira as the system of record",
+  "author": {
+    "name": "Jonas Kahn"
+  },
+  "skills": [
+    "./skills/sw-draw",
+    "./skills/sw-ingest",
+    "./skills/sw-init",
+    "./skills/sw-lint",
+    "./skills/sw-publish",
+    "./skills/sw-review",
+    "./skills/sw-shape-idea",
+    "./skills/sw-spec",
+    "./skills/sw-status",
+    "./skills/sw-sync",
+    "./skills/sw-trace"
+  ],
+  "commands": [
+    "./commands/"
+  ]
+}
