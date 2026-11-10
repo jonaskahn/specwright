@@ -242,7 +242,7 @@ class CatalogTests(unittest.TestCase):
                 self.assertIn(code, {f.code for f in report.errors})
                 target.write_text(content)
             target = skill / "assets/bar.html"
-            target.write_text(target.read_text().replace("--sw-bg:#f2f3f5", "--sw-bg:#eeeeee"))
+            target.write_text(target.read_text().replace("--sw-bg: #f2f3f5", "--sw-bg: #eeeeee"))
             report = validate.Report(skill)
             validate._check_draw_contract(skill, report)
             self.assertIn("V124", {f.code for f in report.errors})

@@ -62,6 +62,23 @@ class VendorTests(unittest.TestCase):
             f"divergent vendored file: {self.skill / 'references/stop-and-ask.md'}", problems
         )
 
+    def test_write_embeds_drawing_theme_bytes(self):
+        assets = self.root / "skills/sw-draw/assets"
+        assets.mkdir(parents=True)
+        theme = "\n:root { --sw-bg: #fff; }\n"
+        (assets / "theme.css").write_text(theme)
+        shell = assets / "er.html"
+        shell.write_text(
+            "<html><style>\n        :root { --sw-bg: #000; }\n"
+            "        svg {\n            max-width: none;\n"
+            "            min-width: 960px;\n        }\n    </style></html>\n"
+        )
+        vendor.write(self.root)
+        text = shell.read_text()
+        self.assertIn(theme, text)
+        self.assertIn("min-width: 960px", text)
+        self.assertEqual(vendor.check(self.root), [])
+
 
 if __name__ == "__main__":
     unittest.main()

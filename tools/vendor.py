@@ -4,11 +4,15 @@
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "lib"))
 from kitlib.schema import SKILL_PREFIX  # noqa: E402
+
+STYLE_BLOCK = re.compile(r"(<style>)(.*?)(</style>)", re.S | re.I)
+SVG_SHELL_EXTRA = "\nsvg {\n    max-width: none;\n    min-width: 960px;\n}"
 
 
 class VendorError(Exception):
@@ -49,6 +53,30 @@ def theme_shells(root: Path) -> list[Path]:
     """Drawing shells that must embed assets/theme.css byte for byte."""
     assets = root / "skills" / "sw-draw" / "assets"
     return sorted(assets.glob("*.html")) if (assets / "theme.css").is_file() else []
+
+
+def sync_themes(root: Path) -> list[str]:
+    """Embed assets/theme.css into every drawing shell so checks see exact bytes."""
+    shells = theme_shells(root)
+    if not shells:
+        return []
+    theme = (shells[0].parent / "theme.css").read_text(encoding="utf-8")
+    updated: list[str] = []
+    for shell in shells:
+        text = shell.read_text(encoding="utf-8")
+        if theme in text:
+            continue
+        match = STYLE_BLOCK.search(text)
+        if match is None:
+            raise VendorError(f"missing style block: {shell}")
+        extra = SVG_SHELL_EXTRA if "min-width: 960px" in match.group(2) else ""
+        replacement = theme + extra
+        text = text[: match.start(2)] + replacement + text[match.end(2) :]
+        if theme not in text:
+            raise VendorError(f"failed to embed theme: {shell}")
+        shell.write_text(text, encoding="utf-8")
+        updated.append(str(shell))
+    return updated
 
 
 def check(root: Path) -> list[str]:
@@ -100,7 +128,9 @@ def write(root: Path) -> list[str]:
         for path in sorted(vendored.iterdir()):
             if path.is_file() and path.name not in expected_runtime:
                 path.unlink()
-    return [str(path) for path in copies]
+    written = [str(path) for path in copies]
+    written.extend(sync_themes(root))
+    return written
 
 
 def main(argv: list[str] | None = None) -> int:
