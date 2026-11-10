@@ -184,4 +184,32 @@ def standalone(page):
     if "<style>" not in svg:
         style = re.search(r"<style>.*?</style>", page, re.S).group(0)
         svg = svg.replace("</desc>", "</desc>" + style, 1)
-    return svg + "\n"
+    return _framed(svg) + "\n"
+
+
+def _framed(svg):
+    """Frame an exported SVG like the cockpit: grouped ground, raised card, title row."""
+    head = re.match(r"<svg\b[^>]*>", svg).group(0)
+    box = re.search(r'viewBox="0 0 ([0-9.]+) ([0-9.]+)"', head)
+    if not box or "data-framed" in head:
+        return svg
+    w, h = float(box.group(1)), float(box.group(2))
+    pad, bar = 32, 72
+    title = re.search(r'<title id="diagram-title">(.*?)</title>', svg, re.S).group(1)
+    total_w, total_h = w + pad * 2, h + pad * 2 + bar
+    new_head = head.replace(box.group(0), f'viewBox="0 0 {total_w:g} {total_h:g}"')
+    new_head = re.sub(r'width="[0-9.]+"', f'width="{total_w:g}"', new_head, count=1)
+    new_head = new_head.replace("<svg ", '<svg data-framed="1" ', 1)
+    inner = svg[len(head) : svg.rindex("</svg>")]
+    style_end = inner.index("</style>") + len("</style>")
+    prelude, rest = inner[:style_end], inner[style_end:]
+    card = (
+        '<rect width="100%" height="100%" fill="var(--sw-bg)"/>'
+        f'<rect x="{pad}" y="{pad}" width="{w:g}" height="{h + bar:g}" rx="18" '
+        'class="paper" style="filter:drop-shadow(0 6px 18px rgba(20,24,30,.18))"/>'
+        f'<text x="{pad + 28}" y="{pad + 46}" class="node-name" '
+        f'style="font-size:22px">{title}</text>'
+        f'<line x1="{pad}" y1="{pad + bar - 8}" x2="{pad + w:g}" y2="{pad + bar - 8}" '
+        'class="rule"/>'
+    )
+    return f'{new_head}{prelude}{card}<g transform="translate({pad} {pad + bar})">{rest}</g></svg>'

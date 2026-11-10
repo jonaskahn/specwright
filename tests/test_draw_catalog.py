@@ -253,6 +253,17 @@ class CatalogTests(unittest.TestCase):
             for value in re.findall(r'<marker[^>]*viewBox="([^"]+)"', page):
                 self.assertLessEqual(float(value.split()[2]), 16)
 
+    def test_standalone_svg_follows_the_cockpit_frame(self):
+        import xml.dom.minidom
+
+        for kind in DRAW.STRUCTURED:
+            page, _ = DRAW.render(fixture(kind))
+            svg = DRAW.standalone(page)
+            self.assertIn('data-framed="1"', svg, kind)
+            self.assertIn("--sw-surface", svg, kind)
+            self.assertIn("translate(32 104)", svg, kind)
+            xml.dom.minidom.parseString(svg)
+
 
 if __name__ == "__main__":
     unittest.main()
