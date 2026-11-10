@@ -2,6 +2,7 @@
 feat: FEAT-NNN
 spec_hash: <hash of the current story>
 status: draft
+assets: []
 ---
 ## Tasks
 

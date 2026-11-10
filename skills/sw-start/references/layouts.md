@@ -16,3 +16,4 @@ Several projects share one spec root, either docs-only or embedded in a monorepo
 - Default to docs-only otherwise.
 - Never convert a layout automatically; moving the spec root is a manual change.
 - In an embedded install, the standing rules are added to an existing AGENTS.md only with the explicit merge option and a yes.
+- Every project has an assets/ folder for user-provided references; sw-asset writes there.

@@ -2,6 +2,7 @@
 feat: FEAT-NNN
 type: plan
 status: draft
+assets: []
 ---
 ## Approach
 <How the work will be done, in terms of observable behaviour.>

@@ -1,12 +1,12 @@
 # Graph model
 
 ## Nodes
-Hierarchy: program, scope, epic, feat, ac, task. Analysis: idea, bo, stk, risk, br, nfr, fr. Evidence: src, snapshot, q, dec, cr. Artifacts: plan, tasks-file, feature-file, diagram. External: jira:KEY. Code: code paths named by Touches.
+Hierarchy: program, scope, epic, feat, ac, task. Analysis: idea, bo, stk, risk, br, nfr, fr. Evidence: src, snapshot, q, dec, cr. Artifacts: plan, tasks-file, feature-file, diagram, asset. External: jira:KEY. Code: code paths named by Touches.
 
 STORY is the BA/PO word for FEAT; there is no STORY node.
 
 ## Relations
-member_of (feat to epic), realizes (to bo), governed_by (to br, nfr, fr), sourced_from, shaped_from, has_ac, has_task, implements (task to ac, br, nfr), touches (task to code), affects (cr or dec), supersedes, illustrates (diagram), exercises (.feature tag), derives_from (artifact to feat), published_as (feat to Jira key), last_snapshot, external_parent (jira_parent), mentions.
+member_of (feat to epic), realizes (to bo), governed_by (to br, nfr, fr), sourced_from, shaped_from, has_ac, has_task, implements (task to ac, br, nfr), touches (task to code), affects (cr or dec), supersedes, illustrates (diagram), exercises (.feature tag), derives_from (artifact to feat), supports (asset to spec item), uses_asset (spec item to asset), published_as (feat to Jira key), last_snapshot, external_parent (jira_parent), mentions.
 
 ## Provenance classes
 - declared: a front matter field, task field, diagram spec_ids or feature tag.

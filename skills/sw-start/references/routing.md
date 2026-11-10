@@ -17,6 +17,9 @@ Pick the first row that matches the evidence printed by the detection script.
 | No sources, ideas or features | sw-ingest or sw-shape-idea | Ask which the user has. |
 | Anything else | sw-status | Read the full position report. |
 
+The user can store a Figma link, diagram, mockup or raw idea at any time with sw-asset;
+that never replaces the route above.
+
 Rules:
 - Ask a question only when two rows fit and the evidence cannot separate them.
 - Two scopes with different next skills: report both and ask which to continue.

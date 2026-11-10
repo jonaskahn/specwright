@@ -12,6 +12,8 @@ Every command accepts --cwd, --scope, --format text|json and --strict. Lists acc
 | How are TASK-001-1 and BO-001 connected? | path TASK-001-1 BO-001 |
 | What does changing BR-001 reach? | impact BR-001 (also accepts a Jira key) |
 | Which features are ready to publish? | find --kind feat --status ready-to-publish |
+| What assets support FEAT-001? | neighbors FEAT-001 --dir in --rel supports |
+| Which spec items use ASSET-001? | neighbors ASSET-001 --dir out --rel supports |
 | What should an agent read for TASK-001-1? | context TASK-001-1, add --with-text --budget 4000 for slices |
 | Is the graph current and sound? | check |
 
