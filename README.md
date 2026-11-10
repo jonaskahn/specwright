@@ -1,15 +1,35 @@
 # Specwright
 
-Portable agent skills for business analysts: turn source material into testable stories,
-keep stable traceability, and prepare safe, explicitly approved Jira changes.
+Portable agent skills that carry a software idea all the way to implementation-ready
+work. Start from raw source material or a rough idea, shape it, specify it with testable
+criteria, draw it, break it into stories and tasks, and keep every item traceable.
+
+## What it is for
+
+Specwright covers the path from idea to implementation tasks for any software team, not
+only business analysis: product owners, engineers, QA and technical leads all work from
+the same stable IDs and evidence. The skills are agent-neutral and install in any client
+that reads the standard `SKILL.md` format.
+
+Each deliverable can be produced in either form, or both:
+
+- **Detailed Markdown** specs, stories and task breakdowns kept in the repository, with
+  source snapshots, drafts and evidence beside them.
+- **Jira stories and tasks** created or updated through a guarded publish flow: quality
+  gate, three-way dry-run and typed confirmation for the exact plan.
+
+Today's skills cover ideation, specification, diagrams, review, publication and
+traceability. Skills that break work down further for developers can be added to the
+same workflow without changing the IDs, traceability or safety rules.
 
 ## Workflow
 
 `sw-init` → `sw-ingest` → `sw-shape-idea` → `sw-spec` → `sw-draw` (when useful)
 → `sw-review` → `sw-publish` → `sw-sync`.
 
-Use `sw-status`, `sw-trace` and `sw-lint` throughout. Jira becomes the system of record
-for published story text; the repository holds source snapshots, drafts and evidence.
+Use `sw-status`, `sw-trace` and `sw-lint` throughout. Work stays in Markdown until you
+choose to publish. Once a story is published, Jira is the system of record for its text;
+the repository holds source snapshots, drafts and evidence.
 
 ## Diagrams and illustrations
 
