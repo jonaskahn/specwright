@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="256" height="256" shape-rendering="crispEdges" role="img" aria-label="Specwright logo">
+  <title>Specwright</title>
+  <rect width="64" height="64" fill="#11131a"/>
+  <rect x="4" y="4" width="56" height="56" fill="#1a1d27"/>
+  <path d="M4 4h56v2H6v52h52v2H4V4z" fill="#2c3040"/>
+  <g fill="#fd736d">
+    <rect x="14" y="12" width="36" height="4"/>
+    <rect x="14" y="12" width="4" height="12"/>
+    <rect x="14" y="20" width="28" height="4"/>
+    <rect x="46" y="20" width="4" height="12"/>
+    <rect x="14" y="28" width="36" height="4"/>
+    <rect x="18" y="32" width="28" height="4"/>
+    <rect x="42" y="32" width="4" height="8"/>
+    <rect x="18" y="40" width="28" height="4"/>
+    <rect x="14" y="44" width="36" height="4"/>
+  </g>
+  <g fill="#ffd166">
+    <rect x="14" y="8" width="4" height="4"/>
+    <rect x="46" y="8" width="4" height="4"/>
+    <rect x="22" y="8" width="4" height="4"/>
+    <rect x="38" y="8" width="4" height="4"/>
+  </g>
+  <g fill="#4fd1cf">
+    <rect x="10" y="52" width="4" height="4"/>
+    <rect x="18" y="52" width="4" height="4"/>
+    <rect x="26" y="52" width="4" height="4"/>
+    <rect x="34" y="52" width="4" height="4"/>
+    <rect x="42" y="52" width="4" height="4"/>
+  </g>
+  <g fill="#70adfb">
+    <rect x="50" y="36" width="4" height="4"/>
+    <rect x="50" y="44" width="4" height="4"/>
+    <rect x="46" y="48" width="4" height="4"/>
+  </g>
+</svg>

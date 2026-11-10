@@ -1,93 +1,66 @@
-# Specwright
+# SPECWRIGHT
 
-Portable agent skills that carry a software idea all the way to implementation-ready
-work. Start from raw source material or a rough idea, shape it, specify it with testable
-criteria, draw it, break it into stories and tasks, and keep every item traceable.
+> Idea to implementation-ready work, one cartridge at a time.
 
-## What it is for
+![logo](logo.svg)
 
-Specwright covers the path from idea to implementation tasks for any software team, not
-only business analysis: product owners, engineers, QA and technical leads all work from
-the same stable IDs and evidence. The skills are agent-neutral and install in any client
-that reads the standard `SKILL.md` format.
+Agent skills that carry a software idea from source material to implementation-ready
+work. Start rough, shape it, write testable specs, draw it, break it into stories and
+tasks, and keep every item traceable — as detailed Markdown, Jira issues, or both.
 
-Each deliverable can be produced in either form, or both:
+## CARTRIDGES
 
-- **Detailed Markdown** specs, stories and task breakdowns kept in the repository, with
-  source snapshots, drafts and evidence beside them.
-- **Jira stories and tasks** created or updated through a guarded publish flow: quality
-  gate, three-way dry-run and typed confirmation for the exact plan.
+| Cartridge | What it does |
+| --- | --- |
+| `sw-start` | Detect the workspace and hand off to the right skill |
+| `sw-asset` | Register user-provided references |
+| `sw-ingest` | Snapshot documents, issues and web pages |
+| `sw-shape-idea` | Turn a rough idea into a shaped concept |
+| `sw-spec` | Write testable specs and acceptance criteria |
+| `sw-draw` | Render 45 diagram types as offline SVG or HTML |
+| `sw-plan` | Break work into stories, features and tasks |
+| `sw-review` | Record named human approval |
+| `sw-publish` | Guarded publish to Markdown, Jira, or both |
+| `sw-sync` | Reconcile local snapshots with Jira |
+| `sw-graph` | Build and query the traceability graph |
+| `sw-status` | Show scope and item state |
+| `sw-trace` | Trace requirements through the graph |
+| `sw-lint` | Run deterministic quality gates |
 
-Today's skills cover ideation, specification, diagrams, review, publication and
-traceability. Skills that break work down further for developers can be added to the
-same workflow without changing the IDs, traceability or safety rules.
+## INSERT COIN
 
-## Workflow
-
-`sw-start` → `sw-init` → `sw-ingest` → `sw-shape-idea` → `sw-spec` → `sw-draw` (when useful)
-→ `sw-review` → `sw-publish` → `sw-sync`, with `sw-plan` for agent tasks and `sw-graph` to map every link.
-
-Use `sw-status`, `sw-trace` and `sw-lint` throughout. Work stays in Markdown until you
-choose to publish. Once a story is published, Jira is the system of record for its text;
-the repository holds source snapshots, drafts and evidence.
-
-## Diagrams and illustrations
-
-sw-draw routes 45 primary types: 41 structured JSON renderers and four original
-illustration templates. Use standalone SVG for embedding or offline HTML for
-source-value tables and spec navigation. Both support light/dark themes; new
-structured types optionally use bounded, reduced-motion-safe CSS cues, never JS.
-Marimekko, dumbbell, funnel and distribution/rank variants are grouped within
-primary chart types. No source quantity, policy or approval is inferred.
-
-See the installed skill's type-picker reference for the full catalog, contracts,
-complexity limits and template routing. sw-trace supplies authoritative RTM facts;
-a diagram never changes requirement status or authorizes a remote write.
-
-## Install
-
-Requires Python 3.10 or newer for runtime scripts. Runtime code uses only the standard
-library. No Python install step is needed: every skill folder is self-contained.
-
-Project installation with the portable skills CLI:
+Requires Python 3.10 or newer. Every skill folder is self-contained.
 
 ```sh
 npx skills add jonaskahn/specwright
 ```
 
-For user-level installation across projects:
+User-level install:
 
 ```sh
 npx skills add jonaskahn/specwright -g -y
 ```
 
-Claude Code users can install the plugin marketplace route:
+Claude Code plugin route:
 
 ```text
 /plugin marketplace add jonaskahn/specwright
 /plugin install specwright@specwright
 ```
 
-Both routes expose the same fourteen `sw-*` skills. Start with `sw-start`; it detects the workspace and hands over to the right skill. Verify skill discovery in your agent
-client and version; selection behavior is client-specific and manual.
+Start with `sw-start`; it detects the workspace and hands over to the right skill.
 
-### Offline fallback
-
-For an air-gapped checkout or a project that needs the generated instruction copies:
+Offline fallback:
 
 ```sh
 python3 tools/install.py --target /absolute/path/to/spec-repo
 python3 tools/package.py --zip --out dist
 ```
 
-The installer writes `.agents/skills/sw-*` and a `.claude/skills` mirror. It never
-overwrites existing instructions or unrelated skills. Standalone archives are release
-artifacts: each zip contains one self-contained skill folder.
-
 See [installation](docs/install.md), [security](docs/security.md),
 [conventions](docs/conventions.md) and [sources](docs/sources.md).
 
-## Develop
+## DEVELOP
 
 ```sh
 uvx ruff format --check .
@@ -106,6 +79,6 @@ The publish protocol and adapters are tested against a local Jira mock. No real 
 instance is accessed by the test suite. A sandbox trial and human sign-off are required
 before production use; dashboard integration is intentionally deferred.
 
-## License
+## LICENSE
 
 MIT. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
