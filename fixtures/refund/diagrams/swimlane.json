@@ -1,0 +1,68 @@
+{
+  "type": "swimlane",
+  "title": "Refund swimlane example",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "submitted",
+      "label": "Submitted",
+      "spec_ids": [],
+      "actor": "Customer"
+    },
+    {
+      "id": "pending",
+      "label": "Pending approval",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "actor": "Reviewer"
+    },
+    {
+      "id": "approved",
+      "label": "Approved",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "actor": "Customer"
+    },
+    {
+      "id": "rejected",
+      "label": "Rejected",
+      "spec_ids": [
+        "AC-001-3"
+      ],
+      "actor": "Reviewer"
+    },
+    {
+      "id": "paid",
+      "label": "Paid",
+      "spec_ids": [],
+      "actor": "Customer"
+    }
+  ],
+  "edges": [
+    {
+      "from": "submitted",
+      "to": "pending",
+      "label": "handoff"
+    },
+    {
+      "from": "pending",
+      "to": "approved",
+      "label": "handoff"
+    },
+    {
+      "from": "approved",
+      "to": "rejected",
+      "label": "handoff"
+    },
+    {
+      "from": "rejected",
+      "to": "paid",
+      "label": "handoff"
+    }
+  ]
+}

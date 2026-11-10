@@ -1,0 +1,22 @@
+erDiagram
+    n0["Request"] {
+        string id PK
+        string request_id FK
+    }
+    n1["Order #40;BR#45;001#41;"] {
+        string id PK
+        string request_id FK
+    }
+    n2["Decision #40;BR#45;001#41;"] {
+        string id PK
+        string request_id FK
+    }
+    n3["Customer #40;AC#45;001#45;3#41;"] {
+        string id PK
+        string request_id FK
+    }
+    n4["Payment"] {
+        string id PK
+        string request_id FK
+    }
+    n0 }o--|| n1 : "references"

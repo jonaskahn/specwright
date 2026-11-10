@@ -1,0 +1,74 @@
+{
+  "type": "sequence",
+  "title": "Refund sequence example",
+  "actors": [
+    "Refund service"
+  ],
+  "nodes": [
+    {
+      "id": "submitted",
+      "label": "Customer",
+      "spec_ids": []
+    },
+    {
+      "id": "pending",
+      "label": "Portal",
+      "spec_ids": [
+        "BR-001"
+      ]
+    },
+    {
+      "id": "approved",
+      "label": "Policy",
+      "spec_ids": [
+        "BR-001"
+      ]
+    },
+    {
+      "id": "rejected",
+      "label": "Reviewer",
+      "spec_ids": [
+        "AC-001-3"
+      ]
+    },
+    {
+      "id": "paid",
+      "label": "Payments",
+      "spec_ids": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "submitted",
+      "to": "pending",
+      "label": "request check",
+      "kind": "call"
+    },
+    {
+      "from": "pending",
+      "to": "approved",
+      "label": "request check",
+      "kind": "call"
+    },
+    {
+      "from": "approved",
+      "to": "rejected",
+      "label": "request check",
+      "kind": "call"
+    },
+    {
+      "from": "rejected",
+      "to": "paid",
+      "label": "request check",
+      "kind": "async"
+    }
+  ],
+  "frames": [
+    {
+      "kind": "opt",
+      "label": "Approval required",
+      "start": 1,
+      "end": 2
+    }
+  ]
+}

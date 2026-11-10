@@ -1,0 +1,16 @@
+{"query": "Draw the five refund statuses from 02-drafts/FEAT-001.story.md with BR-001 chips.", "should_trigger": true}
+{"query": "Make an offline swimlane of refund submission, review, decision, settlement and notice for Customer and Reviewer.", "should_trigger": true}
+{"query": "Create a branch flowchart for refund age checks with both rejection conditions labelled.", "should_trigger": true}
+{"query": "Show the refund persona journey with five stages and named feelings from our interview notes.", "should_trigger": true}
+{"query": "Map evidence, frontstage and backstage work in the refund service blueprint, HTML only.", "should_trigger": true}
+{"query": "Draw the refund activity backbone and outcome release slices as a story map.", "should_trigger": true}
+{"query": "Give QA a sequence diagram of Portal, Policy, Reviewer, Payments and Customer messages.", "should_trigger": true}
+{"query": "Create a conceptual ER picture for Refund, Order, Customer, Decision and Payment with cardinalities.", "should_trigger": true}
+{"query": "Write refund acceptance criteria in 02-drafts/FEAT-001.story.md.", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Record PO approval of the refund draft from this comment evidence.", "should_trigger": false, "near_miss_of": "sw-review"}
+{"query": "Upload the approved refund story and attach its existing state HTML.", "should_trigger": false, "near_miss_of": "sw-publish"}
+{"query": "Trace AC-001-3 to its policy source in the RTM.", "should_trigger": false, "near_miss_of": "sw-trace"}
+{"query": "Lint the refund draft for missing rule references.", "should_trigger": false, "near_miss_of": "sw-lint"}
+{"query": "Ingest this refund policy email before drafting anything.", "should_trigger": false, "near_miss_of": "sw-ingest"}
+{"query": "Shape the initial refund idea into one or several features.", "should_trigger": false, "near_miss_of": "sw-shape-idea"}
+{"query": "Create the workspace manifest for the refunds repository.", "should_trigger": false, "near_miss_of": "sw-init"}

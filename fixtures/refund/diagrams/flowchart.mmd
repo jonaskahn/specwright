@@ -1,0 +1,10 @@
+flowchart TD
+    n0(["Submitted"])
+    n1["Pending approval #40;BR#45;001#41;"]
+    n2{"Approved #40;BR#45;001#41;"}
+    n3(["Rejected #40;AC#45;001#45;3#41;"])
+    n4(["Paid"])
+    n0 -->|"request"| n1
+    n1 -->|"check age"| n2
+    n2 -->|"within policy"| n4
+    n2 -->|"outside policy"| n3

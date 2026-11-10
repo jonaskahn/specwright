@@ -1,0 +1,12 @@
+stateDiagram-v2
+    state "Submitted" as n0
+    state "Pending approval #40;BR#45;001#41;" as n1
+    state "Approved #40;BR#45;001#41;" as n2
+    state "Rejected #40;AC#45;001#45;3#41;" as n3
+    state "Paid" as n4
+    [*] --> n0
+    n0 --> n1: submit #91;8#46;#46;14 days#93; #47; queue
+    n1 --> n2: approve #47; record decision
+    n0 --> n3: submit #91;over 14 days#93; #47; reject
+    n2 --> n4: settle #47; record payment
+    n4 --> [*]

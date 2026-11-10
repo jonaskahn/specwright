@@ -1,0 +1,60 @@
+{
+  "type": "story-map",
+  "title": "Refund story-map example",
+  "actors": [
+    "Refund service"
+  ],
+  "nodes": [
+    {
+      "id": "submitted",
+      "label": "Submitted",
+      "spec_ids": [],
+      "activity": "Request",
+      "slice": "Request to decision"
+    },
+    {
+      "id": "pending",
+      "label": "Pending approval",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "activity": "Decide",
+      "slice": "Request to decision"
+    },
+    {
+      "id": "approved",
+      "label": "Approved",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "activity": "Settle",
+      "slice": "Request to decision"
+    },
+    {
+      "id": "rejected",
+      "label": "Rejected",
+      "spec_ids": [
+        "AC-001-3"
+      ],
+      "activity": "Request",
+      "slice": "Decision to payment"
+    },
+    {
+      "id": "paid",
+      "label": "Paid",
+      "spec_ids": [],
+      "activity": "Decide",
+      "slice": "Decision to payment"
+    }
+  ],
+  "edges": [],
+  "activities": [
+    "Request",
+    "Decide",
+    "Settle"
+  ],
+  "slices": [
+    "Request to decision",
+    "Decision to payment"
+  ]
+}

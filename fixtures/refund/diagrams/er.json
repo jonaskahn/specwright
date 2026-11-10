@@ -1,0 +1,69 @@
+{
+  "type": "er",
+  "title": "Refund er example",
+  "actors": [
+    "Refund service"
+  ],
+  "nodes": [
+    {
+      "id": "submitted",
+      "label": "Request",
+      "spec_ids": [],
+      "fields": [
+        "PK id",
+        "FK request_id"
+      ]
+    },
+    {
+      "id": "pending",
+      "label": "Order",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "fields": [
+        "PK id",
+        "FK request_id"
+      ]
+    },
+    {
+      "id": "approved",
+      "label": "Decision",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "fields": [
+        "PK id",
+        "FK request_id"
+      ]
+    },
+    {
+      "id": "rejected",
+      "label": "Customer",
+      "spec_ids": [
+        "AC-001-3"
+      ],
+      "fields": [
+        "PK id",
+        "FK request_id"
+      ]
+    },
+    {
+      "id": "paid",
+      "label": "Payment",
+      "spec_ids": [],
+      "fields": [
+        "PK id",
+        "FK request_id"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "submitted",
+      "to": "pending",
+      "label": "references",
+      "from_card": "N",
+      "to_card": "1"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "skill": "sw-draw",
+  "cases": [
+    {
+      "id": "refund-lifecycle",
+      "prompt": "Render the refund lifecycle with source IDs in offline HTML and Mermaid.",
+      "fixture": "fixtures/refund/diagrams/state.json",
+      "assertions": [
+        "Exit code is 0.",
+        "HTML contains Submitted, Pending approval, Approved, Rejected and Paid.",
+        "BR-001 and AC-001-3 are visible and present in data-spec attributes.",
+        "Repeated renders are byte-identical.",
+        "Both checker exit codes are 0.",
+        "Mermaid begins stateDiagram-v2."
+      ]
+    },
+    {
+      "id": "refund-service",
+      "prompt": "Render visible and internal refund service layers.",
+      "fixture": "fixtures/refund/diagrams/service-blueprint.json",
+      "assertions": [
+        "HTML contains evidence, customer, frontstage, backstage and support.",
+        "No Mermaid companion is produced.",
+        "Visibility line has a heavier stroke than ordinary dividers.",
+        "Missing cells display n/a."
+      ]
+    },
+    {
+      "id": "small-refusal",
+      "prompt": "Reduce the fixture to three nodes and one actor, then try rendering.",
+      "fixture": "fixtures/refund/diagrams/state.json",
+      "assertions": [
+        "Exit code is 3.",
+        "Stderr says write a paragraph.",
+        "No output is created."
+      ]
+    }
+  ]
+}

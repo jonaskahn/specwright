@@ -1,0 +1,18 @@
+{
+  "type": "state",
+  "title": "FEAT-001 refund status",
+  "actors": ["Refund service"],
+  "nodes": [
+    {"id": "submitted", "label": "Submitted", "spec_ids": []},
+    {"id": "pending", "label": "Pending approval", "spec_ids": ["BR-001"]},
+    {"id": "approved", "label": "Approved", "spec_ids": ["BR-001"]},
+    {"id": "rejected", "label": "Rejected", "spec_ids": ["AC-001-3"]},
+    {"id": "paid", "label": "Paid", "spec_ids": []}
+  ],
+  "edges": [
+    {"from": "submitted", "to": "pending", "label": "submit [8..14 days] / queue"},
+    {"from": "pending", "to": "approved", "label": "approve / record decision"},
+    {"from": "submitted", "to": "rejected", "label": "submit [over 14 days] / reject"},
+    {"from": "approved", "to": "paid", "label": "settle / record payment"}
+  ]
+}

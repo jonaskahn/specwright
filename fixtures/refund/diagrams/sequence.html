@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title><!--title-->Refund sequence example<!--/title--></title>
+<style>
+:root { --sw-bg:#ffffff; --sw-surface:#f7f9fb; --sw-tint:#e8edf2;
+--sw-ink:#17232f; --sw-muted:#495b6b; --sw-hair:#687b8a;
+--sw-accent:#804000; --sw-accent-tint:#fff0d9; --sw-link:#004f91; }
+@media (prefers-color-scheme:dark) { :root {
+--sw-bg:#101820; --sw-surface:#1a2632; --sw-tint:#243443;
+--sw-ink:#f0f5fa; --sw-muted:#bac8d4; --sw-hair:#91a6b7;
+--sw-accent:#ffd18a; --sw-accent-tint:#392b19; --sw-link:#9fd0ff; } }
+body { margin:24px; background:var(--sw-bg); color:var(--sw-ink);
+font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+figure { margin:0; overflow:auto; } figcaption { font-size:1.4rem; font-weight:650; }
+svg { display:block; width:100%; min-width:960px; height:auto; }
+text { fill:var(--sw-ink); font-size:13px; } .small { font-size:14px; }
+.ids { font:12px ui-monospace,Menlo,Consolas,monospace; }
+.box { fill:var(--sw-surface); stroke:var(--sw-ink); stroke-width:1.5; }
+.focal { fill:var(--sw-accent-tint); stroke:var(--sw-accent); }
+.chip { fill:var(--sw-bg); stroke:var(--sw-hair); }
+.paper { fill:var(--sw-bg); } .tint { fill:var(--sw-tint); }
+.rule { stroke:var(--sw-hair); stroke-width:1; }
+.visibility { stroke:var(--sw-ink); stroke-width:3; }
+.solid { fill:var(--sw-ink); } .open { fill:none; stroke:var(--sw-ink); }
+.edge,.curve { fill:none; stroke:var(--sw-ink); stroke-width:1.5; }
+.dashed,.lifeline { stroke-dasharray:8 6; } .lifeline { stroke:var(--sw-hair); }
+.frame { fill:none; stroke:var(--sw-hair); }
+.halo { paint-order:stroke; stroke:var(--sw-bg); stroke-width:6px; stroke-linejoin:round; }
+.legend { padding:16px 32px; border:1px solid var(--sw-hair); }
+a { color:var(--sw-link); } p { color:var(--sw-muted); }
+</style></head>
+<body><main><figure>
+<figcaption><!--title-->Refund sequence example<!--/title--></figcaption>
+<p>Source status: illustrative; confirm rules against the linked draft.</p>
+<svg viewBox="0 0 2608 632" role="img" aria-labelledby="diagram-title diagram-desc">
+<title id="diagram-title"><!--title-->Refund sequence example<!--/title--></title>
+<desc id="diagram-desc">Top boxes are participants. Dashed vertical lines are lifelines. Solid arrows call, dashed arrows return; open heads are asynchronous. Frames bound alternatives or repetition. Spec references are repeated below the picture.</desc>
+<defs><marker id="arrow" viewBox="0 0 2608 632" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 Z" class="solid"/></marker>
+<marker id="open" viewBox="0 0 2608 632" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" class="open"/></marker></defs>
+<!--body--><line x1="360" y1="176" x2="360" y2="592" class="lifeline"/>
+<line x1="728" y1="176" x2="728" y2="592" class="lifeline"/>
+<line x1="1096" y1="176" x2="1096" y2="592" class="lifeline"/>
+<line x1="1464" y1="176" x2="1464" y2="592" class="lifeline"/>
+<line x1="1832" y1="176" x2="1832" y2="592" class="lifeline"/>
+<rect x="160" y="280" width="2408" height="176" rx="0" class="frame"/>
+<text x="168" y="300" class="halo">opt Approval required</text>
+<rect x="720" y="232" width="16" height="48" rx="0" class="chip"/>
+<path d="M 360 240 H 728" class="edge" marker-end="url(#arrow)"/>
+<text x="376" y="228" class="halo small">request check</text>
+<rect x="1088" y="320" width="16" height="48" rx="0" class="chip"/>
+<path d="M 728 328 H 1096" class="edge" marker-end="url(#arrow)"/>
+<text x="744" y="316" class="halo small">request check</text>
+<rect x="1456" y="408" width="16" height="48" rx="0" class="chip"/>
+<path d="M 1096 416 H 1464" class="edge" marker-end="url(#arrow)"/>
+<text x="1112" y="404" class="halo small">request check</text>
+<rect x="1824" y="496" width="16" height="48" rx="0" class="chip"/>
+<path d="M 1464 504 H 1832" class="edge dashed" marker-end="url(#open)"/>
+<text x="1480" y="492" class="halo small">request check</text>
+<g class="node" id="node-submitted" data-node="submitted" data-spec="" data-spec-ids="" data-box="200,80,320,96"><rect x="200" y="80" width="320" height="96" rx="8" class="box"/><text x="224" y="112" class="">Customer</text></g>
+<g class="node" id="node-pending" data-node="pending" data-spec="BR-001" data-spec-ids="BR-001" data-box="568,80,320,96"><rect x="568" y="80" width="320" height="96" rx="8" class="box focal"/><text x="592" y="112" class="">Portal</text><rect x="584" y="132" width="288" height="32" rx="4" class="chip"/><text x="592" y="154" class="ids">BR-001</text></g>
+<g class="node" id="node-approved" data-node="approved" data-spec="BR-001" data-spec-ids="BR-001" data-box="936,80,320,96"><rect x="936" y="80" width="320" height="96" rx="8" class="box focal"/><text x="960" y="112" class="">Policy</text><rect x="952" y="132" width="288" height="32" rx="4" class="chip"/><text x="960" y="154" class="ids">BR-001</text></g>
+<g class="node" id="node-rejected" data-node="rejected" data-spec="AC-001-3" data-spec-ids="AC-001-3" data-box="1304,80,320,96"><rect x="1304" y="80" width="320" height="96" rx="8" class="box"/><text x="1328" y="112" class="">Reviewer</text><rect x="1320" y="132" width="288" height="32" rx="4" class="chip"/><text x="1328" y="154" class="ids">AC-001-3</text></g>
+<g class="node" id="node-paid" data-node="paid" data-spec="" data-spec-ids="" data-box="1672,80,320,96"><rect x="1672" y="80" width="320" height="96" rx="8" class="box"/><text x="1696" y="112" class="">Payments</text></g><!--/body-->
+</svg></figure>
+<ul class="legend"><li>Top boxes are participants. Dashed vertical lines are lifelines. Solid arrows call, dashed arrows return; open heads are asynchronous. Frames bound alternatives or repetition.</li><li>Outlined ID chips link rules and acceptance criteria. Colour alone never supplies meaning.</li></ul>
+<h2>Spec links</h2><ul><!--links--><li><a href="#node-submitted">Customer: no spec IDs</a></li>
+<li><a href="#node-pending">Portal: BR-001</a></li>
+<li><a href="#node-approved">Policy: BR-001</a></li>
+<li><a href="#node-rejected">Reviewer: AC-001-3</a></li>
+<li><a href="#node-paid">Payments: no spec IDs</a></li><!--/links--></ul>
+</main></body></html>

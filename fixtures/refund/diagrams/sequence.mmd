@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant n0 as Customer
+    participant n1 as Portal #40;BR#45;001#41;
+    participant n2 as Policy #40;BR#45;001#41;
+    participant n3 as Reviewer #40;AC#45;001#45;3#41;
+    participant n4 as Payments
+    n0->>n1: request check
+    opt Approval required
+    n1->>n2: request check
+    n2->>n3: request check
+    end
+    n3--)n4: request check
