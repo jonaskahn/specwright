@@ -15,8 +15,6 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-import tomllib
-
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "lib"))
 
 from kitlib import frontmatter, miniyaml, schema  # noqa: E402
@@ -157,6 +155,11 @@ def _check_body(skill: Path, parsed: frontmatter.Parsed, report: Report) -> None
             md, 1, "V025", "run shipped scripts through skill-root paths, not CWD-relative paths"
         )
     referenced = set(PATH_REF.findall(parsed.body))
+    if skill.name == "sw-draw":
+        picker = skill / "references/type-picker.md"
+        if picker.is_file():
+            referenced.update(PATH_REF.findall(picker.read_text(encoding="utf-8")))
+        referenced.update(f"scripts/{p.name}" for p in (skill / "scripts").glob("draw_*.py"))
     for ref in sorted(referenced):
         if not (skill / ref).exists():
             report.add(md, 1, "V026", f"referenced file '{ref}' does not exist")
@@ -199,14 +202,18 @@ def _check_scripts(skill: Path, report: Report) -> None:
     folder = skill / "scripts"
     if not folder.is_dir():
         return
-    for script in sorted(folder.glob("*.py")):
+    for script in sorted(folder.rglob("*.py")):
+        if "kitlib" in script.relative_to(folder).parts:
+            continue
         source = script.read_text(encoding="utf-8")
         try:
             tree = ast.parse(source, str(script))
         except SyntaxError as exc:
             report.add(script, exc.lineno or 1, "V030", f"syntax error: {exc.msg}")
             continue
-        siblings = {p.stem for p in folder.glob("*.py")}
+        siblings = {p.stem for p in folder.glob("*.py")} | {
+            p.name for p in folder.iterdir() if p.is_dir()
+        }
         for module in sorted(set(_stdlib_only(tree, siblings))):
             report.add(
                 script, 1, "V031", f"imports '{module}', which is not in the standard library"
@@ -214,11 +221,12 @@ def _check_scripts(skill: Path, report: Report) -> None:
         for node in ast.walk(tree):
             if isinstance(node, ast.Call) and getattr(node.func, "id", "") == "input":
                 report.add(script, node.lineno, "V032", "scripts must not prompt for input")
-        if "argparse" not in source and "--help" not in source:
+        internal = script.name.startswith("draw_") or script.parent.name == "draw_types"
+        if not internal and "argparse" not in source and "--help" not in source:
             report.add(
                 script, 1, "V033", "script should be documented through argparse --help", False
             )
-        if "Path(__file__)" not in source and "__file__" not in source:
+        if not internal and "Path(__file__)" not in source and "__file__" not in source:
             report.add(script, 1, "V034", "script cannot locate its own skill directory", False)
         if re.search(r"__file__[^\n]*\.parents", source):
             report.add(
@@ -353,6 +361,8 @@ def _check_skill_files(skill: Path, root: Path, report: Report) -> None:
             ".json",
             ".jsonl",
             ".html",
+            ".svg",
+            ".css",
             ".txt",
             ".yaml",
             ".yml",
@@ -366,6 +376,62 @@ def _check_skill_files(skill: Path, root: Path, report: Report) -> None:
                     report.add(path, number, "V060", "host placeholder or home path under skills/")
                 if CWD_COMMAND.search(line):
                     report.add(path, number, "V062", "CWD-relative runtime command under skills/")
+
+
+def _check_draw_contract(skill: Path, report: Report) -> None:
+    """Inspect the closed catalog without executing installed Python modules."""
+    roster = skill / "scripts/draw_types/__init__.py"
+    try:
+        tree = ast.parse(roster.read_text(encoding="utf-8"))
+        groups = {
+            n.targets[0].id: ast.literal_eval(n.value)
+            for n in tree.body
+            if isinstance(n, ast.Assign) and isinstance(n.value, ast.Tuple)
+        }
+        legacy = groups["LEGACY"]
+        templates = groups["TEMPLATES"]
+        new = groups["GRAPHS"] + groups["HIERARCHIES"] + groups["CHARTS"] + groups["OTHER"]
+        types = legacy + new + templates
+        assert len(types) == len(set(types)) == 45
+        assert len(legacy + new) == 41 and len(templates) == 4
+    except (OSError, SyntaxError, ValueError, KeyError, AssertionError) as exc:
+        report.add(roster, 1, "V120", f"invalid 45-type catalog: {exc}")
+        return
+    theme_path = skill / "assets/theme.css"
+    try:
+        theme = theme_path.read_text(encoding="utf-8")
+    except OSError:
+        report.add(theme_path, 1, "V121", "missing canonical drawing theme")
+        return
+    for kind in types:
+        reference = skill / f"references/type-{kind}.md"
+        if not reference.is_file():
+            report.add(reference, 1, "V122", "missing type reference")
+        asset = (
+            skill / "assets" / (f"{kind}-template.html" if kind in templates else f"{kind}.html")
+        )
+        if not asset.is_file():
+            report.add(asset, 1, "V123", "missing drawing shell/template")
+        else:
+            content = asset.read_text(encoding="utf-8")
+            if kind not in legacy and theme not in content:
+                report.add(asset, 1, "V124", "embedded theme differs from assets/theme.css")
+            if "<script" in content.lower() or "@import" in content.lower():
+                report.add(asset, 1, "V125", "drawing assets must be script-free and offline")
+            for marker in ('role="img"', "aria-labelledby=", "<title", "<desc"):
+                if marker not in content:
+                    report.add(asset, 1, "V126", f"missing SVG accessibility marker {marker}")
+        if kind in new:
+            module = skill / "scripts/draw_types" / (kind.replace("-", "_") + ".py")
+            if not module.is_file():
+                report.add(module, 1, "V127", "missing structured type module")
+    for path in (skill / "assets").glob("*"):
+        if path.suffix in {".html", ".css", ".svg"}:
+            source = path.read_text(encoding="utf-8")
+            if any(token in source for token in ("Geist", "Instrument Serif", "--motion-hold")):
+                report.add(
+                    path, 1, "V128", "foreign design-system marker in original drawing assets"
+                )
 
 
 def validate_skill(skill: Path, root: Path, report: Report, *, require_evals: bool = True) -> None:
@@ -385,6 +451,8 @@ def validate_skill(skill: Path, root: Path, report: Report, *, require_evals: bo
         _check_evals(skill, root / "evals", report)
     _check_vendored(skill, root, report)
     _check_skill_files(skill, root, report)
+    if skill.name == "sw-draw":
+        _check_draw_contract(skill, report)
 
 
 def _check_siblings(skills: list[Path], root: Path, report: Report) -> None:
@@ -441,9 +509,31 @@ def _skill_paths(value: object, path: Path, report: Report) -> list[str]:
     return value
 
 
+def _project_metadata(path: Path) -> dict:
+    """Read release fields on Python 3.10 too; no TOML dependency at runtime.
+
+    This deliberately accepts only the quoted single-line project fields used by
+    this repository, not arbitrary TOML. On newer Python use the standard parser.
+    """
+    try:
+        import tomllib
+    except ImportError:
+        content = path.read_text(encoding="utf-8")
+        section = re.search(r"(?ms)^\[project\]\s*$(.*?)(?=^\[|\Z)", content)
+        if section is None:
+            raise ValueError("pyproject.toml has no project table") from None
+        fields = {}
+        for key in ("name", "version", "description"):
+            match = re.search(rf'^\s*{key}\s*=\s*(".*")\s*$', section.group(1), re.M)
+            if match is None:
+                raise ValueError(f"project {key} needs a quoted single-line value") from None
+            fields[key] = json.loads(match.group(1))
+        return fields
+    return tomllib.loads(path.read_text(encoding="utf-8"))["project"]
+
+
 def _check_manifests(root: Path, report: Report) -> None:
-    project = tomllib.loads((root / "pyproject.toml").read_text())
-    metadata = project["project"]
+    metadata = _project_metadata(root / "pyproject.toml")
     expected_version = metadata["version"]
     expected_description = metadata["description"]
     expected_skills = {f"./skills/{name}" for name in EXPECTED_SKILLS}

@@ -2,6 +2,7 @@ import importlib.util
 import json
 import os
 import shutil
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,6 +11,7 @@ SPEC = importlib.util.spec_from_file_location(
     "validate", Path(__file__).resolve().parent.parent / "tools" / "validate.py"
 )
 validate = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = validate
 SPEC.loader.exec_module(validate)
 
 GOOD = (
