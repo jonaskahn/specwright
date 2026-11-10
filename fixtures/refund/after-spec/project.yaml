@@ -1,0 +1,22 @@
+scope: REF
+name: Refund requests
+jira:
+  site: https://example.atlassian.net
+  project_key: PROJ
+  epic: None
+status_map:
+  published: To Do
+  ready-for-dev: Ready for Dev
+  in-development: In Progress
+  superseded: Won't Do
+  withdrawn: Won't Do
+approvers: []
+publish:
+  transitions: false
+  sandbox: true
+  attach_diagrams: false
+confluence:
+  spaces: []
+limits:
+  child_depth: 2
+  max_pages: 50
