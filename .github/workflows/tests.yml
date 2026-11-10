@@ -39,5 +39,9 @@ jobs:
           python tools/package.py --zip --out "$tmp/dist"
           python tools/install.py --target "$tmp/target"
           python tools/validate.py --installed "$tmp/target"
-          (cd "$tmp" && python "$tmp/target/.agents/skills/sw-init/scripts/workspace.py" --help)
-          (cd "$tmp" && python "$tmp/target/.agents/skills/sw-draw/scripts/render_diagram.py" --help)
+          python "$tmp/target/.agents/skills/sw-init/scripts/workspace.py" --help
+          python "$tmp/target/.agents/skills/sw-draw/scripts/render_diagram.py" --help
+          python "$tmp/target/.agents/skills/sw-init/scripts/workspace.py" init \
+            --root "$tmp/workspace" --mode flat --scope REF --name Refunds --project-key PROJ
+          python "$tmp/target/.agents/skills/sw-lint/scripts/sw_lint.py" \
+            --root "$tmp/workspace" --gate draft

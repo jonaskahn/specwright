@@ -1,7 +1,7 @@
 {
   "name": "specwright",
   "version": "0.1.0",
-  "description": "Portable agent skills for business analysts, with Jira as the system of record",
+  "description": "Portable BA skills with spec-linked diagrams and Jira as the system of record",
   "owner": {
     "name": "Jonas Kahn"
   },
@@ -13,7 +13,7 @@
         "url": "https://github.com/jonaskahn/specwright.git"
       },
       "version": "0.1.0",
-      "description": "Portable agent skills for business analysts, with Jira as the system of record",
+      "description": "Portable BA skills with spec-linked diagrams and Jira as the system of record",
       "author": {
         "name": "Jonas Kahn"
       },
