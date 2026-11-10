@@ -49,6 +49,28 @@ jobs:
           python "$tmp/target/.agents/skills/sw-lint/scripts/sw_lint.py" \
             --root "$tmp/workspace" --gate draft
           python "$tmp/target/.agents/skills/sw-graph/scripts/graph.py" \
-            --cwd "$tmp/workspace" build
+            build --cwd "$tmp/workspace"
           python "$tmp/target/.agents/skills/sw-graph/scripts/graph.py" \
-            --cwd "$tmp/workspace" check
+            check --cwd "$tmp/workspace"
+
+  docker:
+    runs-on: ubuntu-latest
+    container: python:3.10-slim
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install git and lint tooling
+        run: |
+          apt-get update -qq
+          apt-get install -qq -y --no-install-recommends git
+          python -m pip install ruff
+      - name: Format and lint
+        run: |
+          ruff format --check .
+          ruff check .
+      - name: Unit tests
+        run: python -m unittest discover -s tests -t .
+      - name: Validate sources and vendored copies
+        run: |
+          python tools/validate.py
+          python tools/vendor.py --check
+          python tools/hygiene.py files

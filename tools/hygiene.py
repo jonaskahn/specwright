@@ -38,13 +38,17 @@ def scan(text: str, patterns: list[tuple[re.Pattern[str], str]], label: str) -> 
 
 
 def staged_files() -> list[str]:
-    out = subprocess.run(
-        ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMR"],
-        capture_output=True,
-        text=True,
-        check=True,
-        timeout=30,
-    )
+    try:
+        out = subprocess.run(
+            ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMR"],
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=30,
+        )
+    except FileNotFoundError:
+        print("hygiene: git not found; scanning no files", file=sys.stderr)
+        return []
     return [line for line in out.stdout.splitlines() if line]
 
 

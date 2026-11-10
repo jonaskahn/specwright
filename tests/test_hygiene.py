@@ -28,6 +28,18 @@ class HygieneTests(unittest.TestCase):
     def test_flags_the_brief_file_name(self):
         self.assertTrue(self.problems(self.BRIEF))
 
+    def test_staged_files_returns_empty_when_git_is_missing(self):
+        original = hygiene.subprocess.run
+
+        def boom(*args, **kwargs):
+            raise FileNotFoundError("git")
+
+        hygiene.subprocess.run = boom
+        try:
+            self.assertEqual(hygiene.staged_files(), [])
+        finally:
+            hygiene.subprocess.run = original
+
     def test_commit_messages_reject_trailers(self):
         msg = "Add parser\n\nCo-authored-by: someone <a@b.c>\n"
         self.assertTrue(self.problems(msg, hygiene.MESSAGE_PATTERNS))

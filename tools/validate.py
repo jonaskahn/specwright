@@ -29,7 +29,7 @@ PATH_REF = re.compile(r"(?<![\w/-])((?:references|scripts|assets)/[\w./-]+\.\w+)
 HOST_PLACEHOLDER = re.compile(
     r"\$\{(?:CLAUDE|CODEX|CURSOR|GEMINI|COPILOT)_[A-Z_]+\}|/Users/[^/\s]+|/home/[^/\s]+"
 )
-SHARED_REFERENCES = ("stop-and-ask.md", "untrusted-content.md")
+SHARED_REFERENCES = ("stop-and-ask.md", "untrusted-content.md", "next-step.md")
 RUNTIME_MARKERS = (
     "## Runtime root",
     "loaded skill directory",
@@ -40,6 +40,7 @@ RUNTIME_MARKERS = (
 )
 CWD_COMMAND = re.compile(r"python3\s+(?:scripts/|references/|assets/)")
 EXPECTED_SKILLS = {
+    "sw-asset",
     "sw-draw",
     "sw-graph",
     "sw-plan",
