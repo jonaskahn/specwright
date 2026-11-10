@@ -1,0 +1,73 @@
+{
+  "type": "architecture",
+  "title": "Refund example \u00b7 architecture",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "zone": "Service",
+      "kind": "component"
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "zone": "Operations",
+      "kind": "component"
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "zone": "Service",
+      "kind": "component"
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": [],
+      "zone": "Operations",
+      "kind": "component"
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": [],
+      "zone": "Service",
+      "kind": "component"
+    }
+  ],
+  "edges": [
+    {
+      "from": "n1",
+      "to": "n2",
+      "label": "supplies evidence"
+    },
+    {
+      "from": "n2",
+      "to": "n3",
+      "label": "supplies evidence"
+    },
+    {
+      "from": "n3",
+      "to": "n4",
+      "label": "supplies evidence"
+    },
+    {
+      "from": "n4",
+      "to": "n5",
+      "label": "supplies evidence"
+    }
+  ],
+  "zones": [
+    "Service",
+    "Operations"
+  ]
+}

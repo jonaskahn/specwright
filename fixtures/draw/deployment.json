@@ -1,0 +1,74 @@
+{
+  "type": "deployment",
+  "title": "Refund example \u00b7 deployment",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "host": "Approved local host",
+      "zone": "Internal",
+      "replicas": 1
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "host": "Approved local host",
+      "zone": "Internal",
+      "replicas": 1
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "host": "Approved local host",
+      "zone": "Internal",
+      "replicas": 1
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": [],
+      "host": "Approved local host",
+      "zone": "Internal",
+      "replicas": 1
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": [],
+      "host": "Approved local host",
+      "zone": "Internal",
+      "replicas": 1
+    }
+  ],
+  "edges": [
+    {
+      "from": "n1",
+      "to": "n2",
+      "label": "supplies evidence"
+    },
+    {
+      "from": "n2",
+      "to": "n3",
+      "label": "supplies evidence"
+    },
+    {
+      "from": "n3",
+      "to": "n4",
+      "label": "supplies evidence"
+    },
+    {
+      "from": "n4",
+      "to": "n5",
+      "label": "supplies evidence"
+    }
+  ]
+}

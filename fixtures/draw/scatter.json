@@ -1,0 +1,50 @@
+{
+  "type": "scatter",
+  "title": "Refund example \u00b7 scatter",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "x": 0.1,
+      "y": 0.2
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "x": 0.28,
+      "y": 0.65
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "x": 0.45999999999999996,
+      "y": 0.45
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": [],
+      "x": 0.64,
+      "y": 0.8
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": [],
+      "x": 0.82,
+      "y": 0.9
+    }
+  ],
+  "edges": [],
+  "x_axis": "Effort",
+  "y_axis": "Value"
+}

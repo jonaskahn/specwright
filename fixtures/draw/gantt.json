@@ -1,0 +1,48 @@
+{
+  "type": "gantt",
+  "title": "Refund example \u00b7 gantt",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "start": "2026-01-01",
+      "end": "2026-01-04"
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "start": "2026-01-04",
+      "end": "2026-01-07"
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "start": "2026-01-07",
+      "end": "2026-01-10"
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": [],
+      "start": "2026-01-10",
+      "end": "2026-01-13"
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": [],
+      "start": "2026-01-13",
+      "end": "2026-01-16"
+    }
+  ],
+  "edges": []
+}

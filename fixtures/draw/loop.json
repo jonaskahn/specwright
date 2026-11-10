@@ -1,0 +1,64 @@
+{
+  "type": "loop",
+  "title": "Refund example \u00b7 loop",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ]
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": []
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": []
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": []
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "n1",
+      "to": "n2",
+      "label": "feedback"
+    },
+    {
+      "from": "n2",
+      "to": "n3",
+      "label": "feedback"
+    },
+    {
+      "from": "n3",
+      "to": "n4",
+      "label": "feedback"
+    },
+    {
+      "from": "n4",
+      "to": "n5",
+      "label": "feedback"
+    },
+    {
+      "from": "n5",
+      "to": "n1",
+      "label": "feedback"
+    }
+  ]
+}

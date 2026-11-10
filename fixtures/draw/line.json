@@ -1,0 +1,75 @@
+{
+  "type": "line",
+  "title": "Refund example \u00b7 line",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "values": [
+        2,
+        4,
+        3,
+        6
+      ]
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "values": [
+        3,
+        5,
+        4,
+        7
+      ]
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "values": [
+        4,
+        6,
+        5,
+        8
+      ]
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": [],
+      "values": [
+        5,
+        7,
+        6,
+        9
+      ]
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": [],
+      "values": [
+        6,
+        8,
+        7,
+        10
+      ]
+    }
+  ],
+  "edges": [],
+  "unit": "Illustrative cases",
+  "categories": [
+    "Intake",
+    "Review",
+    "Decision",
+    "Handoff"
+  ]
+}

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light dark">
+<title><!--title-->Refund example · timeline<!--/title--></title><style>
+:root { color-scheme:light dark; --sw-bg:#ffffff; --sw-surface:#f7f9fb; --sw-tint:#e8edf2; --sw-ink:#17232f; --sw-muted:#495b6b; --sw-hair:#687b8a; --sw-accent:#804000; --sw-accent-tint:#fff0d9; --sw-link:#004f91; --series-1:#32618a; --series-2:#5d6d35; --series-3:#8a4f62; --series-4:#80511e; --series-5:#63549a; --sw-motion-fast:400ms; --sw-motion-total:4s; }
+@media (prefers-color-scheme:dark) { :root { --sw-bg:#101820; --sw-surface:#1a2632; --sw-tint:#243443; --sw-ink:#f0f5fa; --sw-muted:#bac8d4; --sw-hair:#91a6b7; --sw-accent:#ffd18a; --sw-accent-tint:#392b19; --sw-link:#9fd0ff; --series-1:#9fc8ed; --series-2:#bfce93; --series-3:#e0aec0; --series-4:#ebc392; --series-5:#c6baf1; } }
+body { margin:0; padding:clamp(16px,4vw,56px); background:var(--sw-bg); color:var(--sw-ink); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+main { max-width:1800px; margin:auto; } h1 { font-size:clamp(24px,3vw,40px); letter-spacing:-.025em; } p,caption { color:var(--sw-muted); line-height:1.6; }
+figure { margin:0; overflow-x:auto; border:1px solid var(--sw-hair); border-radius:12px; }
+svg { display:block; height:auto; background:var(--sw-bg); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+text { fill:var(--sw-ink); font-size:16px; } .node-name { font-size:18px; font-weight:650; } .small { font-size:14px; } .ids { font:12px ui-monospace,Menlo,Consolas,monospace; }
+.frame { fill:none; stroke:var(--sw-hair); stroke-width:1.5; }
+.box { fill:var(--sw-surface); stroke:var(--sw-ink); stroke-width:1.5; } .focal { fill:var(--sw-accent-tint); stroke:var(--sw-accent); stroke-width:2; }
+.chip { fill:var(--sw-bg); stroke:var(--sw-hair); } .paper { fill:var(--sw-bg); } .tint { fill:var(--sw-tint); }
+.rule { stroke:var(--sw-hair); stroke-width:1; } .edge,.open { fill:none; stroke:var(--sw-ink); stroke-width:2; } .solid { fill:var(--sw-ink); } .dashed { stroke-dasharray:7 5; }
+.set { fill:var(--sw-tint); fill-opacity:.35; stroke:var(--sw-ink); stroke-width:2; } .band { fill:var(--series-1); fill-opacity:.35; stroke:var(--series-1); }
+.series-1 { fill:var(--series-1); stroke:var(--series-1); } .series-2 { fill:var(--series-2); stroke:var(--series-2); } .series-3 { fill:var(--series-3); stroke:var(--series-3); } .series-4 { fill:var(--series-4); stroke:var(--series-4); } .series-5 { fill:var(--series-5); stroke:var(--series-5); }
+polygon[class^="series-"] { fill-opacity:.15; stroke-width:2; } path.edge { fill:none; } .halo { paint-order:stroke; stroke:var(--sw-bg); stroke-width:6px; stroke-linejoin:round; }
+a { color:var(--sw-link); } a:focus-visible { outline:3px solid var(--sw-accent); outline-offset:4px; }
+table { border-collapse:collapse; margin:24px 0; width:100%; } th,td { padding:12px; border:1px solid var(--sw-hair); text-align:left; } caption { text-align:left; margin:12px 0; } .legend { padding:16px 24px; border:1px solid var(--sw-hair); }
+/* Only explicit opt-in drawings move. No semantic label or mark is hidden. */
+@keyframes sw-enter { from { transform:translateY(6px); } to { transform:none; } }
+@keyframes sw-flow { from { stroke-dashoffset:28; } to { stroke-dashoffset:0; } }
+.motion-reveal { animation:sw-enter var(--sw-motion-fast) ease-out 1; }
+.motion-loop .edge { stroke-dasharray:12 2; animation:sw-flow var(--sw-motion-total) linear 1; }
+@media (prefers-reduced-motion:reduce) { .drawing,.drawing * { animation:none !important; transform:none !important; } }
+@media print { .drawing,.drawing * { animation:none !important; transform:none !important; } figure { overflow:visible; } }
+</style></head>
+<body><main><h1><!--title-->Refund example · timeline<!--/title--></h1>
+<p>Source status: illustrative, not approved policy. Confirm every relation against saved evidence.</p>
+<p><!--description-->Calendar positions are proportional to elapsed days, never evenly spaced for decoration.<!--/description--></p>
+<figure aria-label="Scrollable diagram"><!--body--><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1640 1520" width="1640" role="img" aria-labelledby="diagram-title diagram-desc"><title id="diagram-title">Refund example · timeline</title><desc id="diagram-desc">Calendar positions are proportional to elapsed days, never evenly spaced for decoration.</desc><style>
+:root { color-scheme:light dark; --sw-bg:#ffffff; --sw-surface:#f7f9fb; --sw-tint:#e8edf2; --sw-ink:#17232f; --sw-muted:#495b6b; --sw-hair:#687b8a; --sw-accent:#804000; --sw-accent-tint:#fff0d9; --sw-link:#004f91; --series-1:#32618a; --series-2:#5d6d35; --series-3:#8a4f62; --series-4:#80511e; --series-5:#63549a; --sw-motion-fast:400ms; --sw-motion-total:4s; }
+@media (prefers-color-scheme:dark) { :root { --sw-bg:#101820; --sw-surface:#1a2632; --sw-tint:#243443; --sw-ink:#f0f5fa; --sw-muted:#bac8d4; --sw-hair:#91a6b7; --sw-accent:#ffd18a; --sw-accent-tint:#392b19; --sw-link:#9fd0ff; --series-1:#9fc8ed; --series-2:#bfce93; --series-3:#e0aec0; --series-4:#ebc392; --series-5:#c6baf1; } }
+body { margin:0; padding:clamp(16px,4vw,56px); background:var(--sw-bg); color:var(--sw-ink); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+main { max-width:1800px; margin:auto; } h1 { font-size:clamp(24px,3vw,40px); letter-spacing:-.025em; } p,caption { color:var(--sw-muted); line-height:1.6; }
+figure { margin:0; overflow-x:auto; border:1px solid var(--sw-hair); border-radius:12px; }
+svg { display:block; height:auto; background:var(--sw-bg); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+text { fill:var(--sw-ink); font-size:16px; } .node-name { font-size:18px; font-weight:650; } .small { font-size:14px; } .ids { font:12px ui-monospace,Menlo,Consolas,monospace; }
+.frame { fill:none; stroke:var(--sw-hair); stroke-width:1.5; }
+.box { fill:var(--sw-surface); stroke:var(--sw-ink); stroke-width:1.5; } .focal { fill:var(--sw-accent-tint); stroke:var(--sw-accent); stroke-width:2; }
+.chip { fill:var(--sw-bg); stroke:var(--sw-hair); } .paper { fill:var(--sw-bg); } .tint { fill:var(--sw-tint); }
+.rule { stroke:var(--sw-hair); stroke-width:1; } .edge,.open { fill:none; stroke:var(--sw-ink); stroke-width:2; } .solid { fill:var(--sw-ink); } .dashed { stroke-dasharray:7 5; }
+.set { fill:var(--sw-tint); fill-opacity:.35; stroke:var(--sw-ink); stroke-width:2; } .band { fill:var(--series-1); fill-opacity:.35; stroke:var(--series-1); }
+.series-1 { fill:var(--series-1); stroke:var(--series-1); } .series-2 { fill:var(--series-2); stroke:var(--series-2); } .series-3 { fill:var(--series-3); stroke:var(--series-3); } .series-4 { fill:var(--series-4); stroke:var(--series-4); } .series-5 { fill:var(--series-5); stroke:var(--series-5); }
+polygon[class^="series-"] { fill-opacity:.15; stroke-width:2; } path.edge { fill:none; } .halo { paint-order:stroke; stroke:var(--sw-bg); stroke-width:6px; stroke-linejoin:round; }
+a { color:var(--sw-link); } a:focus-visible { outline:3px solid var(--sw-accent); outline-offset:4px; }
+table { border-collapse:collapse; margin:24px 0; width:100%; } th,td { padding:12px; border:1px solid var(--sw-hair); text-align:left; } caption { text-align:left; margin:12px 0; } .legend { padding:16px 24px; border:1px solid var(--sw-hair); }
+/* Only explicit opt-in drawings move. No semantic label or mark is hidden. */
+@keyframes sw-enter { from { transform:translateY(6px); } to { transform:none; } }
+@keyframes sw-flow { from { stroke-dashoffset:28; } to { stroke-dashoffset:0; } }
+.motion-reveal { animation:sw-enter var(--sw-motion-fast) ease-out 1; }
+.motion-loop .edge { stroke-dasharray:12 2; animation:sw-flow var(--sw-motion-total) linear 1; }
+@media (prefers-reduced-motion:reduce) { .drawing,.drawing * { animation:none !important; transform:none !important; } }
+@media print { .drawing,.drawing * { animation:none !important; transform:none !important; } figure { overflow:visible; } }
+</style><defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8"
+ orient="auto-start-reverse">
+<path d="M 0 0 L 11 6 L 0 12 Z" class="solid"/>
+</marker>
+<marker id="triangle" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10"
+ orient="auto-start-reverse">
+<path d="M 0 0 L 11 6 L 0 12 Z" class="box"/>
+</marker>
+<marker id="diamond" viewBox="0 0 16 12" refX="15" refY="6" markerWidth="12" markerHeight="10"
+ orient="auto-start-reverse">
+<path d="M 0 6 L 8 0 L 15 6 L 8 12 Z" class="solid"/>
+</marker>
+<marker id="hollow-diamond" viewBox="0 0 16 12" refX="15" refY="6"
+ markerWidth="12" markerHeight="10"
+ orient="auto-start-reverse">
+<path d="M 0 6 L 8 0 L 15 6 L 8 12 Z" class="box"/>
+</marker>
+</defs><rect width="100%" height="100%" class="paper"/><g class="drawing motion-none"><text x="80" y="50" class="" text-anchor="start">Calendar days; equal distances mean equal elapsed time</text><line x1="100" y1="400" x2="1000" y2="400" class="edge"/><line x1="100" y1="400" x2="100" y2="140" class="rule"/><circle cx="100" cy="400" r="7" class="solid"/><text x="108" y="140" class="halo" text-anchor="start">2026-01-01 · 1</text><line x1="177.143" y1="400" x2="177.143" y2="524" class="rule"/><circle cx="177.143" cy="400" r="7" class="solid"/><text x="185.143" y="524" class="halo" text-anchor="start">2026-01-04 · 2</text><line x1="382.857" y1="400" x2="382.857" y2="228" class="rule"/><circle cx="382.857" cy="400" r="7" class="solid"/><text x="390.857" y="228" class="halo" text-anchor="start">2026-01-12 · 3</text><line x1="897.143" y1="400" x2="897.143" y2="612" class="rule"/><circle cx="897.143" cy="400" r="7" class="solid"/><text x="905.143" y="612" class="halo" text-anchor="start">2026-02-01 · 4</text><line x1="1000" y1="400" x2="1000" y2="316" class="rule"/><circle cx="1000" cy="400" r="7" class="solid"/><text x="1008" y="316" class="halo" text-anchor="start">2026-02-05 · 5</text><g class="node" id="node-n1" data-node="n1" data-spec="BR-001" data-spec-ids="BR-001"><rect x="1160" y="100" width="400" height="160" rx="8" class="box focal"/><text x="1176" y="128" class="node-name" text-anchor="start">Request</text><text x="1176" y="154" class="small" text-anchor="start">Item 1 · see data table</text><rect x="1172" y="222" width="376" height="28" rx="4" class="chip"/><text x="1180" y="242" class="ids" text-anchor="start">BR-001</text></g><g class="node" id="node-n2" data-node="n2" data-spec="" data-spec-ids=""><rect x="1160" y="290" width="400" height="160" rx="8" class="box"/><text x="1176" y="318" class="node-name" text-anchor="start">Policy</text><text x="1176" y="344" class="small" text-anchor="start">Item 2 · see data table</text></g><g class="node" id="node-n3" data-node="n3" data-spec="" data-spec-ids=""><rect x="1160" y="480" width="400" height="160" rx="8" class="box"/><text x="1176" y="508" class="node-name" text-anchor="start">Decision</text><text x="1176" y="534" class="small" text-anchor="start">Item 3 · see data table</text></g><g class="node" id="node-n4" data-node="n4" data-spec="" data-spec-ids=""><rect x="1160" y="670" width="400" height="160" rx="8" class="box"/><text x="1176" y="698" class="node-name" text-anchor="start">Settlement</text><text x="1176" y="724" class="small" text-anchor="start">Item 4 · see data table</text></g><g class="node" id="node-n5" data-node="n5" data-spec="" data-spec-ids=""><rect x="1160" y="860" width="400" height="160" rx="8" class="box"/><text x="1176" y="888" class="node-name" text-anchor="start">Notice</text><text x="1176" y="914" class="small" text-anchor="start">Item 5 · see data table</text></g><text x="60" y="1130" class="node-name" text-anchor="start">Connections, changes and exact data</text><text x="60" y="1166" class="small" text-anchor="start">1. Request</text><text x="60" y="1196" class="small" text-anchor="start">  date: 2026-01-01</text><text x="60" y="1226" class="small" text-anchor="start">2. Policy</text><text x="60" y="1256" class="small" text-anchor="start">  date: 2026-01-04</text><text x="60" y="1286" class="small" text-anchor="start">3. Decision</text><text x="60" y="1316" class="small" text-anchor="start">  date: 2026-01-12</text><text x="60" y="1346" class="small" text-anchor="start">4. Settlement</text><text x="60" y="1376" class="small" text-anchor="start">  date: 2026-02-01</text><text x="60" y="1406" class="small" text-anchor="start">5. Notice</text><text x="60" y="1436" class="small" text-anchor="start">  date: 2026-02-05</text></g></svg><!--/body--></figure>
+<p class="legend">Numbers match evidence cards and exact data below. Source IDs carry traceability; colour alone never carries meaning. Motion is optional and non-semantic.</p>
+<h2>Spec links</h2><ul><!--links--><li><a href="#node-n1">Request: BR-001</a></li><li><a href="#node-n2">Policy: no spec IDs</a></li><li><a href="#node-n3">Decision: no spec IDs</a></li><li><a href="#node-n4">Settlement: no spec IDs</a></li><li><a href="#node-n5">Notice: no spec IDs</a></li><!--/links--></ul><!--data--><table><caption>Exact source values; numbers on marks refer to these rows.</caption><tr><th>Item</th><th>Data</th></tr><tr><th>1. Request</th><td>date: 2026-01-01</td></tr><tr><th>2. Policy</th><td>date: 2026-01-04</td></tr><tr><th>3. Decision</th><td>date: 2026-01-12</td></tr><tr><th>4. Settlement</th><td>date: 2026-02-01</td></tr><tr><th>5. Notice</th><td>date: 2026-02-05</td></tr></table><!--/data-->
+</main></body></html>

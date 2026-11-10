@@ -1,0 +1,50 @@
+{
+  "type": "quadrant",
+  "title": "Refund example \u00b7 quadrant",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "x": 0.1,
+      "y": 0.8
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "x": 0.35,
+      "y": 0.2
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "x": 0.55,
+      "y": 0.7
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": [],
+      "x": 0.75,
+      "y": 0.4
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": [],
+      "x": 0.9,
+      "y": 0.9
+    }
+  ],
+  "edges": [],
+  "x_axis": "Effort",
+  "y_axis": "Value"
+}

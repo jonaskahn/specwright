@@ -1,0 +1,75 @@
+{
+  "type": "radar",
+  "title": "Refund example \u00b7 radar",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "values": [
+        2,
+        3,
+        4,
+        3
+      ]
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "values": [
+        3,
+        4,
+        5,
+        4
+      ]
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "values": [
+        4,
+        5,
+        6,
+        5
+      ]
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": [],
+      "values": [
+        5,
+        6,
+        7,
+        6
+      ]
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": [],
+      "values": [
+        6,
+        7,
+        8,
+        7
+      ]
+    }
+  ],
+  "edges": [],
+  "axes": [
+    "Clarity",
+    "Evidence",
+    "Traceability",
+    "Testability"
+  ],
+  "maximum": 10
+}

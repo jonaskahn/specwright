@@ -1,0 +1,75 @@
+{
+  "type": "sankey",
+  "title": "Refund example \u00b7 sankey",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "stage": 0
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "stage": 1
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "stage": 1
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": [],
+      "stage": 2
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": [],
+      "stage": 3
+    }
+  ],
+  "edges": [
+    {
+      "from": "n1",
+      "to": "n2",
+      "label": "cases",
+      "weight": 40
+    },
+    {
+      "from": "n1",
+      "to": "n3",
+      "label": "cases",
+      "weight": 60
+    },
+    {
+      "from": "n2",
+      "to": "n4",
+      "label": "cases",
+      "weight": 40
+    },
+    {
+      "from": "n3",
+      "to": "n4",
+      "label": "cases",
+      "weight": 60
+    },
+    {
+      "from": "n4",
+      "to": "n5",
+      "label": "cases",
+      "weight": 100
+    }
+  ],
+  "unit": "Illustrative cases"
+}

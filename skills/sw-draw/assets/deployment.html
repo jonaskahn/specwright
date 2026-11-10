@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light dark">
+<title><!--title-->Refund example · deployment<!--/title--></title><style>
+:root { color-scheme:light dark; --sw-bg:#ffffff; --sw-surface:#f7f9fb; --sw-tint:#e8edf2; --sw-ink:#17232f; --sw-muted:#495b6b; --sw-hair:#687b8a; --sw-accent:#804000; --sw-accent-tint:#fff0d9; --sw-link:#004f91; --series-1:#32618a; --series-2:#5d6d35; --series-3:#8a4f62; --series-4:#80511e; --series-5:#63549a; --sw-motion-fast:400ms; --sw-motion-total:4s; }
+@media (prefers-color-scheme:dark) { :root { --sw-bg:#101820; --sw-surface:#1a2632; --sw-tint:#243443; --sw-ink:#f0f5fa; --sw-muted:#bac8d4; --sw-hair:#91a6b7; --sw-accent:#ffd18a; --sw-accent-tint:#392b19; --sw-link:#9fd0ff; --series-1:#9fc8ed; --series-2:#bfce93; --series-3:#e0aec0; --series-4:#ebc392; --series-5:#c6baf1; } }
+body { margin:0; padding:clamp(16px,4vw,56px); background:var(--sw-bg); color:var(--sw-ink); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+main { max-width:1800px; margin:auto; } h1 { font-size:clamp(24px,3vw,40px); letter-spacing:-.025em; } p,caption { color:var(--sw-muted); line-height:1.6; }
+figure { margin:0; overflow-x:auto; border:1px solid var(--sw-hair); border-radius:12px; }
+svg { display:block; height:auto; background:var(--sw-bg); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+text { fill:var(--sw-ink); font-size:16px; } .node-name { font-size:18px; font-weight:650; } .small { font-size:14px; } .ids { font:12px ui-monospace,Menlo,Consolas,monospace; }
+.frame { fill:none; stroke:var(--sw-hair); stroke-width:1.5; }
+.box { fill:var(--sw-surface); stroke:var(--sw-ink); stroke-width:1.5; } .focal { fill:var(--sw-accent-tint); stroke:var(--sw-accent); stroke-width:2; }
+.chip { fill:var(--sw-bg); stroke:var(--sw-hair); } .paper { fill:var(--sw-bg); } .tint { fill:var(--sw-tint); }
+.rule { stroke:var(--sw-hair); stroke-width:1; } .edge,.open { fill:none; stroke:var(--sw-ink); stroke-width:2; } .solid { fill:var(--sw-ink); } .dashed { stroke-dasharray:7 5; }
+.set { fill:var(--sw-tint); fill-opacity:.35; stroke:var(--sw-ink); stroke-width:2; } .band { fill:var(--series-1); fill-opacity:.35; stroke:var(--series-1); }
+.series-1 { fill:var(--series-1); stroke:var(--series-1); } .series-2 { fill:var(--series-2); stroke:var(--series-2); } .series-3 { fill:var(--series-3); stroke:var(--series-3); } .series-4 { fill:var(--series-4); stroke:var(--series-4); } .series-5 { fill:var(--series-5); stroke:var(--series-5); }
+polygon[class^="series-"] { fill-opacity:.15; stroke-width:2; } path.edge { fill:none; } .halo { paint-order:stroke; stroke:var(--sw-bg); stroke-width:6px; stroke-linejoin:round; }
+a { color:var(--sw-link); } a:focus-visible { outline:3px solid var(--sw-accent); outline-offset:4px; }
+table { border-collapse:collapse; margin:24px 0; width:100%; } th,td { padding:12px; border:1px solid var(--sw-hair); text-align:left; } caption { text-align:left; margin:12px 0; } .legend { padding:16px 24px; border:1px solid var(--sw-hair); }
+/* Only explicit opt-in drawings move. No semantic label or mark is hidden. */
+@keyframes sw-enter { from { transform:translateY(6px); } to { transform:none; } }
+@keyframes sw-flow { from { stroke-dashoffset:28; } to { stroke-dashoffset:0; } }
+.motion-reveal { animation:sw-enter var(--sw-motion-fast) ease-out 1; }
+.motion-loop .edge { stroke-dasharray:12 2; animation:sw-flow var(--sw-motion-total) linear 1; }
+@media (prefers-reduced-motion:reduce) { .drawing,.drawing * { animation:none !important; transform:none !important; } }
+@media print { .drawing,.drawing * { animation:none !important; transform:none !important; } figure { overflow:visible; } }
+</style></head>
+<body><main><h1><!--title-->Refund example · deployment<!--/title--></h1>
+<p>Source status: illustrative, not approved policy. Confirm every relation against saved evidence.</p>
+<p><!--description-->Placement cards name hosts, trust zones and replica counts.<!--/description--></p>
+<figure aria-label="Scrollable diagram"><!--body--><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1640 2220" width="1640" role="img" aria-labelledby="diagram-title diagram-desc"><title id="diagram-title">Refund example · deployment</title><desc id="diagram-desc">Placement cards name hosts, trust zones and replica counts.</desc><style>
+:root { color-scheme:light dark; --sw-bg:#ffffff; --sw-surface:#f7f9fb; --sw-tint:#e8edf2; --sw-ink:#17232f; --sw-muted:#495b6b; --sw-hair:#687b8a; --sw-accent:#804000; --sw-accent-tint:#fff0d9; --sw-link:#004f91; --series-1:#32618a; --series-2:#5d6d35; --series-3:#8a4f62; --series-4:#80511e; --series-5:#63549a; --sw-motion-fast:400ms; --sw-motion-total:4s; }
+@media (prefers-color-scheme:dark) { :root { --sw-bg:#101820; --sw-surface:#1a2632; --sw-tint:#243443; --sw-ink:#f0f5fa; --sw-muted:#bac8d4; --sw-hair:#91a6b7; --sw-accent:#ffd18a; --sw-accent-tint:#392b19; --sw-link:#9fd0ff; --series-1:#9fc8ed; --series-2:#bfce93; --series-3:#e0aec0; --series-4:#ebc392; --series-5:#c6baf1; } }
+body { margin:0; padding:clamp(16px,4vw,56px); background:var(--sw-bg); color:var(--sw-ink); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+main { max-width:1800px; margin:auto; } h1 { font-size:clamp(24px,3vw,40px); letter-spacing:-.025em; } p,caption { color:var(--sw-muted); line-height:1.6; }
+figure { margin:0; overflow-x:auto; border:1px solid var(--sw-hair); border-radius:12px; }
+svg { display:block; height:auto; background:var(--sw-bg); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+text { fill:var(--sw-ink); font-size:16px; } .node-name { font-size:18px; font-weight:650; } .small { font-size:14px; } .ids { font:12px ui-monospace,Menlo,Consolas,monospace; }
+.frame { fill:none; stroke:var(--sw-hair); stroke-width:1.5; }
+.box { fill:var(--sw-surface); stroke:var(--sw-ink); stroke-width:1.5; } .focal { fill:var(--sw-accent-tint); stroke:var(--sw-accent); stroke-width:2; }
+.chip { fill:var(--sw-bg); stroke:var(--sw-hair); } .paper { fill:var(--sw-bg); } .tint { fill:var(--sw-tint); }
+.rule { stroke:var(--sw-hair); stroke-width:1; } .edge,.open { fill:none; stroke:var(--sw-ink); stroke-width:2; } .solid { fill:var(--sw-ink); } .dashed { stroke-dasharray:7 5; }
+.set { fill:var(--sw-tint); fill-opacity:.35; stroke:var(--sw-ink); stroke-width:2; } .band { fill:var(--series-1); fill-opacity:.35; stroke:var(--series-1); }
+.series-1 { fill:var(--series-1); stroke:var(--series-1); } .series-2 { fill:var(--series-2); stroke:var(--series-2); } .series-3 { fill:var(--series-3); stroke:var(--series-3); } .series-4 { fill:var(--series-4); stroke:var(--series-4); } .series-5 { fill:var(--series-5); stroke:var(--series-5); }
+polygon[class^="series-"] { fill-opacity:.15; stroke-width:2; } path.edge { fill:none; } .halo { paint-order:stroke; stroke:var(--sw-bg); stroke-width:6px; stroke-linejoin:round; }
+a { color:var(--sw-link); } a:focus-visible { outline:3px solid var(--sw-accent); outline-offset:4px; }
+table { border-collapse:collapse; margin:24px 0; width:100%; } th,td { padding:12px; border:1px solid var(--sw-hair); text-align:left; } caption { text-align:left; margin:12px 0; } .legend { padding:16px 24px; border:1px solid var(--sw-hair); }
+/* Only explicit opt-in drawings move. No semantic label or mark is hidden. */
+@keyframes sw-enter { from { transform:translateY(6px); } to { transform:none; } }
+@keyframes sw-flow { from { stroke-dashoffset:28; } to { stroke-dashoffset:0; } }
+.motion-reveal { animation:sw-enter var(--sw-motion-fast) ease-out 1; }
+.motion-loop .edge { stroke-dasharray:12 2; animation:sw-flow var(--sw-motion-total) linear 1; }
+@media (prefers-reduced-motion:reduce) { .drawing,.drawing * { animation:none !important; transform:none !important; } }
+@media print { .drawing,.drawing * { animation:none !important; transform:none !important; } figure { overflow:visible; } }
+</style><defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8"
+ orient="auto-start-reverse">
+<path d="M 0 0 L 11 6 L 0 12 Z" class="solid"/>
+</marker>
+<marker id="triangle" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10"
+ orient="auto-start-reverse">
+<path d="M 0 0 L 11 6 L 0 12 Z" class="box"/>
+</marker>
+<marker id="diamond" viewBox="0 0 16 12" refX="15" refY="6" markerWidth="12" markerHeight="10"
+ orient="auto-start-reverse">
+<path d="M 0 6 L 8 0 L 15 6 L 8 12 Z" class="solid"/>
+</marker>
+<marker id="hollow-diamond" viewBox="0 0 16 12" refX="15" refY="6"
+ markerWidth="12" markerHeight="10"
+ orient="auto-start-reverse">
+<path d="M 0 6 L 8 0 L 15 6 L 8 12 Z" class="box"/>
+</marker>
+</defs><rect width="100%" height="100%" class="paper"/><g class="drawing motion-none"><rect x="40" y="60" width="1236" height="1180" rx="8" class="frame"/><text x="60" y="88" class="node-name" text-anchor="start">Internal</text><path d="M 480 180 H 552 Q 560 180 560 188 V 412 Q 560 420 552 420 H 480" class="edge" marker-end="url(#arrow)"/><text x="568" y="300" class="halo" text-anchor="start">1</text><path d="M 480 420 H 616 Q 624 420 624 428 V 652 Q 624 660 616 660 H 480" class="edge" marker-end="url(#arrow)"/><text x="632" y="540" class="halo" text-anchor="start">2</text><path d="M 480 660 H 680 Q 688 660 688 668 V 892 Q 688 900 680 900 H 480" class="edge" marker-end="url(#arrow)"/><text x="696" y="780" class="halo" text-anchor="start">3</text><path d="M 480 900 H 744 Q 752 900 752 908 V 1132 Q 752 1140 744 1140 H 480" class="edge" marker-end="url(#arrow)"/><text x="760" y="1020" class="halo" text-anchor="start">4</text><g class="node" id="node-n1" data-node="n1" data-spec="BR-001" data-spec-ids="BR-001"><rect x="80" y="100" width="400" height="160" rx="8" class="box focal"/><text x="96" y="128" class="node-name" text-anchor="start">Request</text><text x="96" y="154" class="small" text-anchor="start">Approved local host</text><text x="96" y="178" class="small" text-anchor="start">1 replicas</text><rect x="92" y="222" width="376" height="28" rx="4" class="chip"/><text x="100" y="242" class="ids" text-anchor="start">BR-001</text></g><g class="node" id="node-n2" data-node="n2" data-spec="" data-spec-ids=""><rect x="80" y="340" width="400" height="160" rx="8" class="box"/><text x="96" y="368" class="node-name" text-anchor="start">Policy</text><text x="96" y="394" class="small" text-anchor="start">Approved local host</text><text x="96" y="418" class="small" text-anchor="start">1 replicas</text></g><g class="node" id="node-n3" data-node="n3" data-spec="" data-spec-ids=""><rect x="80" y="580" width="400" height="160" rx="8" class="box"/><text x="96" y="608" class="node-name" text-anchor="start">Decision</text><text x="96" y="634" class="small" text-anchor="start">Approved local host</text><text x="96" y="658" class="small" text-anchor="start">1 replicas</text></g><g class="node" id="node-n4" data-node="n4" data-spec="" data-spec-ids=""><rect x="80" y="820" width="400" height="160" rx="8" class="box"/><text x="96" y="848" class="node-name" text-anchor="start">Settlement</text><text x="96" y="874" class="small" text-anchor="start">Approved local host</text><text x="96" y="898" class="small" text-anchor="start">1 replicas</text></g><g class="node" id="node-n5" data-node="n5" data-spec="" data-spec-ids=""><rect x="80" y="1060" width="400" height="160" rx="8" class="box"/><text x="96" y="1088" class="node-name" text-anchor="start">Notice</text><text x="96" y="1114" class="small" text-anchor="start">Approved local host</text><text x="96" y="1138" class="small" text-anchor="start">1 replicas</text></g><text x="60" y="1410" class="node-name" text-anchor="start">Connections, changes and exact data</text><text x="60" y="1446" class="small" text-anchor="start">1. n1 → n2: supplies evidence</text><text x="60" y="1476" class="small" text-anchor="start">2. n2 → n3: supplies evidence</text><text x="60" y="1506" class="small" text-anchor="start">3. n3 → n4: supplies evidence</text><text x="60" y="1536" class="small" text-anchor="start">4. n4 → n5: supplies evidence</text><text x="60" y="1566" class="small" text-anchor="start">1. Request</text><text x="60" y="1596" class="small" text-anchor="start">  host: Approved local host</text><text x="60" y="1626" class="small" text-anchor="start">  zone: Internal</text><text x="60" y="1656" class="small" text-anchor="start">  replicas: 1</text><text x="60" y="1686" class="small" text-anchor="start">2. Policy</text><text x="60" y="1716" class="small" text-anchor="start">  host: Approved local host</text><text x="60" y="1746" class="small" text-anchor="start">  zone: Internal</text><text x="60" y="1776" class="small" text-anchor="start">  replicas: 1</text><text x="60" y="1806" class="small" text-anchor="start">3. Decision</text><text x="60" y="1836" class="small" text-anchor="start">  host: Approved local host</text><text x="60" y="1866" class="small" text-anchor="start">  zone: Internal</text><text x="60" y="1896" class="small" text-anchor="start">  replicas: 1</text><text x="60" y="1926" class="small" text-anchor="start">4. Settlement</text><text x="60" y="1956" class="small" text-anchor="start">  host: Approved local host</text><text x="60" y="1986" class="small" text-anchor="start">  zone: Internal</text><text x="60" y="2016" class="small" text-anchor="start">  replicas: 1</text><text x="60" y="2046" class="small" text-anchor="start">5. Notice</text><text x="60" y="2076" class="small" text-anchor="start">  host: Approved local host</text><text x="60" y="2106" class="small" text-anchor="start">  zone: Internal</text><text x="60" y="2136" class="small" text-anchor="start">  replicas: 1</text></g></svg><!--/body--></figure>
+<p class="legend">Numbers match evidence cards and exact data below. Source IDs carry traceability; colour alone never carries meaning. Motion is optional and non-semantic.</p>
+<h2>Spec links</h2><ul><!--links--><li><a href="#node-n1">Request: BR-001</a></li><li><a href="#node-n2">Policy: no spec IDs</a></li><li><a href="#node-n3">Decision: no spec IDs</a></li><li><a href="#node-n4">Settlement: no spec IDs</a></li><li><a href="#node-n5">Notice: no spec IDs</a></li><!--/links--></ul><!--data--><table><caption>Exact source values; numbers on marks refer to these rows.</caption><tr><th>Item</th><th>Data</th></tr><tr><th>1. Request</th><td>host: Approved local host; zone: Internal; replicas: 1</td></tr><tr><th>2. Policy</th><td>host: Approved local host; zone: Internal; replicas: 1</td></tr><tr><th>3. Decision</th><td>host: Approved local host; zone: Internal; replicas: 1</td></tr><tr><th>4. Settlement</th><td>host: Approved local host; zone: Internal; replicas: 1</td></tr><tr><th>5. Notice</th><td>host: Approved local host; zone: Internal; replicas: 1</td></tr></table><!--/data-->
+</main></body></html>

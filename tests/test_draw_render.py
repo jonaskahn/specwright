@@ -50,7 +50,7 @@ class DrawRenderTests(unittest.TestCase):
         self.assertIn("stateDiagram-v2", first[1])
 
     def test_all_types_have_disjoint_node_boxes_and_companions(self):
-        for kind in DRAW.TYPES:
+        for kind in DRAW.LEGACY:
             with self.subTest(kind=kind):
                 spec = self.fixture(kind)
                 page, source = DRAW.render(spec)

@@ -1,0 +1,69 @@
+{
+  "type": "it-current-state",
+  "title": "Refund example \u00b7 it-current-state",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "department": "Operations",
+      "condition": "Observed baseline"
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "department": "Operations",
+      "condition": "Observed baseline"
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "department": "Operations",
+      "condition": "Observed baseline"
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": [],
+      "department": "Operations",
+      "condition": "Observed baseline"
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": [],
+      "department": "Operations",
+      "condition": "Observed baseline"
+    }
+  ],
+  "edges": [
+    {
+      "from": "n1",
+      "to": "n2",
+      "label": "supplies evidence"
+    },
+    {
+      "from": "n2",
+      "to": "n3",
+      "label": "supplies evidence"
+    },
+    {
+      "from": "n3",
+      "to": "n4",
+      "label": "supplies evidence"
+    },
+    {
+      "from": "n4",
+      "to": "n5",
+      "label": "supplies evidence"
+    }
+  ]
+}

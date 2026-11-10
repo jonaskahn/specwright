@@ -1,0 +1,40 @@
+{
+  "type": "venn",
+  "title": "Refund example \u00b7 venn",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "members": [
+        "Request",
+        "Decision"
+      ]
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "members": [
+        "Policy",
+        "Decision"
+      ]
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "members": [
+        "Notice",
+        "Decision"
+      ]
+    }
+  ],
+  "edges": []
+}

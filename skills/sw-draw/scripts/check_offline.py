@@ -27,6 +27,7 @@ FORBIDDEN = re.compile(
 def check_text(text):
     # Decode entities so encoded URLs cannot evade the offline boundary.
     decoded = html.unescape(text)
+    decoded = re.sub(r"xmlns=[\"\']http://www\.w3\.org/2000/svg[\"\']", "", decoded)
     return [
         (decoded.count("\n", 0, m.start()) + 1, m.group(0)) for m in FORBIDDEN.finditer(decoded)
     ]

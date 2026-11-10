@@ -1,0 +1,93 @@
+{
+  "type": "uml-class",
+  "title": "Refund example \u00b7 uml-class",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "attributes": [
+        "+ refundId: Identifier"
+      ],
+      "operations": [
+        "+ inspect(): Decision"
+      ]
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "attributes": [
+        "+ refundId: Identifier"
+      ],
+      "operations": [
+        "+ inspect(): Decision"
+      ]
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "attributes": [
+        "+ refundId: Identifier"
+      ],
+      "operations": [
+        "+ inspect(): Decision"
+      ]
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": [],
+      "attributes": [
+        "+ refundId: Identifier"
+      ],
+      "operations": [
+        "+ inspect(): Decision"
+      ]
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": [],
+      "attributes": [
+        "+ refundId: Identifier"
+      ],
+      "operations": [
+        "+ inspect(): Decision"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "n1",
+      "to": "n2",
+      "label": "supplies evidence",
+      "kind": "association"
+    },
+    {
+      "from": "n2",
+      "to": "n3",
+      "label": "supplies evidence",
+      "kind": "association"
+    },
+    {
+      "from": "n3",
+      "to": "n4",
+      "label": "supplies evidence",
+      "kind": "association"
+    },
+    {
+      "from": "n4",
+      "to": "n5",
+      "label": "supplies evidence",
+      "kind": "association"
+    }
+  ]
+}

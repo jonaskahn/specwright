@@ -1,0 +1,61 @@
+{
+  "type": "kanban",
+  "title": "Refund example \u00b7 kanban",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "column": "Queue",
+      "state": "queued",
+      "owner": "Reviewer"
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "column": "Review",
+      "state": "doing",
+      "owner": "Reviewer"
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "column": "Done",
+      "state": "done",
+      "owner": "Reviewer"
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": [],
+      "column": "Queue",
+      "state": "blocked",
+      "owner": "Reviewer"
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": [],
+      "column": "Review",
+      "state": "waiting",
+      "owner": "Reviewer"
+    }
+  ],
+  "edges": [],
+  "columns": [
+    "Queue",
+    "Review",
+    "Done"
+  ],
+  "limits": {
+    "Review": 1
+  }
+}

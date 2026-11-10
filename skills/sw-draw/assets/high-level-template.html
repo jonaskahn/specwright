@@ -1,0 +1,49 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="color-scheme" content="light dark"><title>Refund scope · context illustration</title><style>
+:root { color-scheme:light dark; --sw-bg:#ffffff; --sw-surface:#f7f9fb; --sw-tint:#e8edf2; --sw-ink:#17232f; --sw-muted:#495b6b; --sw-hair:#687b8a; --sw-accent:#804000; --sw-accent-tint:#fff0d9; --sw-link:#004f91; --series-1:#32618a; --series-2:#5d6d35; --series-3:#8a4f62; --series-4:#80511e; --series-5:#63549a; --sw-motion-fast:400ms; --sw-motion-total:4s; }
+@media (prefers-color-scheme:dark) { :root { --sw-bg:#101820; --sw-surface:#1a2632; --sw-tint:#243443; --sw-ink:#f0f5fa; --sw-muted:#bac8d4; --sw-hair:#91a6b7; --sw-accent:#ffd18a; --sw-accent-tint:#392b19; --sw-link:#9fd0ff; --series-1:#9fc8ed; --series-2:#bfce93; --series-3:#e0aec0; --series-4:#ebc392; --series-5:#c6baf1; } }
+body { margin:0; padding:clamp(16px,4vw,56px); background:var(--sw-bg); color:var(--sw-ink); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+main { max-width:1800px; margin:auto; } h1 { font-size:clamp(24px,3vw,40px); letter-spacing:-.025em; } p,caption { color:var(--sw-muted); line-height:1.6; }
+figure { margin:0; overflow-x:auto; border:1px solid var(--sw-hair); border-radius:12px; }
+svg { display:block; height:auto; background:var(--sw-bg); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+text { fill:var(--sw-ink); font-size:16px; } .node-name { font-size:18px; font-weight:650; } .small { font-size:14px; } .ids { font:12px ui-monospace,Menlo,Consolas,monospace; }
+.frame { fill:none; stroke:var(--sw-hair); stroke-width:1.5; }
+.box { fill:var(--sw-surface); stroke:var(--sw-ink); stroke-width:1.5; } .focal { fill:var(--sw-accent-tint); stroke:var(--sw-accent); stroke-width:2; }
+.chip { fill:var(--sw-bg); stroke:var(--sw-hair); } .paper { fill:var(--sw-bg); } .tint { fill:var(--sw-tint); }
+.rule { stroke:var(--sw-hair); stroke-width:1; } .edge,.open { fill:none; stroke:var(--sw-ink); stroke-width:2; } .solid { fill:var(--sw-ink); } .dashed { stroke-dasharray:7 5; }
+.set { fill:var(--sw-tint); fill-opacity:.35; stroke:var(--sw-ink); stroke-width:2; } .band { fill:var(--series-1); fill-opacity:.35; stroke:var(--series-1); }
+.series-1 { fill:var(--series-1); stroke:var(--series-1); } .series-2 { fill:var(--series-2); stroke:var(--series-2); } .series-3 { fill:var(--series-3); stroke:var(--series-3); } .series-4 { fill:var(--series-4); stroke:var(--series-4); } .series-5 { fill:var(--series-5); stroke:var(--series-5); }
+polygon[class^="series-"] { fill-opacity:.15; stroke-width:2; } path.edge { fill:none; } .halo { paint-order:stroke; stroke:var(--sw-bg); stroke-width:6px; stroke-linejoin:round; }
+a { color:var(--sw-link); } a:focus-visible { outline:3px solid var(--sw-accent); outline-offset:4px; }
+table { border-collapse:collapse; margin:24px 0; width:100%; } th,td { padding:12px; border:1px solid var(--sw-hair); text-align:left; } caption { text-align:left; margin:12px 0; } .legend { padding:16px 24px; border:1px solid var(--sw-hair); }
+/* Only explicit opt-in drawings move. No semantic label or mark is hidden. */
+@keyframes sw-enter { from { transform:translateY(6px); } to { transform:none; } }
+@keyframes sw-flow { from { stroke-dashoffset:28; } to { stroke-dashoffset:0; } }
+.motion-reveal { animation:sw-enter var(--sw-motion-fast) ease-out 1; }
+.motion-loop .edge { stroke-dasharray:12 2; animation:sw-flow var(--sw-motion-total) linear 1; }
+@media (prefers-reduced-motion:reduce) { .drawing,.drawing * { animation:none !important; transform:none !important; } }
+@media print { .drawing,.drawing * { animation:none !important; transform:none !important; } figure { overflow:visible; } }
+</style></head><body><main><h1>Refund scope · context illustration</h1><p>Illustrative template, not approved policy. A single subject connects supplied inputs with observable consumer outcomes. Arrow labels retain the relationship meaning.</p><figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 900" width="1480" role="img" aria-labelledby="diagram-title diagram-desc"><title id="diagram-title">Refund scope · context illustration</title><desc id="diagram-desc">A single subject connects supplied inputs with observable consumer outcomes. Arrow labels retain the relationship meaning.</desc><style>
+:root { color-scheme:light dark; --sw-bg:#ffffff; --sw-surface:#f7f9fb; --sw-tint:#e8edf2; --sw-ink:#17232f; --sw-muted:#495b6b; --sw-hair:#687b8a; --sw-accent:#804000; --sw-accent-tint:#fff0d9; --sw-link:#004f91; --series-1:#32618a; --series-2:#5d6d35; --series-3:#8a4f62; --series-4:#80511e; --series-5:#63549a; --sw-motion-fast:400ms; --sw-motion-total:4s; }
+@media (prefers-color-scheme:dark) { :root { --sw-bg:#101820; --sw-surface:#1a2632; --sw-tint:#243443; --sw-ink:#f0f5fa; --sw-muted:#bac8d4; --sw-hair:#91a6b7; --sw-accent:#ffd18a; --sw-accent-tint:#392b19; --sw-link:#9fd0ff; --series-1:#9fc8ed; --series-2:#bfce93; --series-3:#e0aec0; --series-4:#ebc392; --series-5:#c6baf1; } }
+body { margin:0; padding:clamp(16px,4vw,56px); background:var(--sw-bg); color:var(--sw-ink); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+main { max-width:1800px; margin:auto; } h1 { font-size:clamp(24px,3vw,40px); letter-spacing:-.025em; } p,caption { color:var(--sw-muted); line-height:1.6; }
+figure { margin:0; overflow-x:auto; border:1px solid var(--sw-hair); border-radius:12px; }
+svg { display:block; height:auto; background:var(--sw-bg); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+text { fill:var(--sw-ink); font-size:16px; } .node-name { font-size:18px; font-weight:650; } .small { font-size:14px; } .ids { font:12px ui-monospace,Menlo,Consolas,monospace; }
+.frame { fill:none; stroke:var(--sw-hair); stroke-width:1.5; }
+.box { fill:var(--sw-surface); stroke:var(--sw-ink); stroke-width:1.5; } .focal { fill:var(--sw-accent-tint); stroke:var(--sw-accent); stroke-width:2; }
+.chip { fill:var(--sw-bg); stroke:var(--sw-hair); } .paper { fill:var(--sw-bg); } .tint { fill:var(--sw-tint); }
+.rule { stroke:var(--sw-hair); stroke-width:1; } .edge,.open { fill:none; stroke:var(--sw-ink); stroke-width:2; } .solid { fill:var(--sw-ink); } .dashed { stroke-dasharray:7 5; }
+.set { fill:var(--sw-tint); fill-opacity:.35; stroke:var(--sw-ink); stroke-width:2; } .band { fill:var(--series-1); fill-opacity:.35; stroke:var(--series-1); }
+.series-1 { fill:var(--series-1); stroke:var(--series-1); } .series-2 { fill:var(--series-2); stroke:var(--series-2); } .series-3 { fill:var(--series-3); stroke:var(--series-3); } .series-4 { fill:var(--series-4); stroke:var(--series-4); } .series-5 { fill:var(--series-5); stroke:var(--series-5); }
+polygon[class^="series-"] { fill-opacity:.15; stroke-width:2; } path.edge { fill:none; } .halo { paint-order:stroke; stroke:var(--sw-bg); stroke-width:6px; stroke-linejoin:round; }
+a { color:var(--sw-link); } a:focus-visible { outline:3px solid var(--sw-accent); outline-offset:4px; }
+table { border-collapse:collapse; margin:24px 0; width:100%; } th,td { padding:12px; border:1px solid var(--sw-hair); text-align:left; } caption { text-align:left; margin:12px 0; } .legend { padding:16px 24px; border:1px solid var(--sw-hair); }
+/* Only explicit opt-in drawings move. No semantic label or mark is hidden. */
+@keyframes sw-enter { from { transform:translateY(6px); } to { transform:none; } }
+@keyframes sw-flow { from { stroke-dashoffset:28; } to { stroke-dashoffset:0; } }
+.motion-reveal { animation:sw-enter var(--sw-motion-fast) ease-out 1; }
+.motion-loop .edge { stroke-dasharray:12 2; animation:sw-flow var(--sw-motion-total) linear 1; }
+@media (prefers-reduced-motion:reduce) { .drawing,.drawing * { animation:none !important; transform:none !important; } }
+@media print { .drawing,.drawing * { animation:none !important; transform:none !important; } figure { overflow:visible; } }
+</style><rect width="100%" height="100%" class="paper"/><rect x="80" y="160" width="360" height="180" rx="12" class="box"/><g class="node" id="node-part1" data-spec="BR-001" data-spec-ids="BR-001"><text x="116" y="260">Customer evidence</text><text x="116" y="292" class="ids">BR-001 · illustrative</text></g><rect x="560" y="160" width="360" height="180" rx="12" class="box"/><g class="node" id="node-part2" data-spec="BR-001" data-spec-ids="BR-001"><text x="596" y="260">Refund contract</text><text x="596" y="292" class="ids">BR-001 · illustrative</text></g><rect x="1040" y="160" width="360" height="180" rx="12" class="box"/><g class="node" id="node-part3" data-spec="BR-001" data-spec-ids="BR-001"><text x="1076" y="260">QA scenarios</text><text x="1076" y="292" class="ids">BR-001 · illustrative</text></g><path d="M 440 250 h 100 l -12 -8 m 12 8 l -12 8" class="edge"/><path d="M 920 250 h 100 l -12 -8 m 12 8 l -12 8" class="edge"/><text x="460" y="220" class="small">informs</text><text x="940" y="220" class="small">verifies</text></svg></figure><h2>Spec links</h2><ul><li><a href="#node-part1">Customer evidence: BR-001 (illustrative)</a></li><li><a href="#node-part2">Refund contract: BR-001 (illustrative)</a></li><li><a href="#node-part3">QA scenarios: BR-001 (illustrative)</a></li></ul></main></body></html>

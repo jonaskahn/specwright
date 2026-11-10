@@ -1,0 +1,63 @@
+{
+  "type": "heatmap",
+  "title": "Refund example \u00b7 heatmap",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "row": "Read",
+      "column": "Policy",
+      "value": 1
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "row": "Review",
+      "column": "Draft",
+      "value": 2
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "row": "Read",
+      "column": "Evidence",
+      "value": 3
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": [],
+      "row": "Review",
+      "column": "Policy",
+      "value": 4
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": [],
+      "row": "Read",
+      "column": "Draft",
+      "value": 5
+    }
+  ],
+  "edges": [],
+  "unit": "Illustrative cases",
+  "columns": [
+    "Policy",
+    "Draft",
+    "Evidence"
+  ],
+  "rows": [
+    "Read",
+    "Review"
+  ]
+}

@@ -33,7 +33,7 @@ class DrawCheckTests(unittest.TestCase):
 
     def test_every_template_passes_both_checks(self):
         assets = ROOT / "skills/sw-draw/assets"
-        self.assertEqual(len(list(assets.glob("*.html"))), 8)
+        self.assertEqual(len(list(assets.glob("*.html"))), 45)
         for path in assets.glob("*.html"):
             for tool in (BORDERS, OFFLINE):
                 self.assertEqual(self.run_check(tool, str(path)), (0, "", ""))

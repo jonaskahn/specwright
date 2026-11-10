@@ -1,0 +1,70 @@
+{
+  "type": "architecture-delta",
+  "title": "Refund example \u00b7 architecture-delta",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "status": "unchanged"
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "status": "added"
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "status": "changed",
+      "before_label": "Manual decision",
+      "after_label": "Evidence-backed decision"
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": [],
+      "status": "removed"
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": [],
+      "status": "unchanged"
+    }
+  ],
+  "edges": [
+    {
+      "from": "n1",
+      "to": "n2",
+      "label": "supplies evidence"
+    },
+    {
+      "from": "n2",
+      "to": "n3",
+      "label": "supplies evidence"
+    },
+    {
+      "from": "n3",
+      "to": "n4",
+      "label": "supplies evidence"
+    },
+    {
+      "from": "n4",
+      "to": "n5",
+      "label": "supplies evidence"
+    }
+  ],
+  "changes": [
+    "Add policy review endpoint",
+    "Retire legacy settlement handoff"
+  ]
+}
