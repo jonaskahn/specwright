@@ -20,4 +20,4 @@ nfr: []
 - Diagrams: <paths or None>
 
 ## Trace
-<BO, BR, NFR, Q, DEC and CR references that resolve>
+- BO, BR, NFR, Q, DEC and CR references that resolve.

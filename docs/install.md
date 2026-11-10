@@ -25,7 +25,7 @@ Claude Code plugin marketplace:
 /plugin install specwright@specwright
 ```
 
-The plugin manifests declare all fourteen skills and fourteen command wrappers. Commands
+The plugin manifests declare all fifteen skills and fifteen command wrappers. Commands
 carry Claude-specific `${CLAUDE_PLUGIN_ROOT}` paths; skill folders themselves remain
 host-neutral. Installation writes only skill files and client metadata. It never writes
 to Jira, Confluence or a Specwright workspace.

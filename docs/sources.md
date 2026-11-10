@@ -12,7 +12,7 @@ templates and instructions in Specwright were independently authored.
   sibling runtime.
 - [Claude Code plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces):
   `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` expose the same
-  eleven skills through the marketplace route. Host-specific command placeholders stay in
+  fifteen skills through the marketplace route. Host-specific command placeholders stay in
   `commands/`; skills remain host-neutral.
 - [Agent Skills specification](https://agentskills.io/specification): required name and
   description; optional license, compatibility, metadata and experimental allowed-tools.
