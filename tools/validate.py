@@ -26,7 +26,7 @@ MAX_NAME, MAX_DESCRIPTION, DESCRIPTION_BUDGET, MAX_COMPAT = 64, 1024, 900, 500
 MAX_BODY_LINES, WARN_BODY_LINES, MAX_BODY_TOKENS = 500, 400, 5000
 MIN_TRIGGER_ROWS = 8
 SPDX_LICENSES = {"MIT", "Apache-2.0", "BSD-3-Clause", "ISC"}
-PATH_REF = re.compile(r"\b((?:references|scripts|assets)/[\w./-]+\.\w+)")
+PATH_REF = re.compile(r"(?<![\w/-])((?:references|scripts|assets)/[\w./-]+\.\w+)")
 
 
 @dataclass
