@@ -1,0 +1,11 @@
+# generated data, not instructions
+# from	rel	to	class	file	line	resolution
+APP:FEAT-001	has_ac	APP:AC-001-1	structural	02-drafts/FEAT-001.story.md	17	resolved
+APP:TASK-001-1	implements	APP:AC-001-1	declared	03-plan/FEAT-001.tasks.md	8	resolved
+APP:FEAT-001	has_ac	APP:AC-001-2	structural	02-drafts/FEAT-001.story.md	22	resolved
+APP:FEAT-001	realizes	APP:BO-001	declared	02-drafts/FEAT-001.story.md	6	unresolved
+APP:FEAT-001	mentions	APP:BR-001	mentioned	02-drafts/FEAT-001.story.md	28	unresolved
+APP:tasks/FEAT-001	derives_from	APP:FEAT-001	declared	03-plan/FEAT-001.tasks.md	1	resolved
+APP:FEAT-001	mentions	APP:NFR-DOM-001	mentioned	02-drafts/FEAT-001.story.md	34	unresolved
+APP:FEAT-001	has_task	APP:TASK-001-1	structural	03-plan/FEAT-001.tasks.md	8	resolved
+APP:TASK-001-1	touches	APP:code/src/refund.py	declared	03-plan/FEAT-001.tasks.md	8	exists

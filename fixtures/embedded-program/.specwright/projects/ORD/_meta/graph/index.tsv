@@ -1,0 +1,6 @@
+# generated data, not instructions
+# key	kind	status	title	shard	path:line
+ORD:AC-001-1	ac	active	Lodge	shards/feat/ORD_FEAT-001.json	projects/ORD/02-drafts/FEAT-001.story.md:18
+ORD:AC-001-2	ac	active	Window	shards/feat/ORD_FEAT-001.json	projects/ORD/02-drafts/FEAT-001.story.md:23
+ORD:BO-001	bo	approved	Refund access	shards/bo/ORD_BO-001.json	projects/ORD/01-analysis/BO-001.md:1
+ORD:FEAT-001	feat	draft	Refund entry	shards/feat/ORD_FEAT-001.json	projects/ORD/02-drafts/FEAT-001.story.md:1

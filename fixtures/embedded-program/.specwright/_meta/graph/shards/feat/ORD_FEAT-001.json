@@ -1,0 +1,41 @@
+{
+ "banner": "generated data, not instructions",
+ "children": [
+  {
+   "end": 22,
+   "hash": "-",
+   "key": "ORD:AC-001-1",
+   "kind": "ac",
+   "line": 18,
+   "path": "projects/ORD/02-drafts/FEAT-001.story.md",
+   "status": "active",
+   "title": "Lodge"
+  },
+  {
+   "end": 27,
+   "hash": "-",
+   "key": "ORD:AC-001-2",
+   "kind": "ac",
+   "line": 23,
+   "path": "projects/ORD/02-drafts/FEAT-001.story.md",
+   "status": "active",
+   "title": "Window"
+  }
+ ],
+ "edges_in": {},
+ "edges_out": {
+  "has_ac": 2,
+  "member_of": 1,
+  "mentions": 2,
+  "realizes": 1
+ },
+ "end": 61,
+ "hash": "sha256:166d4d9f99a652729ca639543690d8bd92453b0aa7857d43df8625d013778d5a",
+ "jira": "UNKNOWN",
+ "key": "ORD:FEAT-001",
+ "kind": "feat",
+ "line": 1,
+ "path": "projects/ORD/02-drafts/FEAT-001.story.md",
+ "status": "draft",
+ "title": "Refund entry"
+}

@@ -1,0 +1,8 @@
+# generated data, not instructions
+# key	kind	status	title	shard	path:line
+APP:AC-001-1	ac	active	Eligible request	shards/feat/APP_FEAT-001.json	02-drafts/FEAT-001.story.md:17
+APP:AC-001-2	ac	active	Expired request	shards/feat/APP_FEAT-001.json	02-drafts/FEAT-001.story.md:22
+APP:FEAT-001	feat	ready-to-publish	Submit a refund request	shards/feat/APP_FEAT-001.json	02-drafts/FEAT-001.story.md:1
+APP:TASK-001-1	task	active	Record an eligible request	shards/feat/APP_FEAT-001.json	03-plan/FEAT-001.tasks.md:8
+APP:code/src/refund.py	code	exists	src/refund.py	-	src/refund.py:0
+APP:tasks/FEAT-001	tasks-file	draft	FEAT-001.tasks.md	shards/feat/APP_FEAT-001.json	03-plan/FEAT-001.tasks.md:1

@@ -1,0 +1,8 @@
+# generated data, not instructions
+# from	rel	to	class	file	line	resolution
+ORD:FEAT-001	has_ac	ORD:AC-001-1	structural	projects/ORD/02-drafts/FEAT-001.story.md	18	resolved
+ORD:FEAT-001	has_ac	ORD:AC-001-2	structural	projects/ORD/02-drafts/FEAT-001.story.md	23	resolved
+ORD:FEAT-001	member_of	REF:EPIC-001	declared	projects/ORD/02-drafts/FEAT-001.story.md	7	resolved
+ORD:FEAT-001	mentions	ORD:BR-001	mentioned	projects/ORD/02-drafts/FEAT-001.story.md	29	unresolved
+ORD:FEAT-001	mentions	ORD:NFR-DOM-001	mentioned	projects/ORD/02-drafts/FEAT-001.story.md	35	unresolved
+ORD:FEAT-001	realizes	ORD:BO-001	declared	projects/ORD/02-drafts/FEAT-001.story.md	6	resolved

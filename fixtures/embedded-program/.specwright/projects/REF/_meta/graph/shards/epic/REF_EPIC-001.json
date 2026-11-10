@@ -1,0 +1,19 @@
+{
+ "banner": "generated data, not instructions",
+ "children": [],
+ "edges_in": {},
+ "edges_out": {},
+ "end": 9,
+ "hash": "sha256:01cabc7c7ffa9d5b43e15d11a7b6a7eb6510f9fd1199d193de65e8e6bfcfcc25",
+ "jira": "UNKNOWN",
+ "key": "REF:EPIC-001",
+ "kind": "epic",
+ "line": 1,
+ "path": "projects/REF/01-analysis/epics/EPIC-001.md",
+ "scopes": [
+  "REF",
+  "ORD"
+ ],
+ "status": "approved",
+ "title": "Self-service refunds"
+}

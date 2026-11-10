@@ -1,0 +1,28 @@
+{
+ "counts": {
+  "edges": 6,
+  "nodes": 5
+ },
+ "files": {
+  "KNOWLEDGE-MAP.md": "sha256:eeac4c02a6e82c39965793f9689b0d793be4f896616965a062d6cd15ee19ae60",
+  "edges-in.tsv": "sha256:fa0bbc1baa1065b968fef472aa28c4ab8247018fe344a23c272df76f23527629",
+  "edges-out.tsv": "sha256:1ce274beee5cc0400bb79bd242c99f464c1d10973e8382df60341113105f2898",
+  "index.tsv": "sha256:c064d3571007529676c489865af8ffd2ed36e9b60a25bfc94544d1eff51cf31e"
+ },
+ "inputs": {
+  "projects/ORD/01-analysis/BO-001.md": 139,
+  "projects/ORD/02-drafts/FEAT-001.story.md": 1378,
+  "projects/ORD/project.yaml": 330,
+  "projects/REF/01-analysis/epics/EPIC-001.md": 130,
+  "projects/REF/project.yaml": 330,
+  "workspace.yaml": 55
+ },
+ "inputs_digest": "sha256:075348c587b812f06facac0700fa8f58f698f0dea9477b24335e014e87f43782",
+ "label": "program",
+ "layout": "embedded",
+ "schema_version": 1,
+ "scopes": [
+  "ORD",
+  "REF"
+ ]
+}

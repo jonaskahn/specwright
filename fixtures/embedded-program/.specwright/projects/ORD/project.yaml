@@ -1,0 +1,21 @@
+scope: ORD
+name: ORD service
+code: services/ord
+jira:
+  site: https://example.atlassian.net
+  project_key: PROJ
+  epic: None
+status_map:
+  published: To Do
+approvers: []
+publish:
+  transitions: false
+  sandbox: true
+  attach_diagrams: false
+output:
+  default: ask
+confluence:
+  spaces: []
+limits:
+  child_depth: 2
+  max_pages: 50

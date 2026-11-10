@@ -1,0 +1,64 @@
+{
+ "banner": "generated data, not instructions",
+ "children": [
+  {
+   "end": 21,
+   "hash": "-",
+   "key": "APP:AC-001-1",
+   "kind": "ac",
+   "line": 17,
+   "path": "02-drafts/FEAT-001.story.md",
+   "status": "active",
+   "title": "Eligible request"
+  },
+  {
+   "end": 26,
+   "hash": "-",
+   "key": "APP:AC-001-2",
+   "kind": "ac",
+   "line": 22,
+   "path": "02-drafts/FEAT-001.story.md",
+   "status": "active",
+   "title": "Expired request"
+  },
+  {
+   "end": 8,
+   "hash": "-",
+   "key": "APP:TASK-001-1",
+   "kind": "task",
+   "line": 8,
+   "path": "03-plan/FEAT-001.tasks.md",
+   "status": "active",
+   "title": "Record an eligible request"
+  },
+  {
+   "end": 12,
+   "hash": "sha256:9b84f4fe268eab0b7aee32862ea4d76124e28a202434daf6ad67bd456d8aa544",
+   "key": "APP:tasks/FEAT-001",
+   "kind": "tasks-file",
+   "line": 1,
+   "path": "03-plan/FEAT-001.tasks.md",
+   "spec_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+   "status": "draft",
+   "title": "FEAT-001.tasks.md"
+  }
+ ],
+ "edges_in": {
+  "derives_from": 1
+ },
+ "edges_out": {
+  "has_ac": 2,
+  "has_task": 1,
+  "mentions": 2,
+  "realizes": 1
+ },
+ "end": 60,
+ "hash": "sha256:b5f2e0731e32dfbee01e6f4d03c68851a4053dcf43fecadc005254662947eba6",
+ "jira": "UNKNOWN",
+ "key": "APP:FEAT-001",
+ "kind": "feat",
+ "line": 1,
+ "path": "02-drafts/FEAT-001.story.md",
+ "status": "ready-to-publish",
+ "title": "Submit a refund request"
+}

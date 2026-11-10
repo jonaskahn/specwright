@@ -1,0 +1,5 @@
+mode: program
+projects:
+- ORD
+- REF
+default_scope: ORD

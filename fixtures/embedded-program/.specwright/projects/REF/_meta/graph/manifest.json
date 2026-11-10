@@ -1,0 +1,24 @@
+{
+ "counts": {
+  "edges": 0,
+  "nodes": 1
+ },
+ "files": {
+  "KNOWLEDGE-MAP.md": "sha256:75c939f6bd398a4b51e5d61d7e915969f8f4d1d22d216261e48f4f5c1877f812",
+  "edges-in.tsv": "sha256:e964ed24faad80d03e5fce507c0ffcec601dc10be70b6ead01637e0b35a5db16",
+  "edges-out.tsv": "sha256:e964ed24faad80d03e5fce507c0ffcec601dc10be70b6ead01637e0b35a5db16",
+  "index.tsv": "sha256:09cd7db2b5993be3961f80c97e8f659a79fae29ce8435667638ae15d1c60176d"
+ },
+ "inputs": {
+  "projects/REF/01-analysis/epics/EPIC-001.md": 130,
+  "projects/REF/project.yaml": 330,
+  "workspace.yaml": 55
+ },
+ "inputs_digest": "sha256:839f86d72a92d87a514cbf08e480c08139930b7ac2dfa3093a59a4e6947e91e5",
+ "label": "REF",
+ "layout": "embedded",
+ "schema_version": 1,
+ "scopes": [
+  "REF"
+ ]
+}

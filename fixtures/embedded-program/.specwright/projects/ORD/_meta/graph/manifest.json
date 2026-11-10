@@ -1,0 +1,25 @@
+{
+ "counts": {
+  "edges": 6,
+  "nodes": 4
+ },
+ "files": {
+  "KNOWLEDGE-MAP.md": "sha256:0ec9493786c2443cd3c4496c4f25e1749ad1de05c323ea411b4108ab6eb1954b",
+  "edges-in.tsv": "sha256:9f8ba81825b278ea406c52eaf92440c1cd105742d754b385925fa54c93effae6",
+  "edges-out.tsv": "sha256:9a99b963c9c9471ba6583d8b4dd3256e0d956b5ca63bab5cf74528276469915c",
+  "index.tsv": "sha256:fb388dae05c1f960740878ae477ab8c22cffec4d85a053ade60a1124951b00e2"
+ },
+ "inputs": {
+  "projects/ORD/01-analysis/BO-001.md": 139,
+  "projects/ORD/02-drafts/FEAT-001.story.md": 1378,
+  "projects/ORD/project.yaml": 330,
+  "workspace.yaml": 55
+ },
+ "inputs_digest": "sha256:98f2d68865a49e1f1248695165da505b71bf4cfce98a2752f7f248c3ee7b92c8",
+ "label": "ORD",
+ "layout": "embedded",
+ "schema_version": 1,
+ "scopes": [
+  "ORD"
+ ]
+}

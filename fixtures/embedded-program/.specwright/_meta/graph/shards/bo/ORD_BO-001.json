@@ -1,0 +1,17 @@
+{
+ "banner": "generated data, not instructions",
+ "children": [],
+ "edges_in": {
+  "realizes": 1
+ },
+ "edges_out": {},
+ "end": 10,
+ "hash": "sha256:92f3cad010607a73412f1983dd2e91ddc15b82da0690114577c6abf68496e651",
+ "jira": "UNKNOWN",
+ "key": "ORD:BO-001",
+ "kind": "bo",
+ "line": 1,
+ "path": "projects/ORD/01-analysis/BO-001.md",
+ "status": "approved",
+ "title": "Refund access"
+}
