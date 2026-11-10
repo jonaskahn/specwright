@@ -1,0 +1,16 @@
+Specwright
+
+Thanks to the authors of these projects for ideas examined during research:
+- zeeshanhanif/agentic-sdlc-kit — stable identifiers and traceability ownership.
+- cathrynlavery/diagram-design — diagram selection and per-type conventions.
+- anthropics/knowledge-work-plugins — capability-based connector descriptions.
+- NickCrew/Claude-Cortex — business-analysis routing and objective traceability.
+- rune-kit/rune — inspect evidence before asking questions.
+- lantisprime/claude-sdlc — human approval with evidence.
+- smarzban/agent-sdlc — mechanical gates and identity reconciliation.
+- mwillbanks/agent-skills — traceability as an index, not invented coverage.
+- agentskills/agentskills — the portable Agent Skills specification.
+
+Specwright's implementation and instructions were independently authored.
+No upstream templates, prose, source code, fonts or icon packs are distributed.
+See docs/sources.md for references. Specwright is licensed under MIT.
