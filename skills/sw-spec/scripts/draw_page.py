@@ -4,18 +4,24 @@ from __future__ import annotations
 
 import re
 
-from draw_common import ASSETS, card, esc, quote_mermaid, text
-from draw_engine import render_geometry
-from draw_types import GRAPHS, MERMAID
+import draw_notes
+from draw_common import ASSETS, esc, quote_mermaid
+from draw_engine import build
+from draw_layout import measure, num
+from draw_types import LEGACY, MERMAID
 
 MARKERS = """<defs>
 <marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8"
  orient="auto-start-reverse">
 <path d="M 0 0 L 11 6 L 0 12 Z" class="solid"/>
 </marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8"
+ orient="auto-start-reverse">
+<path d="M 0 1 L 10 6 L 0 11" class="open"/>
+</marker>
 <marker id="triangle" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10"
  orient="auto-start-reverse">
-<path d="M 0 0 L 11 6 L 0 12 Z" class="box"/>
+<path d="M 0 0 L 11 6 L 0 12 Z" class="hollow"/>
 </marker>
 <marker id="diamond" viewBox="0 0 16 12" refX="15" refY="6" markerWidth="12" markerHeight="10"
  orient="auto-start-reverse">
@@ -24,27 +30,137 @@ MARKERS = """<defs>
 <marker id="hollow-diamond" viewBox="0 0 16 12" refX="15" refY="6"
  markerWidth="12" markerHeight="10"
  orient="auto-start-reverse">
-<path d="M 0 6 L 8 0 L 15 6 L 8 12 Z" class="box"/>
+<path d="M 0 6 L 8 0 L 15 6 L 8 12 Z" class="hollow"/>
 </marker>
 </defs>"""
+
+# Motion is on by default only where order or flow is part of the meaning.
+AUTO_MOTION = {
+    "process": "loop",
+    "data-flow": "loop",
+    "dp-integration": "loop",
+    "flowchart": "loop",
+    "swimlane": "loop",
+    "state": "loop",
+    "loop": "loop",
+    "journey": "loop",
+    "sequence": "steps",
+    "bar": "grow",
+    "waterfall": "grow",
+    "gantt": "grow",
+    "timeline": "pop",
+    "sankey": "grow",
+    "line": "pop",
+}
+FLOW_SPEED = 180.0
+
+PAGE = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="light dark" name="color-scheme">
+<title>{title}</title>
+<style>{theme}
+{page_css}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">{eyebrow}</p>
+<h1>{title}</h1>
+<p>{description}</p>
+<figure aria-label="Scrollable diagram">{svg}</figure>
+<h2>Spec links and exact data</h2>
+{table}
+</main>
+</body>
+</html>
+"""
+
+
+def resolve_motion(spec, canvas):
+    mode = spec.get("motion", "auto")
+    kind = spec["type"]
+    if mode == "none":
+        return "none"
+    if mode == "reveal":
+        return "reveal"
+    if mode == "loop":
+        return "loop" if canvas.flows else "reveal"
+    if kind == "pyramid" and spec.get("variant") != "funnel":
+        return "none"
+    chosen = AUTO_MOTION.get(kind, "none")
+    if chosen == "loop" and not canvas.flows:
+        return "none"
+    return chosen
+
+
+def flow_css(canvas, order):
+    """Finite, destination-coloured token that follows each connector in turn."""
+    flows = canvas.flows
+    durations = [length / FLOW_SPEED + 0.25 for _, length, _ in flows]
+    total = sum(durations) + 1.0
+    frames, t = [], 0.0
+    for (d, _length, dest), dur in zip(flows, durations, strict=True):
+        start, end = t / total * 100, (t + dur - 0.25) / total * 100
+        index = order.index(dest) % 5 + 1 if dest in order else 1
+        base = f"offset-path:path('{d}');fill:var(--series-{index});"
+        if start > 0.03:
+            frames.append(f"{start - 0.02:.2f}%{{{base}offset-distance:0%;opacity:0}}")
+        frames.append(f"{start:.2f}%{{{base}offset-distance:0%;opacity:1}}")
+        frames.append(f"{end:.2f}%{{{base}offset-distance:100%;opacity:1}}")
+        frames.append(f"{end + 0.02:.2f}%{{{base}offset-distance:100%;opacity:0}}")
+        t += dur
+    frames.append("100%{opacity:0}")
+    return (
+        "@keyframes sw-flow{" + "".join(frames) + "}\n"
+        "@supports (offset-path: path('M0 0 H1')){"
+        "@media (prefers-reduced-motion: no-preference){"
+        ".motion-loop .flow-token{offset-rotate:0deg;"
+        f"animation:sw-flow {total:.2f}s linear 600ms 3;"
+        "}}}"
+    )
 
 
 def evidence(spec):
     rows = []
-    for i, n in enumerate(spec["nodes"]):
+    for n in spec["nodes"]:
         parts = []
         for k, v in n.items():
-            if k in {"id", "label", "spec_ids", "actor"}:
+            if k in {"id", "label", "spec_ids", "actor", "focal"}:
                 continue
             if isinstance(v, list):
                 v = ", ".join(str(x) for x in v)
+            elif isinstance(v, dict):
+                v = ", ".join(f"{a}: {b}" for a, b in v.items())
             parts.append(f"{k}: {v}")
-        rows.append((f"{i + 1}. {n['label']}", parts))
+        rows.append((n, parts))
+    return rows
+
+
+def connections(spec):
+    names = {n["id"]: n["label"] for n in spec["nodes"]}
+    kind = spec["type"]
+    rows = []
+    for e in spec.get("edges", []):
+        extra = ""
+        if kind == "uml-class":
+            extra = f" [{e['kind']}]"
+        elif kind in {"db-schema", "er"}:
+            extra = f" [{e['from_card']} to {e['to_card']}]"
+        elif kind == "sankey":
+            extra = f" ({e['weight']:g} {spec['unit']})"
+        rows.append(f"{names[e['from']]} → {names[e['to']]}{extra}: {e['label']}")
     return rows
 
 
 def mermaid(spec):
     kind = spec["type"]
+    if kind in LEGACY:
+        import draw_legacy
+
+        return draw_legacy.mermaid(spec)
     if kind not in MERMAID:
         return None
     q = quote_mermaid
@@ -89,88 +205,62 @@ def mermaid(spec):
     return "\n".join(lines) + "\n"
 
 
-def render(spec):
-    kind = spec["type"]
-    width, height, body = render_geometry(spec)
-    # Plot marks never replace the accessible evidence key or source-ID cards.
-    if kind not in GRAPHS and kind not in {"uml-class", "db-schema", "tree", "org-chart", "kanban"}:
-        for i, n in enumerate(spec["nodes"]):
-            body += card(
-                n,
-                (1160, 100 + i * 190, 400, 160),
-                [f"Item {i + 1} · see data table"],
-                i < 2 and bool(n.get("spec_ids")),
-            )
-    ledger = []
-    if kind == "architecture-delta":
-        ledger += ["Change: " + v for v in spec["changes"]]
-    for i, e in enumerate(spec.get("edges", [])):
-        if kind == "uml-class":
-            relation = f" [{e['kind']}]"
-        elif kind == "db-schema":
-            relation = f" [{e['from_card']} → {e['to_card']}]"
-        else:
-            relation = ""
-        ledger.append(
-            f"{i + 1}. {e['from']} → {e['to']}{relation}: {e['label']}"
-            + (f" ({e['weight']:g} {spec['unit']})" if kind == "sankey" else "")
+def table(spec):
+    out = [
+        "<table><caption>Exact source values and spec links, in drawing order.</caption>"
+        "<tr><th>Item</th><th>Spec IDs and data</th></tr>"
+    ]
+    for node, parts in evidence(spec):
+        ids = ", ".join(node.get("spec_ids", [])) or "no spec IDs"
+        detail = "; ".join([ids] + parts)
+        out.append(
+            f'<tr><th><a href="#node-{esc(node["id"])}">{esc(node["label"])}</a></th>'
+            f"<td>{esc(detail)}</td></tr>"
         )
-    for name, parts in evidence(spec):
-        ledger.append(name)
-        # Each admitted field is short; wrap joined arrays without dropping text.
-        for part in parts:
-            while len(part) > 100:
-                ledger.append("  " + part[:100])
-                part = part[100:]
-            ledger.append("  " + part)
-    # Put the full connection ledger in SVG as well as HTML for standalone export.
-    if ledger:
-        body += text(60, height + 30, "Connections, changes and exact data", "node-name")
-        for i, row in enumerate(ledger):
-            body += text(60, height + 66 + i * 30, row, "small")
-        height += 120 + len(ledger) * 30
-        width = max(width, 1640)
-    shell = (ASSETS / f"{kind}.html").read_text(encoding="utf-8")
-    desc = re.search(r"<!--description-->(.*?)<!--/description-->", shell, re.S).group(1)
-    style = re.search(r"<style>(.*?)</style>", shell, re.S).group(1)
-    motion = spec.get("motion", "none")
-    body = f'<g class="drawing motion-{motion}">{body}</g>'
-    # SVG namespace is required by the format; it is not a fetched resource.
+    out.append("</table>")
+    links = connections(spec)
+    if links:
+        out.append(
+            "<table><caption>Connections.</caption><tr><th>#</th><th>Relation</th></tr>"
+            + "".join(
+                f"<tr><th>{i + 1}</th><td>{esc(row)}</td></tr>" for i, row in enumerate(links)
+            )
+            + "</table>"
+        )
+    return "".join(out)
+
+
+def render(spec, theme=None):
+    kind = spec["type"]
+    canvas = build(spec)
+    width, height, body, (dx, dy) = canvas.finish(measure(spec["title"], 22, bold=True) + 64)
+    motion = resolve_motion(spec, canvas)
+    order = [n["id"] for n in spec["nodes"]]
+    token = '<circle class="flow-token" cx="0" cy="0" r="5" aria-hidden="true"/>'
+    dynamic = flow_css(canvas, order) if motion == "loop" and canvas.flows else ""
+    theme = theme if theme is not None else (ASSETS / "theme.css").read_text(encoding="utf-8")
+    desc = esc(draw_notes.DESCRIPTIONS[kind])
+    style = theme + (("\n" + dynamic) if dynamic else "")
     svg = (
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width:g} {height:g}" '
-        f'width="{width:g}" role="img" aria-labelledby="diagram-title diagram-desc">'
+        f'<svg viewBox="0 0 {width} {height}" '
+        f'width="{width}" role="img" aria-labelledby="diagram-title diagram-desc">'
         f'<title id="diagram-title">{esc(spec["title"])}</title>'
         f'<desc id="diagram-desc">{desc}</desc>'
         f"<style>{style}</style>{MARKERS}"
-        f'<rect width="100%" height="100%" rx="18" class="paper"/>{body}</svg>'
+        f'<rect width="100%" height="100%" class="paper" data-bg="1"/>'
+        f'<g transform="translate({dx} {dy})"><g class="drawing motion-{motion}">{body}'
+        f"{token if motion == 'loop' and canvas.flows else ''}</g></g></svg>"
     )
-    links = "".join(
-        f'<li><a href="#node-{n["id"]}">{esc(n["label"])}: '
-        f"{esc(', '.join(n.get('spec_ids', [])) or 'no spec IDs')}</a></li>"
-        for n in spec["nodes"]
+    page = PAGE.format(
+        title=esc(spec["title"]),
+        theme=theme,
+        page_css=f"svg {{ min-width: {num(min(width, 760))}px; }}",
+        eyebrow=esc(draw_notes.name(kind)),
+        description=desc,
+        svg=svg,
+        table=table(spec),
     )
-    table = (
-        "<table><caption>Exact source values; numbers on marks refer to these rows.</caption>"
-        "<tr><th>Item</th><th>Data</th></tr>"
-    )
-    for name, parts in evidence(spec):
-        table += (
-            f"<tr><th>{esc(name)}</th><td>{esc('; '.join(parts) or 'No extra fields')}</td></tr>"
-        )
-    table += "</table>"
-    for key, value in [
-        ("title", esc(spec["title"])),
-        ("body", svg),
-        ("links", links),
-        ("data", table),
-    ]:
-        shell = re.sub(
-            rf"<!--{key}-->.*?<!--/{key}-->",
-            lambda _, k=key, v=value: f"<!--{k}-->{v}<!--/{k}-->",
-            shell,
-            flags=re.S,
-        )
-    return shell, mermaid(spec)
+    return page, mermaid(spec)
 
 
 def standalone(page):
@@ -188,7 +278,7 @@ def standalone(page):
 
 
 def _framed(svg):
-    """Frame an exported SVG like the cockpit: grouped ground, raised card, title row."""
+    """Frame an exported SVG: a flat ground, one hairline sheet and a title row."""
     head = re.match(r"<svg\b[^>]*>", svg).group(0)
     box = re.search(r'viewBox="0 0 ([0-9.]+) ([0-9.]+)"', head)
     if not box or "data-framed" in head:
@@ -203,12 +293,12 @@ def _framed(svg):
     inner = svg[len(head) : svg.rindex("</svg>")]
     style_end = inner.index("</style>") + len("</style>")
     prelude, rest = inner[:style_end], inner[style_end:]
+    rest = re.sub(r'<rect\b[^>]*width="100%"[^>]*\bclass="paper"[^>]*/>', "", rest, count=1)
+    rest = re.sub(r'<rect\b[^>]*\bclass="paper"[^>]*width="100%"[^>]*/>', "", rest, count=1)
     card = (
-        '<rect width="100%" height="100%" fill="var(--sw-bg)"/>'
-        f'<rect x="{pad}" y="{pad}" width="{w:g}" height="{h + bar:g}" rx="18" '
-        'class="paper" style="filter:drop-shadow(0 6px 18px rgba(20,24,30,.18))"/>'
-        f'<text x="{pad + 28}" y="{pad + 46}" class="node-name" '
-        f'style="font-size:22px">{title}</text>'
+        '<rect width="100%" height="100%" class="ground"/>'
+        f'<rect x="{pad}" y="{pad}" width="{w:g}" height="{h + bar:g}" rx="8" class="sheet"/>'
+        f'<text x="{pad + 28}" y="{pad + 46}" class="title-bar">{title}</text>'
         f'<line x1="{pad}" y1="{pad + bar - 8}" x2="{pad + w:g}" y2="{pad + bar - 8}" '
         'class="rule"/>'
     )

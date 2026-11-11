@@ -20,7 +20,7 @@ NO_EDGES = set(CHARTS) - {"wardley"} | {
     "layer-stack",
     "fishbone",
 }
-COMMON_NODE = {"id", "label", "spec_ids", "actor"}
+COMMON_NODE = {"id", "label", "spec_ids", "actor", "focal"}
 EXTRA_NODE = {
     "architecture": {"zone", "kind"},
     "architecture-delta": {"status", "before_label", "after_label"},
@@ -155,8 +155,8 @@ def validate(spec, kind):
         kind,
     )
     label(spec.get("title"), 96)
-    if spec.get("motion", "none") not in {"none", "reveal", "loop"}:
-        raise ValueError("motion must be none, reveal or loop")
+    if spec.get("motion", "auto") not in {"auto", "none", "reveal", "loop"}:
+        raise ValueError("motion must be auto, none, reveal or loop")
     actors = names(spec.get("actors", ["Reader"]), "actors", maximum=6)
     nodes = spec.get("nodes")
     if not isinstance(nodes, list) or not 1 <= len(nodes) <= LIMITS[kind]:
@@ -177,6 +177,10 @@ def validate(spec, kind):
         refs(node)
         if node.get("actor", actors[0]) not in actors:
             raise ValueError("node actor is not declared")
+        if "focal" in node and not isinstance(node["focal"], bool):
+            raise ValueError("focal must be true or false")
+    if sum(n.get("focal") is True for n in nodes) > 2:
+        raise ValueError("at most two focal nodes; emphasis loses meaning beyond that")
     if len(nodes) < 5 and len(actors) == 1:
         raise ParagraphRequired("write a paragraph: fewer than 5 items with one actor")
     edges = spec.get("edges", [])

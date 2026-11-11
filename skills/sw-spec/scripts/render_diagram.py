@@ -15,7 +15,9 @@ _local_shared = _here.parent / "_shared" / "scripts"
 _shared = _source_shared if _source_shared.is_dir() else _local_shared
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
+import draw_engine
 import draw_legacy
+import draw_page
 from draw_common import ParagraphRequired
 from draw_page import standalone
 from draw_types import LEGACY, MERMAID, STRUCTURED, TEMPLATES, TYPES
@@ -43,34 +45,25 @@ def validate(spec):
             "and edit, then check offline/borders"
         )
     if kind in LEGACY:
-        # The shared exception preserves the paragraph gate exit code across families.
-        try:
-            return draw_legacy.validate(spec)
-        except draw_legacy.ParagraphRequired as exc:
-            raise ParagraphRequired(str(exc)) from exc
+        return draw_legacy.validate(spec)
     return module(kind).validate(spec)
 
 
 def render(spec):
     validate(spec)
-    result = (
-        draw_legacy.render(spec) if spec["type"] in LEGACY else module(spec["type"]).render(spec)
-    )
-    return result
+    return draw_page.render(spec)
 
 
 def layout(spec):
     validate(spec)
-    return draw_legacy.layout(spec) if spec["type"] in LEGACY else module(spec["type"]).layout(spec)
+    return draw_engine.layout(spec)
 
 
 def mermaid(spec):
     validate(spec)
     if spec["type"] not in MERMAID:
         return None
-    return (
-        draw_legacy.mermaid(spec) if spec["type"] in LEGACY else module(spec["type"]).mermaid(spec)
-    )
+    return draw_page.mermaid(spec)
 
 
 def main(argv=None):

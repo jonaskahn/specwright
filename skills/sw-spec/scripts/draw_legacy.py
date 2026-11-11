@@ -1,24 +1,20 @@
-#!/usr/bin/env python3
-"""Render a bounded JSON diagram without fetching resources.
+"""The eight business-analysis notations: contract, drawing and Mermaid source."""
 
-Exit codes: 0 rendered, 2 invalid input or I/O failure, 3 write a paragraph instead.
-"""
+from __future__ import annotations
 
-import html
 import re
-import sys
-from pathlib import Path
 
-_here = Path(__file__).resolve().parent
-_source_shared = _here.parent.parent / "_shared" / "scripts"
-_local_shared = _here.parent / "_shared" / "scripts"
-_shared = _source_shared if _source_shared.is_dir() else _local_shared
-if str(_shared) not in sys.path:
-    sys.path.insert(0, str(_shared))
+from draw_common import ParagraphRequired, label
+from draw_flow import FEdge, FNode, draw, layout
+from draw_graphs import (
+    card_dims,
+    class_graph,
+    draw_card,
+    flow_edges,
+)
+from draw_layout import Canvas, ceil4, glyph, measure, micro_width, tab_width, wrap
 
-from check_offline import check_text  # noqa: E402
-
-from kitlib.ids import parse_ref  # noqa: E402
+from kitlib.ids import parse_ref
 
 TYPES = (
     "swimlane",
@@ -31,19 +27,6 @@ TYPES = (
     "er",
 )
 MERMAID = {"flowchart", "journey", "state", "sequence", "er"}
-ASSETS = _here.parent / "assets"
-
-
-class ParagraphRequired(ValueError):
-    pass
-
-
-def label(value, maximum=48):
-    if not isinstance(value, str) or not value.strip() or len(value) > maximum:
-        raise ValueError(f"text must contain 1..{maximum} characters")
-    if "<" in value or any(ord(c) < 32 for c in value) or check_text(value):
-        raise ValueError("labels must be plain offline text without markup or controls")
-    return value
 
 
 def validate(spec):
@@ -83,6 +66,8 @@ def validate(spec):
             raise ValueError("split spec IDs across nodes: chip exceeds 36 characters")
         if node.get("actor", actors[0]) not in actors:
             raise ValueError("node actor is not declared")
+        if "focal" in node and not isinstance(node["focal"], bool):
+            raise ValueError("focal must be true or false")
         if kind == "flowchart" and node.get("kind", "step") not in {
             "start",
             "end",
@@ -121,6 +106,8 @@ def validate(spec):
                 label(field, 30)
                 if not re.fullmatch(r"(?:PK |FK )?[A-Za-z][A-Za-z0-9_]*", field):
                     raise ValueError("fields use identifiers with optional PK or FK marker")
+    if sum(n.get("focal") is True for n in nodes) > 2:
+        raise ValueError("at most two focal nodes; emphasis loses meaning beyond that")
     if kind == "journey" and sum(n.get("pain", False) is True for n in nodes) > 2:
         raise ValueError("journey allows at most two pain markers")
     if kind == "journey" and any(n.get("pain") and n["feeling"] != "low" for n in nodes):
@@ -183,261 +170,335 @@ def validate(spec):
     return spec
 
 
-def esc(value):
-    return html.escape(str(value), quote=True)
+def _flow(spec, nodes, edges, lanes=None):
+    cv = Canvas()
+    plan = layout(nodes, edges, lanes)
+    draw(cv, plan, nodes, edges)
+    return cv, plan
 
 
-def text(x, y, value, cls=""):
-    return f'<text x="{x}" y="{y}" class="{cls}">{esc(value)}</text>'
-
-
-def rect(x, y, w, h, cls="box", radius=0):
-    return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{radius}" class="{cls}"/>'
-
-
-def line(x, y, xx, yy, cls="rule"):
-    return f'<line x1="{x}" y1="{y}" x2="{xx}" y2="{yy}" class="{cls}"/>'
-
-
-def slice_height(spec):
-    counts = {}
-    for node in spec["nodes"]:
-        key = (node["activity"], node["slice"])
-        counts[key] = counts.get(key, 0) + 1
-    return max(counts.values(), default=1) * 112 + 64
-
-
-def layout(spec):
-    kind, nodes = spec["type"], spec["nodes"]
-    boxes = {}
-    if kind == "story-map":
-        counts = {}
-        for node in nodes:
-            col = spec["activities"].index(node["activity"])
-            row = spec["slices"].index(node["slice"])
-            slot = counts.get((col, row), 0)
-            counts[col, row] = slot + 1
-            boxes[node["id"]] = (
-                200 + col * 360,
-                140 + row * slice_height(spec) + slot * 112,
-                320,
-                96,
-            )
-    else:
-        for i, node in enumerate(nodes):
-            x, y, w, h = 200, 80 + i * 152, 320, 96
-            if kind == "swimlane":
-                y = (
-                    100
-                    + spec.get("actors", ["Reader"]).index(
-                        node.get("actor", spec.get("actors", ["Reader"])[0])
-                    )
-                    * 176
-                )
-                x = 200 + i * 368
-            if kind in {"journey", "service-blueprint", "sequence"}:
-                x, y = 200 + i * 368, 80
-            if kind == "er":
-                h, y = 224, 80 + i * 280
-            boxes[node["id"]] = (x, y, w, h)
-    return boxes
-
-
-def node_svg(node, box, kind, focal=False):
-    x, y, w, h = box
-    refs = node.get("spec_ids", [])
-    out = [
-        f'<g class="node" id="node-{esc(node["id"])}" '
-        f'data-node="{esc(node["id"])}" data-spec="{esc(" ".join(refs))}" '
-        f'data-spec-ids="{esc(" ".join(refs))}" data-box="{x},{y},{w},{h}">'
-    ]
-    shape = node.get("kind", "step")
-    if kind == "flowchart" and shape == "decision":
-        out.append(
-            f'<polygon points="{x + w // 2},{y - 24} {x + w + 40},{y + h // 2} '
-            f'{x + w // 2},{y + h + 24} {x - 40},{y + h // 2}" class="box"/>'
-        )
-    elif kind == "flowchart" and shape == "merge":
-        out.append(f'<circle cx="{x + 16}" cy="{y + 24}" r="8" class="solid"/>')
-    else:
-        out.append(
-            rect(
-                x,
-                y,
-                w,
-                h,
-                "box focal" if focal else "box",
-                24 if kind == "state" else 40 if shape in {"start", "end"} else 8,
-            )
-        )
-    out.append(text(x + 24, y + 32, node["label"]))
-    if refs:
-        out.append(rect(x + 16, y + h - 44, w - 32, 32, "chip", 4))
-        out.append(text(x + 24, y + h - 22, " · ".join(refs), "ids"))
-    if kind == "er":
-        out.append(line(x, y + 48, x + w, y + 48))
-        for i, field in enumerate(node.get("fields", [])):
-            out.append(text(x + 24, y + 76 + i * 28, field, "ids"))
-    out.append("</g>")
-    return "".join(out)
-
-
-def render_svg(spec):
-    kind, nodes = spec["type"], spec["nodes"]
-    boxes = layout(spec)
-    width = max(b[0] + b[2] for b in boxes.values()) + 520 + len(spec.get("edges", [])) * 24
-    height = max(b[1] + b[3] for b in boxes.values()) + 100
+def _plain_nodes(spec, lane_of=None, lanes=None):
+    dims = {n["id"]: card_dims(n) for n in spec["nodes"]}
+    width = max(d[0] for d in dims.values())
     out = []
-    if kind == "swimlane":
-        height = 100 + len(spec.get("actors", ["Reader"])) * 176
-        for i, actor in enumerate(spec.get("actors", ["Reader"])):
-            y = 80 + i * 176
-            out.extend(
-                [
-                    rect(8, y, width - 16, 176, "tint" if i % 2 else "paper"),
-                    text(24, y + 48, actor),
-                    line(8, y, width - 8, y),
-                ]
+    for n in spec["nodes"]:
+        h = max(52, dims[n["id"]][1])
+
+        def render(cv, x, y, w, hh, n=n):
+            draw_card(cv, n, x, y, w, hh)
+
+        out.append(FNode(n["id"], width, h, render, lane_of(n) if lane_of else 0))
+    return out
+
+
+def swimlane(spec):
+    lanes = spec.get("actors", ["Reader"])
+    nodes = _plain_nodes(spec, lambda n: lanes.index(n.get("actor", lanes[0])))
+    cv, _ = _flow(spec, nodes, flow_edges(spec), lanes)
+    return cv
+
+
+def _diamond_dims(label):
+    lines = wrap(label, 132, 15, True)
+    tw = max(measure(line, 15, bold=True) for line in lines)
+    w = max(160, ceil4(2 * (tw + 12)))
+    h = max(88, ceil4(2 * (18 * len(lines) + 12)))
+    return w, h, lines
+
+
+def _shape_node(n):
+    kind = n.get("kind", "step")
+    if kind == "decision":
+        w, h, lines = _diamond_dims(n["label"])
+
+        def render(cv, x, y, ww, hh, n=n, lines=lines):
+            cx, cy = x + ww / 2, y + hh / 2
+            shape = cv.tpoly(
+                [(cx, y), (x + ww, cy), (cx, y + hh), (x, cy)],
+                "box focal" if n.get("focal") is True else "box",
             )
-    if kind in {"journey", "service-blueprint"}:
-        rows = (
-            ["actions", "touchpoints", "owner", "feeling"]
-            if kind == "journey"
-            else ["evidence", "customer", "frontstage", "backstage", "support"]
+            text = "".join(
+                cv.ttext(
+                    cx,
+                    cy - 9 * (len(lines) - 1) + 18 * k + 5,
+                    line,
+                    "node-name",
+                    "middle",
+                    bold=True,
+                )
+                for k, line in enumerate(lines)
+            )
+            tab = cv.tab(n, cx + ww / 4 + tab_width(n) / 2, y + hh / 4)
+            cv.node(n, shape + text + tab, (x, y, ww, hh))
+
+        return FNode(n["id"], w, h, render, exits="sides")
+    if kind == "merge":
+
+        def render(cv, x, y, ww, hh, n=n):
+            body = cv.tcircle(x + 9, y + 9, 9, "solid") + cv.ttext(
+                x + 26, y + 14, n["label"], "small", size=13
+            )
+            cv.node(n, body, (x, y, 18, 18))
+
+        return FNode(n["id"], 18, 18, render)
+    w, h, _ = card_dims(n, min_w=204)
+    h = max(52, h)
+
+    def render(cv, x, y, ww, hh, n=n, kind=kind):
+        radius = hh / 2 if kind in {"start", "end"} else 6
+        cls = "box focal" if n.get("focal") is True else "box"
+        lines = wrap(n["label"], ww - 32, 15, True)
+        body = [cv.trect(x, y, ww, hh, cls, radius)]
+        for k, line in enumerate(lines):
+            body.append(
+                cv.ttext(
+                    x + ww / 2,
+                    y + hh / 2 - 9 * (len(lines) - 1) + 18 * k + 5,
+                    line,
+                    "node-name",
+                    "middle",
+                    bold=True,
+                )
+            )
+        body.append(cv.tab(n, x + ww - 12, y))
+        cv.node(n, "".join(body), (x, y, ww, hh))
+
+    return FNode(n["id"], w, h, render)
+
+
+def flowchart(spec):
+    nodes = [_shape_node(n) for n in spec["nodes"]]
+    cv, _ = _flow(spec, nodes, flow_edges(spec))
+    return cv
+
+
+def state(spec):
+    base = card_dims
+    dims = {n["id"]: base(n, min_w=188) for n in spec["nodes"]}
+    width = max(d[0] for d in dims.values())
+    nodes = []
+    for n in spec["nodes"]:
+        h = max(52, dims[n["id"]][1])
+
+        def render(cv, x, y, w, hh, n=n):
+            draw_card(cv, n, x, y, w, hh, cls=None)
+
+        nodes.append(FNode(n["id"], width, h, render))
+
+    def dot(cv, x, y, w, h):
+        cv.add("nodes", cv.tcircle(x + 10, y + 10, 8, "solid"))
+
+    def ring(cv, x, y, w, h):
+        cv.add(
+            "nodes",
+            cv.tcircle(x + 12, y + 12, 11, "hollow") + cv.tcircle(x + 12, y + 12, 6, "solid"),
         )
-        height = 240 + 112 * len(rows)
-        points = []
-        for row, name in enumerate(rows):
-            y = 208 + row * 112
-            out.extend(
-                [
-                    rect(
-                        8,
-                        y,
-                        width - 16,
-                        112,
-                        "tint" if name in {"backstage", "support"} else "paper",
-                    ),
-                    text(24, y + 40, name),
-                    line(8, y, width - 8, y, "visibility" if name == "backstage" else "rule"),
-                ]
-            )
-            for node in nodes:
-                x = boxes[node["id"]][0] + 24
-                if kind == "service-blueprint":
-                    value = node.get("cells", {}).get(name, "n/a")
-                else:
-                    value = {
-                        "actions": node["label"],
-                        "touchpoints": node["touchpoint"],
-                        "owner": node["owner"],
-                        "feeling": node["feeling"],
-                    }[name]
-                if (
-                    kind == "service-blueprint"
-                    and name == "frontstage"
-                    and node["id"] == next((n["id"] for n in nodes if n.get("spec_ids")), None)
-                ):
-                    out.append(rect(x - 8, y + 8, 304, 88, "box focal", 8))
-                out.append(text(x, y + 40, value))
-                if name == "feeling":
-                    py = y + {"high": 56, "neutral": 72, "low": 88}[node["feeling"]]
-                    points.append(f"{x + 80},{py}")
-                    if node.get("pain"):
-                        out.append(text(x + 104, py, "Pain", "halo"))
-        if points:
-            out.append(f'<polyline points="{" ".join(points)}" class="curve"/>')
-    if kind == "story-map":
-        height = 200 + len(spec["slices"]) * slice_height(spec)
-        for i, activity in enumerate(spec["activities"]):
-            out.append(text(200 + i * 360, 64, activity))
-        for i, outcome in enumerate(spec["slices"]):
-            out.extend(
-                [
-                    text(16, 120 + i * slice_height(spec), outcome),
-                    line(
-                        8,
-                        112 + i * slice_height(spec),
-                        width - 8,
-                        112 + i * slice_height(spec),
-                        "visibility",
-                    ),
-                ]
-            )
-    if kind == "sequence":
-        height = 280 + len(spec.get("edges", [])) * 88
-        for box in boxes.values():
-            x, y, w, h = box
-            out.append(line(x + w // 2, y + h, x + w // 2, height - 40, "lifeline"))
-        for frame in spec.get("frames", []):
-            y = 192 + frame["start"] * 88
-            out.extend(
-                [
-                    rect(160, y, width - 200, (frame["end"] - frame["start"] + 1) * 88, "frame"),
-                    text(168, y + 20, frame["kind"] + " " + frame["label"], "halo"),
-                ]
-            )
-    for i, edge in enumerate(spec.get("edges", [])):
-        a, b = boxes[edge["from"]], boxes[edge["to"]]
-        x, y, w, h = a
-        xx, yy, ww, hh = b
-        cls = "edge dashed" if edge.get("kind") in {"return", "async"} else "edge"
-        marker = "open" if edge.get("kind") == "async" else "arrow"
-        if kind == "sequence":
-            sy = 240 + i * 88
-            sx, ex = x + w // 2, xx + ww // 2
-            d = f"M {sx} {sy} H {ex}" if sx != ex else f"M {sx} {sy} h 80 v 32 h -80"
-            lx, ly = min(sx, ex) + 16, sy - 12
-            out.append(rect(ex - 8, sy - 8, 16, 48, "chip"))
-        elif kind == "swimlane":
-            sx, sy, ex, ey = x + w, y + h // 2, xx, yy + hh // 2
-            bend = sx + 24 + i * 8
-            d = f"M {sx} {sy} H {bend} V {ey} H {ex}"
-            lx, ly = sx + 8, sy - 12
+
+    nodes += [FNode("~start", 20, 20, dot), FNode("~end", 24, 24, ring)]
+    edges = flow_edges(spec)
+    edges += [FEdge("~start", spec["nodes"][0]["id"]), FEdge(spec["nodes"][-1]["id"], "~end")]
+    cv = Canvas()
+    plan = layout(nodes, edges)
+    draw(cv, plan, nodes, edges)
+    return cv
+
+
+def sequence(spec):
+    cv = Canvas()
+    nodes, edges = spec["nodes"], spec.get("edges", [])
+    dims = {n["id"]: card_dims(n, min_w=164) for n in nodes}
+    width = max(d[0] for d in dims.values())
+    height = max(d[1] for d in dims.values())
+    index = {n["id"]: i for i, n in enumerate(nodes)}
+    pitch = width + 28
+    for e in edges:
+        a, b = index[e["from"]], index[e["to"]]
+        if a != b:
+            pitch = max(pitch, (measure(e["label"], 13) + 56) / abs(a - b))
+    pitch = ceil4(pitch)
+    cx = {n["id"]: i * pitch + width / 2 for i, n in enumerate(nodes)}
+    row = 72
+    first = height + 76
+    bottom = first + row * len(edges) + 24
+    for n in nodes:
+        draw_card(cv, n, cx[n["id"]] - width / 2, 0, width, height)
+        cv.line(cx[n["id"]], height, cx[n["id"]], bottom, "lifeline", "under")
+    for f in spec.get("frames", []):
+        top = first + f["start"] * row - 52
+        low = first + (f["end"] + 1) * row - 28
+        left, right = -12, cx[nodes[-1]["id"]] + width / 2 + 12
+        cv.rect(left, top, right - left, low - top, "frame", 6, "under")
+        tag = f"{f['kind'].upper()} · {f['label']}"
+        tw = micro_width(tag) + 24
+        cv.rect(left, top, tw, 24, "tab", 6, "under")
+        cv.text(left + 12, top + 17, tag, "micro", layer="under", size=12)
+    for k, e in enumerate(edges):
+        y = first + k * row
+        a, b = cx[e["from"]], cx[e["to"]]
+        kind = e.get("kind", "call")
+        cls = "edge dashed" if kind in {"return", "async"} else "edge"
+        cls += f" step d{min(k + 1, 8)}"
+        marker = "open" if kind == "async" else "arrow"
+        if a == b:
+            d = f"M {a:g} {y:g} H {a + 48:g} V {y + 28:g} H {a:g}"
+            cv.path(d, cls, "edges", f'marker-end="url(#{marker})"', (a, y, 48, 28))
+            cv.text(a + 58, y + 18, e["label"], "small", size=13, layer="tickets")
         else:
-            # Each connection gets its own outside gutter so boxes never hide a transition.
-            gutter = 600 + i * 24
-            sy, ey = y + h // 2, yy + hh // 2
-            if edge["from"] == edge["to"]:
-                d = f"M {x + w - 48} {y} V {y - 40} H {x + w + 48} V {y + 24} H {x + w}"
-                lx, ly = x + 40, y - 48
-            else:
-                d = f"M {x + w} {sy} H {gutter} V {ey} H {xx + ww}"
-                lx, ly = gutter + 8, (sy + ey) // 2
-        out.append(f'<path d="{d}" class="{cls}" marker-end="url(#{marker})"/>')
-        caption = edge["label"]
-        if kind == "er":
-            caption = edge["from_card"] + " : " + caption + " : " + edge["to_card"]
-            out.extend(
-                [
-                    text(x + w + 8, y + 32, edge["from_card"], "halo"),
-                    text(xx + ww + 8, yy + hh - 8, edge["to_card"], "halo"),
-                ]
+            cv.path(
+                f"M {a:g} {y:g} H {b:g}",
+                cls,
+                "edges",
+                f'marker-end="url(#{marker})"',
+                (min(a, b), y, abs(b - a), 1),
             )
-        out.append(text(lx, ly, caption, "halo small"))
-    focal_ids = [n["id"] for n in nodes if n.get("spec_ids")][:2]
-    for node in nodes:
-        out.append(
-            node_svg(
-                node,
-                boxes[node["id"]],
-                kind,
-                node["id"] in focal_ids and kind != "service-blueprint",
-            )
+            cv.text((a + b) / 2, y - 10, e["label"], "small", "middle", 13, layer="tickets")
+        if kind != "return":
+            cv.rect(b - 5, y - 6, 10, 30, "act", 2, "tickets")
+    return cv
+
+
+def er(spec):
+    return class_graph(spec)
+
+
+FEELING = {"high": ("mk-ok", 0), "neutral": ("mk-stop", 1), "low": ("mk-fail", 2)}
+
+
+def _glyph(kind, cls, x, y):
+    shape = {"high": "circle", "low": "triangle"}.get(kind, "square")
+    return glyph(shape, x, y, cls, 6)
+
+
+def journey(spec):
+    cv = Canvas()
+    nodes = spec["nodes"]
+    dims = {n["id"]: card_dims(n, min_w=188) for n in nodes}
+    cw = max(
+        [d[0] for d in dims.values()]
+        + [measure(n["touchpoint"], 13) + 32 for n in nodes]
+        + [measure(n["owner"], 13) + 32 for n in nodes]
+    )
+    cw = ceil4(cw)
+    hh = max(d[1] for d in dims.values())
+    lw, gap = 112, 16
+    rows = {"touchpoint": hh + 40, "owner": hh + 84}
+    top, band = hh + 112, 120
+    levels = {"high": top + 28, "neutral": top + 60, "low": top + 92}
+    for name, y in rows.items():
+        cv.text(0, y + 5, name, "micro", layer="under", size=12)
+    cv.text(0, top + 28, "high", "micro", layer="under", size=12)
+    cv.text(0, top + 60, "neutral", "micro", layer="under", size=12)
+    cv.text(0, top + 92, "low", "micro", layer="under", size=12)
+    for y in levels.values():
+        cv.line(lw, y, lw + len(nodes) * (cw + gap) - gap, y, "grid", "under")
+    pts = []
+    for i, n in enumerate(nodes):
+        x = lw + i * (cw + gap)
+        out = []
+        draw_card_group = []
+        draw_card(cv, n, x, 0, cw, hh)
+        for name, y in rows.items():
+            draw_card_group.append(cv.ttext(x + cw / 2, y + 5, n[name], "small", "middle", 13))
+        cls, _ = FEELING[n["feeling"]]
+        py = levels[n["feeling"]]
+        pts.append((x + cw / 2, py, n))
+        out.append(_glyph(n["feeling"], cls, x + cw / 2, py))
+        cv.grow(x + cw / 2 - 8, py - 8, x + cw / 2 + 8, py + 8)
+        if n.get("pain"):
+            out.append(cv.ttext(x + cw / 2 + 14, py + 5, "Pain", "value halo", bold=True))
+        cv.add("nodes", "".join(draw_card_group) + "".join(out))
+    d = "M " + " L ".join(f"{px:g} {py:g}" for px, py, _ in pts)
+    cv.path(d, "curve", "edges", box=(lw, top, cw * len(nodes), band))
+    for (ax, ay, _), (bx, by, nb) in zip(pts, pts[1:], strict=False):
+        cv.flows.append(
+            (f"M {ax:g} {ay:g} L {bx:g} {by:g}", ((bx - ax) ** 2 + (by - ay) ** 2) ** 0.5, nb["id"])
         )
-    if kind == "state":
-        first = boxes[nodes[0]["id"]]
-        last = boxes[nodes[-1]["id"]]
-        out.extend(
-            [
-                f'<circle cx="{first[0] + 160}" cy="32" r="8" class="solid"/>',
-                line(first[0] + 160, 40, first[0] + 160, first[1], "rule"),
-                f'<circle cx="{last[0] + 160}" cy="{last[1] + last[3] + 48}" r="12" class="box"/>',
-                f'<circle cx="{last[0] + 160}" cy="{last[1] + last[3] + 48}" r="6" class="solid"/>',
-                line(last[0] + 160, last[1] + last[3], last[0] + 160, last[1] + last[3] + 36),
-            ]
+    return cv
+
+
+BLUEPRINT = ("evidence", "customer", "frontstage", "backstage", "support")
+
+
+def service_blueprint(spec):
+    cv = Canvas()
+    nodes = spec["nodes"]
+    dims = {n["id"]: card_dims(n, min_w=188) for n in nodes}
+    cw = ceil4(
+        max(
+            [d[0] for d in dims.values()]
+            + [measure(v, 13) + 32 for n in nodes for v in n.get("cells", {}).values()]
         )
-    return width, height, "\n".join(out)
+    )
+    hh = max(d[1] for d in dims.values())
+    lw, gap, rh = 112, 12, 52
+    top = hh + 24
+    total_w = lw + len(nodes) * (cw + gap) - gap
+    for r, name in enumerate(BLUEPRINT):
+        y = top + r * rh
+        internal = name in {"backstage", "support"}
+        cv.rect(0, y, total_w, rh, "lane" if internal else "frame", 4, "under")
+        cv.text(12, y + rh / 2 + 4, name, "micro", layer="under", size=12)
+        if name == "backstage":
+            cv.line(0, y, total_w, y, "visibility", "over")
+            pw = micro_width("line of visibility") + 20
+            cv.rect(lw - pw - 8, y - 11, pw, 22, "ticket", 11, "over")
+            cv.text(lw - pw + 2, y + 4, "line of visibility", "micro", layer="over", size=12)
+    for i, n in enumerate(nodes):
+        x = lw + i * (cw + gap)
+        draw_card(cv, n, x, 0, cw, hh)
+        out = []
+        for r, name in enumerate(BLUEPRINT):
+            value = n.get("cells", {}).get(name, "n/a")
+            cls = "small" if value != "n/a" else "small"
+            out.append(cv.ttext(x + cw / 2, top + r * rh + rh / 2 + 5, value, cls, "middle", 13))
+        cv.add("nodes", "".join(out))
+    return cv
+
+
+def story_map(spec):
+    cv = Canvas()
+    nodes, acts, slices = spec["nodes"], spec["activities"], spec["slices"]
+    dims = {n["id"]: card_dims(n, min_w=188) for n in nodes}
+    cw = max(d[0] for d in dims.values()) + 24
+    lw = ceil4(max(micro_width(s) for s in slices) + 24)
+    stacks = {}
+    for n in nodes:
+        stacks.setdefault((n["activity"], n["slice"]), []).append(n)
+    heights = []
+    for s in slices:
+        cells = [sum(dims[n["id"]][1] + 14 for n in stacks.get((a, s), [])) for a in acts]
+        heights.append(max(max(cells), 72) + 28)
+    for i, a in enumerate(acts):
+        cv.text(lw + i * cw + cw / 2, 0, a, "node-name", "middle", bold=True, layer="under")
+    y = 24
+    for si, s in enumerate(slices):
+        cv.line(0, y, lw + len(acts) * cw, y, "visibility", "under")
+        cv.text(0, y + 20, s, "micro", layer="under", size=12)
+        for ai, a in enumerate(acts):
+            cy = y + 24
+            for n in stacks.get((a, s), []):
+                h = dims[n["id"]][1]
+                draw_card(cv, n, lw + ai * cw + 12, cy, cw - 24, h)
+                cy += h + 14
+        y += heights[si]
+    cv.line(0, y, lw + len(acts) * cw, y, "visibility", "under")
+    return cv
+
+
+BUILDERS = {
+    "swimlane": swimlane,
+    "flowchart": flowchart,
+    "journey": journey,
+    "service-blueprint": service_blueprint,
+    "story-map": story_map,
+    "state": state,
+    "sequence": sequence,
+    "er": er,
+}
+
+
+def build(spec):
+    return BUILDERS[spec["type"]](spec)
 
 
 def mermaid(spec):
@@ -519,28 +580,3 @@ def mermaid(spec):
     if kind == "state":
         lines.append(f"    {aliases[nodes[-1]['id']]} --> [*]")
     return "\n".join(lines) + "\n"
-
-
-def render(spec):
-    validate(spec)
-    width, height, body = render_svg(spec)
-    links = "\n".join(
-        f'<li><a href="#node-{esc(n["id"])}">{esc(n["label"])}: '
-        f"{esc(', '.join(n.get('spec_ids', [])) or 'no spec IDs')}</a></li>"
-        for n in spec["nodes"]
-    )
-    shell = (ASSETS / f"{spec['type']}.html").read_text(encoding="utf-8")
-    for key, value in (("title", esc(spec["title"])), ("body", body), ("links", links)):
-        shell = re.sub(
-            rf"<!--{key}-->.*?<!--/{key}-->",
-            lambda _, key=key, value=value: f"<!--{key}-->{value}<!--/{key}-->",
-            shell,
-            flags=re.S,
-        )
-    shell = re.sub(
-        r'(?<=<svg )viewBox="[^"]*"(?: width="[^"]*")?',
-        f'viewBox="0 0 {width} {height}" width="{width}"',
-        shell,
-    )
-    shell = re.sub(r'(<marker[^>]*viewBox=")[^"]*', r"\g<1>0 0 10 10", shell)
-    return shell, mermaid(spec)

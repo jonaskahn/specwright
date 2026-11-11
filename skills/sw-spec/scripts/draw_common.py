@@ -1,4 +1,4 @@
-"""Inert text and SVG primitives shared by the drawing families."""
+"""Inert text contract shared by the drawing families: escaping, limits and IDs."""
 
 from __future__ import annotations
 
@@ -48,51 +48,6 @@ def refs(node):
     if len(" · ".join(values)) > 36:
         raise ValueError("split spec IDs across nodes: chip exceeds 36 characters")
     return values
-
-
-def text(x, y, value, cls="", anchor="start"):
-    return f'<text x="{x:g}" y="{y:g}" class="{cls}" text-anchor="{anchor}">{esc(value)}</text>'
-
-
-def rect(x, y, w, h, cls="box", radius=12):
-    return f'<rect x="{x:g}" y="{y:g}" width="{w:g}" height="{h:g}" rx="{radius}" class="{cls}"/>'
-
-
-def line(x, y, xx, yy, cls="rule"):
-    return f'<line x1="{x:g}" y1="{y:g}" x2="{xx:g}" y2="{yy:g}" class="{cls}"/>'
-
-
-def circle(x, y, r, cls="solid"):
-    return f'<circle cx="{x:g}" cy="{y:g}" r="{r:g}" class="{cls}"/>'
-
-
-def path(d, cls="edge", extra=""):
-    return f'<path d="{d}" class="{cls}" {extra}/>'
-
-
-def polygon(points, cls="box"):
-    coords = " ".join(f"{x:g},{y:g}" for x, y in points)
-    return f'<polygon points="{coords}" class="{cls}"/>'
-
-
-def group(node, content):
-    ids = esc(" ".join(refs(node)))
-    return (
-        f'<g class="node" id="node-{node["id"]}" data-node="{node["id"]}" '
-        f'data-spec="{ids}" data-spec-ids="{ids}">{content}</g>'
-    )
-
-
-def card(node, box, detail=(), focal=False):
-    x, y, w, h = box
-    content = rect(x, y, w, h, "box focal" if focal else "box")
-    content += text(x + 16, y + 28, node["label"], "node-name")
-    for i, row in enumerate(detail):
-        content += text(x + 16, y + 54 + i * 24, row, "small")
-    if refs(node):
-        content += rect(x + 12, y + h - 38, w - 24, 28, "chip", 4)
-        content += text(x + 20, y + h - 18, " · ".join(refs(node)), "ids")
-    return group(node, content)
 
 
 def quote_mermaid(value):
