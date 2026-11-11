@@ -88,8 +88,12 @@ Run the full gate before every commit and push:
 
 ## Diagram production
 
-the visuals capability exposes 45 primary types: 41 validated JSON renderers plus four original
-illustration templates. The type picker chooses one grammar from saved evidence;
+the visuals capability names 45 primary types in a closed roster, in three tiers: 12 core types
+ship in every build, 8 extended types ship only in a full install, and the other 25 are parked
+under `extras/sw-spec` and ship nowhere. `make package` builds the core profile for upload;
+`tools/install.py` installs the extended profile. The skill text never assumes which types are
+present: `references/type-picker.md` lists only the shipped ones and
+`scripts/render_diagram.py --list-types` prints the same set. The type picker chooses one grammar from saved evidence;
 the matching reference owns schema and budgets. Chart variants do not silently
 increase the primary-type count. Prefer self-contained SVG for embedding and
 HTML for exact data tables. Both remain offline and theme-aware. No browser, third-party renderer, JavaScript controller or remote fonts run

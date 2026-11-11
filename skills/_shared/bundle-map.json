@@ -254,7 +254,19 @@
         "scripts/kitlib/writelog.py",
         "scripts/sw_lint.py",
         "scripts/trace.py"
-      ]
+      ],
+      "tiers": {
+        "extended": [
+          "architecture",
+          "dependency",
+          "deployment",
+          "tree",
+          "org-chart",
+          "timeline",
+          "gantt",
+          "kanban"
+        ]
+      }
     },
     "sw-start": {
       "capabilities": [

@@ -27,6 +27,7 @@ SKILL_PREFIX = "sw-"
 SHARED = "_shared"
 MAP_NAME = "bundle-map.json"
 KITLIB = Path("scripts/kitlib")
+PROFILES = ("core", "extended")
 JUNK_PARTS = {"__pycache__", ".DS_Store"}
 SHARED_REF = re.compile(r"(?<![\w.-])(?:\.\./)?_shared/((?:references|scripts)/[\w./-]+\.\w+)")
 
@@ -73,7 +74,31 @@ def is_junk(path: Path) -> bool:
     return bool(JUNK_PARTS & set(path.parts)) or path.suffix == ".pyc"
 
 
-def own_files(skill: Path) -> list[Path]:
+def type_files(kind: str) -> list[str]:
+    """Skill-relative files that make up one diagram type, by convention."""
+    return [
+        f"assets/{kind}.html",
+        f"references/type-{kind}.md",
+        f"scripts/draw_types/{kind.replace('-', '_')}.py",
+    ]
+
+
+def extended_types(data: dict, skill_name: str) -> list[str]:
+    """Types a skill ships only in the extended profile."""
+    entry = data["skills"].get(skill_name, {})
+    return list(entry.get("tiers", {}).get("extended", []))
+
+
+def excluded_files(data: dict, skill_name: str, profile: str) -> set[str]:
+    """Skill-relative files the profile leaves out; the extended profile leaves out none."""
+    if profile not in PROFILES:
+        raise BundleError(f"unknown profile '{profile}'; choose one of {', '.join(PROFILES)}")
+    if profile == "extended":
+        return set()
+    return {rel for kind in extended_types(data, skill_name) for rel in type_files(kind)}
+
+
+def own_files(skill: Path, skip: frozenset[str] | set[str] = frozenset()) -> list[Path]:
     """Files a skill ships by itself, matching what packaging copies."""
     return sorted(
         p
@@ -81,6 +106,7 @@ def own_files(skill: Path) -> list[Path]:
         if p.is_file()
         and not is_junk(p.relative_to(skill))
         and SHARED not in p.relative_to(skill).parts[:1]
+        and p.relative_to(skill).as_posix() not in skip
     )
 
 
@@ -167,8 +193,9 @@ def derive(root: Path, data: dict, skill: Path) -> tuple[list[str], list[str]]:
     return sorted(python_closure(shared, roots)), problems
 
 
-def count_files(root: Path, data: dict, skill: Path) -> int:
-    return len(own_files(skill)) + len(data["skills"].get(skill.name, {}).get("shared", []))
+def count_files(root: Path, data: dict, skill: Path, profile: str = "extended") -> int:
+    skip = excluded_files(data, skill.name, profile)
+    return len(own_files(skill, skip)) + len(data["skills"].get(skill.name, {}).get("shared", []))
 
 
 def shared_list(root: Path, skill_name: str) -> list[str]:
@@ -184,13 +211,13 @@ def shared_list(root: Path, skill_name: str) -> list[str]:
     return list(entry.get("shared", []))
 
 
-def budget_error(root: Path, skill: Path) -> str | None:
+def budget_error(root: Path, skill: Path, profile: str = "extended") -> str | None:
     """A message when packaging the skill would exceed the file cap, else None."""
     data = load_map(root)
     cap = int(data["limits"].get("max_files", 200))
-    total = count_files(root, data, skill)
+    total = count_files(root, data, skill, profile)
     if total > cap:
-        return f"{skill.name} would ship {total} files; the cap is {cap}"
+        return f"{skill.name} would ship {total} files in the {profile} profile; the cap is {cap}"
     return None
 
 
@@ -226,11 +253,23 @@ def check(root: Path) -> tuple[list[str], list[str]]:
         for rel in stored:
             if not (shared / rel).is_file():
                 problems.append(f"{skill.name}: mapped file {rel} does not exist")
-        total = count_files(root, data, skill)
-        if total > cap:
-            problems.append(f"{skill.name}: {total} files exceed the cap of {cap}")
-        elif total > target:
-            warnings.append(f"{skill.name}: {total} files is above the target of {target}")
+        kinds = extended_types(data, skill.name)
+        if len(kinds) != len(set(kinds)):
+            problems.append(f"{skill.name}: tiers.extended lists a type twice")
+        for kind in kinds:
+            for rel in type_files(kind):
+                if not (skill / rel).is_file():
+                    problems.append(f"{skill.name}: extended type '{kind}' lacks {rel}")
+        for profile in PROFILES if kinds else ("extended",):
+            total = count_files(root, data, skill, profile)
+            if total > cap:
+                problems.append(
+                    f"{skill.name}: {total} files exceed the cap of {cap} ({profile} profile)"
+                )
+            elif total > target:
+                warnings.append(
+                    f"{skill.name}: {total} files is above the target of {target} ({profile})"
+                )
     return problems, warnings
 
 
@@ -255,19 +294,22 @@ def report(root: Path) -> str:
     data = load_map(root)
     shared = shared_folder(root)
     cap = int(data["limits"].get("max_files", 200))
-    rows = [f"{'skill':<12}{'own':>5}{'shared':>8}{'files':>7}{'KB':>7}  capabilities"]
+    rows = [f"{'skill':<22}{'own':>5}{'shared':>8}{'files':>7}{'KB':>7}  capabilities"]
     shipped: set[str] = set()
     for skill in skill_folders(root):
         entry = data["skills"].get(skill.name, {})
-        files = own_files(skill)
         stored = entry.get("shared", [])
         shipped.update(stored)
-        size = sum(p.stat().st_size for p in files)
-        size += sum((shared / rel).stat().st_size for rel in stored if (shared / rel).is_file())
-        rows.append(
-            f"{skill.name:<12}{len(files):>5}{len(stored):>8}{len(files) + len(stored):>7}"
-            f"{size // 1024:>7}  {', '.join(entry.get('capabilities', []))}"
-        )
+        tiered = bool(extended_types(data, skill.name))
+        for profile in PROFILES if tiered else ("extended",):
+            files = own_files(skill, excluded_files(data, skill.name, profile))
+            size = sum(p.stat().st_size for p in files)
+            size += sum((shared / rel).stat().st_size for rel in stored if (shared / rel).is_file())
+            label = f"{skill.name} ({profile})" if tiered else skill.name
+            rows.append(
+                f"{label:<22}{len(files):>5}{len(stored):>8}{len(files) + len(stored):>7}"
+                f"{size // 1024:>7}  {', '.join(entry.get('capabilities', []))}"
+            )
     rows.append(f"\nfile cap: {cap} per skill")
     unshipped = sorted(
         p.relative_to(shared).as_posix()

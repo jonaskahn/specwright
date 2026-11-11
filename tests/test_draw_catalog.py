@@ -12,25 +12,21 @@ import xml.etree.ElementTree as ET
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = ROOT / "skills/sw-spec/scripts"
+from tests.draw_full import ROOT, SCRIPTS, SHELLS  # noqa: E402
+
 sys.path.insert(0, str(SCRIPTS))
 SPEC = importlib.util.spec_from_file_location("catalog_draw", SCRIPTS / "render_diagram.py")
 DRAW = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(DRAW)
 from check_offline import check_text  # noqa: E402
 from draw_page import standalone  # noqa: E402
+from draw_types import EXTENDED  # noqa: E402
 
 from kitlib.borders import find_one_sided  # noqa: E402
 
 
 def fixture(kind):
-    path = (
-        ROOT
-        / ("fixtures/refund/diagrams" if kind in DRAW.LEGACY else "fixtures/draw")
-        / f"{kind}.json"
-    )
-    return json.loads(path.read_text())
+    return json.loads(SHELLS.fixture(kind).read_text())
 
 
 class CatalogTests(unittest.TestCase):
@@ -272,25 +268,55 @@ class CatalogTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             skill = Path(directory) / "sw-spec"
             shutil.copytree(
-                SCRIPTS.parent, skill, ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
+                SHELLS.SKILL, skill, ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
             )
+
+            def codes(packaged=False):
+                report = validate.Report(skill)
+                validate._check_draw_contract(skill, ROOT, report, packaged)
+                return {f.code for f in report.errors}
+
+            self.assertEqual(codes(), set())
             for relative, code in (
-                ("references/type-radar.md", "V122"),
-                ("assets/bar.html", "V123"),
-                ("scripts/draw_types/sankey.py", "V127"),
+                ("references/type-tree.md", "V122"),
+                ("assets/kanban.html", "V123"),
+                ("scripts/draw_types/gantt.py", "V127"),
             ):
                 target = skill / relative
                 content = target.read_text()
                 target.unlink()
-                report = validate.Report(skill)
-                validate._check_draw_contract(skill, report)
-                self.assertIn(code, {f.code for f in report.errors})
+                self.assertIn(code, codes())
                 target.write_text(content)
-            target = skill / "assets/bar.html"
+            target = skill / "assets/kanban.html"
             target.write_text(target.read_text().replace("--sw-bg: #f3f4f7", "--sw-bg: #eeeeee"))
+            self.assertIn("V124", codes())
+
+    def test_validator_keeps_extras_out_of_the_skill_and_tolerates_a_core_build(self):
+        import shutil
+
+        from tests.test_validate import validate
+
+        with tempfile.TemporaryDirectory() as directory:
+            skill = Path(directory) / "sw-spec"
+            shutil.copytree(
+                SHELLS.SKILL, skill, ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
+            )
+            parked = skill / "assets/bar.html"
+            shutil.copy(SHELLS.EXTRAS / "assets/bar.html", parked)
             report = validate.Report(skill)
-            validate._check_draw_contract(skill, report)
-            self.assertIn("V124", {f.code for f in report.errors})
+            validate._check_draw_contract(skill, ROOT, report)
+            self.assertIn("V129", {f.code for f in report.errors})
+            parked.unlink()
+            for kind in EXTENDED:
+                (skill / f"assets/{kind}.html").unlink()
+                (skill / f"references/type-{kind}.md").unlink()
+                (skill / f"scripts/draw_types/{kind.replace('-', '_')}.py").unlink()
+            report = validate.Report(skill)
+            validate._check_draw_contract(skill, ROOT, report, True)
+            self.assertEqual([f.code for f in report.errors], [])
+            report = validate.Report(skill)
+            validate._check_draw_contract(skill, ROOT, report)
+            self.assertIn("V122", {f.code for f in report.errors})
 
     def test_markers_retain_their_own_viewbox(self):
         for kind in DRAW.STRUCTURED:

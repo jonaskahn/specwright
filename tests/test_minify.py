@@ -9,6 +9,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 TOOLS = REPO / "tools"
 ASSETS = REPO / "skills/sw-spec/assets"
+PAGES = sorted(ASSETS.glob("*.html")) + sorted((REPO / "extras/sw-spec/assets").glob("*.html"))
 sys.path.insert(0, str(TOOLS))
 sys.path.insert(0, str(REPO / "skills/_shared/scripts"))
 
@@ -130,16 +131,15 @@ class HtmlTests(unittest.TestCase):
 
 class ShippedAssetTests(unittest.TestCase):
     def test_every_asset_renders_the_same_after_minifying(self):
-        pages = sorted(ASSETS.glob("*.html"))
-        self.assertGreater(len(pages), 40)
-        for path in pages:
+        self.assertEqual(len(PAGES), 45)
+        for path in PAGES:
             raw = path.read_text(encoding="utf-8")
             small = minify.minify_html(raw)
             self.assertLess(len(small), len(raw), path.name)
             self.assertEqual(events(small), events(raw), path.name)
 
     def test_minifying_never_hides_or_creates_one_sided_borders(self):
-        for path in sorted(ASSETS.glob("*.html")) + [ASSETS / "theme.css"]:
+        for path in PAGES + [ASSETS / "theme.css"]:
             raw = path.read_text(encoding="utf-8")
             small = minify.minify_css(raw) if path.suffix == ".css" else minify.minify_html(raw)
             self.assertEqual(

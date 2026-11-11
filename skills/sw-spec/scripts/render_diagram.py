@@ -20,7 +20,7 @@ import draw_legacy
 import draw_page
 from draw_common import ParagraphRequired
 from draw_page import standalone
-from draw_types import LEGACY, MERMAID, STRUCTURED, TEMPLATES, TYPES
+from draw_types import LEGACY, MERMAID, STRUCTURED, TEMPLATES, TYPES, available
 
 from kitlib.fsio import atomic_write
 
@@ -39,6 +39,8 @@ def validate(spec):
     ):
         raise ValueError("choose one of the supported visual types")
     kind = spec["type"]
+    if kind not in available():
+        raise ValueError(f"type {kind} is not in this build; available: {', '.join(available())}")
     if kind in TEMPLATES:
         raise ValueError(
             f"{kind} is a template type; copy assets/{kind}-template.html "
@@ -68,11 +70,24 @@ def mermaid(spec):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("spec", type=Path, help="validated JSON, see the matching type reference")
     parser.add_argument(
-        "output", type=Path, help="separate .html or .svg output; supported Mermaid sidecar"
+        "spec", type=Path, nargs="?", help="validated JSON, see the matching type reference"
+    )
+    parser.add_argument(
+        "output",
+        type=Path,
+        nargs="?",
+        help="separate .html or .svg output; supported Mermaid sidecar",
+    )
+    parser.add_argument(
+        "--list-types", action="store_true", help="print the types this build supports and exit"
     )
     args = parser.parse_args(argv)
+    if args.list_types:
+        print("\n".join(available()))
+        return 0
+    if args.spec is None or args.output is None:
+        parser.error("spec and output are required unless --list-types is given")
     try:
         if (
             args.output.suffix not in {".html", ".svg"}

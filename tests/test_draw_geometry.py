@@ -1,20 +1,16 @@
 """Geometry, encoding and drift checks for the trace-sheet drawing renderer."""
 
 import copy
-import importlib.util
 import json
 import math
 import re
 import sys
 import unittest
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = ROOT / "skills/sw-spec/scripts"
+from tests.draw_full import ROOT, SCRIPTS, SHELLS  # noqa: E402
+
 sys.path.insert(0, str(SCRIPTS))
-SHELLS = importlib.util.spec_from_file_location("draw_shells", ROOT / "tools/draw_shells.py")
-draw_shells = importlib.util.module_from_spec(SHELLS)
-SHELLS.loader.exec_module(draw_shells)
+draw_shells = SHELLS
 
 import draw_engine  # noqa: E402
 import render_diagram as DRAW  # noqa: E402

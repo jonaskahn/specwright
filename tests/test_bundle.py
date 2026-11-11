@@ -222,5 +222,83 @@ class RepositoryTests(unittest.TestCase):
                 self.assertFalse(any("__pycache__" in str(p) for p in files), skill.name)
 
 
+class ProfileTests(BundleFixture):
+    """A skill with extended diagram types builds a smaller core profile."""
+
+    def setUp(self):
+        super().setUp()
+        for rel, text in (
+            (
+                "references/type-picker.md",
+                "| Flow | references/type-flow.md |\n"
+                "| Gantt | references/type-gantt.md |\nclosing line\n",
+            ),
+            ("references/type-flow.md", "flow\n"),
+            ("references/type-gantt.md", "gantt\n"),
+            ("assets/flow.html", "<p>flow</p>\n"),
+            ("assets/gantt.html", "<p>gantt</p>\n"),
+            ("scripts/draw_types/flow.py", "X = 1\n"),
+            ("scripts/draw_types/gantt.py", "X = 2\n"),
+        ):
+            path = self.skill / rel
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text)
+        self.set_skill(tiers={"extended": ["gantt"]})
+        bundle.write(self.root)
+        self.output = self.base / "out"
+
+    def test_core_profile_leaves_extended_files_and_picker_rows_out(self):
+        package.build(self.root, self.output, profile="core")
+        built = self.output / "sw-demo"
+        self.assertTrue((built / "assets/flow.html").is_file())
+        for rel in ("assets/gantt.html", "references/type-gantt.md", "scripts/draw_types/gantt.py"):
+            self.assertFalse((built / rel).exists(), rel)
+        picker = (built / "references/type-picker.md").read_text()
+        self.assertIn("type-flow.md", picker)
+        self.assertNotIn("gantt", picker)
+        self.assertIn("closing line", picker)
+
+    def test_extended_profile_ships_everything(self):
+        package.build(self.root, self.output, profile="extended")
+        built = self.output / "sw-demo"
+        self.assertTrue((built / "assets/gantt.html").is_file())
+        self.assertIn("type-gantt.md", (built / "references/type-picker.md").read_text())
+
+    def test_source_skill_is_never_modified_by_a_core_build(self):
+        package.build(self.root, self.output, profile="core")
+        self.assertTrue((self.skill / "assets/gantt.html").is_file())
+        self.assertIn("gantt", (self.skill / "references/type-picker.md").read_text())
+
+    def test_report_counts_each_profile_and_core_is_smaller(self):
+        data = self.read_map()
+        core = bundle.count_files(self.root, data, self.skill, "core")
+        full = bundle.count_files(self.root, data, self.skill, "extended")
+        self.assertEqual(full - core, 3)
+        text = bundle.report(self.root)
+        self.assertIn("sw-demo (core)", text)
+        self.assertIn("sw-demo (extended)", text)
+
+    def test_cap_is_checked_per_profile(self):
+        data = self.read_map()
+        core = bundle.count_files(self.root, data, self.skill, "core")
+        data["limits"] = {"max_files": core, "target_files": core}
+        self.write_map(data)
+        problems, _ = bundle.check(self.root)
+        self.assertTrue(any("(extended profile)" in p for p in problems))
+        self.assertFalse(any("(core profile)" in p for p in problems))
+        with self.assertRaisesRegex(ValueError, "extended profile"):
+            package.build(self.root, self.output, profile="extended")
+        self.assertTrue(package.build(self.root, self.output, profile="core"))
+
+    def test_missing_extended_file_is_reported(self):
+        (self.skill / "assets/gantt.html").unlink()
+        problems, _ = bundle.check(self.root)
+        self.assertTrue(any("extended type 'gantt' lacks assets/gantt.html" in p for p in problems))
+
+    def test_unknown_profile_is_refused(self):
+        with self.assertRaisesRegex(ValueError, "unknown profile"):
+            package.build(self.root, self.output, profile="tiny")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -122,7 +122,7 @@ build.default: lint.default test.default
 
 package.default: clean.default build.default package.zip
 
-## package.zip: package every public skill into dist/
+## package.zip: package every public skill into dist/ (core diagram types; see docs/install.md)
 package.zip:
 	$(PYTHON) tools/package.py --zip --out "$(DIST_DIR)"
 

@@ -1,32 +1,67 @@
 #!/usr/bin/env python3
 """Regenerate the shipped drawing examples from their fixtures and the canonical theme.
 
-Every structured type ships one example page, ``skills/sw-spec/assets/<type>.html``,
-rendered from ``fixtures/draw/<type>.json`` (business-analysis types from
-``fixtures/refund/diagrams``). The four hand-edited template pages keep their own
-drawing and only take the current theme. ``--check`` reports drift without writing.
+Every structured type has one example page, rendered from ``fixtures/draw/<type>.json``
+(business-analysis types from ``fixtures/refund/diagrams``). Core and extended types keep
+theirs in ``skills/sw-spec/assets/<type>.html``; the types parked under ``extras/sw-spec``
+keep theirs, their fixtures and the four hand-edited template pages there. Templates keep
+their own drawing and only take the current theme. ``--check`` reports drift without writing.
+
+Rendering always runs against a merged copy of the skill and ``extras/sw-spec`` so every
+type in the closed roster is available, whatever the shipped skill carries.
 """
 
 from __future__ import annotations
 
 import argparse
+import atexit
 import json
 import re
+import shutil
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRIPTS = ROOT / "skills" / "sw-spec" / "scripts"
-ASSETS = ROOT / "skills" / "sw-spec" / "assets"
+SKILL = ROOT / "skills" / "sw-spec"
+EXTRAS = ROOT / "extras" / "sw-spec"
+ASSETS = SKILL / "assets"
+
+
+def full_tree() -> Path:
+    """A temporary copy of the skill with ``extras/sw-spec`` laid over it."""
+    tmp = Path(tempfile.mkdtemp(prefix="specwright-full-"))
+    atexit.register(shutil.rmtree, tmp, True)
+    skills = tmp / "skills"
+    skills.mkdir()
+    full = skills / "sw-spec"
+    shutil.copytree(SKILL, full, ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"))
+    for part in ("assets", "references", "scripts"):
+        shutil.copytree(EXTRAS / part, full / part, dirs_exist_ok=True)
+    (skills / "_shared").symlink_to(ROOT / "skills" / "_shared", target_is_directory=True)
+    return full
+
+
+FULL = full_tree()
+SCRIPTS = FULL / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
 import render_diagram  # noqa: E402
-from draw_types import LEGACY, STRUCTURED, TEMPLATES  # noqa: E402
+from draw_types import CORE, EXTENDED, LEGACY, STRUCTURED, TEMPLATES  # noqa: E402
 
 
 def fixture(kind: str) -> Path:
-    folder = "fixtures/refund/diagrams" if kind in LEGACY else "fixtures/draw"
-    return ROOT / folder / f"{kind}.json"
+    if kind in LEGACY:
+        return ROOT / "fixtures/refund/diagrams" / f"{kind}.json"
+    shipped = ROOT / "fixtures/draw" / f"{kind}.json"
+    return shipped if shipped.is_file() else EXTRAS / "fixtures/draw" / f"{kind}.json"
+
+
+def asset_path(kind: str) -> Path:
+    """Where a type's example page lives: the skill when it ships, else extras."""
+    name = f"{kind}-template.html" if kind in TEMPLATES else f"{kind}.html"
+    base = ASSETS if kind in CORE or kind in EXTENDED else EXTRAS / "assets"
+    return base / name
 
 
 def indent(text: str, spaces: int) -> str:
@@ -58,14 +93,14 @@ def expected() -> dict[Path, str]:
     for kind in STRUCTURED:
         spec = json.loads(fixture(kind).read_text(encoding="utf-8"))
         page, source = render_diagram.render(spec)
-        out[ASSETS / f"{kind}.html"] = page
+        out[asset_path(kind)] = page
         if kind in LEGACY:
             folder = ROOT / "fixtures" / "refund" / "diagrams"
             out[folder / f"{kind}.html"] = page
             if source is not None:
                 out[folder / f"{kind}.mmd"] = source
     for kind in TEMPLATES:
-        path = ASSETS / f"{kind}-template.html"
+        path = asset_path(kind)
         out[path] = restyle(path.read_text(encoding="utf-8"), theme)
     return out
 

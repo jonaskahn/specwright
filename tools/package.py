@@ -7,6 +7,10 @@ and rewrites ``../_shared/`` references to local ``_shared/`` so an uploaded fol
 depends on a sibling or the source checkout. Shipped HTML and CSS are minified (the source
 stays readable). A skill over the map's file cap is refused, because the upload limit is a
 file count.
+
+A skill with optional diagram types (``tiers.extended`` in the map) builds in two profiles:
+``core`` leaves the extended types out so the upload stays small, ``extended`` ships all of
+them. Packaging defaults to ``core``; ``install.py`` defaults to ``extended``.
 """
 
 from __future__ import annotations
@@ -55,15 +59,35 @@ def _rewrite_text(path: Path) -> None:
         path.write_text(rewritten, encoding="utf-8")
 
 
-def bundle_skill(root: Path, source: Path, destination: Path) -> None:
+def _ignore(source: Path, skip: set[str]):
+    junk = shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store")
+
+    def ignore(directory: str, names: list[str]) -> set[str]:
+        ignored = set(junk(directory, names))
+        folder = Path(directory).relative_to(source)
+        ignored.update(n for n in names if (folder / n).as_posix() in skip)
+        return ignored
+
+    return ignore
+
+
+def _prune_picker(destination: Path, skip: set[str]) -> None:
+    """Drop type-picker table rows that point at files the profile left out."""
+    picker = destination / "references" / "type-picker.md"
+    if not skip or not picker.is_file():
+        return
+    lines = picker.read_text(encoding="utf-8").splitlines(keepends=True)
+    kept = [ln for ln in lines if not (ln.startswith("|") and any(rel in ln for rel in skip))]
+    picker.write_text("".join(kept), encoding="utf-8")
+
+
+def bundle_skill(root: Path, source: Path, destination: Path, profile: str = "extended") -> None:
     """Copy one public skill plus the shared tree, then make references local."""
     if destination.exists() or destination.is_symlink():
         raise FileExistsError(f"destination exists: {destination}")
-    shutil.copytree(
-        source,
-        destination,
-        ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"),
-    )
+    skip = bundle.excluded_files(bundle.load_map(root), source.name, profile)
+    shutil.copytree(source, destination, ignore=_ignore(source, skip))
+    _prune_picker(destination, skip)
     shared = shared_folder(root)
     for rel in bundle.shared_list(root, source.name):
         target = destination / SHARED / rel
@@ -86,7 +110,7 @@ def zip_skill(folder: Path, target: Path) -> None:
             archive.writestr(info, path.read_bytes())
 
 
-def build(root: Path, output: Path, zipped: bool = False) -> list[Path]:
+def build(root: Path, output: Path, zipped: bool = False, profile: str = "extended") -> list[Path]:
     sources = skill_sources(root)
     if not sources:
         raise ValueError("no public skill folders found")
@@ -95,7 +119,7 @@ def build(root: Path, output: Path, zipped: bool = False) -> list[Path]:
     # Preflight every skill so a collision or an oversize bundle leaves no partial set.
     for source in sources:
         bundle.shared_list(root, source.name)
-        over = bundle.budget_error(root, source)
+        over = bundle.budget_error(root, source, profile)
         if over:
             raise ValueError(over)
         paths = [output / source.name]
@@ -108,7 +132,7 @@ def build(root: Path, output: Path, zipped: bool = False) -> list[Path]:
     built = []
     for source in sources:
         destination = output / source.name
-        bundle_skill(root, source, destination)
+        bundle_skill(root, source, destination, profile)
         built.append(destination)
         if zipped:
             zip_skill(destination, output / f"{source.name}.zip")
@@ -120,9 +144,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent)
     parser.add_argument("--out", type=Path, default=Path("dist"))
     parser.add_argument("--zip", action="store_true", dest="zipped")
+    parser.add_argument(
+        "--profile",
+        choices=bundle.PROFILES,
+        default="core",
+        help="core leaves optional diagram types out (default); extended ships them all",
+    )
     args = parser.parse_args(argv)
     try:
-        for path in build(args.root, args.out, args.zipped):
+        for path in build(args.root, args.out, args.zipped, args.profile):
             print(path)
         return 0
     except (OSError, ValueError) as exc:

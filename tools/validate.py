@@ -340,8 +340,13 @@ def _check_skill_files(skill: Path, root: Path, report: Report) -> None:
                     report.add(path, number, "V062", "CWD-relative runtime command under skills/")
 
 
-def _check_draw_contract(skill: Path, report: Report) -> None:
-    """Inspect the closed catalog without executing installed Python modules."""
+def _check_draw_contract(skill: Path, root: Path, report: Report, packaged: bool = False) -> None:
+    """Inspect the closed catalog without executing installed Python modules.
+
+    The roster names 45 types in three tiers: core types ship in every build, extended types
+    only in a full install (a packaged core build may omit them all) and the rest are parked
+    under ``extras/<skill>`` where they ship nowhere.
+    """
     roster = skill / "scripts/draw_types/__init__.py"
     try:
         tree = ast.parse(roster.read_text(encoding="utf-8"))
@@ -354,10 +359,13 @@ def _check_draw_contract(skill: Path, report: Report) -> None:
         templates = groups["TEMPLATES"]
         new = groups["GRAPHS"] + groups["HIERARCHIES"] + groups["CHARTS"] + groups["OTHER"]
         types = legacy + new + templates
+        core, extended = groups["CORE"], groups["EXTENDED"]
         assert len(types) == len(set(types)) == 45
         assert len(legacy + new) == 41 and len(templates) == 4
+        assert len(core) == 12 and len(extended) == 8
+        assert set(core + extended) <= set(types) and not set(core) & set(extended)
     except (OSError, SyntaxError, ValueError, KeyError, AssertionError) as exc:
-        report.add(roster, 1, "V120", f"invalid 45-type catalog: {exc}")
+        report.add(roster, 1, "V120", f"invalid type catalog: {exc}")
         return
     theme_path = skill / "assets/theme.css"
     try:
@@ -365,13 +373,33 @@ def _check_draw_contract(skill: Path, report: Report) -> None:
     except OSError:
         report.add(theme_path, 1, "V121", "missing canonical drawing theme")
         return
+    extras = root / "extras" / skill.name
+
+    def files(kind: str, base: Path) -> tuple[Path, Path, Path]:
+        name = f"{kind}-template.html" if kind in templates else f"{kind}.html"
+        return (
+            base / "references" / f"type-{kind}.md",
+            base / "assets" / name,
+            base / "scripts/draw_types" / (kind.replace("-", "_") + ".py"),
+        )
+
     for kind in types:
-        reference = skill / "references" / f"type-{kind}.md"
+        shipped = kind in core or kind in extended
+        if not shipped:
+            if packaged:
+                continue
+            for path in files(kind, skill):
+                if path.exists():
+                    report.add(path, 1, "V129", f"extras type '{kind}' must not ship in the skill")
+            for path in files(kind, extras)[:2]:
+                if not path.is_file():
+                    report.add(path, 1, "V130", f"extras type '{kind}' is missing from extras/")
+            continue
+        reference, asset, module = files(kind, skill)
+        if kind in extended and packaged and not reference.exists():
+            continue
         if not reference.is_file():
             report.add(reference, 1, "V122", "missing type reference")
-        asset = (
-            skill / "assets" / (f"{kind}-template.html" if kind in templates else f"{kind}.html")
-        )
         if not asset.is_file():
             report.add(asset, 1, "V123", "missing drawing shell/template")
         else:
@@ -383,10 +411,8 @@ def _check_draw_contract(skill: Path, report: Report) -> None:
             for marker in ('role="img"', "aria-labelledby=", "<title", "<desc"):
                 if marker not in content:
                     report.add(asset, 1, "V126", f"missing SVG accessibility marker {marker}")
-        if kind in new:
-            module = skill / "scripts/draw_types" / (kind.replace("-", "_") + ".py")
-            if not module.is_file():
-                report.add(module, 1, "V127", "missing structured type module")
+        if kind in new and not module.is_file():
+            report.add(module, 1, "V127", "missing structured type module")
     for path in (skill / "assets").glob("*"):
         if path.suffix in {".html", ".css", ".svg"}:
             source = path.read_text(encoding="utf-8")
@@ -418,7 +444,7 @@ def validate_skill(
         _check_vendored(skill, root, report)
     _check_skill_files(skill, root, report)
     if (skill / "scripts" / "draw_types").is_dir():
-        _check_draw_contract(skill, report)
+        _check_draw_contract(skill, root, report, packaged)
 
 
 def _check_siblings(skills: list[Path], root: Path, report: Report) -> None:

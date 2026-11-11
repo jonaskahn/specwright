@@ -31,10 +31,22 @@ class DrawCheckTests(unittest.TestCase):
             code = tool.main(list(args))
         return code, stdout.getvalue(), stderr.getvalue()
 
+    def test_repository_skill_carries_the_full_extended_set(self):
+        """npx and the plugin marketplace read skills/ as is, so it must hold all 20 types."""
+        sys.path.insert(0, str(SCRIPTS))
+        from draw_types import CORE, EXTENDED
+
+        shipped = {p.stem for p in (ROOT / "skills/sw-spec/assets").glob("*.html")}
+        self.assertEqual(shipped, set(CORE) | set(EXTENDED))
+        for kind in CORE + EXTENDED:
+            self.assertTrue((ROOT / f"skills/sw-spec/references/type-{kind}.md").is_file(), kind)
+
     def test_every_template_passes_both_checks(self):
         assets = ROOT / "skills/sw-spec/assets"
-        self.assertEqual(len(list(assets.glob("*.html"))), 45)
-        for path in assets.glob("*.html"):
+        self.assertEqual(len(list(assets.glob("*.html"))), 20)
+        for path in list(assets.glob("*.html")) + list(
+            (ROOT / "extras/sw-spec/assets").glob("*.html")
+        ):
             for tool in (BORDERS, OFFLINE):
                 self.assertEqual(self.run_check(tool, str(path)), (0, "", ""))
 

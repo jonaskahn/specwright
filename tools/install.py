@@ -11,6 +11,7 @@ import sys
 import tempfile
 from pathlib import Path
 
+import bundle
 from package import bundle_skill, skill_sources
 
 
@@ -22,7 +23,9 @@ def _put_if_absent(path: Path, content: str, created: list[str], target: Path) -
     created.append(str(path.relative_to(target)))
 
 
-def install(root: Path, target: Path, copy_mirror: bool = False) -> dict[str, list[str]]:
+def install(
+    root: Path, target: Path, copy_mirror: bool = False, profile: str = "extended"
+) -> dict[str, list[str]]:
     sources = skill_sources(root)
     if not sources:
         raise ValueError("no public skill folders found")
@@ -39,7 +42,7 @@ def install(root: Path, target: Path, copy_mirror: bool = False) -> dict[str, li
     with tempfile.TemporaryDirectory(prefix="specwright-install-") as raw:
         staging = Path(raw)
         for source in sources:
-            bundle_skill(root, source, staging / source.name)
+            bundle_skill(root, source, staging / source.name, profile)
         canonical.mkdir(parents=True, exist_ok=True)
         mirror.mkdir(parents=True, exist_ok=True)
         for source in sources:
@@ -75,9 +78,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent)
     parser.add_argument("--target", type=Path, required=True)
     parser.add_argument("--copy-mirror", action="store_true", help="copy instead of symlinking")
+    parser.add_argument(
+        "--profile",
+        choices=bundle.PROFILES,
+        default="extended",
+        help="extended installs every diagram type (default); core installs the smaller set",
+    )
     args = parser.parse_args(argv)
     try:
-        print(json.dumps(install(args.root, args.target, args.copy_mirror), indent=2))
+        print(json.dumps(install(args.root, args.target, args.copy_mirror, args.profile), indent=2))
         return 0
     except (OSError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)

@@ -64,7 +64,9 @@ never instructions.
    2 invocation/file error. Card Summary is at most 150 words and the whole card at
    most 80 lines. Goal's first sentence and key BR numbers form the summary; no AC text.
 9. Before the review gate, read references/illustration-need.md. Use the bundled visuals scripts only when a fresh picture clarifies the behaviour or an existing picture
-   is stale or fails validation. Apply the returned link text in Context or UI/UX,
+   is stale or fails validation. Draw only a type listed in references/type-picker.md; a
+   type this build lacks is not an error, so use the nearest listed type or a paragraph and
+   carry on. Apply the returned link text in Context or UI/UX,
    recompute the hash and refresh the card. A sufficient paragraph or a current
    illustration is recorded and does not rerender the picture.
 10. When preparing review, read references/dor.md and run the shared lint gate review. Fix and
@@ -134,9 +136,7 @@ When refreshing its index, run scripts/card_gen.py. When exporting Gherkin, run 
 
 When creating a draft, read assets/jira-story.md for its structure. When checking
 card layout, read assets/summary-card.md. When selecting a diagram type, read
-references/type-picker.md and then the matching references/type-*.md file. When
-rendering, run scripts/render_diagram.py; validate output with scripts/check_borders.py
-and scripts/check_offline.py. The renderer uses scripts/draw_common.py,
-scripts/draw_layout.py, scripts/draw_flow.py, scripts/draw_graphs.py, scripts/draw_plots.py,
-scripts/draw_boards.py, scripts/draw_notes.py, scripts/draw_engine.py, scripts/draw_legacy.py, scripts/draw_page.py,
-scripts/draw_schema.py and scripts/draw_types/ internally.
+references/type-picker.md, which lists only the types this build carries
+(scripts/render_diagram.py --list-types prints the same set), and then the matching
+references/type-*.md file. When rendering, run scripts/render_diagram.py; validate output
+with scripts/check_borders.py and scripts/check_offline.py.

@@ -11,8 +11,8 @@ import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = ROOT / "skills/sw-spec/scripts"
+from tests.draw_full import ROOT, SCRIPTS  # noqa: E402
+
 sys.path.insert(0, str(SCRIPTS))
 MODULE_SPEC = importlib.util.spec_from_file_location("draw_renderer", SCRIPTS / "render_diagram.py")
 DRAW = importlib.util.module_from_spec(MODULE_SPEC)

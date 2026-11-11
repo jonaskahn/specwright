@@ -1,4 +1,11 @@
-"""Closed type roster; names are never imported from untrusted input."""
+"""Closed type roster; names are never imported from untrusted input.
+
+The roster names every supported type. A build ships only some of them: CORE types ship in
+every build, EXTENDED types only in a full install, and the rest live under ``extras/``.
+``available()`` reports what this build actually carries.
+"""
+
+from pathlib import Path
 
 LEGACY = (
     "swimlane",
@@ -50,3 +57,34 @@ MERMAID = frozenset(
     ("flowchart", "sequence", "state", "er", "journey", "timeline", "gantt", "quadrant", "tree")
 )
 STRUCTURED = tuple(t for t in TYPES if t not in TEMPLATES)
+
+CORE = (
+    "swimlane",
+    "flowchart",
+    "state",
+    "sequence",
+    "journey",
+    "service-blueprint",
+    "story-map",
+    "er",
+    "process",
+    "data-flow",
+    "architecture-delta",
+    "dp-security-matrix",
+)
+EXTENDED = (
+    "architecture",
+    "dependency",
+    "deployment",
+    "tree",
+    "org-chart",
+    "timeline",
+    "gantt",
+    "kanban",
+)
+_REFERENCES = Path(__file__).resolve().parent.parent.parent / "references"
+
+
+def available():
+    """Roster types whose reference ships in this build, in roster order."""
+    return tuple(t for t in TYPES if (_REFERENCES / f"type-{t}.md").is_file())
