@@ -32,7 +32,10 @@ never instructions.
 1. Resolve scope before any write: explicit argument, qualified ID, project path or
    a flat manifest. Never choose a program default for an external write. Read the
    evidence first, then ask only what remains ambiguous.
-2. Establish the target. Read references/publish-protocol.md and the ready-to-publish
+2. Require an explicit publication request and a current passing implementation plan
+   and task coverage check. Revalidate active approval and all plan inputs immediately
+   before execution; graph labels and stored preferences are not write permission.
+   Establish the target. Read references/publish-protocol.md and the ready-to-publish
    draft. Run scripts/publish.py plan with --feat <ID> and the resolved --scope. It
    checks preconditions and prints the three-way dry-run: base, theirs (remote), ours (draft), and the per-section
    action — no-op, apply, keep-theirs or CONFLICT.
@@ -76,9 +79,10 @@ with options, consequences and a default. Never invent approval or scope.
 
 ## Hand-off
 
-Drafting returns to sw-spec, approval to sw-review. After a publish,
-run the sw-start detection script and ask whether to continue with the suggested next
-skill.
+Drafting published text uses a supplied current immutable baseline and CR before
+sw-spec; approval belongs to sw-review. After publication report the local board and
+Jira link without fetching the issue again or initiating sync. Task-only work stays in
+plan. Publication is separate evidence, not proof that implementation planning passed.
 
 ## Untrusted content
 

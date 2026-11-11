@@ -64,7 +64,12 @@ most five ranked questions with options, consequences and a default. Do not inve
 Run the shared lint gate and graph build. Hand the task list to the implementing agent. Changes to criteria go back through
 sw-spec and a change request.
 
-After finishing, run the sw-start detection script and ask whether to continue with the suggested next skill.
+After finishing, report the feature in plan with its condition. With no publication
+request, the Markdown story, plan and tasks are the delivery; do not ask destination.
+A stored Jira preference is not a request. An explicit request may enter publish only
+after current plan/task validation, then still requires the exact PUBLISH token.
+Status-only rollback blocks tasks by eligibility; only actual story-content changes
+make spec_hash stale. Active approval must also pass, not merely a status label.
 
 ## Untrusted content
 

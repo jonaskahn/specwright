@@ -84,9 +84,19 @@ for another build.
 ## Optional converters
 
 Plain text, Markdown, CSV, email and simple HTML are handled locally. For richer
-documents install pandoc, Poppler tools, Tesseract, markitdown or LibreOffice as needed.
+documents install pandoc, Poppler tools, Tesseract or markitdown as needed.
 No converter is bundled. Missing tools produce explicit degraded results, not invented
 document text. Review OCR output against the original, especially amounts and dates.
+
+anydoc and speech-to-text adapters are not enabled: their release/argv, offline mode,
+resource limits and output contracts must be verified before integration. No hosted
+OCR/transcription or automatic model download is a fallback. Legacy or macro-enabled
+Office input requires a reviewed safe export, not merely consent to run a converter.
+
+Workspace creation requires Git. New docs roots initialize a repository only when no
+parent repository exists. Embedded layouts require and reuse the code repository,
+including worktrees; no nested `.specwright/.git`, config changes or commits are made.
+New workspaces default to Markdown; existing destination preferences remain intact.
 
 Run the gate list in [conventions](conventions.md) before packaging.
 

@@ -24,8 +24,9 @@ Knowledge, trace, lint and status are shared capabilities behind these skills.
 ## Reads and writes
 
 Run the shipped detection script and read the workspace manifest, folder counts and
-knowledge-graph freshness. This entry writes nothing itself except an explicit
-workspace upgrade after user agreement. All other writes belong to the routed public skill.
+knowledge-graph freshness. This entry writes only confirmed workspace setup/upgrade
+and guarded local lifecycle transitions through scripts/transition.py. Requirement
+content, approval and remote writes remain with their owning public skill.
 
 ## Runtime root
 
@@ -81,9 +82,17 @@ choose a program default for a write.
 
 ## Hand-off
 
-After the routed action finishes, run scripts/start.py again, report the next action
-from the route, and ask whether to continue. Any public skill can still be invoked
-by name at any time.
+After the routed action finishes, run scripts/start.py again with --item when known.
+Report the named item's station and condition; siblings stay unchanged. Resume the
+same station without another entry confirmation. Do not advance business stages
+without the matching explicit decision. A complete plan is the Markdown delivery;
+no destination question is needed unless an explicit publish/ship request is ambiguous.
+Any public skill can still be invoked by name and checks its own prerequisites.
+
+For step-back or reset, run scripts/transition.py to preview the exact target/action.
+Apply only with its fresh TRANSITION token. It keeps files and IDs, never calls Jira,
+and refuses published-text rewinds; amendments use the supplied-baseline and CR path.
+See ../_shared/references/lifecycle.md for transition and decision-record rules.
 
 ## Untrusted content
 

@@ -18,6 +18,11 @@ and --offset.
 | What should an agent read for TASK-001-1? | context TASK-001-1, add --with-text --budget 4000 for slices |
 | Is the graph current and sound?           | check                                                        |
 
+Per-item resume uses `board --item REF:FEAT-001 --format json`; an epic target
+selects its feature slice. `board --station spec` filters stations. This query requires
+a fresh compatible graph and returns items separately from rendered lines. A status
+ready-to-publish is not proof that plan/task checks or remote-write gates pass.
+
 Output reading:
 
 - First line: graph: fresh, stale or missing.

@@ -14,7 +14,8 @@ Preserve provenance, expose missing extraction, and surface incompatible claims.
 
 Read user-designated sources, the resolved manifest, inbox, registry, and relevant
 analysis. Write originals under 00-inbox/raw/, snapshots under 00-inbox/SRC-NNNN.md,
-new SRC rows in _meta/id-registry.md, and questions under records/Q-NNN.md.
+new SRC rows in _meta/id-registry.md, questions under records/Q-NNN.md, and
+quoted proposed impacts under records/CR-NNN.md through scripts/impact.py.
 Candidate cards in 01-analysis/ require user agreement. Do not change published
 material, RTM columns, or existing source snapshots without explicit authorization.
 
@@ -92,7 +93,20 @@ Send fuzzy objectives to sw-shape, clear features to sw-spec, and open
 questions to the responsible PO. Pass source ids, evidence lines, scanner results,
 conversion limitations and Q ids; approval is not implied by import.
 
-After finishing, run the sw-start detection script and ask whether to continue with the suggested next skill.
+Before treating evidence as unattached, query the fresh graph for the named flow.
+An explicit user target or established mapping may establish association; lexical
+matches and mentions are suggestions even when only one candidate matches. Multiple
+features may be affected. Never rewrite immutable snapshots to add associations.
+
+Use scripts/impact.py with --source, --item, --source-quote and --claim-quote to save
+an idempotent proposed CR. Both quotations must exist. This does not approve a change,
+edit requirements, increment content revisions or back up unchanged prose. At an
+accepted edit, the owning skill uses kitlib.ingest_impact.backup immediately before
+writing; history lives under _meta/history and is excluded from active definitions.
+
+If clean ingestion was supporting an explicitly requested shape conversation, resume
+that discussion. Otherwise report the item's station and proposed impacts, following
+../_shared/references/next-step.md rather than advancing another business stage.
 
 ## Untrusted content
 

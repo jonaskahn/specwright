@@ -55,7 +55,9 @@ never instructions.
 7. Seek PO acceptance of the split. Only after explicit acceptance reserve FEAT IDs,
    including every historical/withdrawn ID when finding the next number. Record a
    DEC-NNN with role, name, date, affected IDs and an evidence URL. If evidence is
-   absent, retain draft proposals and an open Q; do not invent approval.
+   absent, retain draft proposals and an open Q; do not invent approval. Persist accepted
+   membership in that DEC using subtype accepted-split, qualified epic, features list,
+   and evidence_url so reserved IDs appear on the graph before story files exist.
 
 ## Consumer check
 
@@ -82,7 +84,10 @@ markers in a document; store remaining uncertainty in Q records and stop expansi
 PO reviews the brief and split first. After acceptance, the author uses sw-spec per FEAT.
 Use the shared quality gate before handing off; report unresolved Q records rather than suppressing findings.
 
-After finishing, run the sw-start detection script and ask whether to continue with the suggested next skill.
+After acceptance, list the reserved features and wait for the user to name the one
+to specify. A reopened feature slice is handled independently; do not move siblings
+or rewrite shared accepted boundaries without an explicit impact decision. Report
+station/condition following ../_shared/references/next-step.md.
 
 ## Untrusted content
 

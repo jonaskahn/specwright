@@ -99,10 +99,18 @@ any subsequent publish at dry-run; this skill never uses jira-write itself.
 
 ## Hand-off
 
-The illustration decision finishes inside this skill: use the bundled visuals scripts only for a needed or stale picture, then run the shared gate. The PO uses sw-review next. Only sw-publish can perform
-confirmed remote writes.
+The illustration decision finishes inside this skill: use bundled visuals only for
+a needed or stale picture, then run the shared gate. Finishing a writing session
+leaves this feature in spec; open questions stay here. Enter review only after explicit
+submission through sw-start's guarded transition command and a passing lint gate.
+Only sw-review records approval and only sw-publish performs remote writes.
 
-After finishing, run the sw-start detection script and ask whether to continue with the suggested next skill.
+Before applying an accepted requirement change, preserve the exact current artifact
+with kitlib.ingest_impact.backup, then increment its content revision with the actual
+edit. Proposed imported impacts alone never increment revisions. Published amendments
+still require a current supplied immutable baseline and CR.
+
+After finishing, report the named item's station per ../_shared/references/next-step.md.
 
 ## Untrusted content
 

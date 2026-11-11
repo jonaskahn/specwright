@@ -1,19 +1,21 @@
-# next step table
+# Per-item recommendations
 
-`scripts/status.py` recommends the next skill and whose turn it is, from the feature
-state and its signals. The suggestion is a route, not an approval.
+The shared lifecycle evaluator supplies station and condition. Status may additionally
+flag known drift and open changes for review; it never polls Jira to obtain them.
 
-## Recommendation rules (in the checker's order)
+| Item evidence | Route |
+| --- | --- |
+| Draft including open questions | sw-spec |
+| Explicitly reopened feature slice | sw-shape |
+| In-review, stale or invalidated approval | sw-review |
+| Ready-to-publish with active approval | sw-plan |
+| Missing/stale/invalid tasks or plan | sw-plan, blocked or incomplete |
+| Passing plan, no publication request | plan complete, Markdown delivery |
+| Passing plan and explicit publication request | sw-publish, still gated |
+| Published, task-only changes | sw-plan |
+| Published-text change | supplied immutable baseline + CR before amendment |
+| Withdrawn/superseded | excluded from active board; trace tombstone retained |
+| Conflicting decisions or incomplete transaction | unknown/blocked; inspect evidence |
 
-- Drift reported (`drift` not none/clean) → **review**; BA then PO.
-- Open change requests → **sw-review**; PO.
-- Open questions → **sw-review**; PO.
-- Sign-off stale → **sw-review**; PO.
-- State withdrawn/superseded → **trace capability**; BA.
-- `ready-for-dev` → **implementation**; Dev and QA.
-- `ready-to-publish` with a fresh sign-off → **sw-publish**; BA after PO OK; otherwise **sw-review**; PO.
-- `in-review` → **sw-review**; PO.
-- `published` → **review**; BA.
-- `draft` with a failing lint → **sw-spec**; BA; otherwise **lint capability**; BA.
-
-UNKNOWN means the report could not decide; treat it as an open question, not a fact.
+Questions in a draft are specification work, not implicit submission. A stored Jira
+preference is not a publication request. Multiple items require a target selection.
