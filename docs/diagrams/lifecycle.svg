@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 464" role="img" aria-labelledby="lifecycle-title lifecycle-desc" id="lifecycle-root">
+<title id="lifecycle-title">Specwright per-item lifecycle</title>
+<desc id="lifecycle-desc">Each accepted feature moves from specification through evidenced review into planning, which delivers Markdown; publication is optional and requires a separate request and exact-plan confirmation.</desc>
+<defs>
+      <style>#lifecycle-root { --paper:#ffffff; --ink:#242129; --muted:#625c68; --accent:#ae0631; --tint:#fff0f3; --rule:#aca4ae; --display:Georgia,serif; --sans:'Geist',system-ui,sans-serif; --mono:'Geist Mono',ui-monospace,monospace; color-scheme:light; }
+      @media(prefers-color-scheme:dark) {
+#lifecycle-root:not([data-theme="light"]) { --paper:#19171d; --ink:#f8f3f5; --muted:#c0b4bf; --accent:#ff899c; --tint:#33212a; --rule:#938391; color-scheme:dark; }
+}
+      #lifecycle-root[data-theme="dark"] { --paper:#19171d; --ink:#f8f3f5; --muted:#c0b4bf; --accent:#ff899c; --tint:#33212a; --rule:#938391; color-scheme:dark; }
+      #lifecycle-root { color: var(--ink); font-family: var(--sans); }
+      #lifecycle-root .canvas { fill:var(--paper); }
+      #lifecycle-root .node { fill:var(--paper); stroke:var(--ink); stroke-width:1.5; }
+      #lifecycle-root .focal { fill:var(--tint); stroke:var(--accent); stroke-width:2; }
+      #lifecycle-root .optional { stroke-dasharray:5 4; }
+      #lifecycle-root .name { font:600 22px var(--sans); fill:var(--ink); }
+      #lifecycle-root .sub { font:400 14px var(--mono); fill:var(--muted); }
+      #lifecycle-root .label { font:500 12px var(--mono); letter-spacing:1px; fill:var(--muted); }
+      #lifecycle-root .note { font:400 16px var(--sans); fill:var(--muted); }
+      #lifecycle-root .connector { fill:none; stroke:var(--muted); stroke-width:1.5; }
+      #lifecycle-root .arrow { fill:var(--muted); }
+      #lifecycle-root .mask { fill:var(--paper); }
+      #lifecycle-root .legend-rule { stroke:var(--rule); stroke-width:1; }</style><marker id="lifecycle-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto"><path class="arrow" d="M0 0 L8 4 L0 8 Z"/></marker></defs>
+<rect class="canvas" width="960" height="464"/>
+<text class="label" x="40" y="32">PER-ITEM PROGRESS</text>
+<text class="note" x="40" y="60">Start reads saved evidence. Ingest supports the work without advancing its station.</text>
+<!-- Connectors first. Labels sit above the stroke with an opaque, separated mask. -->
+<path class="connector" d="M224 152 H264" marker-end="url(#lifecycle-arrow)"/>
+<path class="connector" d="M448 152 H488" marker-end="url(#lifecycle-arrow)"/>
+<path class="connector" d="M672 152 H712" marker-end="url(#lifecycle-arrow)"/>
+<path class="connector" d="M768 200 V248 Q768 256 760 256 H588 Q580 256 580 264 V304" marker-end="url(#lifecycle-arrow)"/>
+<path class="connector optional" d="M840 200 V304" marker-end="url(#lifecycle-arrow)"/>
+<rect class="mask" x="192" y="76" width="104" height="20"/><text class="label" text-anchor="middle" x="244" y="90">ACCEPT SPLIT</text>
+<rect class="mask" x="424" y="76" width="88" height="20"/><text class="label" text-anchor="middle" x="468" y="90">SUBMIT</text>
+<rect class="mask" x="644" y="76" width="96" height="20"/><text class="label" text-anchor="middle" x="692" y="90">APPROVE</text>
+<rect class="mask" x="600" y="224" width="132" height="20"/><text class="label" text-anchor="middle" x="666" y="238">CHECKS PASS</text>
+<rect class="mask" x="850" y="240" width="80" height="40"/><text class="label" x="858" y="254">REQUEST</text><text class="label" x="858" y="274">+ CONFIRM</text>
+<rect class="node" x="40" y="104" width="184" height="96" rx="8"/><text class="name" x="60" y="148">Shape</text><text class="sub" x="60" y="176">Epic + feature split</text>
+<rect class="node" x="264" y="104" width="184" height="96" rx="8"/><text class="name" x="284" y="148">Spec</text><text class="sub" x="284" y="176">One feature's story</text>
+<rect class="node" x="488" y="104" width="184" height="96" rx="8"/><text class="name" x="508" y="148">Review</text><text class="sub" x="508" y="176">Hash-bound sign-off</text>
+<rect class="node" x="712" y="104" width="184" height="96" rx="8"/><text class="name" x="732" y="148">Plan</text><text class="sub" x="732" y="176">Approach + tasks</text>
+<rect class="focal" x="472" y="304" width="216" height="88" rx="8"/><text class="name" x="492" y="340">Markdown ready</text><text class="sub" x="492" y="368">Default delivery</text>
+<rect class="node optional" x="712" y="304" width="184" height="88" rx="8"/><text class="name" x="732" y="340">Publish</text><text class="sub" x="732" y="368">Optional Jira write</text>
+<line class="legend-rule" x1="40" y1="420" x2="920" y2="420"/>
+<text class="note" x="40" y="448">Graph · Trace · Lint · Status · Assets · Visuals</text>
+<text class="sub" x="576" y="448">Dashed route: optional publication</text>
+</svg>
