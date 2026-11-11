@@ -369,7 +369,7 @@ def _check_draw_contract(skill: Path, root: Path, report: Report, packaged: bool
         return
     theme_path = skill / "assets/theme.css"
     try:
-        theme = theme_path.read_text(encoding="utf-8")
+        theme = theme_path.read_text(encoding="utf-8").strip()
     except OSError:
         report.add(theme_path, 1, "V121", "missing canonical drawing theme")
         return
