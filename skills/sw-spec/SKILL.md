@@ -104,7 +104,7 @@ Defaults never resolve conflicting policy or approvals.
 
 ## Hand-off
 
-A writing session leaves the feature in spec; open questions stay here. Enter review only
+A writing session leaves the feature in spec, open questions included. Enter review only
 after explicit submission through sw-start's guarded transition and a passing lint gate.
 Only sw-review records approval; only sw-publish writes remotely. Report the station per
 ../_shared/references/next-step.md.
