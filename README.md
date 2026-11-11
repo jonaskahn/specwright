@@ -8,7 +8,6 @@
 <p align="center">
   <strong>From raw idea to implementation-ready work.</strong><br />
   Seven portable agent skills for evidence, requirements, review and traceable implementation plans.<br />
-  Each feature moves at its own pace. Markdown is the default delivery; Jira publication is optional.
 </p>
 
 
@@ -39,7 +38,7 @@ The diagram follows one feature after an epic's split is accepted. Other feature
 review or advance its siblings.
 
 A passing plan delivers the Markdown story, implementation approach and task list. Publication is a separate choice,
-never an automatic consequence of a stored Jira preference. [Diagram source](docs/diagrams/lifecycle.html).
+never an automatic consequence of a stored Jira preference.
 
 | Action              | Public skill | Output                                                                                            |
 |---------------------|--------------|---------------------------------------------------------------------------------------------------|

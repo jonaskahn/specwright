@@ -20,7 +20,47 @@
       #lifecycle-root .connector { fill:none; stroke:var(--muted); stroke-width:1.5; }
       #lifecycle-root .arrow { fill:var(--muted); }
       #lifecycle-root .mask { fill:var(--paper); }
-      #lifecycle-root .legend-rule { stroke:var(--rule); stroke-width:1; }</style><marker id="lifecycle-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto"><path class="arrow" d="M0 0 L8 4 L0 8 Z"/></marker></defs>
+      #lifecycle-root .legend-rule { stroke:var(--rule); stroke-width:1; }
+      #lifecycle-root { --shape:#625c68; --spec:#960321; --review:#a44864; --plan:#4f5d75; }
+      @media (prefers-color-scheme:dark) {
+        #lifecycle-root:not([data-theme="light"]) { --shape:#c0b4bf; --spec:#ff899c; --review:#ffc7cd; --plan:#bfc9dc; }
+      }
+      #lifecycle-root[data-theme="dark"] { --shape:#c0b4bf; --spec:#ff899c; --review:#ffc7cd; --plan:#bfc9dc; }
+      #lifecycle-root .stage-shape { stroke:var(--shape); }
+      #lifecycle-root .stage-spec { stroke:var(--spec); }
+      #lifecycle-root .stage-review { stroke:var(--review); }
+      #lifecycle-root .stage-plan { stroke:var(--plan); }
+      #lifecycle-root .flow-token { display:none; fill:var(--shape); stroke:var(--paper); stroke-width:2; }
+      @supports (offset-path: path('M0 0 H1')) {
+        @media (prefers-reduced-motion: no-preference) {
+          #lifecycle-root .flow-token {
+            display:block;
+            offset-path:path('M224 152 H264 M448 152 H488 M672 152 H712 M768 200 V248 Q768 256 760 256 H588 Q580 256 580 264 V304 M840 200 V304');
+            offset-rotate:0deg;
+            animation:lifecycle-flow 8000ms linear infinite;
+          }
+        }
+      }
+      @keyframes lifecycle-flow {
+        0% { offset-distance:0%; opacity:0; fill:var(--spec); }
+        1% { opacity:1; }
+        7.83% { fill:var(--spec); }
+        7.85% { fill:var(--review); }
+        15.68% { fill:var(--review); }
+        15.70% { fill:var(--plan); }
+        23.52% { fill:var(--plan); }
+        23.54% { fill:var(--accent); }
+        79.59% { fill:var(--accent); }
+        79.62% { fill:var(--ink); }
+        99% { opacity:1; }
+        100% { offset-distance:100%; opacity:0; fill:var(--ink); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #lifecycle-root .flow-token { display:none; animation:none; }
+      }
+      @media print {
+        #lifecycle-root .flow-token { display:none; animation:none; }
+      }</style><marker id="lifecycle-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto"><path class="arrow" d="M0 0 L8 4 L0 8 Z"/></marker></defs>
 <rect class="canvas" width="960" height="464"/>
 <text class="label" x="40" y="32">PER-ITEM PROGRESS</text>
 <text class="note" x="40" y="60">Start reads saved evidence. Ingest supports the work without advancing its station.</text>
@@ -35,12 +75,15 @@
 <rect class="mask" x="644" y="76" width="96" height="20"/><text class="label" text-anchor="middle" x="692" y="90">APPROVE</text>
 <rect class="mask" x="600" y="224" width="132" height="20"/><text class="label" text-anchor="middle" x="666" y="238">CHECKS PASS</text>
 <rect class="mask" x="850" y="240" width="80" height="40"/><text class="label" x="858" y="254">REQUEST</text><text class="label" x="858" y="274">+ CONFIRM</text>
-<rect class="node" x="40" y="104" width="184" height="96" rx="8"/><text class="name" x="60" y="148">Shape</text><text class="sub" x="60" y="176">Epic + feature split</text>
-<rect class="node" x="264" y="104" width="184" height="96" rx="8"/><text class="name" x="284" y="148">Spec</text><text class="sub" x="284" y="176">One feature's story</text>
-<rect class="node" x="488" y="104" width="184" height="96" rx="8"/><text class="name" x="508" y="148">Review</text><text class="sub" x="508" y="176">Hash-bound sign-off</text>
-<rect class="node" x="712" y="104" width="184" height="96" rx="8"/><text class="name" x="732" y="148">Plan</text><text class="sub" x="732" y="176">Approach + tasks</text>
+<rect class="node stage-shape" x="40" y="104" width="184" height="96" rx="8"/><text class="name" x="60" y="148">Shape</text><text class="sub" x="60" y="176">Epic + split</text>
+<rect class="node stage-spec" x="264" y="104" width="184" height="96" rx="8"/><text class="name" x="284" y="148">Spec</text><text class="sub" x="284" y="176">One feature's story</text>
+<rect class="node stage-review" x="488" y="104" width="184" height="96" rx="8"/><text class="name" x="508" y="148">Review</text><text class="sub" x="508" y="176">Hash-bound sign-off</text>
+<rect class="node stage-plan" x="712" y="104" width="184" height="96" rx="8"/><text class="name" x="732" y="148">Plan</text><text class="sub" x="732" y="176">Approach + tasks</text>
 <rect class="focal" x="472" y="304" width="216" height="88" rx="8"/><text class="name" x="492" y="340">Markdown ready</text><text class="sub" x="492" y="368">Default delivery</text>
 <rect class="node optional" x="712" y="304" width="184" height="88" rx="8"/><text class="name" x="732" y="340">Publish</text><text class="sub" x="732" y="368">Optional Jira write</text>
+<!-- One decorative token follows only connector subpaths. Move commands skip nodes;
+     the optional publication connector is a separate pass, not a delivery-to-publish edge. -->
+<circle class="flow-token" cx="0" cy="0" r="5" aria-hidden="true" focusable="false" data-motion-decorative="true"/>
 <line class="legend-rule" x1="40" y1="420" x2="920" y2="420"/>
 <text class="note" x="40" y="448">Graph · Trace · Lint · Status · Assets · Visuals</text>
 <text class="sub" x="576" y="448">Dashed route: optional publication</text>
