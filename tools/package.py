@@ -4,8 +4,9 @@
 The repository keeps one canonical ``skills/_shared`` tree. Packaging copies into each
 public skill only the shared files listed for it in ``skills/_shared/bundle-map.json``
 and rewrites ``../_shared/`` references to local ``_shared/`` so an uploaded folder never
-depends on a sibling or the source checkout. A skill over the map's file cap is refused,
-because the upload limit is a file count.
+depends on a sibling or the source checkout. Shipped HTML and CSS are minified (the source
+stays readable). A skill over the map's file cap is refused, because the upload limit is a
+file count.
 """
 
 from __future__ import annotations
@@ -18,6 +19,7 @@ import zipfile
 from pathlib import Path
 
 import bundle
+import minify
 
 SKILL_PREFIX = "sw-"
 SHARED = "_shared"
@@ -70,6 +72,7 @@ def bundle_skill(root: Path, source: Path, destination: Path) -> None:
     for path in sorted(destination.rglob("*")):
         if path.is_file():
             _rewrite_text(path)
+            minify.minify_file(path)
 
 
 def zip_skill(folder: Path, target: Path) -> None:
