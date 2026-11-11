@@ -17,7 +17,7 @@ When the customer submits a refund
 Then the amount is 1,200,000 VND
 
 ## Business rules
-- BR-001 applies with \`code\` and **bold** text.
+- BR-001 applies with \\`code\\` and **bold** text.
 
 ## DoR checklist
 - [ ] Goals link a BO
