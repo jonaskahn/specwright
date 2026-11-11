@@ -27,8 +27,7 @@ Nine participants, twice as many messages, two frames.
 Nodes are participants. Edge kind is call, return or async. Optional frames have kind alt, opt or loop, label, start and
 end inclusive zero-based message indexes. Frames must not cross. Use separate drawings for nested alternatives; no
 free-floating if/else arrows.
-The common contract and CLI codes are in style.md. The matching JSON in
-fixtures/refund/diagrams is illustrative, not approved policy.
+Common contract and CLI codes: references/style.md. Examples are illustrative, not approved policy.
 
 ## Anti-patterns
 

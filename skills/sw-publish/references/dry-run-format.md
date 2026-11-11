@@ -1,24 +1,34 @@
-# dry-run format
+# Dry-run format
 
-`scripts/publish.py plan` prints the three-way dry-run that must be shown to the user
-before any confirmation. Read this to interpret its output.
+`scripts/publish.py plan` prints the three-way dry-run. Show it to the user before any
+confirmation.
 
 ## Result fields
 
-- `scope_id` — the resolved qualified feature id (`SCOPE:FEAT-NNN`).
-- `jira_key` — the target key, or `NEW` for a create.
-- `project` — the Jira project from the manifest.
-- `draft_hash` — the full draft content hash; `plan_hash` / `short_hash` bind the whole
-  plan (sections, fields, links, attachments, calls), not just the draft.
-- `updated` — the remote update timestamp the edit will be checked against.
-- `sections` — one row per story section with `base`, `current`, `new` and an `action`.
+| Field | Meaning |
+| --- | --- |
+| `scope_id` | Resolved qualified feature id (`SCOPE:FEAT-NNN`). |
+| `jira_key` | Target key, or `NEW` for a create. |
+| `project` | Jira project from the manifest. |
+| `draft_hash` | Full draft content hash. |
+| `plan_hash`, `short_hash` | Bind the whole plan (sections, fields, links, attachments, calls), not just the draft. |
+| `updated` | Remote update timestamp the edit is checked against. |
+| `sections` | One row per story section: `base`, `current`, `new`, `action`. |
 
-## Actions
+## Section actions
 
-- `no-op` — draft and remote already agree; nothing to change.
-- `apply` — the draft changes the section safely; a diff is shown.
-- `keep-theirs` — the remote changed and the draft did not; keep remote.
-- `CONFLICT` — both sides changed the same section; stop and ask a human.
+| Action | Meaning |
+| --- | --- |
+| `no-op` | Draft and remote agree; nothing to change. |
+| `apply` | The draft changes the section safely; a diff is shown. |
+| `keep-theirs` | Remote changed, draft did not; keep remote. |
+| `CONFLICT` | Both sides changed the section; stop and ask a human. |
 
-Exit codes: `0` no write, `1` apply, `3` sync needed, `4` conflict. Any `CONFLICT`
-blocks the plan; `keep-theirs` means a sync is needed first.
+## Plan classification
+
+The plan result carries `exit_code`, derived from the actions: `0` no write, `1` apply,
+`3` sync needed (`keep-theirs` present), `4` conflict (`CONFLICT` present). A `CONFLICT`
+blocks the plan; `keep-theirs` needs a fresh baseline from normal ingestion first.
+
+This classification is separate from the process exit of scripts/publish.py: `0` the
+preconditions pass and the plan is printed; `2` blocked plan or usage error.

@@ -46,7 +46,7 @@ Answer: UNKNOWN; once answered link evidence and DEC id.
 Affected IDs: [existing candidate rule ids, or UNKNOWN]
 ~~~
 
-The refund fixtures disagree: policy says 30 days after delivery; email says
-14 days, full refund in the first week and half afterward. Keep both citable;
-do not approve either BR until the PO answers. Cards require user acceptance;
-keep at most three explicit clarification markers per card, splitting if needed.
+Example conflict: policy says 30 days after delivery; an email says 14 days, full refund in
+the first week and half afterward. Keep both citable; approve neither BR until the PO
+answers. Cards need user acceptance. Keep at most three clarification markers per card;
+split the card if more are needed.

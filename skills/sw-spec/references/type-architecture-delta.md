@@ -22,10 +22,9 @@ refuses fewer than five items and one actor; never invent an actor to bypass it.
 
 ## JSON additions
 
-The common contract in references/style.md applies. This complete illustrative
-input shows every required field. Source order is retained unless a calendar or
-parent relation determines position. Omitted observations must be resolved, not
-silently replaced with policy. Unknown fields are rejected.
+Common contract: references/style.md. The input below is illustrative and shows every
+required field. Source order is kept unless a calendar or parent relation sets position.
+Resolve omitted observations; never replace them with policy. Unknown fields are rejected.
 
 ```json
 {

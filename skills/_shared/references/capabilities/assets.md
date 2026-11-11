@@ -5,10 +5,9 @@ project so later steps can cite them instead of re-describing them.
 
 ## Trigger
 
-Asset collection is part of ingestion and planning discussion, not an optional
-command. During every ingestion batch, inspect supplied attachments, images,
-diagrams, document references and relevant links. During planning discussion, detect
-newly supplied or mentioned concrete assets as the discussion progresses.
+Runs during every ingestion batch and during planning discussion. In a batch, inspect
+supplied attachments, images, diagrams, document references and relevant links. In
+discussion, detect newly supplied or mentioned concrete assets as they appear.
 
 ## Collection rules
 
@@ -25,7 +24,7 @@ newly supplied or mentioned concrete assets as the discussion progresses.
 
 ## Usage
 
-Run scripts/store.py with --root <project> and the resolved scope. Classify the asset
-with references/domain/asset-kind.md. For a link, use --source URL; do not fetch
+Run ../_shared/scripts/store.py with --root <project> and the resolved scope. Classify the
+asset with ../_shared/references/asset-kind.md. For a link, use --source URL; do not fetch
 remote content. For local files, the script copies the bytes and registers the hash.
 Duplicate bytes report the existing asset instead of allocating a new one.

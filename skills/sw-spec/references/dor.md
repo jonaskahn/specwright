@@ -15,9 +15,9 @@ Before requesting review, check:
 - Review lint passes. PO sign-off is requested and later recorded with role, name,
   date, evidence URL and the exact approved draft hash through sw-review.
 
-INVEST remains useful here: independent value, room to negotiate the solution,
-estimability, team-confirmed size and observable testing. It is not a substitute for
-PO approval or evidence. A draft may be technically complete but not yet approved.
+INVEST (independent value, negotiable solution, estimable, team-confirmed size,
+observable tests) is a useful check, not a substitute for PO approval. A draft can be
+complete and still unapproved.
 
 Published amendments need a current Jira snapshot and a real CR. Inspect approval
 freshness after every behaviour change. A previous approval of different content

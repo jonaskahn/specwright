@@ -8,7 +8,7 @@
   snapshots and raise a change request before revising published requirements.
 - Only sw-publish may write to Jira or Confluence. Require a successful quality gate,
   a three-way dry-run report and fresh typed confirmation for the exact plan in the
-  current session. Never delete remote artifacts or ensure workflow transitions
+  current session. Never delete remote artifacts or force workflow transitions
   without both manifest permission and separate human confirmation.
 - Work from saved snapshots. New source versions get new files; never overwrite originals.
 - Keep IDs stable. Withdrawn IDs remain tombstones and their numbers are never reused.

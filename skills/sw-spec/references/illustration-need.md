@@ -1,7 +1,7 @@
 # When an illustration is needed
 
-Compare saved evidence with any existing picture. Do not use source hashes, and do not draw because a lifecycle stage
-says drawing comes next. A direct request still uses this test.
+Compare saved evidence with any existing picture. Do not use source hashes. Do not draw because
+a lifecycle stage says drawing is next. A direct request still passes this test.
 
 ## Fresh feature
 
@@ -33,6 +33,7 @@ source IDs and the reason the picture is current.
 
 ## Ownership
 
-Return paths and link text. The calling `sw-spec` run writes those links, recomputes the story hash and refreshes the
-card. This skill does not edit the draft, rules, IDs or approval. After a new or updated illustration, `sw-spec` reruns
-the graph and lint before review. A no-op still leaves that story gate to `sw-spec`.
+Return paths and link text. The sw-spec run writes the links, recomputes the story hash and
+refreshes the card. The illustration step never edits the draft, rules, IDs or approval.
+After a new or updated picture, sw-spec reruns graph and lint before review; a no-op still
+leaves that gate to sw-spec.

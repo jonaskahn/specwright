@@ -1,25 +1,26 @@
-# field ownership
+# Field ownership
 
-Only convert fields this skill owns; everything else is preserved byte for byte.
+Convert only fields this skill owns; preserve everything else byte for byte.
 
-## Owned fields
+## Owned Jira fields
 
-- `description` — converted from the draft body (`adf.md_to_adf`).
-- `summary` — taken from the draft front matter `jira_summary`.
-- `labels` — merged, never replaced: the draft labels plus `specwright`,
-  `feat:<id>` and `proj:<scope>`.
+| Field | Source |
+| --- | --- |
+| `description` | Draft body, converted by `adf.md_to_adf`. |
+| `summary` | Draft front matter `jira_summary`. |
+| `labels` | Merged, never replaced: draft labels plus `specwright`, `feat:<id>`, `proj:<scope>`. |
 
-Foreign fields, labels and links stay untouched. `jira_parent`, `jira_issuetype`,
-`jira_priority` and any other remote fields are never invented or overwritten.
+Foreign fields, labels and links stay untouched. Never invent or overwrite `jira_parent`,
+`jira_issuetype`, `jira_priority` or any other remote field.
 
-## Local index ownership
+## Local index writes
 
-After a successful remote write, sw-publish updates exactly:
+After every remote write succeeds, update exactly:
 
-- the registry `Jira key`, `Label`, `Entity property`, `Last published draft hash` and
-  `State` columns for the feature;
-- the RTM `Jira [sw-publish]` column;
-- the card `status` to `published`, `home` to `jira`, and the `links` home URL.
+- registry columns `Jira key`, `Label`, `Entity property`, `Last published draft hash`, `State` for the feature;
+- RTM column `Jira [sw-publish]`;
+- card `status: published`, `home: jira`, and the `links` home URL.
 
-Registry column ownership is enforced in `lib/kitlib/rtm.py`; sw-publish may not set
-the `BO`, `BR/NFR` or `Story draft` columns, which belong to sw-spec.
+Column ownership is enforced in `../_shared/scripts/kitlib/rtm.py` (rules:
+`../_shared/references/rtm-contract.md`). sw-publish may not set the BO, BR/NFR or Story
+draft columns; those belong to sw-spec.

@@ -1,7 +1,7 @@
 # Per-item recommendations
 
-The shared lifecycle evaluator supplies station and condition. Status may additionally
-flag known drift and open changes for review; it never polls Jira to obtain them.
+The lifecycle evaluator supplies station and condition. Status may flag known drift and
+open changes; it never polls Jira.
 
 | Item evidence | Route |
 | --- | --- |

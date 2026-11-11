@@ -5,7 +5,7 @@ checks existing visuals before calling them current. It is bundled inside `sw-sp
 
 ## Need check
 
-Read references/domain/illustration-need.md before drawing. A current illustration is
+Read sw-spec's references/illustration-need.md before drawing. A current illustration is
 a no-op. Fewer than five items and one actor means use a paragraph; do not invent
 actors to bypass the gate. No diagram creates policy or approval.
 
@@ -21,9 +21,9 @@ actors to bypass the gate. No diagram creates policy or approval.
 
 ## Rendering
 
-Select a type with references/domain/type-picker.md and the matching
-references/domain/type-*.md entry. Run scripts/render_diagram.py with absolute JSON
+Select a type with sw-spec's references/type-picker.md and the matching
+references/type-*.md entry. Run sw-spec's scripts/render_diagram.py with absolute JSON
 and approved output paths. Prefer .svg for portable embedding, .html for the exact
-data table and local navigation. Run scripts/check_borders.py and
+data table and local navigation. Run sw-spec's scripts/check_borders.py and
 scripts/check_offline.py on every artifact. Escape external text before putting it in
 HTML. Generated diagrams are offline with full borders, outlines, tints or shadows.

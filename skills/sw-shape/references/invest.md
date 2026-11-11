@@ -1,7 +1,7 @@
 # INVEST and useful slices
 
-INVEST names six discussion tests introduced by Bill Wake. It does not make story
-quality mechanically decidable. Record one reason per letter for every proposed FEAT:
+INVEST gives six discussion tests; it does not make story quality mechanically decidable.
+Record one reason per letter for every proposed FEAT:
 
 | Letter          | Test                                                                 | Refund submission example                                  |
 |-----------------|----------------------------------------------------------------------|------------------------------------------------------------|
@@ -12,9 +12,8 @@ quality mechanically decidable. Record one reason per letter for every proposed 
 | S — Small       | Can the team finish and verify it within its agreed delivery window? | Unknown until the team estimates it.                       |
 | T — Testable    | Can QA observe success and refusal with concrete inputs?             | Pass: amount and pending state are observable.             |
 
-A local heuristic of about seven or fewer ACs can prompt a size conversation; it is
-not Wake's definition and not proof that a story fits a team's capacity. Negotiability
-and estimability require human judgement. Do not turn “unknown” into “pass”.
+About seven or fewer ACs can prompt a size conversation; it does not prove the story fits
+the team's capacity. Negotiable and Estimable need human judgement. Never turn "unknown" into "pass".
 
 Split by workflow step when each step still has user value: lodge a refund, decide
 it, notify the requester. Split by rule variant if a subset is independently useful;
@@ -26,5 +25,4 @@ Avoid horizontal slices such as database, endpoint, and page: each may need the
 others before the customer receives value. If a dependency cannot be removed, state
 it and show which existing capability or later FEAT supplies it. Never invent links.
 
-Source for method facts: https://xp123.com/invest-in-good-stories-and-smart-tasks/
-Examples and local heuristics here are kit guidance, not quotations.
+Source: https://xp123.com/invest-in-good-stories-and-smart-tasks/

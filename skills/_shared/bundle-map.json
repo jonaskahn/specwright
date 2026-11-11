@@ -139,6 +139,7 @@
       "shared": [
         "references/capabilities/quality.md",
         "references/next-step.md",
+        "references/rtm-contract.md",
         "references/rule-catalog.md",
         "references/stop-and-ask.md",
         "references/untrusted-content.md",

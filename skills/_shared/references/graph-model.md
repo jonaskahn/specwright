@@ -12,9 +12,9 @@ Feature shards carry a lifecycle projection: station, condition, available actio
 blockers, planning and publication summaries. Registry-reserved features are nodes
 before story creation. Accepted-split DEC records declare their epic membership.
 Lifecycle DEC predecessor chains survive cache rebuilds; no station field is edited.
-Schema version 2 verifies both input inventory and content digest, including same-size
-changes. Missing/incompatible/stale boards cannot be used for automatic routing.
-Use the board query for structured per-feature output.
+The graph verifies input inventory and content digest (schema version 2), including
+same-size changes. A missing, incompatible or stale board cannot drive routing. Use the
+board query for structured per-feature output.
 
 ## Relations
 

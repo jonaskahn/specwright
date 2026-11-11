@@ -1,10 +1,9 @@
 # Lifecycle
 
-`Prepare -> Shape -> Spec -> Review -> Plan -> optional Publish`
+`shape -> spec -> review -> plan -> optional publish`
 
-Seven public skills remain. Ingest, assets, visuals, knowledge, trace, lint and status
-support the requested action without becoming extra progress stations. No sync stage
-or automatic reconciliation exists.
+Ingest, assets, visuals, knowledge, trace, lint and status support an action; they are
+not stations. There is no sync stage or automatic reconciliation.
 
 ## Board facts
 
@@ -16,8 +15,8 @@ without tasks remain incomplete. A Jira mapping alone does not prove publication
 
 Request publication explicitly only after planning passes. A stored Jira preference is
 neither a publication request nor remote permission. Deferral is a durable decision,
-so rebuilding the graph cannot undo it. Markdown is new workspaces' default; existing
-settings remain unchanged. Explicit ambiguous publish requests still ask destination.
+so rebuilding the graph cannot undo it. Markdown is the default for new workspaces.
+An explicit but ambiguous publish request still asks for the destination.
 
 ## Guarded decisions
 
@@ -56,8 +55,8 @@ conflicting membership must be resolved, never inferred from loose mentions.
 
 ## Completion
 
-Finish the requested action, perform bounded required maintenance, then report the
-item's station and condition. More than one eligible item requires selection, even
+Finish the requested action, run completion.md maintenance, then report the item's
+station and condition. More than one eligible item requires selection, even
 when all share a station. No oldest-draft fallback and no sibling auto-advancement.
 Only sw-publish may write remotely after the clean gate, three-way dry-run and fresh
 exact-plan PUBLISH confirmation; local TRANSITION tokens cannot substitute for it.

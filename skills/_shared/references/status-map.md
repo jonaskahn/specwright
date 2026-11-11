@@ -1,24 +1,21 @@
-# status map
+# Status map
 
-Feature statuses flow through the repository and map onto Jira statuses.
+## Repository feature statuses
 
-## Repository statuses
-
-`draft`, `in-review`, `ready-to-publish`, `published`, `ready-for-dev`, `superseded`,
-`withdrawn`.
+`draft`, `in-review`, `ready-to-publish`, `published`, `ready-for-dev`, `superseded`, `withdrawn`.
 
 ## Default Jira mapping
 
-| Repository     | Jira          |
-|----------------|---------------|
-| published      | To Do         |
-| ready-for-dev  | Ready for Dev |
-| in-development | In Progress   |
-| superseded     | Won't Do      |
-| withdrawn      | Won't Do      |
+| Status | Jira |
+| --- | --- |
+| published | To Do |
+| ready-for-dev | Ready for Dev |
+| in-development | In Progress (Jira side only; not a repository status) |
+| superseded | Won't Do |
+| withdrawn | Won't Do |
 
 ## Ownership
 
-The manifest `status_map` is the mapping; Publish checks drift against it, `lint capability`
-checks status validity, and only `sw-review` moves a draft to `ready-to-publish`.
-A status change never implies approval; approval needs named evidence.
+The manifest `status_map` is the mapping. sw-publish checks drift against it; the lint
+capability checks status validity; only sw-review moves a draft to `ready-to-publish`. A
+status change never implies approval; approval needs named evidence.

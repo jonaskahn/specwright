@@ -26,8 +26,7 @@ Nine states; at most twice as many transitions.
 
 Edges are transitions; first node is initial, last is terminal. Avoid duplicated error arrows: record one shared * to
 Error condition in source context instead. Ask before assuming guards or terminal status.
-The common contract and CLI codes are in style.md. The matching JSON in
-fixtures/refund/diagrams is illustrative, not approved policy.
+Common contract and CLI codes: references/style.md. Examples are illustrative, not approved policy.
 
 ## Anti-patterns
 

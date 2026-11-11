@@ -26,11 +26,9 @@ false if a sample of 50 cases contains fewer than 26 support-entered cases by th
 agreed review date.” Write a date only when agreed. A risk needs an owner, impact,
 likelihood and response, not merely an alarming label.
 
-Choose elicitation by evidence gap. Document analysis extracts existing rules;
-interviews explain conflicting interpretations; observation reveals actual work;
-a workshop resolves a boundary across roles; a small prototype explores a solution
-only after the problem is agreed. These are practical technique choices, not a
-reproduction of a methodology catalogue.
+Choose elicitation by evidence gap: document analysis extracts existing rules; interviews
+explain conflicting interpretations; observation shows actual work; a workshop resolves a
+boundary across roles; a prototype explores a solution only after the problem is agreed.
 
 In synthesis mode, map pasted statements into sections, attach provenance, and
 ask only about contradictions or missing decisions. When sources disagree, keep

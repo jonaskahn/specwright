@@ -1,7 +1,6 @@
 # Behavior before layout
 
-Choose the distinction the consumer must test, then one type. These patterns are
-Specwright's own requirement-review prompts, not another diagramming runtime.
+Choose the distinction the consumer must test, then one type.
 
 | Uncertainty                                   | Required evidence                                | Layout       |
 |-----------------------------------------------|--------------------------------------------------|--------------|

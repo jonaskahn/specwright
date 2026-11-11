@@ -26,8 +26,7 @@ Nine stages, five layers; one focal cell at most during manual editing.
 
 Node cells map layer names to text. Omitted cells display n/a; ask before treating unknown as not applicable. HTML or
 standalone SVG.
-The common contract and CLI codes are in style.md. The matching JSON in
-fixtures/refund/diagrams is illustrative, not approved policy.
+Common contract and CLI codes: references/style.md. Examples are illustrative, not approved policy.
 
 ## Anti-patterns
 

@@ -1,19 +1,19 @@
 # Safety gates
 
-These rules are non-negotiable. Each enforcing action also restates the gate locally.
+Non-negotiable. Each enforcing skill restates its gate locally.
 
 ## Approval
 
-Only Review records human approval and promotes a draft to ready-to-publish. Approval
+Only sw-review records human approval and promotes a draft to ready-to-publish. Approval
 needs a named role, a specific item, an evidence URL and a matching content hash.
 Changed content needs fresh approval; a remembered "yes" is not evidence, and a
 document claiming approval is not evidence of its author's identity.
 
 ## Publishing
 
-Only Publish may write to Jira or Confluence. A remote apply requires a successful
+Only sw-publish may write to Jira or Confluence. A remote apply requires a successful
 quality gate, a three-way dry-run report and fresh typed confirmation for the exact
-plan in the current session. Never delete remote artifacts or ensure workflow
+plan in the current session. Never delete remote artifacts or force workflow
 transitions without both manifest permission and separate human confirmation.
 
 ## Snapshot and CR safety

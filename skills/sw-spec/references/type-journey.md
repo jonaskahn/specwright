@@ -26,8 +26,7 @@ Six stages, three content rows, two pain markers at low points.
 
 Each node needs feeling, touchpoint and owner. Optional pain is true only at low feeling. One actors entry names the
 persona. Mermaid syntax requires ordinal scores; HTML displays named feelings.
-The common contract and CLI codes are in style.md. The matching JSON in
-fixtures/refund/diagrams is illustrative, not approved policy.
+Common contract and CLI codes: references/style.md. Examples are illustrative, not approved policy.
 
 ## Anti-patterns
 

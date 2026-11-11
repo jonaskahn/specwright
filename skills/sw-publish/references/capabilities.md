@@ -1,23 +1,21 @@
-# capabilities
+# Capabilities
 
-sw-publish needs two capabilities, named before the first call.
+Name the providing tool before the first call.
 
-## Required
-
-- **jira-write** — the write path. Only sw-publish uses it. When the capability is
-  absent, the skill stops at the dry-run and never writes.
-- **jira-read** — reads the current remote state, identity candidates and the update
-  timestamp before planning.
+| Capability | Use | When absent |
+| --- | --- | --- |
+| jira-read | Read current remote state, identity candidates and the update timestamp before planning. | Ask for pasted issue data; mark unread fields UNKNOWN. |
+| jira-write | Execute the confirmed plan. Only sw-publish uses it. | Stop at the dry-run; never write. |
 
 ## Fallback
 
-When a session tool provides neither, the bundled REST adapter (`scripts/kitlib`) is the
-fallback only when installed. It is an integration seam, not a certification for a real
-tenant; a project-limited service account with no delete permission is the safe shape for
-a trial. Do not improvise credentials, and never read a token into a report.
+If no session tool supplies either, use the bundled REST adapter (`scripts/kitlib`) only
+when installed. It is an integration seam, not a tenant certification. For a trial use a
+project-limited service account without delete permission. Never improvise credentials or
+read a token into a report.
 
-## What this skill never does
+## Never
 
-- Never deletes a remote artifact or silently transitions a workflow state.
-- Never retries an ambiguous create.
-- Never publishes from a stored "yes" or a pasted approval claim.
+- Delete a remote artifact or silently transition a workflow state.
+- Retry an ambiguous create.
+- Publish from a stored "yes" or a pasted approval claim.

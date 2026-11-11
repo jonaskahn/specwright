@@ -1,11 +1,10 @@
 # Choose the uncertainty before the notation
 
 Use prose if fewer than five items with one actor communicate the same distinction.
-Use only types whose reference file exists in this skill folder; run
-`scripts/render_diagram.py --list-types` to see what this build supports. A type that is
-absent is not an error: pick the nearest present type, or write a paragraph. Never invent a
-notation and never ask the user to install more types.
-Every reference and asset below is relative to this loaded skill directory.
+Use only types whose reference file exists in this skill folder; `scripts/render_diagram.py
+--list-types` prints the set this build supports. An absent type is not an error: pick the
+nearest present type or write a paragraph. Never invent a notation; never ask the user to
+install more types. Paths below are relative to the loaded skill directory.
 
 | Question / subject                               | Type reference                          | Production                                           |
 |--------------------------------------------------|-----------------------------------------|------------------------------------------------------|
@@ -16,7 +15,7 @@ Every reference and asset below is relative to this loaded skill directory.
 | Story map                                        | references/type-story-map.md            | assets/story-map.html · JSON                         |
 | State                                            | references/type-state.md                | assets/state.html · JSON                             |
 | Sequence                                         | references/type-sequence.md             | assets/sequence.html · JSON                          |
-| Er                                               | references/type-er.md                   | assets/er.html · JSON                                |
+| ER (entities and relationships)                  | references/type-er.md                   | assets/er.html · JSON                                |
 | Inputs and outputs across ordered stages         | references/type-process.md              | assets/process.html · JSON                           |
 | Payloads moving across roles                     | references/type-data-flow.md            | assets/data-flow.html · JSON                         |
 | Structural change with a change ledger           | references/type-architecture-delta.md   | assets/architecture-delta.html · JSON                |

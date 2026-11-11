@@ -26,8 +26,7 @@ Nine entities, four fields each; split by aggregate.
 
 Nodes add fields as identifiers optionally prefixed PK or FK. Edges need from_card and to_card, each 1, N, 0..1 or 1..*.
 Never infer physical settings.
-The common contract and CLI codes are in style.md. The matching JSON in
-fixtures/refund/diagrams is illustrative, not approved policy.
+Common contract and CLI codes: references/style.md. Examples are illustrative, not approved policy.
 
 ## Anti-patterns
 
