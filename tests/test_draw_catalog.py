@@ -310,7 +310,7 @@ class CatalogTests(unittest.TestCase):
             for kind in EXTENDED:
                 (skill / f"assets/{kind}.html").unlink()
                 (skill / f"references/type-{kind}.md").unlink()
-                (skill / f"scripts/draw_types/{kind.replace('-', '_')}.py").unlink()
+                (skill / f"scripts/draw_types/{kind.replace('-', '_')}.py").unlink(missing_ok=True)
             report = validate.Report(skill)
             validate._check_draw_contract(skill, ROOT, report, True)
             self.assertEqual([f.code for f in report.errors], [])

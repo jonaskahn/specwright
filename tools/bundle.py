@@ -258,7 +258,8 @@ def check(root: Path) -> tuple[list[str], list[str]]:
             problems.append(f"{skill.name}: tiers.extended lists a type twice")
         for kind in kinds:
             for rel in type_files(kind):
-                if not (skill / rel).is_file():
+                # Legacy types render from shared code, so their own module is optional.
+                if not rel.startswith("scripts/") and not (skill / rel).is_file():
                     problems.append(f"{skill.name}: extended type '{kind}' lacks {rel}")
         for profile in PROFILES if kinds else ("extended",):
             total = count_files(root, data, skill, profile)
