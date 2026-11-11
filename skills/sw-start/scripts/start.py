@@ -75,25 +75,36 @@ def scope_state(root, scope):
         "open_questions": open_q,
         "graph": freshness,
         "output_default": workspace.output_default(root, scope),
+        "board": graph_query.board(graph_query.Store(root, scope)) if freshness == "fresh" else [],
     }
 
 
 def route(state):
     """Deterministic next action for one scope; each answer carries the evidence behind it."""
+    if state["graph"] in ("missing", "incompatible"):
+        return ("sw-start workspace upgrade dry-run", "board schema is missing or incompatible")
+    if state["graph"] != "fresh":
+        return ("shared graph build", "board is unavailable until the graph is fresh")
+    board = [
+        r for r in state.get("board", []) if r.get("kind") != "epic" or r["condition"] != "complete"
+    ]
+    if len(board) > 1:
+        return ("choose item", "several active features; select a qualified item")
+    if len(board) == 1:
+        item = board[0]
+        station = item["station"]
+        return (
+            "sw-" + station if item["condition"] != "unknown" else "shared status",
+            f"{item['id']} remains in {station} ({item['condition']})",
+        )
     feats, ideas = state["feats"], state["ideas"]
     needs_tasks = [f for f in state["feat_ids"] if f not in state["with_tasks"]]
-    if state["graph"] == "missing":
-        return (
-            "sw-start workspace upgrade, then shared graph build",
-            "the knowledge graph is missing",
-        )
-    if feats.get("draft") or feats.get("in-review"):
-        return ("shared lint, then sw-review", "feature drafts are not yet approved")
+    if feats.get("draft"):
+        return ("sw-spec", "drafts remain in specification")
+    if feats.get("in-review"):
+        return ("sw-review", "a feature was submitted to review")
     if feats.get("ready-to-publish"):
-        return (
-            "delivery-target prompt, then sw-publish",
-            "a reviewed feature is ready to publish; output default is " + state["output_default"],
-        )
+        return ("sw-plan", "reviewed requirements need a local implementation plan")
     if (feats.get("published") or feats.get("ready-for-dev")) and needs_tasks:
         return ("sw-plan", "approved features have no tasks file: " + ", ".join(needs_tasks))
     if ideas.get("accepted") and not feats:
@@ -111,7 +122,7 @@ def default_layout(cwd):
     return "embedded" if has_code and (here / ".git").exists() else "docs"
 
 
-def report(cwd):
+def report(cwd, target=None):
     info = workspace.detect(cwd)
     if info["mode"] == "none":
         return {
@@ -123,6 +134,23 @@ def report(cwd):
         }
     root = Path(info["spec_root"])
     scopes = [scope_state(root, s) for s in info["scopes"]]
+    if target:
+        store = graph_query.Store(
+            root, None if workspace.mode_of(root) == "program" else scopes[0]["scope"]
+        )
+        selected = store.resolve(target)
+        scopes = [s for s in scopes if s["scope"] == selected.split(":")[0]]
+        if not scopes or store.node(selected) is None:
+            raise graph_query.QueryError(f"unknown item: {selected}", 3)
+        scopes[0]["board"] = graph_query.board(
+            graph_query.Store(root, scopes[0]["scope"]), selected
+        )
+        if ":EPIC-" in selected:
+            scopes[0]["next"] = [
+                "choose item",
+                "named epic; select a feature slice or request shaping",
+            ]
+            return {**info, "fresh_setup": False, "scopes_state": scopes}
     for item in scopes:
         item["next"] = list(route(item))
     return {**info, "fresh_setup": False, "scopes_state": scopes}
@@ -142,10 +170,11 @@ def hook_lines(data):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cwd", default=".")
+    parser.add_argument("--item", help="qualified epic or feature to resume")
     parser.add_argument("--hook", action="store_true", help="short session summary")
     args = parser.parse_args(argv)
     try:
-        data = report(Path(args.cwd).resolve())
+        data = report(Path(args.cwd).resolve(), args.item)
         if args.hook:
             print("\n".join(hook_lines(data)))
             return 0
@@ -156,7 +185,7 @@ def main(argv=None):
             return 0
         print(f"{ask} options: {ask.options}", file=sys.stderr)
         return 3
-    except (OSError, ValueError, workspace.WorkspaceError) as exc:
+    except (OSError, ValueError, workspace.WorkspaceError, graph_query.QueryError) as exc:
         if args.hook:
             return 0
         print(f"error: {exc}", file=sys.stderr)

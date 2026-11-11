@@ -197,6 +197,19 @@ class PublishTests(WorkflowTestCase):
             ),
         )
         self.draft.write_text(text)
+        (self.root / "03-plan/FEAT-001.plan.md").write_text(
+            "# Implementation plan\n\nImplement both acceptance criteria.\n"
+        )
+        (self.root / "03-plan/FEAT-001.tasks.md").write_text(
+            frontmatter.render(
+                {"feat": "FEAT-001", "status": "ready", "spec_hash": hashing.draft_hash(text)},
+                "\n".join(
+                    f"### TASK-001-{n} — Implement criterion\nTraces to: AC-001-{n}\n"
+                    "Done when: criterion is verified\n"
+                    for n in (1, 2)
+                ),
+            )
+        )
 
     def test_identity_checks_registry_then_label_then_property(self):
         ctx = self.ctx()

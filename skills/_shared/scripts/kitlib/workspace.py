@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
+import subprocess
 import sys
 from pathlib import Path, PurePosixPath
 from typing import Any
@@ -271,6 +273,36 @@ def _write_new(path: Path, text: str, created: list[str], base: Path) -> None:
     created.append(str(path.relative_to(base)))
 
 
+def prepare_git(root: Path, layout: str) -> None:
+    """Reuse parent/worktree repositories; never configure, stage or commit."""
+    git = shutil.which("git")
+    if not git:
+        raise WorkspaceError("Git is required to create a workspace")
+    probe = root.resolve()
+    while not probe.exists():
+        probe = probe.parent
+    result = subprocess.run(
+        [git, "-C", str(probe), "rev-parse", "--show-toplevel"],
+        capture_output=True,
+        text=True,
+        timeout=15,
+    )
+    if result.returncode == 0:
+        return
+    if layout == "embedded":
+        raise WorkspaceError("embedded layout requires an existing code repository")
+    # Initialize only the requested docs root, never its parent.
+    root.mkdir(parents=True, exist_ok=True)
+    result = subprocess.run(
+        [git, "init", "--template=", str(root.resolve())],
+        capture_output=True,
+        text=True,
+        timeout=15,
+    )
+    if result.returncode:
+        raise WorkspaceError("Git initialization failed; workspace was not created")
+
+
 def init(
     root: Path,
     mode: str,
@@ -282,7 +314,7 @@ def init(
     approvers: list[dict[str, str]] | None = None,
     layout: str = "docs",
     code: str | None = None,
-    output: str = "ask",
+    output: str = "markdown",
 ) -> list[str]:
     """Create the manifests and the folder tree; refuses to overwrite an existing project.
 
@@ -308,12 +340,14 @@ def init(
             code = "."
         root = repo / EMBED_DIR
     root = root.resolve()
+    git_root = root.parent if layout == "embedded" else root
     existing = mode_of(root)
     if existing == "flat" or (mode == "flat" and existing != "none"):
         raise WorkspaceError(f"{root} already holds a workspace manifest")
     base = root / "projects" / scope if mode == "program" else root
     if (base / FLAT_MANIFEST).exists():
         raise WorkspaceError(f"{base} already holds a project manifest")
+    prepare_git(git_root, layout)
     root.mkdir(parents=True, exist_ok=True)
     created: list[str] = []
     manifest = project_manifest(scope, name, site, project_key, epic, approvers or [], code, output)
@@ -440,7 +474,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     init_cmd.add_argument("--code", help="code folder this project owns (embedded layout only)")
     init_cmd.add_argument(
-        "--output", default="ask", choices=list(schema.OUTPUT_CHOICES), help="delivery target"
+        "--output", default="markdown", choices=list(schema.OUTPUT_CHOICES), help="delivery target"
     )
     out_cmd = sub.add_parser("output", help="get or set the stored delivery target")
     out_cmd.add_argument("action", choices=["get", "set"])

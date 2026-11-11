@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Check that a feature's tasks cover its criteria and still match its story.
+"""Check task coverage; --mark-ready records coverage, never human approval.
 
-Exit codes: 0 pass, 1 findings, 2 usage or unreadable data. With --mark-ready a passing check
-sets the tasks file status to ready; that records coverage, not human approval.
+Exit codes: 0 pass, 1 findings, 2 usage or unreadable data.
 """
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -15,56 +15,10 @@ _shared = _source_shared if _source_shared.is_dir() else _local_shared
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-import argparse
+from kitlib import frontmatter, fsio, ids, task_validation, workspace  # noqa: E402
 
-from kitlib import frontmatter, fsio, hashing, ids, markdown, workspace  # noqa: E402
-
-APPROVED = ("ready-to-publish", "published", "ready-for-dev")
-
-
-def check(base, feat):
-    findings = []
-    story = base / "02-drafts" / f"{feat}.story.md"
-    tasks_path = base / "03-plan" / f"{feat}.tasks.md"
-    if not story.is_file():
-        return None, [f"{feat}: story draft not found"], None
-    parsed = frontmatter.parse(story.read_text(encoding="utf-8"))
-    status = str((parsed.fm or {}).get("status", "unknown"))
-    if status not in APPROVED:
-        findings.append(f"{feat}: status is {status}; review it with sw-review before planning")
-    if not tasks_path.is_file():
-        return tasks_path, [*findings, f"{feat}: no tasks file at 03-plan/{feat}.tasks.md"], None
-    text = tasks_path.read_text(encoding="utf-8")
-    tp = frontmatter.parse(text)
-    if tp.error or not tp.fm:
-        return tasks_path, [*findings, f"tasks file front matter: {tp.error or 'missing'}"], None
-    current = hashing.draft_hash(story.read_text(encoding="utf-8"))
-    if tp.fm.get("spec_hash") != current:
-        findings.append("tasks are stale: spec_hash differs from the current story")
-    section = markdown.sections(parsed.body).get("Acceptance criteria")
-    acs = set(markdown.ac_blocks(section))
-    blocks = markdown.task_blocks(tp.body)
-    removed = set(markdown.task_tombstones(tp.body))
-    covered = set()
-    for tid, block in blocks.items():
-        refs = ids.find_refs(block.field_line("Traces to"))
-        if not refs:
-            findings.append(f"{tid}: Traces to is empty")
-        for ref in refs:
-            if ref.id.startswith("AC-"):
-                covered.add(ref.id)
-                if ref.id not in acs:
-                    findings.append(f"{tid}: traces to {ref.id}, which is not an active criterion")
-        if not block.field_line("Done when"):
-            findings.append(f"{tid}: Done when is empty")
-    for ac in sorted(acs - covered):
-        findings.append(f"{ac}: no task covers this criterion")
-    number = ids.feat_number(feat)
-    for tid in [*blocks, *removed]:
-        parsed_id = ids.parse_task(tid)
-        if parsed_id is None or parsed_id[0] != number:
-            findings.append(f"{tid}: task number does not belong to {feat}")
-    return tasks_path, findings, tp
+APPROVED = task_validation.APPROVED
+check = task_validation.check
 
 
 def main(argv=None):

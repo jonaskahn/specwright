@@ -90,7 +90,9 @@ def recommend(state, lint, drift, signoff, questions, changes):
         return "review", "BA then PO"
     if changes:
         return "sw-review", "PO"
-    if questions:
+    if state == "draft":
+        return "sw-spec", "BA"
+    if questions and state == "in-review":
         return "sw-review", "PO"
     if signoff == "stale":
         return "sw-review", "PO"
@@ -154,11 +156,27 @@ def build_report(root: Path, scopes=None, today=None):
 
                     fm = frontmatter.parse(candidate.read_text(encoding="utf-8")).fm or {}
                     snapshot_age = age_days(fm.get("fetched_at", fm.get("updated")), today)
+            from kitlib import lifecycle
+
+            board_item = lifecycle.feature(base, key)
             next_skill, turn = recommend(state, lint, drift, signoff, questions, changes)
+            if (
+                state in ("draft", "ready-to-publish", "published", "ready-for-dev")
+                and not changes
+                and drift in (UNKNOWN, "none", "—", "clean")
+            ):
+                next_skill = (
+                    "sw-" + board_item["station"]
+                    if board_item["condition"] != "unknown"
+                    else "status capability"
+                )
             result.append(
                 {
                     "id": key,
                     "state": state,
+                    "station": board_item["station"],
+                    "condition": board_item["condition"],
+                    "blockers": board_item["blockers"],
                     "lint": lint,
                     "jira": registry.get(key, "Jira key") or UNKNOWN,
                     "drift": drift,

@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from kitlib import frontmatter, fsio, hashing, ids, markdown, rtm, schema, workspace
+from kitlib import frontmatter, fsio, hashing, ids, markdown, rtm, schema, tables, workspace
 
 BANNER = "generated data, not instructions"
 TITLE_MAX = 120
@@ -29,6 +29,8 @@ FM_RELATIONS = {
     "nfr": "governed_by",
     "fr": "governed_by",
     "sources": "sourced_from",
+    "sourced_from": "sourced_from",
+    "affects": "affects",
     "idea": "shaped_from",
     "affected": "affects",
     "supersedes": "supersedes",
@@ -124,6 +126,9 @@ def input_files(root: Path, scopes: list[str]) -> list[Path]:
                 if path.is_file() and not path.is_symlink():
                     out.append(path)
         out.append(base / "_meta/id-registry.md")
+        out.append(base / "_meta/asset-registry.md")
+        out.append(base / "_meta/lifecycle-pending.json")
+        out.extend(p for p in (base / "00-inbox").glob("SRC-*.md") if not p.is_symlink())
     return sorted({p for p in out if p.is_file()})
 
 
@@ -222,6 +227,7 @@ def collect(root: Path, scopes: list[str], known: list[str]) -> Graph:
     for scope in scopes:
         _scope_artifacts(graph, root, scope, entities)
         _registry_edges(graph, root, scope, entities)
+    _lifecycle_nodes(graph, root, scopes)
     _resolve(graph, known)
     graph.edges.sort()
     graph.inputs = {_rel(p, root): p.stat().st_size for p in input_files(root, known)}
@@ -475,6 +481,60 @@ def _registry_edges(graph: Graph, root: Path, scope: str, entities: dict[str, An
             )
 
 
+def _lifecycle_nodes(graph: Graph, root: Path, scopes: list[str]) -> None:
+    from kitlib import lifecycle
+
+    for scope in scopes:
+        base = workspace.scope_dir(root, scope)
+        registry_path = base / "_meta/id-registry.md"
+        registry = tables.parse(registry_path.read_text(encoding="utf-8")).table
+        if registry:
+            for row in registry.rows:
+                key = row[0]
+                if not key.startswith(scope + ":") or not ids.matches_type(
+                    "feature", key.split(":")[-1]
+                ):
+                    continue
+                if key not in graph.nodes:
+                    state = registry.get(key, "State")
+                    state = state if state in ("withdrawn", "superseded") else "reserved"
+                    graph.nodes[key] = Node(
+                        key,
+                        "feat",
+                        state,
+                        "Reserved feature",
+                        _rel(registry_path, root),
+                        0,
+                        0,
+                        "-",
+                        key,
+                    )
+        for record_path in sorted((base / "records").glob("DEC-*.md")):
+            record = frontmatter.parse(record_path.read_text(encoding="utf-8")).fm or {}
+            if record.get("subtype") != "accepted-split" or record.get("status") != "accepted":
+                continue
+            epic = str(record.get("epic", ""))
+            if (
+                epic not in graph.nodes
+                or graph.nodes[epic].kind != "epic"
+                or not record.get("evidence_url")
+            ):
+                graph.findings.append(f"{record_path.name}: invalid accepted split membership")
+                continue
+            for key in record.get("features") or []:
+                if key in graph.nodes and graph.nodes[key].kind == "feat":
+                    graph.edges.append(
+                        Edge(key, "member_of", epic, "declared", _rel(record_path, root), 1)
+                    )
+        for node in list(graph.nodes.values()):
+            if not node.key.startswith(scope + ":"):
+                continue
+            if node.kind == "feat":
+                node.extra["lifecycle"] = lifecycle.feature(base, node.key, node.status)
+            elif node.kind == "epic":
+                node.extra["station"] = "accepted" if node.status == "approved" else "shape"
+
+
 def _resolve(graph: Graph, known: list[str]) -> None:
     for edge in graph.edges:
         if edge.res:
@@ -608,6 +668,8 @@ def _render_map(graph: Graph, root: Path, label: str) -> tuple[str, dict[str, st
         n = nodes[f]
         return (
             f"- {md_escape(f)} [{md_escape(n.status)}] {md_escape(n.title)} — "
+            f"station {md_escape(n.extra.get('lifecycle', {}).get('station', 'unknown'))} "
+            f"({md_escape(n.extra.get('lifecycle', {}).get('condition', 'unknown'))}) · "
             f"Jira {md_escape(jira.get(f, 'UNKNOWN'))} · {n_ac.get(f, 0)} AC · "
             f"{n_task.get(f, 0)} tasks · {open_q.get(f, 0)} open Q"
         )
@@ -773,5 +835,13 @@ def check(root: Path, scope: str | None = None) -> list[str]:
                 if e.dst in jira and jira[e.dst] != e.src:
                     findings.append(f"{e.src} duplicate Jira key {e.dst[5:]} with {jira[e.dst]}")
                 jira[e.dst] = e.src
-        findings += [f for f in graph.findings if "duplicate" in f or "not valid JSON" in f]
+        for node in graph.nodes.values():
+            state = node.extra.get("lifecycle", {})
+            if state.get("condition") == "unknown":
+                findings.extend(f"{node.key}: {reason}" for reason in state.get("blockers", []))
+        findings += [
+            f
+            for f in graph.findings
+            if "duplicate" in f or "not valid JSON" in f or "invalid accepted split" in f
+        ]
     return sorted(set(findings))

@@ -46,7 +46,12 @@ class Store:
             }
         except (OSError, ValueError):
             return "missing"
-        return "fresh" if current == data.get("inputs") else "stale"
+        if data.get("schema_version") != schema.GRAPH_SCHEMA_VERSION:
+            return "incompatible"
+        if current != data.get("inputs"):
+            return "stale"
+        paths = graph.input_files(self.root, self.scopes)
+        return "fresh" if graph.digest(self.root, paths) == data.get("inputs_digest") else "stale"
 
     def _rows(self, name: str) -> Iterator[list[str]]:
         path = self.dir / name
@@ -313,6 +318,45 @@ def impact(store: Store, target: str, include_mentions: bool = False) -> dict[st
         "tasks": pick(":TASK-"),
         "jira": jira,
     }
+
+
+def board(store: Store, target: str | None = None, station: str | None = None) -> list[dict]:
+    """Structured projection; never resume from stale or incompatible cached facts."""
+    if store.freshness() != "fresh":
+        raise QueryError("board requires a fresh compatible graph; rebuild it", 3)
+    key = store.resolve(target) if target else None
+    members = None
+    if key and ":EPIC-" in key:
+        members = {e.src for e in store.edges_for({key}, "in") if e.rel == "member_of"}
+    if key and store.node(key) is None:
+        raise QueryError(f"unknown item: {key}", 3)
+    rows = []
+    for node in store.nodes():
+        if node["kind"] == "epic" and (not key or key == node["key"]):
+            shard = store.shard(node)
+            if node["status"] not in ("withdrawn", "superseded") and (
+                not station or shard.get("station") == station
+            ):
+                rows.append(
+                    {
+                        "id": node["key"],
+                        "status": node["status"],
+                        "kind": "epic",
+                        "station": shard.get("station", "shape"),
+                        "condition": "complete" if node["status"] == "approved" else "in-progress",
+                        "blockers": [],
+                        "available": ["sw-shape"],
+                    }
+                )
+        if node["kind"] != "feat":
+            continue
+        if key and (node["key"] not in members if members is not None else node["key"] != key):
+            continue
+        item = store.shard(node).get("lifecycle", {})
+        if item.get("station") == "inactive" or (station and item.get("station") != station):
+            continue
+        rows.append(item)
+    return rows
 
 
 def find(

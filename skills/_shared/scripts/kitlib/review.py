@@ -39,6 +39,8 @@ def marker_for(draft: str, scope_id: str) -> str:
 
 def verify_evidence(draft: str, scope_id: str, manifest: Path, evidence: Evidence) -> dict:
     """Accept only a configured approver, an HTTPS reference and a matching draft hash."""
+    if not evidence.verified:
+        raise ApprovalError("evidence identity has not been verified")
     if evidence.kind not in {"comment", "transition", "pr"}:
         raise ApprovalError("unknown evidence kind")
     if not SAFE_URL.match(evidence.url):
@@ -67,6 +69,21 @@ def promote(draft_path: Path, scope_id: str, manifest: Path, evidence: Evidence)
     original = draft_path.read_text(encoding="utf-8")
     result = verify_evidence(original, scope_id, manifest, evidence)
     fm, body = frontmatter.split(original)
+    from kitlib import lifecycle
+
+    history = lifecycle.decisions(manifest.parent, scope_id)
+    latest = next((r for r in reversed(history) if r["action"] != "set-destination"), {})
+    if latest.get("action") == "reopen-shape":
+        raise ApprovalError("accept the reopened feature slice before review")
+    if (manifest.parent / "_meta/lifecycle-pending.json").exists():
+        raise ApprovalError("incomplete lifecycle transaction requires recovery")
+    invalidation = next(
+        (r for r in reversed(history) if r["action"] in lifecycle.INVALIDATES), None
+    )
+    if invalidation:
+        if result["signoff"] in (invalidation.get("signoffs") or []):
+            raise ApprovalError("approval was invalidated; provide fresh evidence")
+        fm["approval_after"] = invalidation["id"]
     signoffs = list(fm.get("signoffs") or []) + [result["signoff"]]
     fm["status"] = "ready-to-publish"
     fm["signoffs"] = signoffs

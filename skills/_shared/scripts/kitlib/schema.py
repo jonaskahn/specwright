@@ -110,7 +110,7 @@ SCOPE_DIRS = [
 
 OUTPUT_CHOICES = ("ask", "markdown", "jira", "both")
 GRAPH_DIR = "_meta/graph"
-GRAPH_SCHEMA_VERSION = 1
+GRAPH_SCHEMA_VERSION = 2
 
 # The closed set of graph relations; a link outside this set is never recorded.
 RELATIONS = (

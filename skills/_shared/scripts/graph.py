@@ -41,6 +41,9 @@ def _parser():
         return cmd
 
     add("map", "print the knowledge map").add_argument("--epic")
+    brd = add("board", "per-feature lifecycle board")
+    brd.add_argument("--item")
+    brd.add_argument("--station")
     add("show", "one node with link counts", ident=True)
     nb = add("neighbors", "paged links with file and line", ident=True)
     nb.add_argument("--dir", choices=["in", "out", "both"], default="both")
@@ -125,6 +128,10 @@ def main(argv=None):
             print(graph_query.header(store))
             print(text, end="")
             return EXIT_STALE if args.strict and store.freshness() != "fresh" else 0
+        if args.command == "board":
+            rows = graph_query.board(store, args.item, args.station)
+            lines = [f"{r['id']}: {r['station']} ({r['condition']})" for r in rows]
+            return _emit(args, store, lines, {"items": rows})
         if args.command == "stats":
             return _emit(args, store, graph_query.stats(store))
         if args.command == "find":

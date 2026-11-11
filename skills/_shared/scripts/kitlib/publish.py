@@ -65,8 +65,13 @@ def context(root: Path, feat: str, scope: str | None = None) -> Context:
 
 
 def preconditions(ctx: Context, lint_report: str = "") -> list[str]:
+    from kitlib import lifecycle, task_validation
+
     errors = []
     draft = ctx.draft.read_text(encoding="utf-8")
+    if lifecycle.approval_state(ctx.base, ctx.scope_id.split(":")[-1], draft) != "fresh":
+        errors.append("active approval is absent, stale or invalidated")
+    errors.extend(task_validation.planning(ctx.base, ctx.scope_id.split(":")[-1])["findings"])
     fm, _ = frontmatter.split(draft)
     if fm.get("status") != "ready-to-publish":
         errors.append("draft is not ready-to-publish")
@@ -183,6 +188,9 @@ def execute(
     ctx: Context, port: jira_port.Port, plan: jira_port.Plan, run: str
 ) -> jira_port.Outcome:
     """Bind every dependent operation to the original confirmed plan hash."""
+    errors = preconditions(ctx)
+    if errors:
+        raise PublishError("; ".join(errors))
     original = [asdict(operation) for operation in plan.operations]
     completed, results, created_key = 0, [], None
     for operation in plan.operations:

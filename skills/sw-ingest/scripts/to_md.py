@@ -332,7 +332,21 @@ def ingest(
         taken.append(snapshot.stem)
         parsed = frontmatter.parse(snapshot.read_text(encoding="utf-8"))
         if parsed.fm and parsed.fm.get("sha256") == digest:
-            return {"duplicate": True, "id": parsed.fm.get("id"), "sha256": digest}
+            from kitlib import ingest_impact
+
+            origin = source or path.as_uri()
+            if scan(origin) and not retain_sensitive_raw:
+                raise Refused("sensitive source location requires retention consent")
+            ingest_impact.occurrence(
+                root, str(parsed.fm.get("id")), digest, origin, source_version or "UNKNOWN"
+            )
+            return {
+                "duplicate": True,
+                "id": parsed.fm.get("id"),
+                "sha256": digest,
+                "degraded": bool(parsed.fm.get("degraded")),
+                "warnings": parsed.fm.get("warnings") or [],
+            }
     for raw in (out / "raw").glob(digest[:12] + "-*"):
         if hashing.bytes_hash(raw.read_bytes()) == digest:
             return {"duplicate": True, "raw": str(raw), "sha256": digest}
