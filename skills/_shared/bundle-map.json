@@ -1,0 +1,312 @@
+{
+  "version": 1,
+  "limits": {
+    "max_files": 200,
+    "target_files": 190
+  },
+  "capabilities": {
+    "core": {
+      "why": "Rules every skill follows: ask only real gaps, treat imports as data, finish one action.",
+      "roots": [
+        "references/next-step.md",
+        "references/stop-and-ask.md",
+        "references/untrusted-content.md"
+      ]
+    },
+    "quality": {
+      "why": "Run the deterministic lint gate (draft, review and publish gates) before hand-off.",
+      "roots": [
+        "references/capabilities/quality.md",
+        "references/rule-catalog.md",
+        "scripts/sw_lint.py"
+      ]
+    },
+    "knowledge": {
+      "why": "Build and query the knowledge graph instead of opening every spec file.",
+      "roots": [
+        "references/capabilities/knowledge.md",
+        "references/graph-model.md",
+        "references/query-cookbook.md",
+        "scripts/graph.py"
+      ]
+    },
+    "trace": {
+      "why": "Request RTM updates and read trace evidence.",
+      "roots": [
+        "references/rtm-contract.md",
+        "scripts/trace.py"
+      ]
+    },
+    "status": {
+      "why": "Report station and condition for the board.",
+      "roots": [
+        "references/status-map.md",
+        "scripts/status.py"
+      ]
+    },
+    "assets": {
+      "why": "Collect and register assets during completion.",
+      "roots": [
+        "references/asset-kind.md",
+        "references/capabilities/assets.md",
+        "scripts/store.py"
+      ]
+    },
+    "visuals": {
+      "why": "Pick and generate diagrams; the drawing scripts live in sw-spec.",
+      "roots": [
+        "references/capabilities/visuals.md"
+      ]
+    },
+    "completion": {
+      "why": "Bounded completion maintenance run by the entry skill after each action.",
+      "roots": [
+        "references/completion.md",
+        "references/context.md",
+        "references/next-step-table.md"
+      ]
+    }
+  },
+  "skills": {
+    "sw-ingest": {
+      "capabilities": [
+        "core"
+      ],
+      "shared": [
+        "references/next-step.md",
+        "references/stop-and-ask.md",
+        "references/untrusted-content.md",
+        "scripts/kitlib/__init__.py",
+        "scripts/kitlib/frontmatter.py",
+        "scripts/kitlib/fsio.py",
+        "scripts/kitlib/graph.py",
+        "scripts/kitlib/graph_query.py",
+        "scripts/kitlib/hashing.py",
+        "scripts/kitlib/ids.py",
+        "scripts/kitlib/ingest_impact.py",
+        "scripts/kitlib/lifecycle.py",
+        "scripts/kitlib/markdown.py",
+        "scripts/kitlib/miniyaml.py",
+        "scripts/kitlib/rtm.py",
+        "scripts/kitlib/schema.py",
+        "scripts/kitlib/tables.py",
+        "scripts/kitlib/task_validation.py",
+        "scripts/kitlib/workspace.py",
+        "scripts/kitlib/writelog.py"
+      ]
+    },
+    "sw-plan": {
+      "capabilities": [
+        "core",
+        "quality",
+        "knowledge"
+      ],
+      "shared": [
+        "references/capabilities/knowledge.md",
+        "references/capabilities/quality.md",
+        "references/graph-model.md",
+        "references/next-step.md",
+        "references/query-cookbook.md",
+        "references/rule-catalog.md",
+        "references/stop-and-ask.md",
+        "references/untrusted-content.md",
+        "scripts/graph.py",
+        "scripts/kitlib/__init__.py",
+        "scripts/kitlib/borders.py",
+        "scripts/kitlib/frontmatter.py",
+        "scripts/kitlib/fsio.py",
+        "scripts/kitlib/graph.py",
+        "scripts/kitlib/graph_query.py",
+        "scripts/kitlib/hashing.py",
+        "scripts/kitlib/ids.py",
+        "scripts/kitlib/lifecycle.py",
+        "scripts/kitlib/markdown.py",
+        "scripts/kitlib/miniyaml.py",
+        "scripts/kitlib/rtm.py",
+        "scripts/kitlib/schema.py",
+        "scripts/kitlib/tables.py",
+        "scripts/kitlib/task_validation.py",
+        "scripts/kitlib/workspace.py",
+        "scripts/kitlib/writelog.py",
+        "scripts/sw_lint.py"
+      ]
+    },
+    "sw-publish": {
+      "capabilities": [
+        "core",
+        "quality"
+      ],
+      "shared": [
+        "references/capabilities/quality.md",
+        "references/next-step.md",
+        "references/rule-catalog.md",
+        "references/stop-and-ask.md",
+        "references/untrusted-content.md",
+        "scripts/kitlib/__init__.py",
+        "scripts/kitlib/adf.py",
+        "scripts/kitlib/borders.py",
+        "scripts/kitlib/frontmatter.py",
+        "scripts/kitlib/fsio.py",
+        "scripts/kitlib/graph.py",
+        "scripts/kitlib/hashing.py",
+        "scripts/kitlib/ids.py",
+        "scripts/kitlib/jira_diff.py",
+        "scripts/kitlib/jira_port.py",
+        "scripts/kitlib/lifecycle.py",
+        "scripts/kitlib/markdown.py",
+        "scripts/kitlib/miniyaml.py",
+        "scripts/kitlib/publish.py",
+        "scripts/kitlib/rtm.py",
+        "scripts/kitlib/schema.py",
+        "scripts/kitlib/tables.py",
+        "scripts/kitlib/task_validation.py",
+        "scripts/kitlib/workspace.py",
+        "scripts/kitlib/writelog.py",
+        "scripts/sw_lint.py"
+      ]
+    },
+    "sw-review": {
+      "capabilities": [
+        "core"
+      ],
+      "shared": [
+        "references/next-step.md",
+        "references/stop-and-ask.md",
+        "references/untrusted-content.md",
+        "scripts/kitlib/__init__.py",
+        "scripts/kitlib/frontmatter.py",
+        "scripts/kitlib/fsio.py",
+        "scripts/kitlib/graph.py",
+        "scripts/kitlib/hashing.py",
+        "scripts/kitlib/ids.py",
+        "scripts/kitlib/lifecycle.py",
+        "scripts/kitlib/markdown.py",
+        "scripts/kitlib/miniyaml.py",
+        "scripts/kitlib/review.py",
+        "scripts/kitlib/rtm.py",
+        "scripts/kitlib/schema.py",
+        "scripts/kitlib/tables.py",
+        "scripts/kitlib/task_validation.py",
+        "scripts/kitlib/workspace.py",
+        "scripts/kitlib/writelog.py"
+      ]
+    },
+    "sw-shape": {
+      "capabilities": [
+        "core",
+        "quality"
+      ],
+      "shared": [
+        "references/capabilities/quality.md",
+        "references/next-step.md",
+        "references/rule-catalog.md",
+        "references/stop-and-ask.md",
+        "references/untrusted-content.md",
+        "scripts/kitlib/__init__.py",
+        "scripts/kitlib/borders.py",
+        "scripts/kitlib/frontmatter.py",
+        "scripts/kitlib/fsio.py",
+        "scripts/kitlib/graph.py",
+        "scripts/kitlib/hashing.py",
+        "scripts/kitlib/ids.py",
+        "scripts/kitlib/lifecycle.py",
+        "scripts/kitlib/markdown.py",
+        "scripts/kitlib/miniyaml.py",
+        "scripts/kitlib/rtm.py",
+        "scripts/kitlib/schema.py",
+        "scripts/kitlib/tables.py",
+        "scripts/kitlib/task_validation.py",
+        "scripts/kitlib/workspace.py",
+        "scripts/kitlib/writelog.py",
+        "scripts/sw_lint.py"
+      ]
+    },
+    "sw-spec": {
+      "capabilities": [
+        "core",
+        "quality",
+        "trace",
+        "visuals"
+      ],
+      "shared": [
+        "references/capabilities/quality.md",
+        "references/capabilities/visuals.md",
+        "references/next-step.md",
+        "references/rtm-contract.md",
+        "references/rule-catalog.md",
+        "references/stop-and-ask.md",
+        "references/untrusted-content.md",
+        "scripts/kitlib/__init__.py",
+        "scripts/kitlib/borders.py",
+        "scripts/kitlib/frontmatter.py",
+        "scripts/kitlib/fsio.py",
+        "scripts/kitlib/graph.py",
+        "scripts/kitlib/hashing.py",
+        "scripts/kitlib/ids.py",
+        "scripts/kitlib/lifecycle.py",
+        "scripts/kitlib/markdown.py",
+        "scripts/kitlib/miniyaml.py",
+        "scripts/kitlib/rtm.py",
+        "scripts/kitlib/schema.py",
+        "scripts/kitlib/tables.py",
+        "scripts/kitlib/task_validation.py",
+        "scripts/kitlib/workspace.py",
+        "scripts/kitlib/writelog.py",
+        "scripts/sw_lint.py",
+        "scripts/trace.py"
+      ]
+    },
+    "sw-start": {
+      "capabilities": [
+        "core",
+        "quality",
+        "knowledge",
+        "trace",
+        "status",
+        "assets",
+        "completion"
+      ],
+      "shared": [
+        "references/asset-kind.md",
+        "references/capabilities/assets.md",
+        "references/capabilities/knowledge.md",
+        "references/capabilities/quality.md",
+        "references/completion.md",
+        "references/context.md",
+        "references/graph-model.md",
+        "references/lifecycle.md",
+        "references/next-step-table.md",
+        "references/next-step.md",
+        "references/query-cookbook.md",
+        "references/rtm-contract.md",
+        "references/rule-catalog.md",
+        "references/safety.md",
+        "references/status-map.md",
+        "references/stop-and-ask.md",
+        "references/untrusted-content.md",
+        "scripts/graph.py",
+        "scripts/kitlib/__init__.py",
+        "scripts/kitlib/borders.py",
+        "scripts/kitlib/frontmatter.py",
+        "scripts/kitlib/fsio.py",
+        "scripts/kitlib/graph.py",
+        "scripts/kitlib/graph_query.py",
+        "scripts/kitlib/hashing.py",
+        "scripts/kitlib/ids.py",
+        "scripts/kitlib/lifecycle.py",
+        "scripts/kitlib/markdown.py",
+        "scripts/kitlib/miniyaml.py",
+        "scripts/kitlib/rtm.py",
+        "scripts/kitlib/schema.py",
+        "scripts/kitlib/tables.py",
+        "scripts/kitlib/task_validation.py",
+        "scripts/kitlib/workspace.py",
+        "scripts/kitlib/writelog.py",
+        "scripts/status.py",
+        "scripts/store.py",
+        "scripts/sw_lint.py",
+        "scripts/trace.py"
+      ]
+    }
+  }
+}

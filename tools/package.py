@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Build each public Specwright skill as a self-contained, reproducible zip.
 
-The repository keeps one canonical ``skills/_shared`` tree. Packaging copies it into
-each public skill and rewrites ``../_shared/`` references to local ``_shared/`` so an
-uploaded folder never depends on a sibling or the source checkout.
+The repository keeps one canonical ``skills/_shared`` tree. Packaging copies into each
+public skill only the shared files listed for it in ``skills/_shared/bundle-map.json``
+and rewrites ``../_shared/`` references to local ``_shared/`` so an uploaded folder never
+depends on a sibling or the source checkout. A skill over the map's file cap is refused,
+because the upload limit is a file count.
 """
 
 from __future__ import annotations
@@ -14,6 +16,8 @@ import shutil
 import sys
 import zipfile
 from pathlib import Path
+
+import bundle
 
 SKILL_PREFIX = "sw-"
 SHARED = "_shared"
@@ -58,12 +62,11 @@ def bundle_skill(root: Path, source: Path, destination: Path) -> None:
         destination,
         ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"),
     )
-    embedded = destination / SHARED
-    shutil.copytree(
-        shared_folder(root),
-        embedded,
-        ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"),
-    )
+    shared = shared_folder(root)
+    for rel in bundle.shared_list(root, source.name):
+        target = destination / SHARED / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(shared / rel, target)
     for path in sorted(destination.rglob("*")):
         if path.is_file():
             _rewrite_text(path)
@@ -86,8 +89,12 @@ def build(root: Path, output: Path, zipped: bool = False) -> list[Path]:
         raise ValueError("no public skill folders found")
     if output.resolve() == root.resolve() or root.resolve().is_relative_to(output.resolve()):
         raise ValueError("output must not contain the source repository")
-    # Preflight every path so a collision cannot leave a partial set of packages.
+    # Preflight every skill so a collision or an oversize bundle leaves no partial set.
     for source in sources:
+        bundle.shared_list(root, source.name)
+        over = bundle.budget_error(root, source)
+        if over:
+            raise ValueError(over)
         paths = [output / source.name]
         if zipped:
             paths.append(output / f"{source.name}.zip")
