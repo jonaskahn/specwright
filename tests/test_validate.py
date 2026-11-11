@@ -182,6 +182,20 @@ class ReleaseSurfaceTests(unittest.TestCase):
         validate._check_commands(self.root, report)
         self.assertEqual(report.errors, [])
 
+    def test_packaged_drawing_theme_survives_minification(self):
+        repo = Path(__file__).resolve().parent.parent
+        spec = importlib.util.spec_from_file_location("package", repo / "tools" / "package.py")
+        package = importlib.util.module_from_spec(spec)
+        sys.path.insert(0, str(repo / "tools"))
+        self.addCleanup(sys.path.remove, str(repo / "tools"))
+        spec.loader.exec_module(package)
+        with tempfile.TemporaryDirectory() as tmp:
+            built = Path(tmp) / "sw-spec"
+            package.bundle_skill(repo, repo / "skills" / "sw-spec", built)
+            report = validate.Report(Path(tmp))
+            validate._check_draw_contract(built, repo, report, packaged=True)
+        self.assertNotIn("V124", {finding.code for finding in report.errors})
+
     def test_missing_command_wrapper(self):
         (self.root / "commands/sw-start.md").unlink()
         self.assertIn("V090", self.check(lambda r: validate._check_commands(self.root, r)))
