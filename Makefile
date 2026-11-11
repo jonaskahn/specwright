@@ -50,9 +50,9 @@ $(GROUPS):
 	done
 	@$(MAKE) --no-print-directory $(if $(COMMANDS),$(addprefix $@.,$(COMMANDS)),$(if $(filter $@,$(RUNNABLE)),$@.default,help GROUP=$@))
 
-##@ lint: → format check, Ruff, source validation, vendor and hygiene checks
+##@ lint: → format check, Ruff, source validation, vendor, bundle-map and hygiene checks
 
-lint.default: lint.format lint.ruff lint.validate lint.vendor lint.hygiene
+lint.default: lint.format lint.ruff lint.validate lint.vendor lint.bundle lint.hygiene
 
 ## lint.format: check formatting without writing
 lint.format:
@@ -70,13 +70,17 @@ lint.validate:
 lint.vendor:
 	$(PYTHON) tools/vendor.py --check
 
+## lint.bundle: fail when bundle-map.json drifts from real imports, links or the file cap
+lint.bundle:
+	$(PYTHON) tools/bundle.py --check
+
 ## lint.hygiene: scan text for work-tracking labels and attribution
 lint.hygiene:
 	$(PYTHON) tools/hygiene.py files
 
-##@ format: → apply Ruff fixes, format sources, regenerate vendored files
+##@ format: → apply Ruff fixes, format sources, regenerate vendored files and the bundle map
 
-format.default: format.ruff format.write format.vendor
+format.default: format.ruff format.write format.vendor format.bundle
 
 ## format.ruff: apply Ruff's safe lint fixes
 format.ruff:
@@ -89,6 +93,10 @@ format.write:
 ## format.vendor: regenerate vendored shared code
 format.vendor:
 	$(PYTHON) tools/vendor.py --write
+
+## format.bundle: regenerate each skill's shared-file list in bundle-map.json
+format.bundle:
+	$(PYTHON) tools/bundle.py --write
 
 ##@ test: → the unit test suite
 
@@ -117,6 +125,10 @@ package.default: clean.default build.default package.zip
 ## package.zip: package every public skill into dist/
 package.zip:
 	$(PYTHON) tools/package.py --zip --out "$(DIST_DIR)"
+
+## package.report: show each skill's file count, size and shared capabilities
+package.report:
+	$(PYTHON) tools/bundle.py --report
 
 ##@ clean: → remove distribution output, caches and Python bytecode
 
