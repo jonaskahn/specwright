@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import re
 import subprocess
 import sys
@@ -35,6 +36,20 @@ class DistributionTests(unittest.TestCase):
         (self.root / "skills/_shared/scripts/graph.py").write_text("print('graph')\n")
         (self.root / "skills/_shared/references").mkdir(parents=True)
         (self.root / "skills/_shared/references/safety.md").write_text("shared\n")
+        (self.root / "skills/_shared/bundle-map.json").write_text(
+            json.dumps(
+                {
+                    "limits": {"max_files": 200},
+                    "capabilities": {},
+                    "skills": {
+                        "sw-start": {
+                            "capabilities": [],
+                            "shared": ["references/safety.md", "scripts/kitlib/__init__.py"],
+                        }
+                    },
+                }
+            )
+        )
         (self.root / "LICENSE").write_text("MIT\n")
         (self.root / "AGENTS.md").write_text("# Rules\n")
         self.skill = self.root / "skills" / "sw-start"
@@ -60,6 +75,7 @@ class DistributionTests(unittest.TestCase):
         self.assertTrue((skill / "_shared" / "scripts" / "kitlib" / "__init__.py").exists())
         self.assertEqual((skill / "LICENSE").read_text(), "MIT\n")
         self.assertTrue((skill / "_shared" / "references" / "safety.md").exists())
+        self.assertFalse((skill / "_shared" / "scripts" / "graph.py").exists())
         self.assertIn("_shared/references/safety.md", (skill / "references/safety.md").read_text())
         self.assertNotIn("../_shared", (skill / "references/safety.md").read_text())
         result = subprocess.run(
