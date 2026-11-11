@@ -265,7 +265,9 @@
           "org-chart",
           "timeline",
           "gantt",
-          "kanban"
+          "kanban",
+          "service-blueprint",
+          "dp-security-matrix"
         ]
       }
     },

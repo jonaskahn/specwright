@@ -88,8 +88,8 @@ Run the full gate before every commit and push:
 
 ## Diagram production
 
-the visuals capability names 45 primary types in a closed roster, in three tiers: 12 core types
-ship in every build, 8 extended types ship only in a full install, and the other 25 are parked
+the visuals capability names 45 primary types in a closed roster, in three tiers: 10 core types
+ship in every build, 10 extended types ship only in a full install, and the other 25 are parked
 under `extras/sw-spec` and ship nowhere. `make package` builds the core profile for upload;
 `tools/install.py` installs the extended profile. The skill text never assumes which types are
 present: `references/type-picker.md` lists only the shipped ones and

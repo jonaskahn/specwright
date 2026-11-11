@@ -28,7 +28,7 @@ Claude Code plugin marketplace:
 
 Both routes read `skills/` straight from the repository, so they always carry the full
 `extended` set of 20 diagram types (`skills/sw-spec` holds core and extended; only
-`extras/` is left out). Only `tools/package.py` defaults to the 12-type core profile.
+`extras/` is left out). Only `tools/package.py` defaults to the 10-type core profile.
 
 The plugin manifests declare all seven public skills and seven command wrappers. Commands
 carry Claude-specific `${CLAUDE_PLUGIN_ROOT}` paths; skill folders themselves remain
@@ -55,7 +55,7 @@ python3 tools/install.py --target /absolute/path/to/spec-repo
 It copies the same self-contained skills to `.agents/skills/sw-*` and mirrors them to
 `.claude/skills/sw-*` as relative symlinks on macOS/Linux or copies on Windows. Use
 `--copy-mirror` to always copy. The installer ships the full `extended` profile of the
-diagram types (20); pass `--profile core` for the 12 core types only. Codex, Copilot, Cursor and Gemini can discover the
+diagram types (20); pass `--profile core` for the 10 core types only. Codex, Copilot, Cursor and Gemini can discover the
 canonical project skills; Claude Code uses its mirror.
 
 New projects receive AGENTS.md, equal CLAUDE.md and GEMINI.md copies, and a Copilot
@@ -86,7 +86,7 @@ references, assets, scripts and an embedded `_shared/kitlib`. Release output is 
 from version control. Existing output is never replaced; choose a fresh `--out` directory
 for another build.
 
-Archives default to the `core` profile (12 diagram types) to stay well inside the upload file
+Archives default to the `core` profile (10 diagram types) to stay well inside the upload file
 cap; `--profile extended` adds the 8 extended types. The skill adapts to whichever set is
 present, so either archive works without further changes.
 

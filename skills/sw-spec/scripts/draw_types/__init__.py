@@ -64,13 +64,11 @@ CORE = (
     "state",
     "sequence",
     "journey",
-    "service-blueprint",
     "story-map",
     "er",
     "process",
     "data-flow",
     "architecture-delta",
-    "dp-security-matrix",
 )
 EXTENDED = (
     "architecture",
@@ -81,6 +79,8 @@ EXTENDED = (
     "timeline",
     "gantt",
     "kanban",
+    "service-blueprint",
+    "dp-security-matrix",
 )
 _REFERENCES = Path(__file__).resolve().parent.parent.parent / "references"
 

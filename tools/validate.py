@@ -362,7 +362,7 @@ def _check_draw_contract(skill: Path, root: Path, report: Report, packaged: bool
         core, extended = groups["CORE"], groups["EXTENDED"]
         assert len(types) == len(set(types)) == 45
         assert len(legacy + new) == 41 and len(templates) == 4
-        assert len(core) == 12 and len(extended) == 8
+        assert len(core) == 10 and len(extended) == 10
         assert set(core + extended) <= set(types) and not set(core) & set(extended)
     except (OSError, SyntaxError, ValueError, KeyError, AssertionError) as exc:
         report.add(roster, 1, "V120", f"invalid type catalog: {exc}")

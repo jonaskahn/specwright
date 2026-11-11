@@ -88,7 +88,7 @@ npx skills add jonaskahn/specwright -g
 ```
 
 Both this and the plugin below install `skills/` as it is in the repository: all 20 diagram
-types. Only `tools/package.py` zips (default profile `core`, 12 types) are smaller.
+types. Only `tools/package.py` zips (default profile `core`, 10 types) are smaller.
 
 ### Claude Code plugin
 
