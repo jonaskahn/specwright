@@ -10,7 +10,7 @@ Use nested for containment.
 
 ## Layout and meaning
 
-Circles denote membership, not proportional area. The membership ledger lists every exact intersection.
+Circles denote membership, not proportional area. Region counts sit in the circles and the membership table lists every exact intersection.
 Meaning comes from labels, shape, relationships and source IDs, not decoration.
 Compare the complete source values below the figure before hand-off.
 

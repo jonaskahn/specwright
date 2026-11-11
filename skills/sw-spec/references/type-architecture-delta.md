@@ -10,7 +10,7 @@ Use a table for attribute-only changes.
 
 ## Layout and meaning
 
-Each component has an explicit change status; the ledger records before/after meaning.
+Before and after share one layout. Each card states added, removed, changed or unchanged by glyph and word, and the change list names every edit.
 Meaning comes from labels, shape, relationships and source IDs, not decoration.
 Compare the complete source values below the figure before hand-off.
 

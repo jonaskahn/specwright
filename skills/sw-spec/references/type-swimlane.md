@@ -10,7 +10,7 @@ Use flowchart when ownership is irrelevant; sequence for message timing.
 
 ## Layout conventions
 
-Horizontal lanes name actors. Each step belongs to exactly one lane; crossing lanes means a handoff. Narrative order
+Vertical lanes name actors and the flow reads top to bottom. Each step belongs to exactly one lane; crossing lanes means a handoff. Narrative order
 reads left to right.
 
 ## Focal rule

@@ -10,7 +10,7 @@ Use tree for single-parent decomposition.
 
 ## Layout and meaning
 
-Numbered directed connections retain shared dependencies and cycles; cards show fan-in.
+Directed connections retain shared dependencies and cycles; a dashed return closes a cycle and each card shows its fan-in.
 Meaning comes from labels, shape, relationships and source IDs, not decoration.
 Compare the complete source values below the figure before hand-off.
 

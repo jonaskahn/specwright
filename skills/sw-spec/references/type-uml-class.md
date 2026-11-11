@@ -10,7 +10,7 @@ Use ER for conceptual multiplicity only.
 
 ## Layout and meaning
 
-Class compartments separate attributes from operations; typed markers and the connection ledger preserve relations.
+Class compartments separate attributes from operations; end markers show the relation kind and each connector names it.
 Meaning comes from labels, shape, relationships and source IDs, not decoration.
 Compare the complete source values below the figure before hand-off.
 

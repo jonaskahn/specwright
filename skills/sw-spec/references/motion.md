@@ -1,13 +1,21 @@
 # Bounded motion, static meaning
 
-The new JSON types accept motion: none (default), reveal, or loop. No JavaScript.
-Reveal gives the entire drawing one short 6px entrance; it never hides a semantic
-item or implies sequencing that the source did not provide. Loop is a single
-four-second dashed connector-flow cue, not indefinite autoplay. Its name denotes
-flow around the path, not a repeating semantic state machine.
+`motion` defaults to `auto`: a drawing moves only when order or flow is part of what it
+says. `none`, `reveal` and `loop` remain explicit overrides. Playback is CSS only, with no
+JavaScript, and every frame, including the first, shows every label, mark and value.
 
-All labels, values, nodes and outcomes remain present in the initial and final
-frame. Motion never changes geometry, order, evidence, source IDs or approval.
-Reduced-motion and print disable animation and transforms completely. A standalone
-SVG includes the same CSS, theme tokens, background and semantics.
-For repeated or interactive playback, stop: that capability is not shipped.
+| Behaviour | Types | Why |
+| --- | --- | --- |
+| Flow token: one dot follows each connector in turn and takes the colour of the node it reaches; three cycles, then it rests | process, data-flow, dp-integration, flowchart, swimlane, state, loop, journey | The order of hand-offs or transitions is the content. |
+| Message stepping: each message arrow is emphasised once, in order | sequence | Time order is the axis. |
+| Staggered entrance: marks fade in source order (about 600 ms), or pop in place for dated and line marks | bar, waterfall, gantt, sankey, timeline, line, funnel pyramid | Reading order and baseline are reinforced; geometry never changes. |
+| Static | every other type, including all four templates | They show snapshots or structure, and motion would imply a sequence the source does not state. |
+
+Explicit `reveal` gives the whole drawing one short 6 px entrance. Explicit `loop` runs the
+flow token on any drawing that has connectors.
+
+The first frame is the final geometry: entrances change only opacity or a mark's own scale
+around its centre, so a renderer that stops at frame zero still shows exact values. The
+flow token is the single decorative mark hidden at rest. Reduced motion and print disable
+every animation and transform; a standalone SVG carries the same CSS, theme tokens,
+background and semantics.

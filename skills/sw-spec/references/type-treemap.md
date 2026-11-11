@@ -10,7 +10,7 @@ Use bar for easier comparisons.
 
 ## Layout and meaning
 
-Strip treemap area is proportional to value. Marimekko width is proportional to value and height to within-column
+Squarified treemap area is proportional to value, with shade on an ordered ramp. Marimekko width is proportional to value and height to within-column
 segments.
 Meaning comes from labels, shape, relationships and source IDs, not decoration.
 Compare the complete source values below the figure before hand-off.

@@ -10,7 +10,7 @@ Use state for legal lifecycle events.
 
 ## Layout and meaning
 
-One connected directed cycle feeds back into its starting point; numbered stages match the evidence key.
+One connected cycle of arcs feeds back into its starting point; numerals inside the stages give their order.
 Meaning comes from labels, shape, relationships and source IDs, not decoration.
 Compare the complete source values below the figure before hand-off.
 

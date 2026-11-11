@@ -10,7 +10,7 @@ Use deployment for host placement.
 
 ## Layout and meaning
 
-Typed components and zones; numbered connectors identify their exact relations.
+Components sit in zone columns and flow top to bottom; every connector carries its relation as a masked label.
 Meaning comes from labels, shape, relationships and source IDs, not decoration.
 Compare the complete source values below the figure before hand-off.
 

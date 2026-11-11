@@ -57,3 +57,8 @@ source specification.
 If behavior dominates, first read references/semantic-patterns.md; then use one layout grammar.
 For ownership choose swimlane, for status choose state, for message order choose sequence.
 For source impact and RTM facts, use the shared trace capability for evidence before drawing a dependency view.
+
+Motion is on by default only where order or flow is the meaning (see references/motion.md): the flow
+token on process, data-flow, dp-integration, flowchart, swimlane, state, loop and journey; message
+stepping on sequence; a staggered entrance on bar, waterfall, gantt, sankey, timeline, line and the funnel
+pyramid. Every other type, and all templates, stay static.

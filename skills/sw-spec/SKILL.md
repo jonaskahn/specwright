@@ -137,5 +137,6 @@ card layout, read assets/summary-card.md. When selecting a diagram type, read
 references/type-picker.md and then the matching references/type-*.md file. When
 rendering, run scripts/render_diagram.py; validate output with scripts/check_borders.py
 and scripts/check_offline.py. The renderer uses scripts/draw_common.py,
-scripts/draw_engine.py, scripts/draw_legacy.py, scripts/draw_page.py,
+scripts/draw_layout.py, scripts/draw_flow.py, scripts/draw_graphs.py, scripts/draw_plots.py,
+scripts/draw_boards.py, scripts/draw_notes.py, scripts/draw_engine.py, scripts/draw_legacy.py, scripts/draw_page.py,
 scripts/draw_schema.py and scripts/draw_types/ internally.
