@@ -178,12 +178,57 @@ class CatalogTests(unittest.TestCase):
             self.assertIn("@media print", page)
             self.assertNotIn("<script", page)
             self.assertNotIn("infinite", page)
-            self.assertNotIn("opacity:0", page)
             for n in spec["nodes"]:
                 self.assertIn(n["label"], page)
         spec["motion"] = "javascript"
         with self.assertRaises(ValueError):
             DRAW.render(spec)
+
+    def test_motion_is_on_by_default_only_where_order_is_the_meaning(self):
+        from draw_page import AUTO_MOTION
+
+        self.assertEqual(
+            set(AUTO_MOTION),
+            {
+                "process",
+                "data-flow",
+                "dp-integration",
+                "flowchart",
+                "swimlane",
+                "state",
+                "loop",
+                "journey",
+                "sequence",
+                "bar",
+                "waterfall",
+                "gantt",
+                "timeline",
+                "sankey",
+                "line",
+            },
+        )
+        for kind in DRAW.STRUCTURED:
+            page, _ = DRAW.render(fixture(kind))
+            match = re.search(r"drawing motion-(\w+)", page)
+            expected = AUTO_MOTION.get(kind, "none")
+            with self.subTest(kind=kind):
+                self.assertEqual(match.group(1), expected)
+                # Playback is finite; the theme hides only the decorative token at rest.
+                for count in re.findall(r"linear \d+ms (\d+)\b", page) + re.findall(
+                    r"s linear 600ms (\d+)", page
+                ):
+                    self.assertLessEqual(int(count), 3)
+                if expected == "none":
+                    self.assertNotIn("@keyframes sw-flow", page)
+
+    def test_flow_token_is_destination_coloured_and_stays_on_connectors(self):
+        page, _ = DRAW.render(fixture("process"))
+        css = re.search(r"@keyframes sw-flow\{(.*?)\}\n@supports", page, re.S).group(1)
+        self.assertEqual(len(re.findall(r"offset-distance:100%;opacity:1", css)), 4)
+        self.assertEqual({int(n) for n in re.findall(r"var\(--series-(\d)\)", css)}, {2, 3, 4, 5})
+        for path in re.findall(r"offset-path:path\('([^']+)'\)", css):
+            self.assertEqual(path.count("M"), 1)
+            self.assertRegex(path, r"^M [\d. -]+[LQ ]")
 
     def test_svg_cli_and_sidecar_preflight(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -217,7 +262,7 @@ class CatalogTests(unittest.TestCase):
             DRAW.render(spec)
         svg = standalone(DRAW.render(fixture("bar"))[0])
         for value in (12, 24, 18, 30, 16):
-            self.assertIn(f"value: {value}", svg)
+            self.assertIn(f">{value}<", svg)
 
     def test_validator_rejects_catalog_and_asset_drift(self):
         import shutil
@@ -242,7 +287,7 @@ class CatalogTests(unittest.TestCase):
                 self.assertIn(code, {f.code for f in report.errors})
                 target.write_text(content)
             target = skill / "assets/bar.html"
-            target.write_text(target.read_text().replace("--sw-bg: #f2f3f5", "--sw-bg: #eeeeee"))
+            target.write_text(target.read_text().replace("--sw-bg: #f3f4f7", "--sw-bg: #eeeeee"))
             report = validate.Report(skill)
             validate._check_draw_contract(skill, report)
             self.assertIn("V124", {f.code for f in report.errors})
@@ -253,7 +298,7 @@ class CatalogTests(unittest.TestCase):
             for value in re.findall(r'<marker[^>]*viewBox="([^"]+)"', page):
                 self.assertLessEqual(float(value.split()[2]), 16)
 
-    def test_standalone_svg_follows_the_cockpit_frame(self):
+    def test_standalone_svg_is_one_flat_framed_sheet(self):
         import xml.dom.minidom
 
         for kind in DRAW.STRUCTURED:
@@ -262,6 +307,10 @@ class CatalogTests(unittest.TestCase):
             self.assertIn('data-framed="1"', svg, kind)
             self.assertIn("--sw-surface", svg, kind)
             self.assertIn("translate(32 104)", svg, kind)
+            self.assertNotIn("drop-shadow", svg, kind)
+            self.assertNotIn("<filter", svg, kind)
+            self.assertEqual(svg.count('class="sheet"'), 1, kind)
+            self.assertNotIn('class="paper"', svg, kind)
             xml.dom.minidom.parseString(svg)
 
 

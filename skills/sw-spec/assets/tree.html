@@ -1,146 +1,233 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1" name="viewport">
-    <meta content="light dark" name="color-scheme">
-    <title><!--title-->Refund example · tree<!--/title--></title>
-    <style>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="light dark" name="color-scheme">
+<title>Refund example · tree</title>
+<style>
 :root {
     color-scheme: light dark;
-    --sw-bg: #f2f3f5;
-    --sw-surface: #fcfeff;
-    --sw-tint: #e9ebee;
-    --sw-ink: #17181a;
-    --sw-muted: #5d6165;
-    --sw-hair: #83868a;
-    --sw-edge: #c2c4c7;
-    --sw-rule: #dfe1e4;
-    --sw-accent: #c40e22;
-    --sw-accent-tint: #fde8ea;
-    --sw-link: #245fd4;
-    --sw-focus: #245fd4;
-    --sw-shadow: 0 1px 3px rgba(20, 24, 30, .10), 0 8px 24px -12px rgba(20, 24, 30, .22);
-    --sw-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, "Segoe UI", sans-serif;
-    --sw-mono: ui-monospace, "SF Mono", "IBM Plex Mono", Menlo, Consolas, monospace;
-    --series-1: #245fd4;
-    --series-2: #006b2d;
-    --series-3: #994a00;
-    --series-4: #00807e;
-    --series-5: #c9305f;
-    --sw-motion-fast: 400ms;
-    --sw-motion-total: 4s;
+    --sw-bg: #f3f4f7;
+    --sw-surface: #ffffff;
+    --sw-tint: #eceef3;
+    --sw-ink: #1b1f27;
+    --sw-muted: #565e6c;
+    --sw-hair: #7a8393;
+    --sw-edge: #c6cbd6;
+    --sw-rule: #e2e5ec;
+    --sw-focal: #3a44c4;
+    --sw-focal-tint: #eceeff;
+    --sw-link: #3a44c4;
+    --sw-focus: #3a44c4;
+    --sw-fail: #c0283a;
+    --sw-fail-tint: #fdecee;
+    --sw-ok: #0e6f3e;
+    --sw-warn: #8a5600;
+    --sw-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --sw-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    --series-1: #2c5bd0;
+    --series-2: #b25a00;
+    --series-3: #0a7a58;
+    --series-4: #a23c8c;
+    --series-5: #5a6376;
+    --ramp-1: #e9ebff;
+    --ramp-2: #c3c8f7;
+    --ramp-3: #8d96e8;
+    --ramp-4: #5963d3;
+    --ramp-5: #2c34a0;
+    --ramp-tx-1: #1b1f27;
+    --ramp-tx-2: #1b1f27;
+    --ramp-tx-3: #11142b;
+    --ramp-tx-4: #ffffff;
+    --ramp-tx-5: #ffffff;
+    --sw-motion-fast: 600ms;
+    --sw-motion-cycle: 8s;
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
-        --sw-bg: #060709;
-        --sw-surface: #17181b;
-        --sw-tint: #222427;
-        --sw-ink: #f1f2f3;
-        --sw-muted: #a8abae;
-        --sw-hair: #7c8084;
-        --sw-edge: #44484c;
-        --sw-rule: #292c2e;
-        --sw-accent: #fd736d;
-        --sw-accent-tint: #3a1a1c;
-        --sw-link: #70adfb;
-        --sw-focus: #70adfb;
-        --sw-shadow: 0 0 0 1px rgba(255, 255, 255, .06), 0 10px 28px -10px rgba(0, 0, 0, .7);
-        --series-1: #70adfb;
-        --series-2: #5fd37f;
-        --series-3: #f7ac4d;
-        --series-4: #4fd1cf;
-        --series-5: #f08aa8;
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --sw-bg: #0e1015;
+        --sw-surface: #161a21;
+        --sw-tint: #1f242d;
+        --sw-ink: #e8ebf0;
+        --sw-muted: #a5adbb;
+        --sw-hair: #78818f;
+        --sw-edge: #394050;
+        --sw-rule: #272c37;
+        --sw-focal: #a3acff;
+        --sw-focal-tint: #232859;
+        --sw-link: #a3acff;
+        --sw-focus: #a3acff;
+        --sw-fail: #ff8d97;
+        --sw-fail-tint: #3a1c22;
+        --sw-ok: #6fd49b;
+        --sw-warn: #f1b85c;
+        --series-1: #7ea5ff;
+        --series-2: #ffa24f;
+        --series-3: #4fd6a6;
+        --series-4: #f08cd3;
+        --series-5: #aab4c8;
+        --ramp-1: #222754;
+        --ramp-2: #323a82;
+        --ramp-3: #4f5bb8;
+        --ramp-4: #7f8bef;
+        --ramp-5: #b4bcff;
+        --ramp-tx-1: #e8ebf0;
+        --ramp-tx-2: #e8ebf0;
+        --ramp-tx-3: #ffffff;
+        --ramp-tx-4: #0e1015;
+        --ramp-tx-5: #0e1015;
     }
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --sw-bg: #0e1015;
+    --sw-surface: #161a21;
+    --sw-tint: #1f242d;
+    --sw-ink: #e8ebf0;
+    --sw-muted: #a5adbb;
+    --sw-hair: #78818f;
+    --sw-edge: #394050;
+    --sw-rule: #272c37;
+    --sw-focal: #a3acff;
+    --sw-focal-tint: #232859;
+    --sw-link: #a3acff;
+    --sw-focus: #a3acff;
+    --sw-fail: #ff8d97;
+    --sw-fail-tint: #3a1c22;
+    --sw-ok: #6fd49b;
+    --sw-warn: #f1b85c;
+    --series-1: #7ea5ff;
+    --series-2: #ffa24f;
+    --series-3: #4fd6a6;
+    --series-4: #f08cd3;
+    --series-5: #aab4c8;
+    --ramp-1: #222754;
+    --ramp-2: #323a82;
+    --ramp-3: #4f5bb8;
+    --ramp-4: #7f8bef;
+    --ramp-5: #b4bcff;
+    --ramp-tx-1: #e8ebf0;
+    --ramp-tx-2: #e8ebf0;
+    --ramp-tx-3: #ffffff;
+    --ramp-tx-4: #0e1015;
+    --ramp-tx-5: #0e1015;
 }
 
 body {
     margin: 0;
-    padding: clamp(16px, 4vw, 56px);
+    padding-block: clamp(16px, 4vw, 48px);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
     background: var(--sw-bg);
     color: var(--sw-ink);
     font-family: var(--sw-font);
+    line-height: 1.5;
 }
 
 main {
-    max-width: 1800px;
+    max-width: 1280px;
     margin: auto;
 }
 
-h1, figcaption {
-    font-size: clamp(24px, 3vw, 40px);
+h1 {
+    margin: 4px 0 8px;
+    font-size: clamp(22px, 2.6vw, 32px);
     font-weight: 700;
-    letter-spacing: -.03em;
+    letter-spacing: -.02em;
+    text-wrap: balance;
 }
 
 h2 {
-    letter-spacing: -.02em;
+    margin: 32px 0 8px;
+    font-size: 17px;
+    letter-spacing: -.01em;
 }
 
 p, caption {
     color: var(--sw-muted);
-    line-height: 1.6;
+    max-width: 72ch;
+}
+
+.eyebrow {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--sw-focal);
 }
 
 figure {
-    margin: 0;
+    margin: 20px 0 0;
+    padding: 8px;
     overflow-x: auto;
     background: var(--sw-surface);
     border: 1px solid var(--sw-rule);
-    border-radius: 18px;
-    box-shadow: var(--sw-shadow);
+    border-radius: 8px;
 }
 
 svg {
     display: block;
+    max-width: 100%;
     height: auto;
-    background: var(--sw-surface);
+    margin: auto;
     font-family: var(--sw-font);
 }
 
 text {
     fill: var(--sw-ink);
-    font-size: 16px;
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
 }
 
 .node-name {
-    font-size: 18px;
-    font-weight: 650;
-    letter-spacing: -.01em;
+    font-size: 15px;
+    font-weight: 600;
 }
 
 .small {
-    font-size: 14px;
+    font-size: 13px;
     fill: var(--sw-muted);
+}
+
+.value {
+    font-size: 15px;
+    font-weight: 600;
 }
 
 .ids {
     font: 12px var(--sw-mono);
+    fill: var(--sw-muted);
+}
+
+.micro {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    fill: var(--sw-muted);
+}
+
+.title-bar {
+    font-size: 22px;
+    font-weight: 650;
+    letter-spacing: -.01em;
 }
 
 .frame {
     fill: none;
     stroke: var(--sw-edge);
-    stroke-width: 1.25;
+    stroke-width: 1;
 }
 
-.box {
-    fill: var(--sw-surface);
-    stroke: var(--sw-edge);
-    stroke-width: 1.25;
-    filter: drop-shadow(0 2px 3px rgba(20, 24, 30, .12));
-}
-
-.focal {
-    fill: var(--sw-accent-tint);
-    stroke: var(--sw-accent);
-    stroke-width: 2;
-}
-
-.chip {
+.lane {
     fill: var(--sw-tint);
-    stroke: var(--sw-hair);
+    fill-opacity: .55;
+    stroke: var(--sw-rule);
     stroke-width: 1;
 }
 
@@ -148,8 +235,55 @@ text {
     fill: var(--sw-surface);
 }
 
+.ground {
+    fill: var(--sw-bg);
+}
+
+.sheet {
+    fill: var(--sw-surface);
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+}
+
 .tint {
     fill: var(--sw-tint);
+}
+
+.box {
+    fill: var(--sw-surface);
+    stroke: var(--sw-edge);
+    stroke-width: 1.25;
+}
+
+.ghost {
+    fill: none;
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+    stroke-dasharray: 4 4;
+}
+
+.focal {
+    fill: var(--sw-focal-tint);
+    stroke: var(--sw-focal);
+    stroke-width: 1.75;
+}
+
+.fail-box {
+    fill: var(--sw-fail-tint);
+    stroke: var(--sw-fail);
+    stroke-width: 1.75;
+}
+
+.tab {
+    fill: var(--sw-tint);
+    stroke: var(--sw-hair);
+    stroke-width: 1;
+}
+
+.ticket {
+    fill: var(--sw-surface);
+    stroke: var(--sw-edge);
+    stroke-width: 1;
 }
 
 .rule {
@@ -157,103 +291,125 @@ text {
     stroke-width: 1;
 }
 
+.grid {
+    stroke: var(--sw-rule);
+    stroke-width: 1;
+}
+
+.axis {
+    stroke: var(--sw-hair);
+    stroke-width: 1.25;
+}
+
+.visibility {
+    stroke: var(--sw-ink);
+    stroke-width: 2.5;
+}
+
 .edge, .open, .curve {
     fill: none;
     stroke: var(--sw-muted);
-    stroke-width: 1.75;
+    stroke-width: 1.5;
     stroke-linecap: round;
     stroke-linejoin: round;
+}
+
+.edge.mark, .curve.mark {
+    stroke: var(--sw-focal);
 }
 
 .solid {
     fill: var(--sw-muted);
 }
 
+.hollow {
+    fill: var(--sw-surface);
+    stroke: var(--sw-muted);
+    stroke-width: 1.5;
+}
+
 .dashed, .lifeline {
-    stroke-dasharray: 7 5;
+    stroke-dasharray: 6 5;
 }
 
 .lifeline {
     stroke: var(--sw-hair);
+    stroke-width: 1;
 }
 
-.visibility {
-    stroke: var(--sw-ink);
-    stroke-width: 3;
+.act {
+    fill: var(--sw-tint);
+    stroke: var(--sw-hair);
+    stroke-width: 1;
 }
 
 .set {
-    fill: var(--sw-tint);
-    fill-opacity: .5;
-    stroke: var(--sw-hair);
-    stroke-width: 1.5;
-}
-
-.band {
-    fill: var(--series-1);
-    fill-opacity: .25;
-    stroke: var(--series-1);
-}
-
-.series-1 {
-    fill: var(--series-1);
-    stroke: var(--series-1);
-}
-
-.series-2 {
-    fill: var(--series-2);
-    stroke: var(--series-2);
-}
-
-.series-3 {
-    fill: var(--series-3);
-    stroke: var(--series-3);
-}
-
-.series-4 {
-    fill: var(--series-4);
-    stroke: var(--series-4);
-}
-
-.series-5 {
-    fill: var(--series-5);
-    stroke: var(--series-5);
-}
-
-polygon[class^="series-"] {
-    fill-opacity: .15;
-    stroke-width: 2;
-}
-
-path.edge {
-    fill: none;
+    fill-opacity: .16;
+    stroke-width: 1.75;
 }
 
 .halo {
     paint-order: stroke;
     stroke: var(--sw-surface);
-    stroke-width: 6px;
+    stroke-width: 5px;
     stroke-linejoin: round;
 }
 
-.mk-ok {
-    fill: var(--series-2);
-    stroke: var(--series-2);
+.series-1 { fill: var(--series-1); stroke: var(--series-1); }
+.series-2 { fill: var(--series-2); stroke: var(--series-2); }
+.series-3 { fill: var(--series-3); stroke: var(--series-3); }
+.series-4 { fill: var(--series-4); stroke: var(--series-4); }
+.series-5 { fill: var(--series-5); stroke: var(--series-5); }
+
+path.line-1, path.line-2, path.line-3, path.line-4, path.line-5 {
+    fill: none;
+    stroke-width: 2.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
-.mk-fail {
-    fill: var(--sw-accent);
-    stroke: var(--sw-accent);
+.line-1 { stroke: var(--series-1); }
+.line-2 { stroke: var(--series-2); }
+.line-3 { stroke: var(--series-3); }
+.line-4 { stroke: var(--series-4); }
+.line-5 { stroke: var(--series-5); }
+
+.area {
+    fill-opacity: .22;
+    stroke-width: 1.5;
 }
 
-.mk-stop {
-    fill: var(--sw-muted);
-    stroke: var(--sw-muted);
+.ramp-1 { fill: var(--ramp-1); }
+.ramp-2 { fill: var(--ramp-2); }
+.ramp-3 { fill: var(--ramp-3); }
+.ramp-4 { fill: var(--ramp-4); }
+.ramp-5 { fill: var(--ramp-5); }
+.rt-1 { fill: var(--ramp-tx-1); }
+.rt-2 { fill: var(--ramp-tx-2); }
+.rt-3 { fill: var(--ramp-tx-3); }
+.rt-4 { fill: var(--ramp-tx-4); }
+.rt-5 { fill: var(--ramp-tx-5); }
+
+.up { fill: var(--series-1); stroke: var(--series-1); }
+.down { fill: var(--series-2); stroke: var(--series-2); }
+.total { fill: var(--sw-muted); stroke: var(--sw-muted); }
+
+.band {
+    fill-opacity: .3;
+    stroke-opacity: .7;
+    stroke-width: 1;
 }
 
-.mk-run {
-    fill: var(--series-3);
-    stroke: var(--series-3);
+.mk-ok { fill: var(--sw-ok); stroke: var(--sw-ok); }
+.mk-fail { fill: var(--sw-fail); stroke: var(--sw-fail); }
+.mk-stop { fill: var(--sw-muted); stroke: var(--sw-muted); }
+.mk-run { fill: var(--sw-warn); stroke: var(--sw-warn); }
+
+.flow-token {
+    fill: var(--sw-focal);
+    stroke: var(--sw-surface);
+    stroke-width: 2;
+    opacity: 0;
 }
 
 a {
@@ -262,69 +418,117 @@ a {
 
 a:focus-visible {
     outline: 3px solid var(--sw-focus);
-    outline-offset: 4px;
+    outline-offset: 3px;
     border-radius: 4px;
 }
 
 table {
     border-collapse: collapse;
-    margin: 24px 0;
+    margin: 8px 0 24px;
     width: 100%;
+    font-size: 14px;
     background: var(--sw-surface);
-    border-radius: 18px;
 }
 
 th, td {
-    padding: 12px;
+    padding: 8px 12px;
     border: 0;
     box-shadow: inset 0 -1px 0 var(--sw-rule);
     text-align: left;
+    vertical-align: top;
+}
+
+th {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+td {
+    color: var(--sw-muted);
+    font-variant-numeric: tabular-nums;
 }
 
 caption {
     text-align: left;
-    margin: 12px 0;
+    padding: 8px 0;
 }
 
 .legend {
-    padding: 16px 24px;
-    border: 1px solid var(--sw-rule);
-    border-radius: 12px;
-    background: var(--sw-surface);
+    margin: 12px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    list-style: none;
+    font-size: 13px;
+    color: var(--sw-muted);
 }
 
-/* Only explicit opt-in drawings move. No semantic label or mark is hidden. */
+/* Motion is opt-in per drawing type. Every frame, including the first, shows all content. */
 @keyframes sw-enter {
-    from {
-        transform: translateY(6px);
-    }
-    to {
-        transform: none;
-    }
+    from { transform: translateY(6px); }
+    to { transform: none; }
 }
 
-@keyframes sw-flow {
-    from {
-        stroke-dashoffset: 28;
-    }
-    to {
-        stroke-dashoffset: 0;
-    }
+@keyframes sw-fade {
+    from { opacity: .55; }
+    to { opacity: 1; }
+}
+
+@keyframes sw-pop {
+    from { transform: scale(.55); }
+    to { transform: none; }
+}
+
+@keyframes sw-pulse {
+    0% { stroke: var(--sw-muted); stroke-width: 1.5; }
+    35%, 65% { stroke: var(--sw-focal); stroke-width: 3; }
+    100% { stroke: var(--sw-muted); stroke-width: 1.5; }
 }
 
 .motion-reveal {
     animation: sw-enter var(--sw-motion-fast) ease-out 1;
 }
 
-.motion-loop .edge {
-    stroke-dasharray: 12 2;
-    animation: sw-flow var(--sw-motion-total) linear 1;
+.motion-grow .enter {
+    animation: sw-fade var(--sw-motion-fast) ease-out backwards;
 }
+
+.motion-pop .pop {
+    transform-box: fill-box;
+    transform-origin: center center;
+    animation: sw-pop var(--sw-motion-fast) ease-out backwards;
+}
+
+.motion-steps .step {
+    animation: sw-pulse 700ms ease-in-out backwards;
+}
+
+.d1 { animation-delay: 120ms; }
+.d2 { animation-delay: 240ms; }
+.d3 { animation-delay: 360ms; }
+.d4 { animation-delay: 480ms; }
+.d5 { animation-delay: 600ms; }
+.d6 { animation-delay: 720ms; }
+.d7 { animation-delay: 840ms; }
+.d8 { animation-delay: 960ms; }
+.motion-steps .step.d1 { animation-delay: 700ms; }
+.motion-steps .step.d2 { animation-delay: 1400ms; }
+.motion-steps .step.d3 { animation-delay: 2100ms; }
+.motion-steps .step.d4 { animation-delay: 2800ms; }
+.motion-steps .step.d5 { animation-delay: 3500ms; }
+.motion-steps .step.d6 { animation-delay: 4200ms; }
+.motion-steps .step.d7 { animation-delay: 4900ms; }
+.motion-steps .step.d8 { animation-delay: 5600ms; }
 
 @media (prefers-reduced-motion: reduce) {
     .drawing, .drawing * {
         animation: none !important;
         transform: none !important;
+    }
+
+    .flow-token {
+        display: none;
     }
 }
 
@@ -334,457 +538,589 @@ caption {
         transform: none !important;
     }
 
+    .flow-token {
+        display: none;
+    }
+
     figure {
         overflow: visible;
     }
 }
+
+svg { min-width: 318px; }
 </style>
 </head>
 <body>
-<main><h1><!--title-->Refund example · tree<!--/title--></h1>
-    <p>Source status: illustrative, not approved policy. Confirm every relation against saved evidence.</p>
-    <p><!--description-->Depth encodes parentage. Each node has one parent except the root.<!--/description--></p>
-    <figure aria-label="Scrollable diagram"><!--body-->
-        <svg aria-labelledby="diagram-title diagram-desc" role="img" viewBox="0 0 3520 1510" width="3520"
-             xmlns="http://www.w3.org/2000/svg"><title id="diagram-title">Refund example · tree</title>
-            <desc id="diagram-desc">Depth encodes parentage. Each node has one parent except the root.</desc>
-            <style>
-                :root {
-                    color-scheme: light dark;
-                    --sw-bg: #f2f3f5;
-                    --sw-surface: #fcfeff;
-                    --sw-tint: #e9ebee;
-                    --sw-ink: #17181a;
-                    --sw-muted: #5d6165;
-                    --sw-hair: #83868a;
-                    --sw-edge: #c2c4c7;
-                    --sw-rule: #dfe1e4;
-                    --sw-accent: #c40e22;
-                    --sw-accent-tint: #fde8ea;
-                    --sw-link: #245fd4;
-                    --sw-focus: #245fd4;
-                    --sw-shadow: 0 1px 3px rgba(20, 24, 30, .10), 0 8px 24px -12px rgba(20, 24, 30, .22);
-                    --sw-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, "Segoe UI", sans-serif;
-                    --sw-mono: ui-monospace, "SF Mono", "IBM Plex Mono", Menlo, Consolas, monospace;
-                    --series-1: #245fd4;
-                    --series-2: #006b2d;
-                    --series-3: #994a00;
-                    --series-4: #00807e;
-                    --series-5: #c9305f;
-                    --sw-motion-fast: 400ms;
-                    --sw-motion-total: 4s;
-                }
+<main>
+<p class="eyebrow">Tree</p>
+<h1>Refund example · tree</h1>
+<p>Depth encodes parentage; every node has one parent except the root.</p>
+<figure aria-label="Scrollable diagram"><svg viewBox="0 0 318 694" width="318" role="img" aria-labelledby="diagram-title diagram-desc"><title id="diagram-title">Refund example · tree</title><desc id="diagram-desc">Depth encodes parentage; every node has one parent except the root.</desc><style>
+:root {
+    color-scheme: light dark;
+    --sw-bg: #f3f4f7;
+    --sw-surface: #ffffff;
+    --sw-tint: #eceef3;
+    --sw-ink: #1b1f27;
+    --sw-muted: #565e6c;
+    --sw-hair: #7a8393;
+    --sw-edge: #c6cbd6;
+    --sw-rule: #e2e5ec;
+    --sw-focal: #3a44c4;
+    --sw-focal-tint: #eceeff;
+    --sw-link: #3a44c4;
+    --sw-focus: #3a44c4;
+    --sw-fail: #c0283a;
+    --sw-fail-tint: #fdecee;
+    --sw-ok: #0e6f3e;
+    --sw-warn: #8a5600;
+    --sw-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --sw-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    --series-1: #2c5bd0;
+    --series-2: #b25a00;
+    --series-3: #0a7a58;
+    --series-4: #a23c8c;
+    --series-5: #5a6376;
+    --ramp-1: #e9ebff;
+    --ramp-2: #c3c8f7;
+    --ramp-3: #8d96e8;
+    --ramp-4: #5963d3;
+    --ramp-5: #2c34a0;
+    --ramp-tx-1: #1b1f27;
+    --ramp-tx-2: #1b1f27;
+    --ramp-tx-3: #11142b;
+    --ramp-tx-4: #ffffff;
+    --ramp-tx-5: #ffffff;
+    --sw-motion-fast: 600ms;
+    --sw-motion-cycle: 8s;
+}
 
-                @media (prefers-color-scheme: dark) {
-                    :root {
-                        --sw-bg: #060709;
-                        --sw-surface: #17181b;
-                        --sw-tint: #222427;
-                        --sw-ink: #f1f2f3;
-                        --sw-muted: #a8abae;
-                        --sw-hair: #7c8084;
-                        --sw-edge: #44484c;
-                        --sw-rule: #292c2e;
-                        --sw-accent: #fd736d;
-                        --sw-accent-tint: #3a1a1c;
-                        --sw-link: #70adfb;
-                        --sw-focus: #70adfb;
-                        --sw-shadow: 0 0 0 1px rgba(255, 255, 255, .06), 0 10px 28px -10px rgba(0, 0, 0, .7);
-                        --series-1: #70adfb;
-                        --series-2: #5fd37f;
-                        --series-3: #f7ac4d;
-                        --series-4: #4fd1cf;
-                        --series-5: #f08aa8;
-                    }
-                }
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --sw-bg: #0e1015;
+        --sw-surface: #161a21;
+        --sw-tint: #1f242d;
+        --sw-ink: #e8ebf0;
+        --sw-muted: #a5adbb;
+        --sw-hair: #78818f;
+        --sw-edge: #394050;
+        --sw-rule: #272c37;
+        --sw-focal: #a3acff;
+        --sw-focal-tint: #232859;
+        --sw-link: #a3acff;
+        --sw-focus: #a3acff;
+        --sw-fail: #ff8d97;
+        --sw-fail-tint: #3a1c22;
+        --sw-ok: #6fd49b;
+        --sw-warn: #f1b85c;
+        --series-1: #7ea5ff;
+        --series-2: #ffa24f;
+        --series-3: #4fd6a6;
+        --series-4: #f08cd3;
+        --series-5: #aab4c8;
+        --ramp-1: #222754;
+        --ramp-2: #323a82;
+        --ramp-3: #4f5bb8;
+        --ramp-4: #7f8bef;
+        --ramp-5: #b4bcff;
+        --ramp-tx-1: #e8ebf0;
+        --ramp-tx-2: #e8ebf0;
+        --ramp-tx-3: #ffffff;
+        --ramp-tx-4: #0e1015;
+        --ramp-tx-5: #0e1015;
+    }
+}
 
-                body {
-                    margin: 0;
-                    padding: clamp(16px, 4vw, 56px);
-                    background: var(--sw-bg);
-                    color: var(--sw-ink);
-                    font-family: var(--sw-font);
-                }
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --sw-bg: #0e1015;
+    --sw-surface: #161a21;
+    --sw-tint: #1f242d;
+    --sw-ink: #e8ebf0;
+    --sw-muted: #a5adbb;
+    --sw-hair: #78818f;
+    --sw-edge: #394050;
+    --sw-rule: #272c37;
+    --sw-focal: #a3acff;
+    --sw-focal-tint: #232859;
+    --sw-link: #a3acff;
+    --sw-focus: #a3acff;
+    --sw-fail: #ff8d97;
+    --sw-fail-tint: #3a1c22;
+    --sw-ok: #6fd49b;
+    --sw-warn: #f1b85c;
+    --series-1: #7ea5ff;
+    --series-2: #ffa24f;
+    --series-3: #4fd6a6;
+    --series-4: #f08cd3;
+    --series-5: #aab4c8;
+    --ramp-1: #222754;
+    --ramp-2: #323a82;
+    --ramp-3: #4f5bb8;
+    --ramp-4: #7f8bef;
+    --ramp-5: #b4bcff;
+    --ramp-tx-1: #e8ebf0;
+    --ramp-tx-2: #e8ebf0;
+    --ramp-tx-3: #ffffff;
+    --ramp-tx-4: #0e1015;
+    --ramp-tx-5: #0e1015;
+}
 
-                main {
-                    max-width: 1800px;
-                    margin: auto;
-                }
+body {
+    margin: 0;
+    padding-block: clamp(16px, 4vw, 48px);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    background: var(--sw-bg);
+    color: var(--sw-ink);
+    font-family: var(--sw-font);
+    line-height: 1.5;
+}
 
-                h1, figcaption {
-                    font-size: clamp(24px, 3vw, 40px);
-                    font-weight: 700;
-                    letter-spacing: -.03em;
-                }
+main {
+    max-width: 1280px;
+    margin: auto;
+}
 
-                h2 {
-                    letter-spacing: -.02em;
-                }
+h1 {
+    margin: 4px 0 8px;
+    font-size: clamp(22px, 2.6vw, 32px);
+    font-weight: 700;
+    letter-spacing: -.02em;
+    text-wrap: balance;
+}
 
-                p, caption {
-                    color: var(--sw-muted);
-                    line-height: 1.6;
-                }
+h2 {
+    margin: 32px 0 8px;
+    font-size: 17px;
+    letter-spacing: -.01em;
+}
 
-                figure {
-                    margin: 0;
-                    overflow-x: auto;
-                    background: var(--sw-surface);
-                    border: 1px solid var(--sw-rule);
-                    border-radius: 18px;
-                    box-shadow: var(--sw-shadow);
-                }
+p, caption {
+    color: var(--sw-muted);
+    max-width: 72ch;
+}
 
-                svg {
-                    display: block;
-                    height: auto;
-                    background: var(--sw-surface);
-                    font-family: var(--sw-font);
-                }
+.eyebrow {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--sw-focal);
+}
 
-                text {
-                    fill: var(--sw-ink);
-                    font-size: 16px;
-                }
+figure {
+    margin: 20px 0 0;
+    padding: 8px;
+    overflow-x: auto;
+    background: var(--sw-surface);
+    border: 1px solid var(--sw-rule);
+    border-radius: 8px;
+}
 
-                .node-name {
-                    font-size: 18px;
-                    font-weight: 650;
-                    letter-spacing: -.01em;
-                }
+svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: auto;
+    font-family: var(--sw-font);
+}
 
-                .small {
-                    font-size: 14px;
-                    fill: var(--sw-muted);
-                }
+text {
+    fill: var(--sw-ink);
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+}
 
-                .ids {
-                    font: 12px var(--sw-mono);
-                }
+.node-name {
+    font-size: 15px;
+    font-weight: 600;
+}
 
-                .frame {
-                    fill: none;
-                    stroke: var(--sw-edge);
-                    stroke-width: 1.25;
-                }
+.small {
+    font-size: 13px;
+    fill: var(--sw-muted);
+}
 
-                .box {
-                    fill: var(--sw-surface);
-                    stroke: var(--sw-edge);
-                    stroke-width: 1.25;
-                    filter: drop-shadow(0 2px 3px rgba(20, 24, 30, .12));
-                }
+.value {
+    font-size: 15px;
+    font-weight: 600;
+}
 
-                .focal {
-                    fill: var(--sw-accent-tint);
-                    stroke: var(--sw-accent);
-                    stroke-width: 2;
-                }
+.ids {
+    font: 12px var(--sw-mono);
+    fill: var(--sw-muted);
+}
 
-                .chip {
-                    fill: var(--sw-tint);
-                    stroke: var(--sw-hair);
-                    stroke-width: 1;
-                }
+.micro {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    fill: var(--sw-muted);
+}
 
-                .paper {
-                    fill: var(--sw-surface);
-                }
+.title-bar {
+    font-size: 22px;
+    font-weight: 650;
+    letter-spacing: -.01em;
+}
 
-                .tint {
-                    fill: var(--sw-tint);
-                }
+.frame {
+    fill: none;
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+}
 
-                .rule {
-                    stroke: var(--sw-edge);
-                    stroke-width: 1;
-                }
+.lane {
+    fill: var(--sw-tint);
+    fill-opacity: .55;
+    stroke: var(--sw-rule);
+    stroke-width: 1;
+}
 
-                .edge, .open, .curve {
-                    fill: none;
-                    stroke: var(--sw-muted);
-                    stroke-width: 1.75;
-                    stroke-linecap: round;
-                    stroke-linejoin: round;
-                }
+.paper {
+    fill: var(--sw-surface);
+}
 
-                .solid {
-                    fill: var(--sw-muted);
-                }
+.ground {
+    fill: var(--sw-bg);
+}
 
-                .dashed, .lifeline {
-                    stroke-dasharray: 7 5;
-                }
+.sheet {
+    fill: var(--sw-surface);
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+}
 
-                .lifeline {
-                    stroke: var(--sw-hair);
-                }
+.tint {
+    fill: var(--sw-tint);
+}
 
-                .visibility {
-                    stroke: var(--sw-ink);
-                    stroke-width: 3;
-                }
+.box {
+    fill: var(--sw-surface);
+    stroke: var(--sw-edge);
+    stroke-width: 1.25;
+}
 
-                .set {
-                    fill: var(--sw-tint);
-                    fill-opacity: .5;
-                    stroke: var(--sw-hair);
-                    stroke-width: 1.5;
-                }
+.ghost {
+    fill: none;
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+    stroke-dasharray: 4 4;
+}
 
-                .band {
-                    fill: var(--series-1);
-                    fill-opacity: .25;
-                    stroke: var(--series-1);
-                }
+.focal {
+    fill: var(--sw-focal-tint);
+    stroke: var(--sw-focal);
+    stroke-width: 1.75;
+}
 
-                .series-1 {
-                    fill: var(--series-1);
-                    stroke: var(--series-1);
-                }
+.fail-box {
+    fill: var(--sw-fail-tint);
+    stroke: var(--sw-fail);
+    stroke-width: 1.75;
+}
 
-                .series-2 {
-                    fill: var(--series-2);
-                    stroke: var(--series-2);
-                }
+.tab {
+    fill: var(--sw-tint);
+    stroke: var(--sw-hair);
+    stroke-width: 1;
+}
 
-                .series-3 {
-                    fill: var(--series-3);
-                    stroke: var(--series-3);
-                }
+.ticket {
+    fill: var(--sw-surface);
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+}
 
-                .series-4 {
-                    fill: var(--series-4);
-                    stroke: var(--series-4);
-                }
+.rule {
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+}
 
-                .series-5 {
-                    fill: var(--series-5);
-                    stroke: var(--series-5);
-                }
+.grid {
+    stroke: var(--sw-rule);
+    stroke-width: 1;
+}
 
-                polygon[class^="series-"] {
-                    fill-opacity: .15;
-                    stroke-width: 2;
-                }
+.axis {
+    stroke: var(--sw-hair);
+    stroke-width: 1.25;
+}
 
-                path.edge {
-                    fill: none;
-                }
+.visibility {
+    stroke: var(--sw-ink);
+    stroke-width: 2.5;
+}
 
-                .halo {
-                    paint-order: stroke;
-                    stroke: var(--sw-surface);
-                    stroke-width: 6px;
-                    stroke-linejoin: round;
-                }
+.edge, .open, .curve {
+    fill: none;
+    stroke: var(--sw-muted);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
 
-                .mk-ok {
-                    fill: var(--series-2);
-                    stroke: var(--series-2);
-                }
+.edge.mark, .curve.mark {
+    stroke: var(--sw-focal);
+}
 
-                .mk-fail {
-                    fill: var(--sw-accent);
-                    stroke: var(--sw-accent);
-                }
+.solid {
+    fill: var(--sw-muted);
+}
 
-                .mk-stop {
-                    fill: var(--sw-muted);
-                    stroke: var(--sw-muted);
-                }
+.hollow {
+    fill: var(--sw-surface);
+    stroke: var(--sw-muted);
+    stroke-width: 1.5;
+}
 
-                .mk-run {
-                    fill: var(--series-3);
-                    stroke: var(--series-3);
-                }
+.dashed, .lifeline {
+    stroke-dasharray: 6 5;
+}
 
-                a {
-                    color: var(--sw-link);
-                }
+.lifeline {
+    stroke: var(--sw-hair);
+    stroke-width: 1;
+}
 
-                a:focus-visible {
-                    outline: 3px solid var(--sw-focus);
-                    outline-offset: 4px;
-                    border-radius: 4px;
-                }
+.act {
+    fill: var(--sw-tint);
+    stroke: var(--sw-hair);
+    stroke-width: 1;
+}
 
-                table {
-                    border-collapse: collapse;
-                    margin: 24px 0;
-                    width: 100%;
-                    background: var(--sw-surface);
-                    border-radius: 18px;
-                }
+.set {
+    fill-opacity: .16;
+    stroke-width: 1.75;
+}
 
-                th, td {
-                    padding: 12px;
-                    border: 0;
-                    box-shadow: inset 0 -1px 0 var(--sw-rule);
-                    text-align: left;
-                }
+.halo {
+    paint-order: stroke;
+    stroke: var(--sw-surface);
+    stroke-width: 5px;
+    stroke-linejoin: round;
+}
 
-                caption {
-                    text-align: left;
-                    margin: 12px 0;
-                }
+.series-1 { fill: var(--series-1); stroke: var(--series-1); }
+.series-2 { fill: var(--series-2); stroke: var(--series-2); }
+.series-3 { fill: var(--series-3); stroke: var(--series-3); }
+.series-4 { fill: var(--series-4); stroke: var(--series-4); }
+.series-5 { fill: var(--series-5); stroke: var(--series-5); }
 
-                .legend {
-                    padding: 16px 24px;
-                    border: 1px solid var(--sw-rule);
-                    border-radius: 12px;
-                    background: var(--sw-surface);
-                }
+path.line-1, path.line-2, path.line-3, path.line-4, path.line-5 {
+    fill: none;
+    stroke-width: 2.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
 
-                /* Only explicit opt-in drawings move. No semantic label or mark is hidden. */
-                @keyframes sw-enter {
-                    from {
-                        transform: translateY(6px);
-                    }
-                    to {
-                        transform: none;
-                    }
-                }
+.line-1 { stroke: var(--series-1); }
+.line-2 { stroke: var(--series-2); }
+.line-3 { stroke: var(--series-3); }
+.line-4 { stroke: var(--series-4); }
+.line-5 { stroke: var(--series-5); }
 
-                @keyframes sw-flow {
-                    from {
-                        stroke-dashoffset: 28;
-                    }
-                    to {
-                        stroke-dashoffset: 0;
-                    }
-                }
+.area {
+    fill-opacity: .22;
+    stroke-width: 1.5;
+}
 
-                .motion-reveal {
-                    animation: sw-enter var(--sw-motion-fast) ease-out 1;
-                }
+.ramp-1 { fill: var(--ramp-1); }
+.ramp-2 { fill: var(--ramp-2); }
+.ramp-3 { fill: var(--ramp-3); }
+.ramp-4 { fill: var(--ramp-4); }
+.ramp-5 { fill: var(--ramp-5); }
+.rt-1 { fill: var(--ramp-tx-1); }
+.rt-2 { fill: var(--ramp-tx-2); }
+.rt-3 { fill: var(--ramp-tx-3); }
+.rt-4 { fill: var(--ramp-tx-4); }
+.rt-5 { fill: var(--ramp-tx-5); }
 
-                .motion-loop .edge {
-                    stroke-dasharray: 12 2;
-                    animation: sw-flow var(--sw-motion-total) linear 1;
-                }
+.up { fill: var(--series-1); stroke: var(--series-1); }
+.down { fill: var(--series-2); stroke: var(--series-2); }
+.total { fill: var(--sw-muted); stroke: var(--sw-muted); }
 
-                @media (prefers-reduced-motion: reduce) {
-                    .drawing, .drawing * {
-                        animation: none !important;
-                        transform: none !important;
-                    }
-                }
+.band {
+    fill-opacity: .3;
+    stroke-opacity: .7;
+    stroke-width: 1;
+}
 
-                @media print {
-                    .drawing, .drawing * {
-                        animation: none !important;
-                        transform: none !important;
-                    }
+.mk-ok { fill: var(--sw-ok); stroke: var(--sw-ok); }
+.mk-fail { fill: var(--sw-fail); stroke: var(--sw-fail); }
+.mk-stop { fill: var(--sw-muted); stroke: var(--sw-muted); }
+.mk-run { fill: var(--sw-warn); stroke: var(--sw-warn); }
 
-                    figure {
-                        overflow: visible;
-                    }
-                }
-            </style>
-            <defs>
-                <marker id="arrow" markerHeight="8" markerWidth="8" orient="auto-start-reverse" refX="11" refY="6"
-                        viewBox="0 0 12 12">
-                    <path class="solid" d="M 0 0 L 11 6 L 0 12 Z"/>
-                </marker>
-                <marker id="triangle" markerHeight="10" markerWidth="10" orient="auto-start-reverse" refX="11" refY="6"
-                        viewBox="0 0 12 12">
-                    <path class="box" d="M 0 0 L 11 6 L 0 12 Z"/>
-                </marker>
-                <marker id="diamond" markerHeight="10" markerWidth="12" orient="auto-start-reverse" refX="15" refY="6"
-                        viewBox="0 0 16 12">
-                    <path class="solid" d="M 0 6 L 8 0 L 15 6 L 8 12 Z"/>
-                </marker>
-                <marker id="hollow-diamond" markerHeight="10" markerWidth="12" orient="auto-start-reverse"
-                        refX="15" refY="6"
-                        viewBox="0 0 16 12">
-                    <path class="box" d="M 0 6 L 8 0 L 15 6 L 8 12 Z"/>
-                </marker>
-            </defs>
-            <rect class="paper" height="100%" width="100%"/>
-            <g class="drawing motion-none">
-                <path class="edge" d="M 480 170 H 2392 Q 2400 170 2400 178 V 362 Q 2400 370 2392 370 H 940"
-                      marker-end="url(#arrow)"/>
-                <text class="halo" text-anchor="start" x="2408" y="270">1</text>
-                <path class="edge" d="M 940 370 H 2456 Q 2464 370 2464 378 V 562 Q 2464 570 2456 570 H 1400"
-                      marker-end="url(#arrow)"/>
-                <text class="halo" text-anchor="start" x="2472" y="470">2</text>
-                <path class="edge" d="M 1400 570 H 2520 Q 2528 570 2528 578 V 762 Q 2528 770 2520 770 H 1860"
-                      marker-end="url(#arrow)"/>
-                <text class="halo" text-anchor="start" x="2536" y="670">3</text>
-                <path class="edge" d="M 1860 770 H 2584 Q 2592 770 2592 778 V 962 Q 2592 970 2584 970 H 2320"
-                      marker-end="url(#arrow)"/>
-                <text class="halo" text-anchor="start" x="2600" y="870">4</text>
-                <g class="node" data-node="n1" data-spec="BR-001" data-spec-ids="BR-001" id="node-n1">
-                    <rect class="box" height="140" rx="8" width="400" x="80" y="100"/>
-                    <text class="node-name" text-anchor="start" x="96" y="128">Request</text>
-                    <rect class="chip" height="28" rx="4" width="376" x="92" y="202"/>
-                    <text class="ids" text-anchor="start" x="100" y="222">BR-001</text>
-                </g>
-                <g class="node" data-node="n2" data-spec="" data-spec-ids="" id="node-n2">
-                    <rect class="box" height="140" rx="8" width="400" x="540" y="300"/>
-                    <text class="node-name" text-anchor="start" x="556" y="328">Policy</text>
-                </g>
-                <g class="node" data-node="n3" data-spec="" data-spec-ids="" id="node-n3">
-                    <rect class="box" height="140" rx="8" width="400" x="1000" y="500"/>
-                    <text class="node-name" text-anchor="start" x="1016" y="528">Decision</text>
-                </g>
-                <g class="node" data-node="n4" data-spec="" data-spec-ids="" id="node-n4">
-                    <rect class="box" height="140" rx="8" width="400" x="1460" y="700"/>
-                    <text class="node-name" text-anchor="start" x="1476" y="728">Settlement</text>
-                </g>
-                <g class="node" data-node="n5" data-spec="" data-spec-ids="" id="node-n5">
-                    <rect class="box" height="140" rx="8" width="400" x="1920" y="900"/>
-                    <text class="node-name" text-anchor="start" x="1936" y="928">Notice</text>
-                </g>
-                <text class="node-name" text-anchor="start" x="60" y="1150">Connections, changes and exact data</text>
-                <text class="small" text-anchor="start" x="60" y="1186">1. n1 → n2: supplies evidence</text>
-                <text class="small" text-anchor="start" x="60" y="1216">2. n2 → n3: supplies evidence</text>
-                <text class="small" text-anchor="start" x="60" y="1246">3. n3 → n4: supplies evidence</text>
-                <text class="small" text-anchor="start" x="60" y="1276">4. n4 → n5: supplies evidence</text>
-                <text class="small" text-anchor="start" x="60" y="1306">1. Request</text>
-                <text class="small" text-anchor="start" x="60" y="1336">2. Policy</text>
-                <text class="small" text-anchor="start" x="60" y="1366">3. Decision</text>
-                <text class="small" text-anchor="start" x="60" y="1396">4. Settlement</text>
-                <text class="small" text-anchor="start" x="60" y="1426">5. Notice</text>
-            </g>
-        </svg><!--/body--></figure>
-    <p class="legend">Numbers match evidence cards and exact data below. Source IDs carry traceability; colour alone
-        never carries meaning. Motion is optional and non-semantic.</p>
-    <h2>Spec links</h2>
-    <ul><!--links-->
-        <li><a href="#node-n1">Request: BR-001</a></li>
-        <li><a href="#node-n2">Policy: no spec IDs</a></li>
-        <li><a href="#node-n3">Decision: no spec IDs</a></li>
-        <li><a href="#node-n4">Settlement: no spec IDs</a></li>
-        <li><a href="#node-n5">Notice: no spec IDs</a></li><!--/links--></ul><!--data-->
-    <table>
-        <caption>Exact source values; numbers on marks refer to these rows.</caption>
-        <tr>
-            <th>Item</th>
-            <th>Data</th>
-        </tr>
-        <tr>
-            <th>1. Request</th>
-            <td>No extra fields</td>
-        </tr>
-        <tr>
-            <th>2. Policy</th>
-            <td>No extra fields</td>
-        </tr>
-        <tr>
-            <th>3. Decision</th>
-            <td>No extra fields</td>
-        </tr>
-        <tr>
-            <th>4. Settlement</th>
-            <td>No extra fields</td>
-        </tr>
-        <tr>
-            <th>5. Notice</th>
-            <td>No extra fields</td>
-        </tr>
-    </table><!--/data-->
+.flow-token {
+    fill: var(--sw-focal);
+    stroke: var(--sw-surface);
+    stroke-width: 2;
+    opacity: 0;
+}
+
+a {
+    color: var(--sw-link);
+}
+
+a:focus-visible {
+    outline: 3px solid var(--sw-focus);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+table {
+    border-collapse: collapse;
+    margin: 8px 0 24px;
+    width: 100%;
+    font-size: 14px;
+    background: var(--sw-surface);
+}
+
+th, td {
+    padding: 8px 12px;
+    border: 0;
+    box-shadow: inset 0 -1px 0 var(--sw-rule);
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+td {
+    color: var(--sw-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+caption {
+    text-align: left;
+    padding: 8px 0;
+}
+
+.legend {
+    margin: 12px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    list-style: none;
+    font-size: 13px;
+    color: var(--sw-muted);
+}
+
+/* Motion is opt-in per drawing type. Every frame, including the first, shows all content. */
+@keyframes sw-enter {
+    from { transform: translateY(6px); }
+    to { transform: none; }
+}
+
+@keyframes sw-fade {
+    from { opacity: .55; }
+    to { opacity: 1; }
+}
+
+@keyframes sw-pop {
+    from { transform: scale(.55); }
+    to { transform: none; }
+}
+
+@keyframes sw-pulse {
+    0% { stroke: var(--sw-muted); stroke-width: 1.5; }
+    35%, 65% { stroke: var(--sw-focal); stroke-width: 3; }
+    100% { stroke: var(--sw-muted); stroke-width: 1.5; }
+}
+
+.motion-reveal {
+    animation: sw-enter var(--sw-motion-fast) ease-out 1;
+}
+
+.motion-grow .enter {
+    animation: sw-fade var(--sw-motion-fast) ease-out backwards;
+}
+
+.motion-pop .pop {
+    transform-box: fill-box;
+    transform-origin: center center;
+    animation: sw-pop var(--sw-motion-fast) ease-out backwards;
+}
+
+.motion-steps .step {
+    animation: sw-pulse 700ms ease-in-out backwards;
+}
+
+.d1 { animation-delay: 120ms; }
+.d2 { animation-delay: 240ms; }
+.d3 { animation-delay: 360ms; }
+.d4 { animation-delay: 480ms; }
+.d5 { animation-delay: 600ms; }
+.d6 { animation-delay: 720ms; }
+.d7 { animation-delay: 840ms; }
+.d8 { animation-delay: 960ms; }
+.motion-steps .step.d1 { animation-delay: 700ms; }
+.motion-steps .step.d2 { animation-delay: 1400ms; }
+.motion-steps .step.d3 { animation-delay: 2100ms; }
+.motion-steps .step.d4 { animation-delay: 2800ms; }
+.motion-steps .step.d5 { animation-delay: 3500ms; }
+.motion-steps .step.d6 { animation-delay: 4200ms; }
+.motion-steps .step.d7 { animation-delay: 4900ms; }
+.motion-steps .step.d8 { animation-delay: 5600ms; }
+
+@media (prefers-reduced-motion: reduce) {
+    .drawing, .drawing * {
+        animation: none !important;
+        transform: none !important;
+    }
+
+    .flow-token {
+        display: none;
+    }
+}
+
+@media print {
+    .drawing, .drawing * {
+        animation: none !important;
+        transform: none !important;
+    }
+
+    .flow-token {
+        display: none;
+    }
+
+    figure {
+        overflow: visible;
+    }
+}
+</style><defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8"
+ orient="auto-start-reverse">
+<path d="M 0 0 L 11 6 L 0 12 Z" class="solid"/>
+</marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8"
+ orient="auto-start-reverse">
+<path d="M 0 1 L 10 6 L 0 11" class="open"/>
+</marker>
+<marker id="triangle" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10"
+ orient="auto-start-reverse">
+<path d="M 0 0 L 11 6 L 0 12 Z" class="hollow"/>
+</marker>
+<marker id="diamond" viewBox="0 0 16 12" refX="15" refY="6" markerWidth="12" markerHeight="10"
+ orient="auto-start-reverse">
+<path d="M 0 6 L 8 0 L 15 6 L 8 12 Z" class="solid"/>
+</marker>
+<marker id="hollow-diamond" viewBox="0 0 16 12" refX="15" refY="6"
+ markerWidth="12" markerHeight="10"
+ orient="auto-start-reverse">
+<path d="M 0 6 L 8 0 L 15 6 L 8 12 Z" class="hollow"/>
+</marker>
+</defs><rect width="100%" height="100%" class="paper" data-bg="1"/><g transform="translate(36 28)"><g class="drawing motion-none"><path d="M 122 58 L 122 158" class="edge" marker-end="url(#arrow)"/><path d="M 122 202 L 122 302" class="edge" marker-end="url(#arrow)"/><path d="M 122 346 L 122 446" class="edge" marker-end="url(#arrow)"/><path d="M 122 490 L 122 590" class="edge" marker-end="url(#arrow)"/><rect x="57.47" y="97" width="129.07" height="22" rx="11" class="ticket"/><text x="122" y="113" class="small" text-anchor="middle">supplies evidence</text><rect x="57.47" y="241" width="129.07" height="22" rx="11" class="ticket"/><text x="122" y="257" class="small" text-anchor="middle">supplies evidence</text><rect x="57.47" y="385" width="129.07" height="22" rx="11" class="ticket"/><text x="122" y="401" class="small" text-anchor="middle">supplies evidence</text><rect x="57.47" y="529" width="129.07" height="22" rx="11" class="ticket"/><text x="122" y="545" class="small" text-anchor="middle">supplies evidence</text><g class="node" id="node-n1" data-node="n1" data-spec="BR-001" data-spec-ids="BR-001"><rect x="28" y="14" width="188" height="44" rx="6" class="box"/><text x="44" y="40" class="node-name">Request</text><rect x="144.8" y="4" width="59.2" height="20" rx="4" class="tab"/><text x="152.8" y="18" class="ids">BR-001</text></g><g class="node" id="node-n2" data-node="n2" data-spec="" data-spec-ids=""><rect x="28" y="158" width="188" height="44" rx="6" class="box"/><text x="44" y="184" class="node-name">Policy</text></g><g class="node" id="node-n3" data-node="n3" data-spec="" data-spec-ids=""><rect x="28" y="302" width="188" height="44" rx="6" class="box"/><text x="44" y="328" class="node-name">Decision</text></g><g class="node" id="node-n4" data-node="n4" data-spec="" data-spec-ids=""><rect x="28" y="446" width="188" height="44" rx="6" class="box"/><text x="44" y="472" class="node-name">Settlement</text></g><g class="node" id="node-n5" data-node="n5" data-spec="" data-spec-ids=""><rect x="28" y="590" width="188" height="44" rx="6" class="box"/><text x="44" y="616" class="node-name">Notice</text></g></g></g></svg></figure>
+<h2>Spec links and exact data</h2>
+<table><caption>Exact source values and spec links, in drawing order.</caption><tr><th>Item</th><th>Spec IDs and data</th></tr><tr><th><a href="#node-n1">Request</a></th><td>BR-001</td></tr><tr><th><a href="#node-n2">Policy</a></th><td>no spec IDs</td></tr><tr><th><a href="#node-n3">Decision</a></th><td>no spec IDs</td></tr><tr><th><a href="#node-n4">Settlement</a></th><td>no spec IDs</td></tr><tr><th><a href="#node-n5">Notice</a></th><td>no spec IDs</td></tr></table><table><caption>Connections.</caption><tr><th>#</th><th>Relation</th></tr><tr><th>1</th><td>Request → Policy: supplies evidence</td></tr><tr><th>2</th><td>Policy → Decision: supplies evidence</td></tr><tr><th>3</th><td>Decision → Settlement: supplies evidence</td></tr><tr><th>4</th><td>Settlement → Notice: supplies evidence</td></tr></table>
 </main>
 </body>
 </html>

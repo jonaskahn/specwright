@@ -1,73 +1,1126 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
-<title><!--title-->Refund sequence example<!--/title--></title>
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="light dark" name="color-scheme">
+<title>Refund sequence example</title>
 <style>
-:root { --sw-bg:#ffffff; --sw-surface:#f7f9fb; --sw-tint:#e8edf2;
---sw-ink:#17232f; --sw-muted:#495b6b; --sw-hair:#687b8a;
---sw-accent:#804000; --sw-accent-tint:#fff0d9; --sw-link:#004f91; }
-@media (prefers-color-scheme:dark) { :root {
---sw-bg:#101820; --sw-surface:#1a2632; --sw-tint:#243443;
---sw-ink:#f0f5fa; --sw-muted:#bac8d4; --sw-hair:#91a6b7;
---sw-accent:#ffd18a; --sw-accent-tint:#392b19; --sw-link:#9fd0ff; } }
-body { margin:24px; background:var(--sw-bg); color:var(--sw-ink);
-font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
-figure { margin:0; overflow:auto; } figcaption { font-size:1.4rem; font-weight:650; }
-svg { display:block; width:100%; min-width:960px; height:auto; }
-text { fill:var(--sw-ink); font-size:13px; } .small { font-size:14px; }
-.ids { font:12px ui-monospace,Menlo,Consolas,monospace; }
-.box { fill:var(--sw-surface); stroke:var(--sw-ink); stroke-width:1.5; }
-.focal { fill:var(--sw-accent-tint); stroke:var(--sw-accent); }
-.chip { fill:var(--sw-bg); stroke:var(--sw-hair); }
-.paper { fill:var(--sw-bg); } .tint { fill:var(--sw-tint); }
-.rule { stroke:var(--sw-hair); stroke-width:1; }
-.visibility { stroke:var(--sw-ink); stroke-width:3; }
-.solid { fill:var(--sw-ink); } .open { fill:none; stroke:var(--sw-ink); }
-.edge,.curve { fill:none; stroke:var(--sw-ink); stroke-width:1.5; }
-.dashed,.lifeline { stroke-dasharray:8 6; } .lifeline { stroke:var(--sw-hair); }
-.frame { fill:none; stroke:var(--sw-hair); }
-.halo { paint-order:stroke; stroke:var(--sw-bg); stroke-width:6px; stroke-linejoin:round; }
-.legend { padding:16px 32px; border:1px solid var(--sw-hair); }
-a { color:var(--sw-link); } p { color:var(--sw-muted); }
-</style></head>
-<body><main><figure>
-<figcaption><!--title-->Refund sequence example<!--/title--></figcaption>
-<p>Source status: illustrative; confirm rules against the linked draft.</p>
-<svg viewBox="0 0 2608 632" role="img" aria-labelledby="diagram-title diagram-desc">
-<title id="diagram-title"><!--title-->Refund sequence example<!--/title--></title>
-<desc id="diagram-desc">Top boxes are participants. Dashed vertical lines are lifelines. Solid arrows call, dashed arrows return; open heads are asynchronous. Frames bound alternatives or repetition. Spec references are repeated below the picture.</desc>
-<defs><marker id="arrow" viewBox="0 0 2608 632" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 Z" class="solid"/></marker>
-<marker id="open" viewBox="0 0 2608 632" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" class="open"/></marker></defs>
-<!--body--><line x1="360" y1="176" x2="360" y2="592" class="lifeline"/>
-<line x1="728" y1="176" x2="728" y2="592" class="lifeline"/>
-<line x1="1096" y1="176" x2="1096" y2="592" class="lifeline"/>
-<line x1="1464" y1="176" x2="1464" y2="592" class="lifeline"/>
-<line x1="1832" y1="176" x2="1832" y2="592" class="lifeline"/>
-<rect x="160" y="280" width="2408" height="176" rx="0" class="frame"/>
-<text x="168" y="300" class="halo">opt Approval required</text>
-<rect x="720" y="232" width="16" height="48" rx="0" class="chip"/>
-<path d="M 360 240 H 728" class="edge" marker-end="url(#arrow)"/>
-<text x="376" y="228" class="halo small">request check</text>
-<rect x="1088" y="320" width="16" height="48" rx="0" class="chip"/>
-<path d="M 728 328 H 1096" class="edge" marker-end="url(#arrow)"/>
-<text x="744" y="316" class="halo small">request check</text>
-<rect x="1456" y="408" width="16" height="48" rx="0" class="chip"/>
-<path d="M 1096 416 H 1464" class="edge" marker-end="url(#arrow)"/>
-<text x="1112" y="404" class="halo small">request check</text>
-<rect x="1824" y="496" width="16" height="48" rx="0" class="chip"/>
-<path d="M 1464 504 H 1832" class="edge dashed" marker-end="url(#open)"/>
-<text x="1480" y="492" class="halo small">request check</text>
-<g class="node" id="node-submitted" data-node="submitted" data-spec="" data-spec-ids="" data-box="200,80,320,96"><rect x="200" y="80" width="320" height="96" rx="8" class="box"/><text x="224" y="112" class="">Customer</text></g>
-<g class="node" id="node-pending" data-node="pending" data-spec="BR-001" data-spec-ids="BR-001" data-box="568,80,320,96"><rect x="568" y="80" width="320" height="96" rx="8" class="box focal"/><text x="592" y="112" class="">Portal</text><rect x="584" y="132" width="288" height="32" rx="4" class="chip"/><text x="592" y="154" class="ids">BR-001</text></g>
-<g class="node" id="node-approved" data-node="approved" data-spec="BR-001" data-spec-ids="BR-001" data-box="936,80,320,96"><rect x="936" y="80" width="320" height="96" rx="8" class="box focal"/><text x="960" y="112" class="">Policy</text><rect x="952" y="132" width="288" height="32" rx="4" class="chip"/><text x="960" y="154" class="ids">BR-001</text></g>
-<g class="node" id="node-rejected" data-node="rejected" data-spec="AC-001-3" data-spec-ids="AC-001-3" data-box="1304,80,320,96"><rect x="1304" y="80" width="320" height="96" rx="8" class="box"/><text x="1328" y="112" class="">Reviewer</text><rect x="1320" y="132" width="288" height="32" rx="4" class="chip"/><text x="1328" y="154" class="ids">AC-001-3</text></g>
-<g class="node" id="node-paid" data-node="paid" data-spec="" data-spec-ids="" data-box="1672,80,320,96"><rect x="1672" y="80" width="320" height="96" rx="8" class="box"/><text x="1696" y="112" class="">Payments</text></g><!--/body-->
-</svg></figure>
-<ul class="legend"><li>Top boxes are participants. Dashed vertical lines are lifelines. Solid arrows call, dashed arrows return; open heads are asynchronous. Frames bound alternatives or repetition.</li><li>Outlined ID chips link rules and acceptance criteria. Colour alone never supplies meaning.</li></ul>
-<h2>Spec links</h2><ul><!--links--><li><a href="#node-submitted">Customer: no spec IDs</a></li>
-<li><a href="#node-pending">Portal: BR-001</a></li>
-<li><a href="#node-approved">Policy: BR-001</a></li>
-<li><a href="#node-rejected">Reviewer: AC-001-3</a></li>
-<li><a href="#node-paid">Payments: no spec IDs</a></li><!--/links--></ul>
-</main></body></html>
+:root {
+    color-scheme: light dark;
+    --sw-bg: #f3f4f7;
+    --sw-surface: #ffffff;
+    --sw-tint: #eceef3;
+    --sw-ink: #1b1f27;
+    --sw-muted: #565e6c;
+    --sw-hair: #7a8393;
+    --sw-edge: #c6cbd6;
+    --sw-rule: #e2e5ec;
+    --sw-focal: #3a44c4;
+    --sw-focal-tint: #eceeff;
+    --sw-link: #3a44c4;
+    --sw-focus: #3a44c4;
+    --sw-fail: #c0283a;
+    --sw-fail-tint: #fdecee;
+    --sw-ok: #0e6f3e;
+    --sw-warn: #8a5600;
+    --sw-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --sw-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    --series-1: #2c5bd0;
+    --series-2: #b25a00;
+    --series-3: #0a7a58;
+    --series-4: #a23c8c;
+    --series-5: #5a6376;
+    --ramp-1: #e9ebff;
+    --ramp-2: #c3c8f7;
+    --ramp-3: #8d96e8;
+    --ramp-4: #5963d3;
+    --ramp-5: #2c34a0;
+    --ramp-tx-1: #1b1f27;
+    --ramp-tx-2: #1b1f27;
+    --ramp-tx-3: #11142b;
+    --ramp-tx-4: #ffffff;
+    --ramp-tx-5: #ffffff;
+    --sw-motion-fast: 600ms;
+    --sw-motion-cycle: 8s;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --sw-bg: #0e1015;
+        --sw-surface: #161a21;
+        --sw-tint: #1f242d;
+        --sw-ink: #e8ebf0;
+        --sw-muted: #a5adbb;
+        --sw-hair: #78818f;
+        --sw-edge: #394050;
+        --sw-rule: #272c37;
+        --sw-focal: #a3acff;
+        --sw-focal-tint: #232859;
+        --sw-link: #a3acff;
+        --sw-focus: #a3acff;
+        --sw-fail: #ff8d97;
+        --sw-fail-tint: #3a1c22;
+        --sw-ok: #6fd49b;
+        --sw-warn: #f1b85c;
+        --series-1: #7ea5ff;
+        --series-2: #ffa24f;
+        --series-3: #4fd6a6;
+        --series-4: #f08cd3;
+        --series-5: #aab4c8;
+        --ramp-1: #222754;
+        --ramp-2: #323a82;
+        --ramp-3: #4f5bb8;
+        --ramp-4: #7f8bef;
+        --ramp-5: #b4bcff;
+        --ramp-tx-1: #e8ebf0;
+        --ramp-tx-2: #e8ebf0;
+        --ramp-tx-3: #ffffff;
+        --ramp-tx-4: #0e1015;
+        --ramp-tx-5: #0e1015;
+    }
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --sw-bg: #0e1015;
+    --sw-surface: #161a21;
+    --sw-tint: #1f242d;
+    --sw-ink: #e8ebf0;
+    --sw-muted: #a5adbb;
+    --sw-hair: #78818f;
+    --sw-edge: #394050;
+    --sw-rule: #272c37;
+    --sw-focal: #a3acff;
+    --sw-focal-tint: #232859;
+    --sw-link: #a3acff;
+    --sw-focus: #a3acff;
+    --sw-fail: #ff8d97;
+    --sw-fail-tint: #3a1c22;
+    --sw-ok: #6fd49b;
+    --sw-warn: #f1b85c;
+    --series-1: #7ea5ff;
+    --series-2: #ffa24f;
+    --series-3: #4fd6a6;
+    --series-4: #f08cd3;
+    --series-5: #aab4c8;
+    --ramp-1: #222754;
+    --ramp-2: #323a82;
+    --ramp-3: #4f5bb8;
+    --ramp-4: #7f8bef;
+    --ramp-5: #b4bcff;
+    --ramp-tx-1: #e8ebf0;
+    --ramp-tx-2: #e8ebf0;
+    --ramp-tx-3: #ffffff;
+    --ramp-tx-4: #0e1015;
+    --ramp-tx-5: #0e1015;
+}
+
+body {
+    margin: 0;
+    padding-block: clamp(16px, 4vw, 48px);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    background: var(--sw-bg);
+    color: var(--sw-ink);
+    font-family: var(--sw-font);
+    line-height: 1.5;
+}
+
+main {
+    max-width: 1280px;
+    margin: auto;
+}
+
+h1 {
+    margin: 4px 0 8px;
+    font-size: clamp(22px, 2.6vw, 32px);
+    font-weight: 700;
+    letter-spacing: -.02em;
+    text-wrap: balance;
+}
+
+h2 {
+    margin: 32px 0 8px;
+    font-size: 17px;
+    letter-spacing: -.01em;
+}
+
+p, caption {
+    color: var(--sw-muted);
+    max-width: 72ch;
+}
+
+.eyebrow {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--sw-focal);
+}
+
+figure {
+    margin: 20px 0 0;
+    padding: 8px;
+    overflow-x: auto;
+    background: var(--sw-surface);
+    border: 1px solid var(--sw-rule);
+    border-radius: 8px;
+}
+
+svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: auto;
+    font-family: var(--sw-font);
+}
+
+text {
+    fill: var(--sw-ink);
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+}
+
+.node-name {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.small {
+    font-size: 13px;
+    fill: var(--sw-muted);
+}
+
+.value {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.ids {
+    font: 12px var(--sw-mono);
+    fill: var(--sw-muted);
+}
+
+.micro {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    fill: var(--sw-muted);
+}
+
+.title-bar {
+    font-size: 22px;
+    font-weight: 650;
+    letter-spacing: -.01em;
+}
+
+.frame {
+    fill: none;
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+}
+
+.lane {
+    fill: var(--sw-tint);
+    fill-opacity: .55;
+    stroke: var(--sw-rule);
+    stroke-width: 1;
+}
+
+.paper {
+    fill: var(--sw-surface);
+}
+
+.ground {
+    fill: var(--sw-bg);
+}
+
+.sheet {
+    fill: var(--sw-surface);
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+}
+
+.tint {
+    fill: var(--sw-tint);
+}
+
+.box {
+    fill: var(--sw-surface);
+    stroke: var(--sw-edge);
+    stroke-width: 1.25;
+}
+
+.ghost {
+    fill: none;
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+    stroke-dasharray: 4 4;
+}
+
+.focal {
+    fill: var(--sw-focal-tint);
+    stroke: var(--sw-focal);
+    stroke-width: 1.75;
+}
+
+.fail-box {
+    fill: var(--sw-fail-tint);
+    stroke: var(--sw-fail);
+    stroke-width: 1.75;
+}
+
+.tab {
+    fill: var(--sw-tint);
+    stroke: var(--sw-hair);
+    stroke-width: 1;
+}
+
+.ticket {
+    fill: var(--sw-surface);
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+}
+
+.rule {
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+}
+
+.grid {
+    stroke: var(--sw-rule);
+    stroke-width: 1;
+}
+
+.axis {
+    stroke: var(--sw-hair);
+    stroke-width: 1.25;
+}
+
+.visibility {
+    stroke: var(--sw-ink);
+    stroke-width: 2.5;
+}
+
+.edge, .open, .curve {
+    fill: none;
+    stroke: var(--sw-muted);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.edge.mark, .curve.mark {
+    stroke: var(--sw-focal);
+}
+
+.solid {
+    fill: var(--sw-muted);
+}
+
+.hollow {
+    fill: var(--sw-surface);
+    stroke: var(--sw-muted);
+    stroke-width: 1.5;
+}
+
+.dashed, .lifeline {
+    stroke-dasharray: 6 5;
+}
+
+.lifeline {
+    stroke: var(--sw-hair);
+    stroke-width: 1;
+}
+
+.act {
+    fill: var(--sw-tint);
+    stroke: var(--sw-hair);
+    stroke-width: 1;
+}
+
+.set {
+    fill-opacity: .16;
+    stroke-width: 1.75;
+}
+
+.halo {
+    paint-order: stroke;
+    stroke: var(--sw-surface);
+    stroke-width: 5px;
+    stroke-linejoin: round;
+}
+
+.series-1 { fill: var(--series-1); stroke: var(--series-1); }
+.series-2 { fill: var(--series-2); stroke: var(--series-2); }
+.series-3 { fill: var(--series-3); stroke: var(--series-3); }
+.series-4 { fill: var(--series-4); stroke: var(--series-4); }
+.series-5 { fill: var(--series-5); stroke: var(--series-5); }
+
+path.line-1, path.line-2, path.line-3, path.line-4, path.line-5 {
+    fill: none;
+    stroke-width: 2.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.line-1 { stroke: var(--series-1); }
+.line-2 { stroke: var(--series-2); }
+.line-3 { stroke: var(--series-3); }
+.line-4 { stroke: var(--series-4); }
+.line-5 { stroke: var(--series-5); }
+
+.area {
+    fill-opacity: .22;
+    stroke-width: 1.5;
+}
+
+.ramp-1 { fill: var(--ramp-1); }
+.ramp-2 { fill: var(--ramp-2); }
+.ramp-3 { fill: var(--ramp-3); }
+.ramp-4 { fill: var(--ramp-4); }
+.ramp-5 { fill: var(--ramp-5); }
+.rt-1 { fill: var(--ramp-tx-1); }
+.rt-2 { fill: var(--ramp-tx-2); }
+.rt-3 { fill: var(--ramp-tx-3); }
+.rt-4 { fill: var(--ramp-tx-4); }
+.rt-5 { fill: var(--ramp-tx-5); }
+
+.up { fill: var(--series-1); stroke: var(--series-1); }
+.down { fill: var(--series-2); stroke: var(--series-2); }
+.total { fill: var(--sw-muted); stroke: var(--sw-muted); }
+
+.band {
+    fill-opacity: .3;
+    stroke-opacity: .7;
+    stroke-width: 1;
+}
+
+.mk-ok { fill: var(--sw-ok); stroke: var(--sw-ok); }
+.mk-fail { fill: var(--sw-fail); stroke: var(--sw-fail); }
+.mk-stop { fill: var(--sw-muted); stroke: var(--sw-muted); }
+.mk-run { fill: var(--sw-warn); stroke: var(--sw-warn); }
+
+.flow-token {
+    fill: var(--sw-focal);
+    stroke: var(--sw-surface);
+    stroke-width: 2;
+    opacity: 0;
+}
+
+a {
+    color: var(--sw-link);
+}
+
+a:focus-visible {
+    outline: 3px solid var(--sw-focus);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+table {
+    border-collapse: collapse;
+    margin: 8px 0 24px;
+    width: 100%;
+    font-size: 14px;
+    background: var(--sw-surface);
+}
+
+th, td {
+    padding: 8px 12px;
+    border: 0;
+    box-shadow: inset 0 -1px 0 var(--sw-rule);
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+td {
+    color: var(--sw-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+caption {
+    text-align: left;
+    padding: 8px 0;
+}
+
+.legend {
+    margin: 12px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    list-style: none;
+    font-size: 13px;
+    color: var(--sw-muted);
+}
+
+/* Motion is opt-in per drawing type. Every frame, including the first, shows all content. */
+@keyframes sw-enter {
+    from { transform: translateY(6px); }
+    to { transform: none; }
+}
+
+@keyframes sw-fade {
+    from { opacity: .55; }
+    to { opacity: 1; }
+}
+
+@keyframes sw-pop {
+    from { transform: scale(.55); }
+    to { transform: none; }
+}
+
+@keyframes sw-pulse {
+    0% { stroke: var(--sw-muted); stroke-width: 1.5; }
+    35%, 65% { stroke: var(--sw-focal); stroke-width: 3; }
+    100% { stroke: var(--sw-muted); stroke-width: 1.5; }
+}
+
+.motion-reveal {
+    animation: sw-enter var(--sw-motion-fast) ease-out 1;
+}
+
+.motion-grow .enter {
+    animation: sw-fade var(--sw-motion-fast) ease-out backwards;
+}
+
+.motion-pop .pop {
+    transform-box: fill-box;
+    transform-origin: center center;
+    animation: sw-pop var(--sw-motion-fast) ease-out backwards;
+}
+
+.motion-steps .step {
+    animation: sw-pulse 700ms ease-in-out backwards;
+}
+
+.d1 { animation-delay: 120ms; }
+.d2 { animation-delay: 240ms; }
+.d3 { animation-delay: 360ms; }
+.d4 { animation-delay: 480ms; }
+.d5 { animation-delay: 600ms; }
+.d6 { animation-delay: 720ms; }
+.d7 { animation-delay: 840ms; }
+.d8 { animation-delay: 960ms; }
+.motion-steps .step.d1 { animation-delay: 700ms; }
+.motion-steps .step.d2 { animation-delay: 1400ms; }
+.motion-steps .step.d3 { animation-delay: 2100ms; }
+.motion-steps .step.d4 { animation-delay: 2800ms; }
+.motion-steps .step.d5 { animation-delay: 3500ms; }
+.motion-steps .step.d6 { animation-delay: 4200ms; }
+.motion-steps .step.d7 { animation-delay: 4900ms; }
+.motion-steps .step.d8 { animation-delay: 5600ms; }
+
+@media (prefers-reduced-motion: reduce) {
+    .drawing, .drawing * {
+        animation: none !important;
+        transform: none !important;
+    }
+
+    .flow-token {
+        display: none;
+    }
+}
+
+@media print {
+    .drawing, .drawing * {
+        animation: none !important;
+        transform: none !important;
+    }
+
+    .flow-token {
+        display: none;
+    }
+
+    figure {
+        overflow: visible;
+    }
+}
+
+svg { min-width: 760px; }
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Sequence</p>
+<h1>Refund sequence example</h1>
+<p>Participants run left to right and time runs down. Solid arrows call, dashed arrows return, open heads are asynchronous; frames bound alternatives and loops.</p>
+<figure aria-label="Scrollable diagram"><svg viewBox="0 0 1020 506" width="1020" role="img" aria-labelledby="diagram-title diagram-desc"><title id="diagram-title">Refund sequence example</title><desc id="diagram-desc">Participants run left to right and time runs down. Solid arrows call, dashed arrows return, open heads are asynchronous; frames bound alternatives and loops.</desc><style>
+:root {
+    color-scheme: light dark;
+    --sw-bg: #f3f4f7;
+    --sw-surface: #ffffff;
+    --sw-tint: #eceef3;
+    --sw-ink: #1b1f27;
+    --sw-muted: #565e6c;
+    --sw-hair: #7a8393;
+    --sw-edge: #c6cbd6;
+    --sw-rule: #e2e5ec;
+    --sw-focal: #3a44c4;
+    --sw-focal-tint: #eceeff;
+    --sw-link: #3a44c4;
+    --sw-focus: #3a44c4;
+    --sw-fail: #c0283a;
+    --sw-fail-tint: #fdecee;
+    --sw-ok: #0e6f3e;
+    --sw-warn: #8a5600;
+    --sw-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --sw-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    --series-1: #2c5bd0;
+    --series-2: #b25a00;
+    --series-3: #0a7a58;
+    --series-4: #a23c8c;
+    --series-5: #5a6376;
+    --ramp-1: #e9ebff;
+    --ramp-2: #c3c8f7;
+    --ramp-3: #8d96e8;
+    --ramp-4: #5963d3;
+    --ramp-5: #2c34a0;
+    --ramp-tx-1: #1b1f27;
+    --ramp-tx-2: #1b1f27;
+    --ramp-tx-3: #11142b;
+    --ramp-tx-4: #ffffff;
+    --ramp-tx-5: #ffffff;
+    --sw-motion-fast: 600ms;
+    --sw-motion-cycle: 8s;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --sw-bg: #0e1015;
+        --sw-surface: #161a21;
+        --sw-tint: #1f242d;
+        --sw-ink: #e8ebf0;
+        --sw-muted: #a5adbb;
+        --sw-hair: #78818f;
+        --sw-edge: #394050;
+        --sw-rule: #272c37;
+        --sw-focal: #a3acff;
+        --sw-focal-tint: #232859;
+        --sw-link: #a3acff;
+        --sw-focus: #a3acff;
+        --sw-fail: #ff8d97;
+        --sw-fail-tint: #3a1c22;
+        --sw-ok: #6fd49b;
+        --sw-warn: #f1b85c;
+        --series-1: #7ea5ff;
+        --series-2: #ffa24f;
+        --series-3: #4fd6a6;
+        --series-4: #f08cd3;
+        --series-5: #aab4c8;
+        --ramp-1: #222754;
+        --ramp-2: #323a82;
+        --ramp-3: #4f5bb8;
+        --ramp-4: #7f8bef;
+        --ramp-5: #b4bcff;
+        --ramp-tx-1: #e8ebf0;
+        --ramp-tx-2: #e8ebf0;
+        --ramp-tx-3: #ffffff;
+        --ramp-tx-4: #0e1015;
+        --ramp-tx-5: #0e1015;
+    }
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --sw-bg: #0e1015;
+    --sw-surface: #161a21;
+    --sw-tint: #1f242d;
+    --sw-ink: #e8ebf0;
+    --sw-muted: #a5adbb;
+    --sw-hair: #78818f;
+    --sw-edge: #394050;
+    --sw-rule: #272c37;
+    --sw-focal: #a3acff;
+    --sw-focal-tint: #232859;
+    --sw-link: #a3acff;
+    --sw-focus: #a3acff;
+    --sw-fail: #ff8d97;
+    --sw-fail-tint: #3a1c22;
+    --sw-ok: #6fd49b;
+    --sw-warn: #f1b85c;
+    --series-1: #7ea5ff;
+    --series-2: #ffa24f;
+    --series-3: #4fd6a6;
+    --series-4: #f08cd3;
+    --series-5: #aab4c8;
+    --ramp-1: #222754;
+    --ramp-2: #323a82;
+    --ramp-3: #4f5bb8;
+    --ramp-4: #7f8bef;
+    --ramp-5: #b4bcff;
+    --ramp-tx-1: #e8ebf0;
+    --ramp-tx-2: #e8ebf0;
+    --ramp-tx-3: #ffffff;
+    --ramp-tx-4: #0e1015;
+    --ramp-tx-5: #0e1015;
+}
+
+body {
+    margin: 0;
+    padding-block: clamp(16px, 4vw, 48px);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    background: var(--sw-bg);
+    color: var(--sw-ink);
+    font-family: var(--sw-font);
+    line-height: 1.5;
+}
+
+main {
+    max-width: 1280px;
+    margin: auto;
+}
+
+h1 {
+    margin: 4px 0 8px;
+    font-size: clamp(22px, 2.6vw, 32px);
+    font-weight: 700;
+    letter-spacing: -.02em;
+    text-wrap: balance;
+}
+
+h2 {
+    margin: 32px 0 8px;
+    font-size: 17px;
+    letter-spacing: -.01em;
+}
+
+p, caption {
+    color: var(--sw-muted);
+    max-width: 72ch;
+}
+
+.eyebrow {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--sw-focal);
+}
+
+figure {
+    margin: 20px 0 0;
+    padding: 8px;
+    overflow-x: auto;
+    background: var(--sw-surface);
+    border: 1px solid var(--sw-rule);
+    border-radius: 8px;
+}
+
+svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: auto;
+    font-family: var(--sw-font);
+}
+
+text {
+    fill: var(--sw-ink);
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+}
+
+.node-name {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.small {
+    font-size: 13px;
+    fill: var(--sw-muted);
+}
+
+.value {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.ids {
+    font: 12px var(--sw-mono);
+    fill: var(--sw-muted);
+}
+
+.micro {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    fill: var(--sw-muted);
+}
+
+.title-bar {
+    font-size: 22px;
+    font-weight: 650;
+    letter-spacing: -.01em;
+}
+
+.frame {
+    fill: none;
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+}
+
+.lane {
+    fill: var(--sw-tint);
+    fill-opacity: .55;
+    stroke: var(--sw-rule);
+    stroke-width: 1;
+}
+
+.paper {
+    fill: var(--sw-surface);
+}
+
+.ground {
+    fill: var(--sw-bg);
+}
+
+.sheet {
+    fill: var(--sw-surface);
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+}
+
+.tint {
+    fill: var(--sw-tint);
+}
+
+.box {
+    fill: var(--sw-surface);
+    stroke: var(--sw-edge);
+    stroke-width: 1.25;
+}
+
+.ghost {
+    fill: none;
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+    stroke-dasharray: 4 4;
+}
+
+.focal {
+    fill: var(--sw-focal-tint);
+    stroke: var(--sw-focal);
+    stroke-width: 1.75;
+}
+
+.fail-box {
+    fill: var(--sw-fail-tint);
+    stroke: var(--sw-fail);
+    stroke-width: 1.75;
+}
+
+.tab {
+    fill: var(--sw-tint);
+    stroke: var(--sw-hair);
+    stroke-width: 1;
+}
+
+.ticket {
+    fill: var(--sw-surface);
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+}
+
+.rule {
+    stroke: var(--sw-edge);
+    stroke-width: 1;
+}
+
+.grid {
+    stroke: var(--sw-rule);
+    stroke-width: 1;
+}
+
+.axis {
+    stroke: var(--sw-hair);
+    stroke-width: 1.25;
+}
+
+.visibility {
+    stroke: var(--sw-ink);
+    stroke-width: 2.5;
+}
+
+.edge, .open, .curve {
+    fill: none;
+    stroke: var(--sw-muted);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.edge.mark, .curve.mark {
+    stroke: var(--sw-focal);
+}
+
+.solid {
+    fill: var(--sw-muted);
+}
+
+.hollow {
+    fill: var(--sw-surface);
+    stroke: var(--sw-muted);
+    stroke-width: 1.5;
+}
+
+.dashed, .lifeline {
+    stroke-dasharray: 6 5;
+}
+
+.lifeline {
+    stroke: var(--sw-hair);
+    stroke-width: 1;
+}
+
+.act {
+    fill: var(--sw-tint);
+    stroke: var(--sw-hair);
+    stroke-width: 1;
+}
+
+.set {
+    fill-opacity: .16;
+    stroke-width: 1.75;
+}
+
+.halo {
+    paint-order: stroke;
+    stroke: var(--sw-surface);
+    stroke-width: 5px;
+    stroke-linejoin: round;
+}
+
+.series-1 { fill: var(--series-1); stroke: var(--series-1); }
+.series-2 { fill: var(--series-2); stroke: var(--series-2); }
+.series-3 { fill: var(--series-3); stroke: var(--series-3); }
+.series-4 { fill: var(--series-4); stroke: var(--series-4); }
+.series-5 { fill: var(--series-5); stroke: var(--series-5); }
+
+path.line-1, path.line-2, path.line-3, path.line-4, path.line-5 {
+    fill: none;
+    stroke-width: 2.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.line-1 { stroke: var(--series-1); }
+.line-2 { stroke: var(--series-2); }
+.line-3 { stroke: var(--series-3); }
+.line-4 { stroke: var(--series-4); }
+.line-5 { stroke: var(--series-5); }
+
+.area {
+    fill-opacity: .22;
+    stroke-width: 1.5;
+}
+
+.ramp-1 { fill: var(--ramp-1); }
+.ramp-2 { fill: var(--ramp-2); }
+.ramp-3 { fill: var(--ramp-3); }
+.ramp-4 { fill: var(--ramp-4); }
+.ramp-5 { fill: var(--ramp-5); }
+.rt-1 { fill: var(--ramp-tx-1); }
+.rt-2 { fill: var(--ramp-tx-2); }
+.rt-3 { fill: var(--ramp-tx-3); }
+.rt-4 { fill: var(--ramp-tx-4); }
+.rt-5 { fill: var(--ramp-tx-5); }
+
+.up { fill: var(--series-1); stroke: var(--series-1); }
+.down { fill: var(--series-2); stroke: var(--series-2); }
+.total { fill: var(--sw-muted); stroke: var(--sw-muted); }
+
+.band {
+    fill-opacity: .3;
+    stroke-opacity: .7;
+    stroke-width: 1;
+}
+
+.mk-ok { fill: var(--sw-ok); stroke: var(--sw-ok); }
+.mk-fail { fill: var(--sw-fail); stroke: var(--sw-fail); }
+.mk-stop { fill: var(--sw-muted); stroke: var(--sw-muted); }
+.mk-run { fill: var(--sw-warn); stroke: var(--sw-warn); }
+
+.flow-token {
+    fill: var(--sw-focal);
+    stroke: var(--sw-surface);
+    stroke-width: 2;
+    opacity: 0;
+}
+
+a {
+    color: var(--sw-link);
+}
+
+a:focus-visible {
+    outline: 3px solid var(--sw-focus);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+table {
+    border-collapse: collapse;
+    margin: 8px 0 24px;
+    width: 100%;
+    font-size: 14px;
+    background: var(--sw-surface);
+}
+
+th, td {
+    padding: 8px 12px;
+    border: 0;
+    box-shadow: inset 0 -1px 0 var(--sw-rule);
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+td {
+    color: var(--sw-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+caption {
+    text-align: left;
+    padding: 8px 0;
+}
+
+.legend {
+    margin: 12px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    list-style: none;
+    font-size: 13px;
+    color: var(--sw-muted);
+}
+
+/* Motion is opt-in per drawing type. Every frame, including the first, shows all content. */
+@keyframes sw-enter {
+    from { transform: translateY(6px); }
+    to { transform: none; }
+}
+
+@keyframes sw-fade {
+    from { opacity: .55; }
+    to { opacity: 1; }
+}
+
+@keyframes sw-pop {
+    from { transform: scale(.55); }
+    to { transform: none; }
+}
+
+@keyframes sw-pulse {
+    0% { stroke: var(--sw-muted); stroke-width: 1.5; }
+    35%, 65% { stroke: var(--sw-focal); stroke-width: 3; }
+    100% { stroke: var(--sw-muted); stroke-width: 1.5; }
+}
+
+.motion-reveal {
+    animation: sw-enter var(--sw-motion-fast) ease-out 1;
+}
+
+.motion-grow .enter {
+    animation: sw-fade var(--sw-motion-fast) ease-out backwards;
+}
+
+.motion-pop .pop {
+    transform-box: fill-box;
+    transform-origin: center center;
+    animation: sw-pop var(--sw-motion-fast) ease-out backwards;
+}
+
+.motion-steps .step {
+    animation: sw-pulse 700ms ease-in-out backwards;
+}
+
+.d1 { animation-delay: 120ms; }
+.d2 { animation-delay: 240ms; }
+.d3 { animation-delay: 360ms; }
+.d4 { animation-delay: 480ms; }
+.d5 { animation-delay: 600ms; }
+.d6 { animation-delay: 720ms; }
+.d7 { animation-delay: 840ms; }
+.d8 { animation-delay: 960ms; }
+.motion-steps .step.d1 { animation-delay: 700ms; }
+.motion-steps .step.d2 { animation-delay: 1400ms; }
+.motion-steps .step.d3 { animation-delay: 2100ms; }
+.motion-steps .step.d4 { animation-delay: 2800ms; }
+.motion-steps .step.d5 { animation-delay: 3500ms; }
+.motion-steps .step.d6 { animation-delay: 4200ms; }
+.motion-steps .step.d7 { animation-delay: 4900ms; }
+.motion-steps .step.d8 { animation-delay: 5600ms; }
+
+@media (prefers-reduced-motion: reduce) {
+    .drawing, .drawing * {
+        animation: none !important;
+        transform: none !important;
+    }
+
+    .flow-token {
+        display: none;
+    }
+}
+
+@media print {
+    .drawing, .drawing * {
+        animation: none !important;
+        transform: none !important;
+    }
+
+    .flow-token {
+        display: none;
+    }
+
+    figure {
+        overflow: visible;
+    }
+}
+</style><defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8"
+ orient="auto-start-reverse">
+<path d="M 0 0 L 11 6 L 0 12 Z" class="solid"/>
+</marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8"
+ orient="auto-start-reverse">
+<path d="M 0 1 L 10 6 L 0 11" class="open"/>
+</marker>
+<marker id="triangle" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10"
+ orient="auto-start-reverse">
+<path d="M 0 0 L 11 6 L 0 12 Z" class="hollow"/>
+</marker>
+<marker id="diamond" viewBox="0 0 16 12" refX="15" refY="6" markerWidth="12" markerHeight="10"
+ orient="auto-start-reverse">
+<path d="M 0 6 L 8 0 L 15 6 L 8 12 Z" class="solid"/>
+</marker>
+<marker id="hollow-diamond" viewBox="0 0 16 12" refX="15" refY="6"
+ markerWidth="12" markerHeight="10"
+ orient="auto-start-reverse">
+<path d="M 0 6 L 8 0 L 15 6 L 8 12 Z" class="hollow"/>
+</marker>
+</defs><rect width="100%" height="100%" class="paper" data-bg="1"/><g transform="translate(44 42)"><g class="drawing motion-steps"><line x1="82" y1="44" x2="82" y2="432" class="lifeline"/><line x1="274" y1="44" x2="274" y2="432" class="lifeline"/><line x1="466" y1="44" x2="466" y2="432" class="lifeline"/><line x1="658" y1="44" x2="658" y2="432" class="lifeline"/><line x1="850" y1="44" x2="850" y2="432" class="lifeline"/><rect x="-12" y="140" width="956" height="168" rx="6" class="frame"/><rect x="-12" y="140" width="236.75" height="24" rx="6" class="tab"/><text x="0" y="157" class="micro" text-anchor="start">OPT · Approval required</text><path d="M 82 120 H 274" class="edge step d1" marker-end="url(#arrow)"/><path d="M 274 192 H 466" class="edge step d2" marker-end="url(#arrow)"/><path d="M 466 264 H 658" class="edge step d3" marker-end="url(#arrow)"/><path d="M 658 336 H 850" class="edge dashed step d4" marker-end="url(#open)"/><text x="178" y="110" class="small" text-anchor="middle">request check</text><rect x="269" y="114" width="10" height="30" rx="2" class="act"/><text x="370" y="182" class="small" text-anchor="middle">request check</text><rect x="461" y="186" width="10" height="30" rx="2" class="act"/><text x="562" y="254" class="small" text-anchor="middle">request check</text><rect x="653" y="258" width="10" height="30" rx="2" class="act"/><text x="754" y="326" class="small" text-anchor="middle">request check</text><rect x="845" y="330" width="10" height="30" rx="2" class="act"/><g class="node" id="node-submitted" data-node="submitted" data-spec="" data-spec-ids=""><rect x="0" y="0" width="164" height="44" rx="6" class="box"/><text x="16" y="26" class="node-name">Customer</text></g><g class="node" id="node-pending" data-node="pending" data-spec="BR-001" data-spec-ids="BR-001"><rect x="192" y="0" width="164" height="44" rx="6" class="box"/><text x="208" y="26" class="node-name">Portal</text><rect x="284.8" y="-10" width="59.2" height="20" rx="4" class="tab"/><text x="292.8" y="4" class="ids">BR-001</text></g><g class="node" id="node-approved" data-node="approved" data-spec="BR-001" data-spec-ids="BR-001"><rect x="384" y="0" width="164" height="44" rx="6" class="box"/><text x="400" y="26" class="node-name">Policy</text><rect x="476.8" y="-10" width="59.2" height="20" rx="4" class="tab"/><text x="484.8" y="4" class="ids">BR-001</text></g><g class="node" id="node-rejected" data-node="rejected" data-spec="AC-001-3" data-spec-ids="AC-001-3"><rect x="576" y="0" width="164" height="44" rx="6" class="box"/><text x="592" y="26" class="node-name">Reviewer</text><rect x="654.4" y="-10" width="73.6" height="20" rx="4" class="tab"/><text x="662.4" y="4" class="ids">AC-001-3</text></g><g class="node" id="node-paid" data-node="paid" data-spec="" data-spec-ids=""><rect x="768" y="0" width="164" height="44" rx="6" class="box"/><text x="784" y="26" class="node-name">Payments</text></g></g></g></svg></figure>
+<h2>Spec links and exact data</h2>
+<table><caption>Exact source values and spec links, in drawing order.</caption><tr><th>Item</th><th>Spec IDs and data</th></tr><tr><th><a href="#node-submitted">Customer</a></th><td>no spec IDs</td></tr><tr><th><a href="#node-pending">Portal</a></th><td>BR-001</td></tr><tr><th><a href="#node-approved">Policy</a></th><td>BR-001</td></tr><tr><th><a href="#node-rejected">Reviewer</a></th><td>AC-001-3</td></tr><tr><th><a href="#node-paid">Payments</a></th><td>no spec IDs</td></tr></table><table><caption>Connections.</caption><tr><th>#</th><th>Relation</th></tr><tr><th>1</th><td>Customer → Portal: request check</td></tr><tr><th>2</th><td>Portal → Policy: request check</td></tr><tr><th>3</th><td>Policy → Reviewer: request check</td></tr><tr><th>4</th><td>Reviewer → Payments: request check</td></tr></table>
+</main>
+</body>
+</html>

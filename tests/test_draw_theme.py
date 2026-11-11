@@ -31,10 +31,39 @@ class ThemeContrast(unittest.TestCase):
         for theme in (tokens(light), tokens(re.split(r"\bbody\s*\{", dark, maxsplit=1)[0])):
             theme = {**tokens(light), **theme}
             for ground in ("sw-bg", "sw-surface"):
-                for name in ("sw-ink", "sw-muted", "sw-link", "sw-accent"):
+                for name in (
+                    "sw-ink",
+                    "sw-muted",
+                    "sw-link",
+                    "sw-focal",
+                    "sw-fail",
+                    "sw-ok",
+                    "sw-warn",
+                ):
                     self.assertGreaterEqual(ratio(theme[name], theme[ground]), 4.5, (name, ground))
                 for name in ("sw-hair", "series-1", "series-2", "series-3", "series-4", "series-5"):
                     self.assertGreaterEqual(ratio(theme[name], theme[ground]), 3.0, (name, ground))
+            for step in range(1, 6):
+                self.assertGreaterEqual(
+                    ratio(theme[f"ramp-tx-{step}"], theme[f"ramp-{step}"]), 4.5, ("ramp", step)
+                )
+            for tint, ink in (("sw-focal-tint", "sw-focal"), ("sw-fail-tint", "sw-fail")):
+                self.assertGreaterEqual(ratio(theme[ink], theme[tint]), 4.5, tint)
+            ramp = [luminance(theme[f"ramp-{step}"]) for step in range(1, 6)]
+            self.assertEqual(
+                ramp, sorted(ramp) if ramp[0] < ramp[-1] else sorted(ramp, reverse=True)
+            )
+
+    def test_theme_follows_system_and_explicit_choice(self):
+        text = CSS.read_text(encoding="utf-8")
+        self.assertIn(':root:not([data-theme="light"])', text)
+        self.assertIn(':root[data-theme="dark"]', text)
+        self.assertNotRegex(text, r"drop-shadow|box-shadow:\s*0 ")
+
+    def test_only_the_decorative_token_is_hidden_at_rest(self):
+        text = CSS.read_text(encoding="utf-8")
+        hidden = re.findall(r"([^{}]+)\{[^}]*\bopacity:\s*0\s*;", text)
+        self.assertEqual([h.strip() for h in hidden], [".flow-token"])
 
     def test_no_single_side_borders(self):
         self.assertNotRegex(CSS.read_text(encoding="utf-8"), r"border-(left|right|top|bottom)\s*:")
