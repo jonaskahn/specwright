@@ -50,6 +50,7 @@ external key mappings in the ID registry. Use qualified IDs (`SCOPE:FEAT-NNN`) a
 | Lead, worker | In a parallel batch the lead is the session agent that guards the writes and saves shared state; a worker is a sub-agent that writes one item's files. |
 | Lint gate | `sw_lint.py --root <project> --gate draft\|review\|publish` (in `_shared/scripts` of the skills that lint). Exit 0 clean; 10, 20 or 30 means blocking findings at that gate. |
 | DoR | The definition of ready for review: `dor.md`. |
+| Business objective | `BO-NNN`. The outcome a feature exists for. A BO has many epics and features; an epic serves one or more BOs (`bo:` on the epic); a feature serves one or more BOs, directly in its own `bo:` or through its epic. |
 | Visual reference | A mockup, Figma link, screenshot or diagram (asset kinds figma, mockup, image, diagram, or a drawing in `diagrams/`) that shows what to build. The story lists it in `assets:` and UI/UX; UI tasks cite it in `Visuals:`. |
 | Layer | The delivery area of a task, written as a title prefix: backend, frontend, mobile, devops, data, qa, design or docs. One layer per task. |
 | TRANSITION token | `TRANSITION <SCOPE>:FEAT-NNN <action> <digest>`, printed by sw-start's transition script preview. After the user's plain yes the agent passes it; the user never types it. |

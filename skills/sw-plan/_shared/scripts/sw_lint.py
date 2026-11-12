@@ -45,10 +45,13 @@ REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {
     "L-065",
     "L-066",
     "L-067",
+    "L-068",
+    "L-069",
 }
+WARN_ONLY = {"L-009", "L-015", "L-041", "L-044", "L-064", "L-065", "L-067", "L-068", "L-069"}
 PUBLISH = {"L-018", "L-037", "L-045", "L-046"}
 SYNC = set()
-RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), *range(56, 68))}
+RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), *range(56, 70))}
 RULE_HELP = {
     "L-001": "Front matter needs a mapping with non-empty id, type, status (scope in a program).",
     "L-002": "The id must use the grammar for its type, e.g. FEAT-003, BO-001, NFR-REF-001.",
@@ -100,6 +103,8 @@ RULE_HELP = {
     "L-065": "A diagram cites an ID that is withdrawn or missing.",
     "L-066": "Each ASSET in `assets:` must be registered and cited in Context or UI/UX.",
     "L-067": "A mockup, link or image registered for this feature is missing from `assets:`.",
+    "L-068": "An active epic must name at least one business objective in `bo:`.",
+    "L-069": "A feature and its epic share no business objective.",
 }
 # Artifacts a reader looks up by name; each needs a title and an alias list (possibly empty).
 NAMED_TYPES = {
@@ -482,7 +487,7 @@ def lint_document(doc, ctx):
     def emit(rule, message, line=1, subject="", sev="error"):
         gate = rule_gate(rule)
         if list(GATES).index(gate) <= list(GATES).index(ctx.gate):
-            if rule in {"L-009", "L-015", "L-041", "L-044", "L-064", "L-065", "L-067"}:
+            if rule in WARN_ONLY:
                 sev = "warn"
             if rule == "L-012" and ctx.gate == "review":
                 sev = "warn"
@@ -662,6 +667,10 @@ def lint_document(doc, ctx):
         ]
         if not bo_refs:
             emit("L-005", "feature needs at least one BO reference")
+    if fm["type"] == "epic" and fm["status"] in {"draft", "approved"}:
+        serves = [r for v in sequence(fm.get("bo")) for r in ids.find_refs(str(v))]
+        if not any(r.id.startswith("BO-") for r in serves):
+            emit("L-068", "epic needs at least one business objective in bo:", 1, doc.spec_id)
     if doc.story:
         if len(doc.ac) < 2:
             emit(
@@ -1216,6 +1225,24 @@ def graph_findings(ctx):
             )
         if e.rel == "touches" and e.res in ("missing", "unsafe-path", "no-code-root"):
             add("L-052", "warn", e.file, e.line, f"Touches path is {e.res}: {e.dst}", e.src)
+
+    serves: dict[str, set[str]] = {}
+    for e in built.edges:
+        if e.rel == "realizes" and e.cls == "declared":
+            serves.setdefault(e.src, set()).add(e.dst)
+    for e in built.edges:
+        if e.rel != "member_of" or e.cls != "declared" or not e.src.startswith(prefix):
+            continue
+        feature, epic = serves.get(e.src, set()), serves.get(e.dst, set())
+        if feature and epic and not feature & epic:
+            add(
+                "L-069",
+                "warn",
+                e.file,
+                e.line,
+                f"no business objective in common with {e.dst}",
+                e.src,
+            )
 
     for key, node in built.nodes.items():
         if not key.startswith(prefix):

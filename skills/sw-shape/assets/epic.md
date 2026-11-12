@@ -4,7 +4,7 @@ type: epic
 scope: <SCOPE>
 title: <outcome-led title>
 status: draft
-bo: []
+bo: []           # one or more business objectives this epic serves, e.g. [BO-001]
 scopes: [<SCOPE>]
 ---
 

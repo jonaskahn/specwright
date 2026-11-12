@@ -1,10 +1,10 @@
 {
  "files": {
   "references/capabilities/knowledge.md": "9f9e8150b6e9",
-  "references/context.md": "bffa0c26ef88",
+  "references/context.md": "22f1e263ed8a",
   "references/data-format.md": "5ff853a951b5",
   "references/governance.md": "f5b1903daddc",
-  "references/graph-model.md": "5613266ed2ac",
+  "references/graph-model.md": "264abea7c9ec",
   "references/next-step.md": "99625bb29f36",
   "references/query-cookbook.md": "6f8a7beedc70",
   "references/runtime.md": "90964d273588",

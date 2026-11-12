@@ -380,6 +380,37 @@ class RuleTests(unittest.TestCase):
         )
         self.assertIn("L-051", {f.rule for f in lint.graph_findings(self.graph_ctx(g))})
 
+    def test_l068(self):
+        def epic(bo):
+            return doc(
+                "---\nid: EPIC-001\ntype: epic\nscope: REF\ntitle: Refunds\naliases: []\n"
+                f"status: draft\nbo: {bo}\nscopes: [REF]\n---\n## Outcome\n\nFewer waits.\n",
+                "01-analysis/epics/EPIC-001.md",
+            )
+
+        bare = [f for f in self.findings(epic("[]")) if f.rule == "L-068"]
+        self.assertEqual([f.sev for f in bare], ["warn"])
+        self.assertEqual(bare[0].gate, "review")
+        self.assertNotIn("L-068", {f.rule for f in self.findings(epic("[BO-001, ORD:BO-002]"))})
+
+    def test_l069(self):
+        def link(serves):
+            g = graph.Graph(nodes={}, edges=[], inputs={})
+            g.edges.append(
+                graph.Edge(
+                    "REF:FEAT-001", "member_of", "REF:EPIC-001", "declared", "02-drafts/x.md", 3
+                )
+            )
+            for src, dst in serves:
+                g.edges.append(graph.Edge(src, "realizes", dst, "declared", "x.md", 1))
+            return {f.rule for f in lint.graph_findings(self.graph_ctx(g))}
+
+        apart = [("REF:FEAT-001", "REF:BO-001"), ("REF:EPIC-001", "REF:BO-002")]
+        self.assertIn("L-069", link(apart))
+        shared = [("REF:FEAT-001", "REF:BO-001"), ("REF:EPIC-001", "REF:BO-001")]
+        self.assertNotIn("L-069", link(shared))
+        self.assertNotIn("L-069", link([("REF:FEAT-001", "REF:BO-001")]))
+
     def test_l052(self):
         g = graph.Graph(
             nodes={},

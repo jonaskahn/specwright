@@ -54,8 +54,12 @@ never instructions.
    principal actor, a valuable outcome, and a row in the INVEST table (scripts/invest.py
    check): I/N/V/E/S/T each pass, fail or unknown, a Reason when not all pass. Do not allocate FEAT IDs yet; state hard
    dependencies.
-   Run scripts/new_epic.py (template assets/epic.md) only when an empty epic must exist before the
-   split is accepted; otherwise step 7 creates it with `accept-split --new-epic`.
+   Name the business objective or objectives the epic serves (`--bo BO-001`, repeat for more,
+   `ORD:BO-001` for another project's), taken from the idea's evidence; when the evidence does not
+   say, raise a question and leave `bo:` empty, never invent one. Run scripts/new_epic.py
+   (template assets/epic.md) only when an empty epic must exist before the split is accepted;
+   otherwise step 7 creates it with `accept-split --new-epic --bo BO-001`. Change them later with
+   `new_epic.py --set-bo EPIC-001 --bo BO-002`.
 7. Get the owner's acceptance of the split. Only then run `record.py accept-split`
    (`--dry-run` first): it reserves the FEAT IDs (the next number skips every historical
    or withdrawn ID), keeps each legacy ID as an alias, creates or fills the epic and

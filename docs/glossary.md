@@ -2,6 +2,7 @@
 
 | Term | Meaning |
 |---|---|
+| Business objective | `BO-NNN`. The outcome a feature exists for. A BO has many epics and features; an epic serves one or more BOs (`bo:` on the epic); a feature serves one or more BOs, directly in its own `bo:` or through its epic. |
 | Epic | `EPIC-NNN`. An optional grouping above features that may span projects. |
 | Feature | `FEAT-NNN`. Also called Story by product and QA. One document, one Jira Story. |
 | Story | The BA/PO word for a Feature. STORY-001 is an input alias only; files use FEAT-001. |

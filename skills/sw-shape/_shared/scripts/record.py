@@ -112,6 +112,9 @@ def _parser():
     epic = _add(res, "epic", "create an epic")
     epic.add_argument("--title", required=True)
     epic.add_argument("--scopes", help="comma-separated projects taking part, home first")
+    epic.add_argument(
+        "--bo", action="append", default=[], help="business objective it serves; repeat for more"
+    )
 
     split = _add(top, "accept-split", "reserve features, fill an epic, record the decision")
     split.add_argument("--item", action="append", default=[], help="'Title|alias1,alias2'")
@@ -119,6 +122,7 @@ def _parser():
     split.add_argument("--from-register", metavar="GROUP", help="every legacy item of this group")
     split.add_argument("--epic", action="append", default=[])
     split.add_argument("--new-epic", default="")
+    split.add_argument("--bo", action="append", default=[], help="objectives of the new epic")
     _decider(split)
 
     bak = _add(top, "backup", "archive an authored artifact just before an accepted edit")
@@ -190,7 +194,7 @@ def _build(ctx, args):
         return plan, "reserve-feat", ", ".join(plan.made)
     if args.noun == "reserve":
         scopes = [s.strip() for s in args.scopes.split(",")] if args.scopes else None
-        plan, identity = recordops.reserve_epic(ctx, args.title, scopes)
+        plan, identity = recordops.reserve_epic(ctx, args.title, scopes, bo=args.bo)
         return plan, "reserve-epic", f"{ctx.scope}:{identity}"
     if args.noun == "accept-split":
         items, existing = list(args.item), list(args.existing)
@@ -199,7 +203,7 @@ def _build(ctx, args):
             items += more_items
             existing += more_existing
         plan = recordops.accept_split(
-            ctx, items, existing, args.epic, args.new_epic, _who(ctx, args)
+            ctx, items, existing, args.epic, args.new_epic, _who(ctx, args), args.bo
         )
         return plan, "accept-split", ", ".join(plan.made)
     cells = {}

@@ -26,24 +26,33 @@ if str(_shared) not in sys.path:
 from kitlib import epics  # noqa: E402
 
 
-def create(root, scope, title, scopes=None, template=None):
+def create(root, scope, title, scopes=None, template=None, bo=None):
     template = template or _here.parent / "assets" / "epic.md"
     if not template.is_file():
         raise ValueError("template unavailable; provide --template pointing to assets/epic.md")
-    return epics.create(root, scope, title, scopes, template.read_text(encoding="utf-8"))
+    return epics.create(root, scope, title, scopes, template.read_text(encoding="utf-8"), bo)
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--scope-root", required=True, type=Path)
     parser.add_argument("--scope", required=True)
-    parser.add_argument("--title", required=True)
+    parser.add_argument("--title", default="", help="required unless --set-bo")
     parser.add_argument("--scopes", help="comma-separated projects taking part, home first")
     parser.add_argument("--template", type=Path)
+    parser.add_argument(
+        "--bo", action="append", default=[], help="business objective it serves; repeat for more"
+    )
+    parser.add_argument("--set-bo", metavar="EPIC", help="replace the objectives of an epic")
     args = parser.parse_args(argv)
+    if not args.set_bo and not args.title:
+        parser.error("--title is required")
     try:
         participants = [s.strip() for s in args.scopes.split(",")] if args.scopes else None
-        print(create(args.scope_root, args.scope, args.title, participants, args.template))
+        if args.set_bo:
+            print(epics.set_objectives(args.scope_root, args.scope, args.set_bo, args.bo))
+            return 0
+        print(create(args.scope_root, args.scope, args.title, participants, args.template, args.bo))
         return 0
     except (ValueError, FileExistsError) as exc:
         print(f"error: {exc}", file=sys.stderr)

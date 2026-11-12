@@ -525,10 +525,18 @@ def reserve_features(ctx: Ctx, items: list[str], plan: Plan | None = None) -> Pl
     return plan
 
 
-def reserve_epic(ctx: Ctx, title: str, scopes: list[str] | None = None, plan: Plan | None = None):
+def reserve_epic(
+    ctx: Ctx,
+    title: str,
+    scopes: list[str] | None = None,
+    plan: Plan | None = None,
+    bo: list[str] | None = None,
+):
     plan = plan or new_plan(ctx)
     try:
-        identity, path, text = epics.build(ctx.base, ctx.scope, title, scopes, taken=plan.taken)
+        identity, path, text = epics.build(
+            ctx.base, ctx.scope, title, scopes, taken=plan.taken, bo=bo
+        )
     except ValueError as exc:
         raise RecordError(str(exc)) from None
     plan.taken.append(identity)
@@ -545,6 +553,7 @@ def accept_split(
     epic_ids: list[str],
     new_epic: str,
     who: dict[str, Any],
+    bo: list[str] | None = None,
 ) -> Plan:
     if workspace.governance(ctx.root, ctx.scope)["signoff"] == "required":
         if not who.get("evidence_url"):
@@ -569,7 +578,7 @@ def accept_split(
             raise RecordError(f"{raw} is not an active epic")
         epic_keys.append(key)
     if new_epic:
-        plan, identity = reserve_epic(ctx, new_epic, plan=plan)
+        plan, identity = reserve_epic(ctx, new_epic, plan=plan, bo=bo)
         epic_keys.append(f"{ctx.scope}:{identity}")
     before = len(plan.registry)
     if items:
