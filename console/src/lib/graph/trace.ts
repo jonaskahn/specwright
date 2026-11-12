@@ -32,7 +32,7 @@ export interface TraceNode {
   kind: string;
   title: string;
   status: string | null;
-  /** A published Jira issue key shown on the card, never as a node of its own. */
+  /** A published Jira issue key shown on the card (from the registry), never as a node of its own. */
   jira: string | null;
   next: string | null;
   level: number;
@@ -80,9 +80,18 @@ interface Parts {
   edges: GraphEdge[];
 }
 
-function parts(nodes: GraphNode[], edges: GraphEdge[]): Parts {
+export interface TraceOptions {
+  /** Placeholders for missing links. On unless false. */
+  gaps?: boolean;
+  /** Add the column of code files that tasks say they change. Off by default: most projects name none. */
+  code?: boolean;
+  /** Published Jira issue keys by item key, read from the identifier registry (the only place they live). */
+  jira?: Map<string, string>;
+}
+
+function parts(nodes: GraphNode[], edges: GraphEdge[], code = false): Parts {
   const chain = new Map<string, GraphNode>();
-  for (const n of nodes) if (n.kind in LEVEL_KINDS) chain.set(n.key, n);
+  for (const n of nodes) if (n.kind in LEVEL_KINDS && (code || n.kind !== 'code')) chain.set(n.key, n);
   const kept = edges.filter((e) => CHAIN_RELS.has(e.rel) && chain.has(e.from) && chain.has(e.to));
   return { chain, edges: kept };
 }
@@ -91,8 +100,8 @@ function level(kind: string): number {
   return LEVEL_KINDS[kind] ?? 0;
 }
 
-function node(n: GraphNode): TraceNode {
-  return { id: n.key, key: n.key, gap: null, kind: n.kind, title: n.title || n.key, status: n.status, jira: n.jira, next: null, level: level(n.kind), x: 0, y: 0 };
+function node(n: GraphNode, jira: string | null): TraceNode {
+  return { id: n.key, key: n.key, gap: null, kind: n.kind, title: n.title || n.key, status: n.status, jira, next: null, level: level(n.kind), x: 0, y: 0 };
 }
 
 function gapNode(kind: GapKind, owner: string): TraceNode {
@@ -130,11 +139,11 @@ export function traceCoverage(nodes: GraphNode[], edges: GraphEdge[]): Coverage[
   return measures;
 }
 
-export function buildTrace(nodes: GraphNode[], edges: GraphEdge[], opts: { gaps?: boolean } = {}): TraceModel {
-  const { chain, edges: chainEdges } = parts(nodes, edges);
+export function buildTrace(nodes: GraphNode[], edges: GraphEdge[], opts: TraceOptions = {}): TraceModel {
+  const { chain, edges: chainEdges } = parts(nodes, edges, opts.code);
   const model: TraceModel = { nodes: [], links: [], broken: [], levels: [], width: 0, height: 0, notes: [] };
   const present = new Map<string, TraceNode>();
-  for (const n of [...chain.values()].sort((a, b) => (a.key < b.key ? -1 : 1))) present.set(n.key, node(n));
+  for (const n of [...chain.values()].sort((a, b) => (a.key < b.key ? -1 : 1))) present.set(n.key, node(n, opts.jira?.get(n.key) ?? null));
 
   const title = (key: string) => present.get(key)?.title ?? key;
   for (const e of chainEdges) {
@@ -288,7 +297,7 @@ export function chainOf(model: TraceModel, id: string): { nodes: Set<string>; li
 }
 
 /** Keep only the chain around one item and everything below its features. For maps too large to read whole. */
-export function focusModel(nodes: GraphNode[], edges: GraphEdge[], key: string, opts: { gaps?: boolean } = {}): TraceModel {
+export function focusModel(nodes: GraphNode[], edges: GraphEdge[], key: string, opts: TraceOptions = {}): TraceModel {
   const full = buildTrace(nodes, edges, opts);
   const keep = chainOf(full, key).nodes;
   for (const f of full.nodes.filter((n) => keep.has(n.id) && n.kind === 'feat')) {

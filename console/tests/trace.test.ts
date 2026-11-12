@@ -9,7 +9,11 @@ function load(variant: Variant): { nodes: GraphNode[]; edges: GraphEdge[] } {
 }
 
 const { nodes, edges } = load('trace');
-const model = buildTrace(nodes, edges);
+const jira = new Map(
+  (JSON.parse(read('trace', 'data/registry.json')).rows as { id: string; jiraKey: string | null }[]).filter((r) => r.jiraKey).map((r) => [r.id, r.jiraKey as string]),
+);
+const model = buildTrace(nodes, edges, { code: true, jira });
+const plain = buildTrace(nodes, edges, { jira });
 const byKey = (key: string) => model.nodes.find((n) => n.key === key)!;
 const gaps = () => model.nodes.filter((n) => n.gap).map((n) => `${n.gap}:${n.id.split(':').slice(2).join(':')}`).sort();
 
@@ -34,9 +38,21 @@ describe('the trace map lays the chain out from why to how', () => {
     expect(real.filter((l) => l.rel === 'has_ac')).toHaveLength(5);
   });
 
-  it('keeps a Jira issue on its card rather than as a node of its own', () => {
+  it('stops at tasks unless code files are asked for', () => {
+    expect(plain.levels).toEqual([0, 1, 2, 3, 4]);
+    expect(plain.nodes.some((n) => n.kind === 'code')).toBe(false);
+    expect(model.nodes.filter((n) => n.kind === 'code').map((n) => n.title)).toEqual(['src/decide.py', 'src/notify.py', 'src/refund.py']);
+  });
+
+  it('shows a Jira issue on the card of any item the registry gives one, never as a node', () => {
     expect(byKey('REF:FEAT-001').jira).toBe('PROJ-101');
+    expect(byKey('REF:EPIC-001').jira).toBe('PROJ-100');
+    expect(byKey('REF:FEAT-002').jira).toBeNull();
     expect(model.nodes.some((n) => n.kind === 'jira')).toBe(false);
+  });
+
+  it('never gives a task a Jira key: tasks stay in Markdown', () => {
+    expect(model.nodes.filter((n) => n.kind === 'task').every((n) => n.jira === null)).toBe(true);
   });
 
   it('shows every missing link as a placeholder that names the skill to ask', () => {
@@ -77,7 +93,7 @@ describe('the trace map lays the chain out from why to how', () => {
   });
 
   it('is deterministic and never overlaps two items in a column', () => {
-    expect(JSON.stringify(buildTrace(nodes, edges))).toBe(JSON.stringify(model));
+    expect(JSON.stringify(buildTrace(nodes, edges, { code: true, jira }))).toBe(JSON.stringify(model));
     const seen = new Set<string>();
     for (const n of model.nodes) {
       const at = `${n.x},${n.y}`;

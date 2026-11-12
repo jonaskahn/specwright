@@ -45,7 +45,7 @@
             {#each g.items.slice(0, 20) as l, i (i)}
               <button type="button" title={`${classWords(l.cls)}. ${resolutionWords(l.res)}.`} onclick={() => onpick(l.other)}>
                 <strong>{app.graph.node(l.other)?.title ?? l.other}</strong>
-                <span class="mono">{l.other}</span>
+                {#if l.rel === 'touches'}<span>{resolutionWords(l.res)}</span>{:else}<span class="mono">{l.other}</span>{/if}
               </button>
             {/each}
           </div>

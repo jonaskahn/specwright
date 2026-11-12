@@ -24,6 +24,7 @@
   let selected = $state<string | null>(null);
   let measure = $state<string | null>(null);
   let focusKey = $state<string | null>(null);
+  let code = $state(false);
 
   $effect(() => { if (app.route.param) selected = app.route.param; });
 
@@ -41,7 +42,9 @@
   const big = $derived(chainCount > TRACE_LIMIT);
   const picks = $derived(all.filter((n) => n.kind === 'epic' || n.kind === 'feat'));
   const start = $derived(focusKey ?? (selected && known.has(selected) ? selected : (picks[0]?.key ?? null)));
-  const model = $derived(big && start ? focusModel(all, allEdges, start) : buildTrace(all, allEdges));
+  const jira = $derived(new Map(app.registry.filter((r) => r.jiraKey).map((r) => [r.id, r.jiraKey as string])));
+  const options = $derived({ code, jira });
+  const model = $derived(big && start ? focusModel(all, allEdges, start, options) : buildTrace(all, allEdges, options));
   const coverage = $derived(traceCoverage(all, allEdges));
 
   const emphasis = $derived.by(() => {
@@ -93,6 +96,9 @@
             <svg class="mk" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill={`oklch(58% 0.15 ${hue(kind)})`} /></svg>{kindWords(kind, true)}
           </button>
         {/each}
+      {/if}
+      {#if view === 'trace'}
+        <label class="row-flex"><input type="checkbox" bind:checked={code} /> Show code files that tasks change</label>
       {/if}
       {#if view === 'network'}
         <label class="row-flex"><input type="checkbox" bind:checked={mentions} /> Links that only mention an item</label>
