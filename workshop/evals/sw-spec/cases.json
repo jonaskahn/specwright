@@ -105,6 +105,26 @@
         "No later criterion reuses the number",
         "The draft hash is restamped"
       ]
+    },
+    {
+      "id": "mockup-linked",
+      "prompt": "Write the story for the refund request screen; the project already holds a Figma link and a mockup image for it",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "The agent finds the Figma and mockup assets through the graph query instead of asking the user for them",
+        "Every found ASSET id is in the assets front matter and in the UI/UX Visuals list with the screen or AC it shows",
+        "A Figma link is quoted from its .url file and never fetched",
+        "A UI state the mockup does not show becomes a Q record, not an invented state"
+      ]
+    },
+    {
+      "id": "visual-lint",
+      "prompt": "Run the review lint on a story whose assets list names ASSET-009",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "L-066 reports ASSET-009 as missing from the asset registry",
+        "The agent registers the real asset or removes the id; it does not weaken the rule"
+      ]
     }
   ]
 }

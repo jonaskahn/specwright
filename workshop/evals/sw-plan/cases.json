@@ -45,6 +45,27 @@
         "One worker per feature writes only its own plan and tasks files",
         "The lead runs the write guard, then graph, lint and data export once"
       ]
+    },
+    {
+      "id": "split-per-layer",
+      "prompt": "Plan FEAT-001, which needs an API, a refund screen and a pipeline change",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "Each task title starts with exactly one layer prefix such as [backend], [frontend] or [devops]",
+        "Work for different layers is separate tasks ordered with Depends on, not one mixed task",
+        "check_tasks.py passes"
+      ]
+    },
+    {
+      "id": "ui-task-cites-visual",
+      "prompt": "Plan a feature whose story lists a mockup ASSET-001 in UI/UX",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "Every frontend, mobile and design task has a Visuals line naming the mockup or diagram it builds",
+        "Done when names the state or screen the visual shows",
+        "A state needed by an AC but missing from the visual becomes a question, not a guess",
+        "A frontend task without Visuals makes check_tasks.py exit 1"
+      ]
     }
   ]
 }
