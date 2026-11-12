@@ -9,6 +9,7 @@
   "scripts/kitlib/__init__.py": "b15fdecaaa14",
   "scripts/kitlib/adf.py": "50834357b853",
   "scripts/kitlib/borders.py": "61c9a3762adc",
+  "scripts/kitlib/cite.py": "e68bc074e2bf",
   "scripts/kitlib/frontmatter.py": "8f5e22fd72e7",
   "scripts/kitlib/fsio.py": "ab1846444c3c",
   "scripts/kitlib/graph.py": "533f7801651a",
@@ -27,7 +28,7 @@
   "scripts/kitlib/task_validation.py": "a72c8fe85965",
   "scripts/kitlib/workspace.py": "7d09233b2a22",
   "scripts/kitlib/writelog.py": "ea537699559c",
-  "scripts/sw_lint.py": "f58b82877cf5",
+  "scripts/sw_lint.py": "acae578a48d9",
   "scripts/trace.py": "cdcb3f5231f2"
  },
  "kit_version": "0.3.0"

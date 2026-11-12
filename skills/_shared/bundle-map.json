@@ -37,6 +37,13 @@
         "scripts/trace.py"
       ]
     },
+    "citations": {
+      "why": "Cite saved evidence by program and verify that citations still resolve.",
+      "roots": [
+        "references/capabilities/citations.md",
+        "scripts/cite.py"
+      ]
+    },
     "status": {
       "why": "Report station and condition for the board.",
       "roots": [
@@ -70,13 +77,17 @@
   "skills": {
     "sw-ingest": {
       "capabilities": [
-        "core"
+        "core",
+        "citations"
       ],
       "shared": [
+        "references/capabilities/citations.md",
         "references/next-step.md",
         "references/stop-and-ask.md",
         "references/untrusted-content.md",
+        "scripts/cite.py",
         "scripts/kitlib/__init__.py",
+        "scripts/kitlib/cite.py",
         "scripts/kitlib/frontmatter.py",
         "scripts/kitlib/fsio.py",
         "scripts/kitlib/graph.py",
@@ -114,6 +125,7 @@
         "scripts/graph.py",
         "scripts/kitlib/__init__.py",
         "scripts/kitlib/borders.py",
+        "scripts/kitlib/cite.py",
         "scripts/kitlib/frontmatter.py",
         "scripts/kitlib/fsio.py",
         "scripts/kitlib/graph.py",
@@ -149,6 +161,7 @@
         "scripts/kitlib/__init__.py",
         "scripts/kitlib/adf.py",
         "scripts/kitlib/borders.py",
+        "scripts/kitlib/cite.py",
         "scripts/kitlib/frontmatter.py",
         "scripts/kitlib/fsio.py",
         "scripts/kitlib/graph.py",
@@ -173,13 +186,17 @@
     },
     "sw-review": {
       "capabilities": [
-        "core"
+        "core",
+        "citations"
       ],
       "shared": [
+        "references/capabilities/citations.md",
         "references/next-step.md",
         "references/stop-and-ask.md",
         "references/untrusted-content.md",
+        "scripts/cite.py",
         "scripts/kitlib/__init__.py",
+        "scripts/kitlib/cite.py",
         "scripts/kitlib/frontmatter.py",
         "scripts/kitlib/fsio.py",
         "scripts/kitlib/graph.py",
@@ -201,16 +218,20 @@
     "sw-shape": {
       "capabilities": [
         "core",
-        "quality"
+        "quality",
+        "citations"
       ],
       "shared": [
+        "references/capabilities/citations.md",
         "references/capabilities/quality.md",
         "references/next-step.md",
         "references/rule-catalog.md",
         "references/stop-and-ask.md",
         "references/untrusted-content.md",
+        "scripts/cite.py",
         "scripts/kitlib/__init__.py",
         "scripts/kitlib/borders.py",
+        "scripts/kitlib/cite.py",
         "scripts/kitlib/frontmatter.py",
         "scripts/kitlib/fsio.py",
         "scripts/kitlib/graph.py",
@@ -234,9 +255,11 @@
         "core",
         "quality",
         "trace",
-        "visuals"
+        "visuals",
+        "citations"
       ],
       "shared": [
+        "references/capabilities/citations.md",
         "references/capabilities/quality.md",
         "references/capabilities/visuals.md",
         "references/next-step.md",
@@ -244,8 +267,10 @@
         "references/rule-catalog.md",
         "references/stop-and-ask.md",
         "references/untrusted-content.md",
+        "scripts/cite.py",
         "scripts/kitlib/__init__.py",
         "scripts/kitlib/borders.py",
+        "scripts/kitlib/cite.py",
         "scripts/kitlib/frontmatter.py",
         "scripts/kitlib/fsio.py",
         "scripts/kitlib/graph.py",
@@ -310,6 +335,7 @@
         "scripts/graph.py",
         "scripts/kitlib/__init__.py",
         "scripts/kitlib/borders.py",
+        "scripts/kitlib/cite.py",
         "scripts/kitlib/frontmatter.py",
         "scripts/kitlib/fsio.py",
         "scripts/kitlib/graph.py",

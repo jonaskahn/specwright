@@ -20,6 +20,7 @@
   "scripts/graph.py": "fba4c044b8bf",
   "scripts/kitlib/__init__.py": "b15fdecaaa14",
   "scripts/kitlib/borders.py": "61c9a3762adc",
+  "scripts/kitlib/cite.py": "e68bc074e2bf",
   "scripts/kitlib/frontmatter.py": "8f5e22fd72e7",
   "scripts/kitlib/fsio.py": "ab1846444c3c",
   "scripts/kitlib/graph.py": "533f7801651a",
@@ -39,7 +40,7 @@
   "scripts/kitlib/writelog.py": "ea537699559c",
   "scripts/status.py": "785c604bad2b",
   "scripts/store.py": "71798bc4689c",
-  "scripts/sw_lint.py": "f58b82877cf5",
+  "scripts/sw_lint.py": "acae578a48d9",
   "scripts/trace.py": "cdcb3f5231f2"
  },
  "kit_version": "0.3.0"

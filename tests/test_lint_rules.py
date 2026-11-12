@@ -396,6 +396,32 @@ class RuleTests(unittest.TestCase):
         named = lint.registry_findings(self.context([doc()], registry=reg))
         self.assertNotIn("L-055", {f.rule for f in named})
 
+    def test_l057(self):
+        from kitlib import cite
+
+        inbox = self.base / "00-inbox"
+        inbox.mkdir()
+        lines = ["---", "id: SRC-0001", "---", "Refunds close after 14 days.", ""]
+        (inbox / "SRC-0001.md").write_text("\n".join(lines) + "\n")
+        stamp = cite.quote_hash([lines[3]])
+        good = doc(GOOD + f"\nSource: SRC-0001:L4#{stamp}\n")
+        for bad_text in (
+            "SRC-0001:L9",  # beyond the end
+            "SRC-0001:L5",  # blank line
+            "SRC-0001:L4#ffff",  # text does not match the hash
+            "SRC-0009:L1",  # no such snapshot
+        ):
+            self.check_rule("L-057", doc(GOOD + f"\nSource: {bad_text}\n"), good)
+
+    def test_l057_weak_evidence_is_only_a_warning(self):
+        inbox = self.base / "00-inbox"
+        inbox.mkdir()
+        (inbox / "SRC-0001.md").write_text(
+            "---\nid: SRC-0001\ncontent_class: index-only\n---\ntext\n"
+        )
+        found = self.findings(doc(GOOD + "\nSource: SRC-0001:L5\n"))
+        self.assertEqual([f.sev for f in found if f.rule == "L-057"], ["warn"])
+
     def test_every_rule_has_a_named_test(self):
         covered = {"L-" + name.removeprefix("test_l") for name in dir(self) if re_rule(name)}
         self.assertEqual(lint.RULE_IDS, covered)

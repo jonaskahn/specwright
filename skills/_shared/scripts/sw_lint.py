@@ -21,6 +21,7 @@ from urllib.parse import urlsplit
 
 from kitlib import (  # noqa: E402
     borders,
+    cite,
     frontmatter,
     fsio,
     graph,
@@ -36,7 +37,7 @@ GATES = {"draft": 10, "review": 20, "publish": 30}
 REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {"L-017"}
 PUBLISH = {"L-018", "L-037", "L-045", "L-046"}
 SYNC = set()
-RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56))}
+RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), 57)}
 # Artifacts a reader looks up by name; each needs a title and an alias list (possibly empty).
 NAMED_TYPES = {"feature", "idea", "epic", "q", "dec", "cr", "risk", "snapshot"}
 PLACEHOLDER_TITLES = {
@@ -343,6 +344,13 @@ class Context:
         self.registry = registry or tables.Table(list(schema.REGISTRY_COLUMNS))
         self.waivers = []
         self.built = built
+        self._sources = None
+
+    @property
+    def sources(self):
+        if self._sources is None:
+            self._sources = cite.Sources(self.base)
+        return self._sources
 
     def feature(self, doc):
         if not doc.snapshot:
@@ -432,6 +440,9 @@ def lint_document(doc, ctx):
         emit("L-016", "status is not valid for this type")
     if fm.get("scope", ctx.scope) != ctx.scope:
         emit("L-043", "front matter scope differs from the selected project")
+    if not doc.snapshot and fm["type"] not in {"snapshot", "src"}:
+        for problem in cite.problems(ctx.sources, doc.raw):
+            emit("L-057", problem.message, problem.line, sev=problem.severity)
     if fm["type"] in NAMED_TYPES and not doc.card:
         # Snapshots are immutable, so an old one without a name is a warning, not a blocker.
         severity = "warn" if fm["type"] == "snapshot" else "error"

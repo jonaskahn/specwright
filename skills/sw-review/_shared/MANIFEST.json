@@ -1,9 +1,12 @@
 {
  "files": {
+  "references/capabilities/citations.md": "d3c8ec81a8fb",
   "references/next-step.md": "014dd8c606b1",
   "references/stop-and-ask.md": "8dcf14ae3f9f",
   "references/untrusted-content.md": "03ff18989296",
+  "scripts/cite.py": "a7b886ab0215",
   "scripts/kitlib/__init__.py": "b15fdecaaa14",
+  "scripts/kitlib/cite.py": "e68bc074e2bf",
   "scripts/kitlib/frontmatter.py": "8f5e22fd72e7",
   "scripts/kitlib/fsio.py": "ab1846444c3c",
   "scripts/kitlib/graph.py": "533f7801651a",

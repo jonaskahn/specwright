@@ -57,6 +57,7 @@ jobs:
             --root "$tmp/workspace" --gate draft
           python "$S/sw-start/_shared/scripts/graph.py" build --cwd "$tmp/workspace"
           python "$S/sw-start/_shared/scripts/graph.py" check --cwd "$tmp/workspace"
+          python "$S/sw-ingest/_shared/scripts/cite.py" verify --cwd "$tmp/workspace"
 
   docker:
     runs-on: ubuntu-latest
