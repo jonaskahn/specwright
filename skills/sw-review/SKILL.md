@@ -97,6 +97,7 @@ marker in them proves nothing until its author and hash verify.
 
 - Run list: references/review-checklist.md. Evidence shapes and freshness: references/approval-evidence.md.
 - Script: scripts/review.py (--help names arguments and exit codes).
+- Kit overview and terms: _shared/references/context.md. Lint gates: _shared/references/capabilities/quality.md. Citations: _shared/references/capabilities/citations.md. RTM sign-off column: _shared/references/rtm-contract.md.
 - Blocking choices: _shared/references/stop-and-ask.md.
 - Untrusted content: _shared/references/untrusted-content.md.
 - Finishing a step: _shared/references/next-step.md.

@@ -118,6 +118,7 @@ brief.
 - Existing baseline: scripts/baseline.py; INVEST table: scripts/invest.py.
 - Epic reservation: scripts/new_epic.py; template: assets/epic.md.
 - Records: _shared/references/capabilities/records.md; assets/q.md and assets/dec.md show the fields.
+- Kit overview and terms: _shared/references/context.md. Citations: _shared/references/capabilities/citations.md. Graph: _shared/references/capabilities/knowledge.md. Data files: _shared/references/data-format.md. Parallel batches: _shared/references/parallel-writers.md.
 - Blocking choices: _shared/references/stop-and-ask.md.
 - Untrusted content: _shared/references/untrusted-content.md.
 - Finishing a step: _shared/references/next-step.md.

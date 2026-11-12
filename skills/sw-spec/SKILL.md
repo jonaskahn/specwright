@@ -151,6 +151,7 @@ cards or remote issues.
 
 - Several features at once: references/parallel-spec.md; _shared/references/parallel-writers.md.
 - Lint gates: _shared/references/capabilities/quality.md. Diagrams: _shared/references/capabilities/visuals.md. Remote reads: _shared/references/capabilities/remote.md.
+- Kit overview and terms: _shared/references/context.md. Records: _shared/references/capabilities/records.md. Citations: _shared/references/capabilities/citations.md. RTM columns: _shared/references/rtm-contract.md.
 - Blocking choices: _shared/references/stop-and-ask.md.
 - Untrusted content: _shared/references/untrusted-content.md.
 - Finishing a step: _shared/references/next-step.md.

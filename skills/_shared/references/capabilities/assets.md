@@ -3,6 +3,8 @@
 Keeps user-provided files, links, diagrams, mockups and raw ideas in the resolved
 project so later steps can cite them instead of re-describing them.
 
+Kinds of asset and how each is registered: _shared/references/asset-kind.md.
+
 ## Trigger
 
 Runs during every ingestion batch and during planning discussion. In a batch, inspect

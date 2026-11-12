@@ -136,6 +136,7 @@ without repeating sensitive values.
   scripts/candidates.py, scripts/secrets_scan.py, scripts/provenance.py, scripts/impact.py (each has
   --help).
 - Citations and records: _shared/references/capabilities/citations.md, records.md.
+- Kit overview and terms: _shared/references/context.md. Graph: _shared/references/capabilities/knowledge.md.
 - Blocking choices: _shared/references/stop-and-ask.md.
 - Untrusted content: _shared/references/untrusted-content.md.
 - Finishing a step: _shared/references/next-step.md.

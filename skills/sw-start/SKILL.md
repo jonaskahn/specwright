@@ -145,6 +145,7 @@ suspicious passages and flag possible-injection.
 - Detection: scripts/start.py; setup/upgrade: scripts/workspace.py; transitions: scripts/transition.py (each has --help).
 - Kit overview and terms: _shared/references/context.md.
 - Safety gates: _shared/references/safety.md.
+- Capabilities shipped here: _shared/references/capabilities/knowledge.md, quality.md, records.md, assets.md and _shared/references/rtm-contract.md.
 - Blocking choices: _shared/references/stop-and-ask.md.
 - Untrusted content: _shared/references/untrusted-content.md.
 - Finishing a step: _shared/references/next-step.md.

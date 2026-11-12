@@ -23,4 +23,5 @@ update is reported as incomplete maintenance, not a successful refresh.
 
 Start with _shared/scripts/graph.py map and read the map. Pick the smallest query that
 answers the question. When the first output line says stale or missing, run build
-before trusting an answer; use --strict in automation.
+before trusting an answer; use --strict in automation. Model of nodes and edges:
+_shared/references/graph-model.md. Ready-made queries: _shared/references/query-cookbook.md.

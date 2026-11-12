@@ -15,4 +15,4 @@ exit 2 is usage or an unexpected checker failure. No network is used.
 Read each finding as `path:line: L-NNN message`. Choose the gate from
 _shared/references/rule-catalog.md. Fix findings through the operation that owns the
 artifact, then rerun. Never edit a rule, banned-word list or gate threshold merely to
-make a check pass. A waiver, when the gate supports one, is recorded, not invented.
+make a check pass. Readiness before review: _shared/references/dor.md. A waiver, when the gate supports one, is recorded, not invented.
