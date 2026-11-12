@@ -35,7 +35,16 @@ cannot report that Python is missing.
 
 1. Run scripts/view.py doctor --cwd <project>. It reports Python, Node, the packed console,
    the console folder and any missing or stale data files. Exit 1 means Node 24 is missing
-   or the packed console is damaged.
+   or the packed console is damaged; exit 4 means data files are missing or stale (step 3).
+   Typical output:
+
+   ```
+   python: 3.12.4 (ok)
+   node: 24.1.0 (ok)
+   console zip: ok (console <version>)
+   console folder: not installed
+   note: <a data file that is missing or stale, its owner and the command that refreshes it>
+   ```
 2. If Node is missing, follow _shared/references/runtime.md: show `runtime.sh plan node`,
    ask once, and run `runtime.sh install node --yes` only after the user approves that plan.
    If they decline, say sw-view needs Node 24 and stop; nothing else is affected.
@@ -56,13 +65,13 @@ cannot report that Python is missing.
 ## Consumer check
 
 Can the user open the printed address and see their project with the counts that
-`status.py` and the graph map report? Is `git status` free of `console/` and `_meta/data/`?
+`_shared/scripts/graph.py map` reports? Is `git status` free of `console/` and `_meta/data/`?
 
 ## Stop and ask
 
 Stop when Node is missing and not approved, when console/ holds local changes, and when the
-packed console fails its checksum (reinstall the skill). Ask at most five ranked questions
-with options, consequences and a default.
+packed console fails its checksum (reinstall the skill). Questions follow
+`_shared/references/stop-and-ask.md`.
 
 ## Gotchas
 

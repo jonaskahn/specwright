@@ -5,7 +5,9 @@ gap, conflict or preference that the artifacts cannot settle. Record answers in
 question and decision records so the next session does not ask again.
 
 Ask at most five questions at once, everywhere; routing may ask fewer (sw-start asks at
-most two at routing time). Use this shape:
+most two at routing time). Rank them by blocking impact, then uncertainty, then rework cost.
+Keep at most three clarification markers per document; move the rest into question records.
+In a parallel batch the lead merges the workers' questions and asks five at a time. Use this shape:
 
 > Q1 [blocking] Which refund window applies? Checked SRC-0001 and SRC-0002.
 > A) 14 days -> the policy source needs amendment.
