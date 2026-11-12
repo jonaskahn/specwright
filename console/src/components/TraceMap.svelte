@@ -77,6 +77,7 @@
       viewBox={`0 0 ${model.width} ${model.height}`}
     >
       <defs>
+        <clipPath id="trace-card-clip"><rect width={BOX.w} height={BOX.h} rx="10" /></clipPath>
         <marker id="trace-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
           <path d="M0 0L8 4L0 8z" class="trace-arrowhead" />
         </marker>
@@ -106,7 +107,8 @@
         >
           <title>{sentence(n)}</title>
           <rect class="card-bg" width={BOX.w} height={BOX.h} rx="10" />
-          {#if !n.gap}<rect class="bar" width="5" height={BOX.h} rx="2.5" style:fill={`oklch(58% 0.15 ${hue(n.kind)})`} />{/if}
+          {#if !n.gap}<rect class="bar" width="5" height={BOX.h} clip-path="url(#trace-card-clip)" style:fill={`oklch(58% 0.15 ${hue(n.kind)})`} />{/if}
+          <rect class="card-edge" width={BOX.w} height={BOX.h} rx="10" />
           <text class="t-kind" x="14" y="16">{n.gap ? 'Missing link' : n.kind === 'code' ? kindWords(n.kind) : `${kindWords(n.kind)} · ${shortKey(n.key ?? '')}`}</text>
           <text class="t-title" x="14" y="33">{fit(n.title)}</text>
           {#if n.gap}

@@ -1,5 +1,5 @@
 {
- "bytes": 382969,
+ "bytes": 383793,
  "console": "0.5.0",
  "files": {
   ".nvmrc": "sha256:68ca3fba3b7e864770cb61aeb306d4bd4354b68ab4dd38450860c5d823e42a53",
@@ -29,7 +29,7 @@
   "src/components/Sidebar.svelte": "sha256:3d1e2745288dcdf239141b09dc750cb66a54a9a5a2c85e9e7014a6527feef69b",
   "src/components/StaleBanner.svelte": "sha256:39c17628efd77af83d9be802c985564b5489a425f15d941dd1604046a453b816",
   "src/components/Topbar.svelte": "sha256:7d2e1ce9ee5b4f5fb63c316fb5a5a7bf7d51a9556be3033f752a3ec12e7687a7",
-  "src/components/TraceMap.svelte": "sha256:588f8d3b98e5d5d89a594a74a5a1904c682b1a8cb3a4e7972238e12547006af5",
+  "src/components/TraceMap.svelte": "sha256:63f249f1ae3d28bd4aed1ea106ef0f0d5faa6f3ea64eed8e72457661c5528586",
   "src/components/TreeItem.svelte": "sha256:255ffd4eac1821640ac8018880dd80132f82b47ec9d9a1651338ae3105963aa0",
   "src/components/nav.ts": "sha256:32de200eb5c2e44becef9f5f08931449145de551fd4d8c7a9a17c8524a64a849",
   "src/env.d.ts": "sha256:cc9c01ab82cd866d596b11028637a284c3cca4b115d2aa5a02c31d2c59977fc1",
@@ -61,7 +61,7 @@
   "src/routes/Sources.svelte": "sha256:c9537387f69fd4fbc8d197526e1b305d7f9742e247bc0236a46f46a2fea7849a",
   "src/routes/Tasks.svelte": "sha256:8c3e9a1bf389ec8e3fc2bdef1d372aff30f5dc67b3202a5808fd689455407079",
   "src/routes/Tree.svelte": "sha256:8991ad7f125863be7a895b7d274efb180507785aec14bbe83df5312bce78bae2",
-  "src/styles/components.css": "sha256:7201f6e8051e8778f22c74d736d08961afe47f4005ad4ea94987636c773e036c",
+  "src/styles/components.css": "sha256:8ad8d3d8adb3c9ce41ffcde38b5151a493fe7ed59f365eb1a9a1d7dfeb77d3e8",
   "src/styles/shell.css": "sha256:dafa6377ebd7e14e83bc505b0230f7798add0fefc873eff1aefd282aa73194d0",
   "src/styles/tokens.css": "sha256:11d8c7fa0293ef947e495c721857900459b118001c2d6065554b10c133be5966",
   "svelte.config.js": "sha256:38f4ed7a7ec5e5c793b4f3809b8f85876ce2ee232392e56c25c2d076e30370a4",
@@ -71,13 +71,13 @@
   "tests/query.parity.test.ts": "sha256:ff84a49d5ca8e4a421ba95ccdadb62de8d49ae1f4dcab67a00cbbde5fefa52ec",
   "tests/safety.test.ts": "sha256:408450054b6d70ae975e2d2b976fe7cff70f2859fe8fc70c60a16014515ca3f2",
   "tests/status.test.ts": "sha256:8d325a29b3a077ae74189a08ddbadca400022aabc85199031bfb87a237a8109c",
-  "tests/trace.test.ts": "sha256:2d5124a397ba6534ebc9ea62c36858559148483b17e5b52661916acc92164221",
+  "tests/trace.test.ts": "sha256:d66c8bc27545e5030a5025a0e8422bff2bdc0484fd62cd7092ec926226023dfa",
   "tests/tree.test.ts": "sha256:3214094257803b8073622856019521607aaba51fea50cf54a9a901716fcf8326",
   "tests/vocabulary.test.ts": "sha256:64853fc338fe138b5dae441dad762e7e62d83d74a79fc31f201cc0752a873b81",
   "tsconfig.json": "sha256:570966f0723394c2a3e120ea1198f9ec9d153380ae6c9ac3c303579c311ea8df",
   "vite.config.ts": "sha256:500a2492b90c3a9add4255e31f68a0934a9d56013011a401d3cfd70612c76d23"
  },
  "formatVersion": 1,
- "tree": "sha256:c275a8c4daa5afd9de5cecaf1463f7f89a64924def23a5b92106350d430728d5",
- "zip": "sha256:8e8f3e1f97889460781cafca72b5b4abe1a62cb506a915991991892f1e188bd4"
+ "tree": "sha256:3f138b54c7afc89f5c389b8ede9885a8a85758dac8bae1289ea22c9ce321409a",
+ "zip": "sha256:107541390f38bca4761334ab57c8bcde3e046c7f37bdb26a8240789dc07d1535"
 }

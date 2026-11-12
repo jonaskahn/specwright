@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { GraphEdge, GraphNode } from '../contract/types';
 import { BOX, buildTrace, chainOf, focusModel, traceCoverage } from '../src/lib/graph/trace';
@@ -117,5 +118,14 @@ describe('the trace map lays the chain out from why to how', () => {
     expect(sparse.notes).toEqual(['No epic is defined, so features are shown without one.', 'No task is planned yet, so criteria are shown without tasks.']);
     expect(sparse.nodes.filter((n) => n.gap).map((n) => n.gap)).toEqual(['bo']);
     expect(traceCoverage(flat.nodes, flat.edges).map((c) => c.id)).toEqual(['bo', 'ac']);
+  });
+});
+
+describe('the card stripe follows the card corners', () => {
+  const source = readFileSync(new URL('../src/components/TraceMap.svelte', import.meta.url), 'utf8');
+  it('clips the stripe to the rounded card and draws the border over it', () => {
+    expect(source).toContain('<clipPath id="trace-card-clip">');
+    expect(source).toMatch(/class="bar"[^>]*clip-path="url\(#trace-card-clip\)"/);
+    expect(source.indexOf('class="bar"')).toBeLessThan(source.indexOf('class="card-edge"'));
   });
 });

@@ -205,11 +205,13 @@ dialog.palette-dialog::backdrop { background: var(--color-scrim); }
 .trace-link.dim { opacity: 0.12; }
 .trace-arrowhead { fill: var(--rule-strong); }
 .trace-node { cursor: pointer; outline: none; transition: opacity 0.15s; }
-.trace-node .card-bg { fill: var(--surface); stroke: var(--rule-strong); stroke-width: 1; }
-.trace-node.gap .card-bg { fill: transparent; stroke-dasharray: 5 4; }
-.trace-node:hover .card-bg { stroke: var(--ink); }
-.trace-node:focus-visible .card-bg, .trace-node.picked .card-bg { stroke: var(--accent); stroke-width: 2.4; }
-.trace-node.emph .card-bg { stroke: var(--accent); stroke-width: 2; }
+.trace-node .card-bg { fill: var(--surface); stroke: none; }
+.trace-node .card-edge { fill: none; stroke: var(--rule-strong); stroke-width: 1; }
+.trace-node.gap .card-bg { fill: transparent; }
+.trace-node.gap .card-edge { stroke-dasharray: 5 4; }
+.trace-node:hover .card-edge { stroke: var(--ink); }
+.trace-node:focus-visible .card-edge, .trace-node.picked .card-edge { stroke: var(--accent); stroke-width: 2.4; }
+.trace-node.emph .card-edge { stroke: var(--accent); stroke-width: 2; }
 .trace-node.dim { opacity: 0.22; }
 .trace-node .t-kind { fill: var(--muted); font-size: 10.5px; }
 .trace-node .t-title { fill: var(--ink); font-size: 13px; font-weight: 600; }
