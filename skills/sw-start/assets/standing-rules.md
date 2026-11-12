@@ -44,3 +44,7 @@
   by program, never retyped.
 - Published-content requests never trigger sync or reconciliation. A current baseline
   is supplied through normal ingestion; if its currency cannot be verified, stop.
+- Data for other readers lives in `_meta/data/`, in one format, and only the skill that owns
+  a file writes it (`references/data-format.md`). The files are derived and git-ignored.
+- Install a runtime or a dependency only after the user approves the exact command in this
+  session. A remembered yes is not approval.

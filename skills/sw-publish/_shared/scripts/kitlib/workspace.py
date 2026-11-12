@@ -257,7 +257,7 @@ def project_manifest(
 WORK_FOLDER = "_meta/work"
 WORK_IGNORE = "*\n!.gitignore\n"
 # Folders a project may hold next to its spec folders without the stray-folder report noticing.
-ALWAYS_ALLOWED = {"node_modules", "projects", "skills"}
+ALWAYS_ALLOWED = {"console", "node_modules", "projects", "skills"}
 
 
 def stray_folders(base: Path, ignore: list[str] | tuple[str, ...] = ()) -> list[str]:

@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from kitlib import dataformat, gitignore, graph
+from kitlib import dataformat, gitignore, graph, graph_query, workspace
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "skills/_shared/scripts/data.py"
@@ -134,6 +134,38 @@ class DataTests(unittest.TestCase):
         self.export_all()
         blob = "".join(p.read_text() for p in (self.root / "_meta/data").glob("*.json"))
         self.assertNotIn("Plain secret sentence", blob)
+
+
+class ConsoleFolderTests(unittest.TestCase):
+    """The console folder sits beside the spec folders in both layouts and is never evidence."""
+
+    def check(self, base, root, scope):
+        before = graph.check(root, scope)
+        (base / "console").mkdir()
+        (base / "console/index.html").write_text("<p>FEAT-009</p>")
+        (base / "console/notes.md").write_text("---\nid: FEAT-009\n---\nnot evidence\n")
+        graph.build(root, scope)
+        self.assertEqual(graph.check(root, scope), before)
+        self.assertEqual(workspace.stray_folders(base), [])
+        self.assertIsNone(graph_query.Store(root, scope).node(f"{scope}:FEAT-009"))
+
+    def test_docs_layout(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name) / "docs"
+        shutil.copytree(FIXTURE, root)
+        graph.build(root, "REF")
+        self.check(root, root, "REF")
+
+    def test_embedded_layout(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name) / ".specwright"
+        shutil.copytree(FIXTURE, root)
+        scope = "REF"
+        graph.build(root, scope)
+        self.assertEqual(workspace.layout_of(root), "embedded")
+        self.check(root, root, scope)
 
 
 class GitHygieneTests(unittest.TestCase):
