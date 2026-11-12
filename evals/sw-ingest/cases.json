@@ -21,6 +21,17 @@
         "The second import reports duplicate true.",
         "The registry contains only one source row."
       ]
+    },
+    {
+      "id": "bulk-import-baseline",
+      "prompt": "import the pages of fixtures/baseline/tree.json as one batch",
+      "fixture": "fixtures/baseline",
+      "assertions": [
+        "runs a dry run before the real batch",
+        "reports expected and received counts and a status per page",
+        "does not import the page with sample personal data without a named, evidenced example decision",
+        "flags the empty parent page as index-only"
+      ]
     }
   ]
 }

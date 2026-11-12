@@ -14,3 +14,6 @@
 {"query": "draw a birthday card", "should_trigger": false}
 {"query": "run npm install", "should_trigger": false}
 {"query": "delete every file", "should_trigger": false}
+{"query": "we already have a legacy register and a wiki of requirements, where do we start", "should_trigger": true}
+{"query": "which of our features should we specify first", "should_trigger": true}
+{"query": "import this batch of 80 wiki pages as evidence", "should_trigger": false, "near_miss_of": "sw-ingest"}

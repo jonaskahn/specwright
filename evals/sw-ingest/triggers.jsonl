@@ -14,3 +14,7 @@
 {"query": "Compare the latest PROJ-14 description with our published baseline.", "should_trigger": false, "near_miss_of": "ingestion"}
 {"query": "Create a new REF project workspace with folders and manifest.", "should_trigger": false, "near_miss_of": "sw-start"}
 {"query": "Lint existing refund cards for missing ids.", "should_trigger": false, "near_miss_of": "lint capability"}
+{"query": "Import every page under the Refunds wiki tree as one batch and report expected against received counts.", "should_trigger": true}
+{"query": "This snapshot has the right text but the wrong source URL; correct its provenance without re-importing.", "should_trigger": true}
+{"query": "Split these 60 imported pages among several readers and check that every page was read once.", "should_trigger": true}
+{"query": "Group our legacy register into epics and reserve a feature per item.", "should_trigger": false, "near_miss_of": "sw-shape"}

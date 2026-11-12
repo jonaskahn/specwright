@@ -8,7 +8,9 @@ These rules apply to every file in the kit.
   `LICENSE`, and optional `references/`, `scripts/` and `assets/`.
 - Portable front matter holds exactly `name` and `description`. Put safety rules in the
   body, never in vendor-specific keys. Keep the version in `pyproject.toml` and the plugin
-  manifests; keep compatibility prose in the body and docs.
+  manifests, and mirror it in `kitlib/schema.py` as `KIT_VERSION` (`tools/validate.py`
+  fails when they differ) so a running skill can name its release and a mixed install is
+  detected. Keep compatibility prose in the body and docs.
 - The description is one line of at most 900 characters: what the skill does, when to use
   it with real trigger phrases, and a closing "Do NOT use for ... (use sw-x)" clause.
 - The body stays under 500 lines and about 5000 tokens. Move detail into `references/` and
@@ -69,6 +71,24 @@ These rules apply to every file in the kit.
   The skill's own `_shared/` wins, so an installed script never searches outside its own
   skill directory; the sibling `skills/_shared` is only a fallback inside the source tree. Shared capability scripts live
   directly in `skills/_shared/scripts` and import their sibling `kitlib` normally.
+
+## Artifact names
+
+- Records, ideas, epics and snapshots are named `<ID>--<slug>.md` (`Q-001--which-window.md`).
+  The ID before `--` is the stable part: the slug may change without breaking a link, and
+  every reader resolves by the front matter `id`, never by file name. Existing files are
+  never renamed. Feature artifacts keep their multi-part names (`FEAT-001.story.md`).
+- Every indexed artifact carries `title` and `aliases` (a list, possibly empty) in front
+  matter; the legacy IDs and remote IDs the business knows it by go in `aliases`. Other
+  fields are `status`, `sources`, `affects` and `supersedes`. A reserved feature that has no
+  file yet takes `Title` and `Aliases` from the ID registry. The master index shows the
+  content hash of every artifact, so the front matter carries none.
+- Citations have the form `SRC-0001:L12-L14#a1b2` (lines of the saved snapshot, plus a
+  four-hex hash of the cited text). Copy quotes and hashes with `cite.py`; never retype them.
+- Writes to records, the registry, snapshots and candidates go through the shared scripts
+  (`record.py`, `bulk_import.py`, `candidates.py`, `provenance.py`). They validate first,
+  support `--dry-run`, log an intent and a result in `_meta/write-log.md`, and honour the
+  registry column owners (`rtm.REGISTRY_OWNERS`). Working files go under `_meta/work/`.
 
 ## Writing style
 

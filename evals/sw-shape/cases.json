@@ -18,6 +18,16 @@
         "The quality gate reports the leak",
         "The draft stays unapproved"
       ]
+    },
+    {
+      "id": "baseline-split",
+      "prompt": "shape fixtures/baseline/register.csv into groups",
+      "fixture": "fixtures/baseline",
+      "assertions": [
+        "keeps each legacy ID as an alias of a reserved feature",
+        "records the first question: keep each legacy item as one feature or re-split by INVEST",
+        "records the split decision only with the decider's role, name and evidence"
+      ]
     }
   ]
 }

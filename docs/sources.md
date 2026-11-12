@@ -53,6 +53,11 @@ templates and instructions in Specwright were independently authored.
   request a body representation explicitly. Version number is the page drift key.
   Include macros are not followed recursively.
 
+- [Confluence page children and cursor pagination](https://developer.atlassian.com/cloud/confluence/rest/v2/intro/#pagination):
+  v2 lists return a `_links.next` cursor; follow it until it is absent. The wiki reader refuses
+  a next link that leaves `/wiki/`, treats a page, depth or request limit as an incomplete pull,
+  and reports expected against received counts instead of trusting one capped result.
+
 Reported historical MCP pagination and Confluence ADF-version bugs were already fixed
 upstream when inspected. Pagination guards remain useful, but those bugs are not
 presented as current platform defects. Absence of Jira ETag support was not proven;

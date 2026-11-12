@@ -14,3 +14,6 @@
 {"query": "Shape the unaccepted refund idea", "should_trigger": false, "near_miss_of": "sw-spec"}
 {"query": "Write concrete ACs for FEAT-001", "should_trigger": false, "near_miss_of": "sw-spec"}
 {"query": "Update the RTM manually", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "We run 40 capabilities under legacy IDs LEG-100 and up; turn that register into reserved features and a brief per group.", "should_trigger": true}
+{"query": "Record the PO's decision to keep each legacy item as one feature, with the meeting minutes as evidence.", "should_trigger": true}
+{"query": "Import the legacy register's wiki pages into the inbox.", "should_trigger": false, "near_miss_of": "sw-ingest"}

@@ -44,6 +44,8 @@ A rough idea goes in. A story, a plan, and a task list come out. Product, engine
 | Plan | `sw-plan` | An approach and tasks checked against the current story |
 | Publish | `sw-publish` | A delivery you asked for, including a guarded Jira write |
 
+Every artifact has a stable ID, a title and aliases, and `graph.py show <any name>` finds it by a legacy ID, a remote page ID or a title fragment. The build also writes `_meta/INDEX.md`, `CROSSWALK.tsv` and `READ-FIRST.md`, so a new session can start from one short list instead of crawling folders. A project that already runs many capabilities starts from its legacy register (`sw-start` routes it), imports a page tree in one logged batch, and checks every citation by script.
+
 ## `02` — Install
 
 Four ways in. Pick the one that matches the machine in front of you.

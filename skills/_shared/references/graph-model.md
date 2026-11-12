@@ -3,7 +3,7 @@
 ## Nodes
 
 Hierarchy: program, scope, epic, feat, ac, task. Analysis: idea, bo, stk, risk, br, nfr, fr. Evidence: src, snapshot, q,
-dec, cr. Artifacts: plan, tasks-file, feature-file, diagram, asset. External: jira:KEY. Code: code paths named by
+dec, cr, amendment (AMD), candidates (CAND). Artifacts: plan, tasks-file, feature-file, diagram, asset. External: jira:KEY. Code: code paths named by
 Touches.
 
 STORY is the BA/PO word for FEAT; there is no STORY node.
@@ -18,7 +18,7 @@ board query for structured per-feature output.
 
 ## Relations
 
-member_of (feat to epic), realizes (to bo), governed_by (to br, nfr, fr), sourced_from, shaped_from, has_ac, has_task,
+member_of (feat to epic), realizes (to bo), governed_by (to br, nfr, fr), sourced_from, shaped_from, source_parent (snapshot to its parent page), has_ac, has_task,
 implements (task to ac, br, nfr), touches (task to code), affects (cr or dec), supersedes, illustrates (diagram),
 exercises (.feature tag), derives_from (artifact to feat), supports (asset to spec item), uses_asset (spec item to
 asset), published_as (feat to Jira key), last_snapshot, external_parent (jira_parent), mentions.

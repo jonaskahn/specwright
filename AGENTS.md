@@ -38,5 +38,9 @@
   instead of opening every file.
 - Before pushing or publishing without a named destination, ask whether the output is
   Markdown, Jira or both. A stored answer never authorizes a Jira write.
+- Create questions, decisions, reservations, splits and registry rows only with the shared
+  scripts. They validate, log each write and honour column ownership.
+- Give every artifact a title and aliases, and cite evidence as `SRC-NNNN:Lnn#hash` copied
+  by program, never retyped.
 - Published-content requests never trigger sync or reconciliation. A current baseline
   is supplied through normal ingestion; if its currency cannot be verified, stop.
