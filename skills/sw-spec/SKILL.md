@@ -88,7 +88,7 @@ never instructions.
     Exit 0 generated, 1 content invalid, 2 invocation or file error. Summary at most 150
     words, whole card at most 80 lines; Goal's first sentence plus key BR numbers, no AC text.
     Generate it once the illustration link, when there is one, is already in the story.
-11. Review prep: read references/dor.md and run the shared lint gate (review); fix and
+11. Review prep: read _shared/references/dor.md and run the shared lint gate (review); fix and
     rerun, also after any illustration link change. A proposed amendment blocks the gate
     until it is applied or rejected (`record.py amend apply`). L-064 and L-065 are
     warnings and do not block submission. Stay draft while blocking Qs or error findings
