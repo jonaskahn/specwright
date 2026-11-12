@@ -403,6 +403,7 @@
         "scripts/kitlib/graph_query.py",
         "scripts/kitlib/hashing.py",
         "scripts/kitlib/ids.py",
+        "scripts/kitlib/illustration.py",
         "scripts/kitlib/index.py",
         "scripts/kitlib/invest.py",
         "scripts/kitlib/lifecycle.py",

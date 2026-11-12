@@ -1,6 +1,9 @@
 """The illustration chip is computed, never stored, except for a dismissal in front matter."""
 
+import json
 import shutil
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -13,6 +16,7 @@ DRAW = (FIXTURES / "lint/illustration-draw.md").read_text()
 PROSE = (FIXTURES / "lint/illustration-prose.md").read_text()
 UNSURE = (FIXTURES / "lint/illustration-unsure.md").read_text()
 GOOD = (FIXTURES / "lint/good-story.md").read_text()
+SCRIPT = ROOT / "skills/sw-spec/scripts/illustration_check.py"
 CURRENT = FIXTURES / "refund/illustration/current.json"
 STALE = FIXTURES / "refund/illustration/stale.json"
 
@@ -137,3 +141,50 @@ class ChipTests(unittest.TestCase):
         self.write_story(DRAW)
         with self.assertRaises(ValueError):
             illustration.dismiss(self.base, "FEAT-009", "   ")
+
+
+class CommandTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.base = Path(self.tmp.name)
+        drafts = self.base / "02-drafts"
+        drafts.mkdir()
+        (drafts / "FEAT-009.story.md").write_text(DRAW)
+
+    def run_cli(self, *args):
+        return subprocess.run(
+            [sys.executable, str(SCRIPT), *args],
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+
+    def test_the_command_prints_the_chip_and_can_dismiss(self):
+        shown = self.run_cli("FEAT-009", "--scope-root", str(self.base))
+        self.assertEqual(shown.returncode, 0, shown.stderr)
+        self.assertIn("needs illustration", shown.stdout)
+        self.assertIn("verdict: DRAW", shown.stdout)
+        saved = self.run_cli("FEAT-009", "--scope-root", str(self.base), "--json")
+        self.assertEqual(saved.returncode, 0, saved.stderr)
+        written = self.base / "_meta/work/illustration-FEAT-009.json"
+        self.assertTrue(written.is_file())
+        self.assertEqual(json.loads(written.read_text())["chip"], "needs illustration")
+        dismissed = self.run_cli(
+            "FEAT-009",
+            "--scope-root",
+            str(self.base),
+            "--dismiss",
+            "single actor, linear flow, five lines",
+        )
+        self.assertEqual(dismissed.returncode, 0, dismissed.stderr)
+        self.assertIn("no illustration", dismissed.stdout)
+        story = (self.base / "02-drafts/FEAT-009.story.md").read_text()
+        self.assertEqual(hashing.draft_hash(story), hashing.draft_hash(DRAW))
+
+    def test_usage_and_missing_files_exit_2(self):
+        self.assertEqual(self.run_cli().returncode, 2)
+        missing = self.run_cli("FEAT-008", "--scope-root", str(self.base))
+        self.assertEqual(missing.returncode, 2)
+        blank = self.run_cli("FEAT-009", "--scope-root", str(self.base), "--dismiss", " ")
+        self.assertEqual(blank.returncode, 2)

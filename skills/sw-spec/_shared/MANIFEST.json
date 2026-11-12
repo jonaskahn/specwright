@@ -29,6 +29,7 @@
   "scripts/kitlib/graph_query.py": "eea56a960afd",
   "scripts/kitlib/hashing.py": "8236e6704e63",
   "scripts/kitlib/ids.py": "88a0e53a1198",
+  "scripts/kitlib/illustration.py": "be060190a7ac",
   "scripts/kitlib/index.py": "d1455540d597",
   "scripts/kitlib/invest.py": "952e723ae1fa",
   "scripts/kitlib/lifecycle.py": "aff4c529a805",
