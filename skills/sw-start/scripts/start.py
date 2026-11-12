@@ -32,6 +32,7 @@ from kitlib import (  # noqa: E402
     hashing,
     index,
     invest,
+    runtime,
     schema,
     workspace,
 )
@@ -410,6 +411,17 @@ def report(cwd, target=None, pack=False):
     return {**info, "fresh_setup": False, "scopes_state": scopes}
 
 
+def runtime_state():
+    """Python and Node status for the setup step; a missing Node only disables sw-view."""
+    status = runtime.check()
+    return {
+        "python": status["python"]["ok"],
+        "node": status["node"]["ok"],
+        "node_version": status["node"]["version"],
+        "node_plan": "_shared/scripts/runtime.py plan node",
+    }
+
+
 def hook_lines(data):
     if data.get("fresh_setup"):
         return []
@@ -420,6 +432,8 @@ def hook_lines(data):
     for item in data["scopes_state"][:5]:
         feats = ", ".join(f"{n} {s}" for s, n in sorted(item["feats"].items())) or "no features"
         lines.append(f"- {item['scope']}: {feats}; graph {item['graph']}; next: {item['next'][0]}")
+    if not data.get("runtime", {}).get("node", True):
+        lines.append("Node 24 is not installed; sw-view needs it. Ask before installing it.")
     lines.append("Run /sw-start to continue.")
     return lines[:10]
 
@@ -439,6 +453,7 @@ def main(argv=None):
         data = {
             "kit_version": schema.KIT_VERSION,
             **report(Path(args.cwd).resolve(), args.item, args.pack),
+            "runtime": runtime_state(),
         }
         if args.hook:
             print("\n".join(hook_lines(data)))

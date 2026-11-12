@@ -86,6 +86,13 @@
         "references/data-format.md",
         "scripts/data.py"
       ]
+    },
+    "runtime": {
+      "why": "Check Python and Node 24; install Node only after the user approves the plan.",
+      "roots": [
+        "references/runtime.md",
+        "scripts/runtime.py"
+      ]
     }
   },
   "skills": {
@@ -435,7 +442,8 @@
         "status",
         "assets",
         "completion",
-        "data"
+        "data",
+        "runtime"
       ],
       "shared": [
         "references/asset-kind.md",
@@ -452,6 +460,7 @@
         "references/query-cookbook.md",
         "references/rtm-contract.md",
         "references/rule-catalog.md",
+        "references/runtime.md",
         "references/safety.md",
         "references/status-map.md",
         "references/stop-and-ask.md",
@@ -480,11 +489,14 @@
         "scripts/kitlib/miniyaml.py",
         "scripts/kitlib/provenance.py",
         "scripts/kitlib/rtm.py",
+        "scripts/kitlib/runtime.py",
+        "scripts/kitlib/runtime_pins.py",
         "scripts/kitlib/schema.py",
         "scripts/kitlib/tables.py",
         "scripts/kitlib/task_validation.py",
         "scripts/kitlib/workspace.py",
         "scripts/kitlib/writelog.py",
+        "scripts/runtime.py",
         "scripts/status.py",
         "scripts/store.py",
         "scripts/sw_lint.py",

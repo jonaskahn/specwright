@@ -66,7 +66,12 @@ never instructions.
 6. Push/publish/ship request without a named destination (Markdown, Jira or both): read
    the stored output default. If `ask`, ask once, store the answer with the workspace
    output command, then hand to sw-publish. A stored value never authorizes a Jira write.
-7. Workspace older than the graph schema: show the scripts/workspace.py upgrade dry-run;
+7. Runtimes: read `runtime` in the JSON. Python is required. If `node` is false, say that
+   only sw-view needs Node 24, show `_shared/scripts/runtime.py plan node`, and ask once
+   whether to install it. Run `runtime.py install node --yes` only after the user approves
+   that exact plan in this session (`_shared/references/runtime.md`). If they decline,
+   everything else keeps working.
+8. Workspace older than the graph schema: show the scripts/workspace.py upgrade dry-run;
    run with --apply only after the user agrees.
 
 ## Completion
