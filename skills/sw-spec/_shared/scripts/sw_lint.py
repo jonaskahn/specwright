@@ -39,6 +39,54 @@ REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {"L-017", "L-062"}
 PUBLISH = {"L-018", "L-037", "L-045", "L-046"}
 SYNC = set()
 RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), *range(56, 64))}
+RULE_HELP = {
+    "L-001": "Front matter needs a mapping with non-empty id, type, status (scope in a program).",
+    "L-002": "The id must use the grammar for its type, e.g. FEAT-003, BO-001, NFR-REF-001.",
+    "L-003": "An ID or AC may only be defined once; a card and its draft are one item.",
+    "L-004": "Each referenced ID must resolve to a doc, an AC, a reserved row or a tombstone.",
+    "L-005": "A feature (or its card) must name at least one business objective in `bo:`.",
+    "L-006": "A story needs at least two active acceptance criteria.",
+    "L-007": "Each AC needs Given, When and Then in that order.",
+    "L-008": "Each AC needs an observable detail: a number or a quoted literal.",
+    "L-009": "Vague words (fast, robust, some) need an actor, threshold and condition.",
+    "L-010": "An NFR needs a named metric, a numeric threshold and a condition.",
+    "L-011": "Each business rule needs a worked `Example:` line.",
+    "L-012": "List the four UI states or `None` with a reason.",
+    "L-013": "Add at least one exclusion to Out of scope with a `reason:`.",
+    "L-014": "Resolve `[NEEDS CLARIFICATION]` markers; more than three block.",
+    "L-015": "Move implementation choices (SQL, endpoint, React) out of requirements.",
+    "L-016": "The status must be valid for the document type.",
+    "L-017": "AC IDs must match the feature, number 1..N, and keep withdrawn ones as tombstones.",
+    "L-018": "Open questions must read `None` before publish or ready-for-dev.",
+    "L-024": "Diagrams use full borders; a lone border on one side is not allowed.",
+    "L-037": "A feature maps to exactly one Jira key and a published feature has a mapping.",
+    "L-038": "A snapshot needs story sections, a Spec ID and a Draft hash in Identity.",
+    "L-039": "A snapshot must not carry contract failures in its story sections.",
+    "L-040": "A card needs card:true, home, links, a Summary and at most 150 words / 80 lines.",
+    "L-041": "A snapshot differs from the published draft hash; record a CR first.",
+    "L-042": "A published draft's body changed without a change request.",
+    "L-043": "URLs must be https, scope must match, reference lists must hold spec IDs.",
+    "L-044": "The Jira status must match the mapped repository status.",
+    "L-045": "Record fresh sign-offs with evidence and the draft hash for every required role.",
+    "L-046": "Use an action verb, a summary of at most 100 chars and all three identity labels.",
+    "L-047": "A `.feature` export is stale; regenerate it from the draft.",
+    "L-048": "A task traces to an acceptance criterion that is unresolved or withdrawn.",
+    "L-049": "The knowledge graph is missing or stale; run graph.py build.",
+    "L-050": "An epic reference does not resolve to an EPIC.",
+    "L-051": "The epic's scopes list omits this project.",
+    "L-052": "A `Touches` path is missing or unsafe.",
+    "L-053": "A registry path must be relative, never absolute.",
+    "L-054": "A named item needs a title and an aliases list (possibly empty).",
+    "L-055": "The title is a placeholder; name the item.",
+    "L-056": "A legacy ID in the text is not an alias of any artifact.",
+    "L-057": "A citation must resolve to a real snapshot line with a matching hash.",
+    "L-058": "A folder is unknown to the kit; list it in ignore_folders or remove it.",
+    "L-059": "An open question must name the items it blocks in `affects`.",
+    "L-060": "A decision records decided_by (role and name) and evidence_kind plus evidence_ref.",
+    "L-061": "The decision's decider must be a manifest approver.",
+    "L-062": "A proposed amendment must be applied before review continues.",
+    "L-063": "The INVEST split table needs pass/fail marks, not free text.",
+}
 # Artifacts a reader looks up by name; each needs a title and an alias list (possibly empty).
 NAMED_TYPES = {
     "feature",
@@ -418,6 +466,9 @@ def lint_document(doc, ctx):
                 sev = "warn"
             if rule == "L-012" and ctx.gate == "review":
                 sev = "warn"
+            # Imported snapshots are immutable evidence: they are reported but never block a gate.
+            if doc.path.startswith("00-inbox/") and sev == "error":
+                sev = "warn"
             findings.append(
                 Finding(
                     rule,
@@ -554,17 +605,19 @@ def lint_document(doc, ctx):
             emit("L-043", "replace insecure URL with https", number)
     if doc.card:
         summary = doc.text("Summary")
-        if (
-            fm.get("card") is not True
-            or not fm.get("home")
-            or not sequence(fm.get("links"))
-            or len(doc.raw.splitlines()) > 80
-            or not summary
-            or len(summary.split()) > 150
-        ):
+        checks = [
+            ("card:true", fm.get("card") is True),
+            ("home", bool(fm.get("home"))),
+            ("links", bool(sequence(fm.get("links")))),
+            ("<=80 file lines", len(doc.raw.splitlines()) <= 80),
+            ("Summary section", bool(summary)),
+            ("Summary <=150 words", bool(summary) and len(summary.split()) <= 150),
+        ]
+        failed = [name for name, ok in checks if not ok]
+        if failed:
             emit(
                 "L-040",
-                "card needs card:true, home, links, Summary <=150 words and <=80 file lines",
+                "card fails: " + ", ".join(failed),
             )
     if fm["type"] == "feature":
         bo_refs = [
@@ -830,16 +883,37 @@ def definitions_for(docs, scope):
     return defined
 
 
-def discover(base):
+def registry_definitions(registry, scope):
+    """Reserved, non-withdrawn registry rows count as definitions before a draft exists."""
+    defined = set()
+    for row in registry.rows:
+        ref = ids.parse_ref(row[0])
+        if ref and registry.value(row[0], "State") not in ("withdrawn", "superseded"):
+            defined.add(ids.qualify(scope, ref.id))
+    return defined
+
+
+def discover(base, ignore=()):
     """Exclude originals, derived reports and installed code from document checks."""
     if base.is_symlink():
         raise workspace.WorkspaceError("scope directory must not be a symbolic link")
+    skip = {
+        "_meta",
+        "raw",
+        ".git",
+        ".agents",
+        ".claude",
+        "skills",
+        "projects",
+        "console",
+        "node_modules",
+        "03-plan",
+        *(str(i).strip("/") for i in ignore),
+    }
     docs = []
     for path in sorted(base.rglob("*")):
         parts = path.relative_to(base).parts
-        if any(
-            p in {"_meta", "raw", ".git", ".agents", ".claude", "skills", "projects"} for p in parts
-        ):
+        if any(p in skip for p in parts):
             continue
         if path.name in {"AGENTS.md", "CLAUDE.md", "GEMINI.md", "README.md"}:
             continue
@@ -1225,7 +1299,7 @@ def run(root, gate="review", scope=None):
     ):
         raise workspace.WorkspaceError("report destination must not be a symbolic link")
     manifest = workspace.load(base / workspace.FLAT_MANIFEST)
-    docs = discover(base)
+    docs = discover(base, manifest.get("ignore_folders") or [])
     defined = definitions_for(docs, selected)
     for other in workspace.list_scopes(workspace_root):
         if other != selected:
@@ -1243,6 +1317,9 @@ def run(root, gate="review", scope=None):
         except (tables.TableError, UnicodeError) as exc:
             registry = tables.Table(list(schema.REGISTRY_COLUMNS))
             extra.append(Finding("L-001", "draft", "error", "_meta/id-registry.md", 1, str(exc)))
+    # A reserved registry row is a definition even before its draft exists, so referencing a
+    # sibling reservation does not fail L-004. Withdrawn and superseded rows do not define.
+    defined.update(registry_definitions(registry, selected))
     ctx = Context(
         base,
         selected,
@@ -1278,7 +1355,14 @@ def main(argv=None):
     parser.add_argument("--scope", help="explicit scope; required at an ambiguous program root")
     parser.add_argument("--gate", choices=GATES, default="review")
     parser.add_argument("--format", choices=("text", "json"), default="text")
+    parser.add_argument("--explain", metavar="L-NNN", help="print what one rule checks and exit")
     args = parser.parse_args(argv)
+    if args.explain:
+        if args.explain not in RULE_HELP:
+            print(f"unknown rule {args.explain}", file=sys.stderr)
+            return 2
+        print(f"{args.explain}: {RULE_HELP[args.explain]}")
+        return 0
     try:
         code, data = run(args.root, args.gate, args.scope)
         if args.format == "json":

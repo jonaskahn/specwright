@@ -190,6 +190,8 @@ def alias_owners(ctx: Ctx) -> dict[str, str]:
             owners[str(alias).casefold()] = key
     registry = rtm.read_table(ctx.registry, list(schema.REGISTRY_COLUMNS)).table
     for row in registry.rows:
+        if registry.value(row[0], "State") in ("withdrawn", "superseded"):
+            continue  # a withdrawn reservation frees its aliases; the number stays a tombstone
         for alias in registry.value(row[0], "Aliases").split("|"):
             if alias.strip():
                 owners.setdefault(alias.strip().casefold(), row[0])

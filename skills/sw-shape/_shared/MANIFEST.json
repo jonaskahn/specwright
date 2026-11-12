@@ -28,7 +28,7 @@
   "scripts/kitlib/gitignore.py": "fae07f5626eb",
   "scripts/kitlib/graph.py": "32ab86e5193e",
   "scripts/kitlib/graph_query.py": "eea56a960afd",
-  "scripts/kitlib/hashing.py": "d4230ca068c6",
+  "scripts/kitlib/hashing.py": "8236e6704e63",
   "scripts/kitlib/ids.py": "88a0e53a1198",
   "scripts/kitlib/index.py": "d1455540d597",
   "scripts/kitlib/invest.py": "952e723ae1fa",
@@ -36,7 +36,7 @@
   "scripts/kitlib/markdown.py": "e3b4f0bf14ab",
   "scripts/kitlib/miniyaml.py": "73a1bbe68a05",
   "scripts/kitlib/provenance.py": "7657b964c364",
-  "scripts/kitlib/recordops.py": "7ede2f3d65b6",
+  "scripts/kitlib/recordops.py": "cfa45d140f07",
   "scripts/kitlib/rtm.py": "dc57dda3403f",
   "scripts/kitlib/schema.py": "639c27392390",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
@@ -44,7 +44,7 @@
   "scripts/kitlib/workspace.py": "8356351721af",
   "scripts/kitlib/writelog.py": "c75ee83de4ff",
   "scripts/record.py": "ebcc85315a55",
-  "scripts/sw_lint.py": "11177eec3235"
+  "scripts/sw_lint.py": "58b9aa413c7d"
  },
  "kit_version": "0.4.1"
 }
