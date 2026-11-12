@@ -26,10 +26,10 @@ the manifest; `governance.md` is the one table of what each setting allows.
 ## Read order
 
 1. sw-start/SKILL.md, then safety.md.
-2. Route: the output of sw-start's `scripts/start.py` and its `references/routing.md`.
+2. Route: the output of sw-start's start script and its routing reference.
 3. Work: the routed skill's SKILL.md and the references it names.
-4. Finish: completion.md, then the route table in sw-start's `references/routing.md`; stop at the next
-   human decision.
+4. Finish: completion.md, then the route table in sw-start's routing reference; stop at the next human
+   decision.
 
 ## Terms
 
@@ -40,7 +40,7 @@ external key mappings in the ID registry. Use qualified IDs (`SCOPE:FEAT-NNN`) a
 | --- | --- |
 | Station | Where an item sits: `shape`, `spec`, `review`, `plan`, `publish`, or `inactive` (withdrawn or superseded). |
 | Condition | The state inside a station: `not-started`, `in-progress`, `blocked`, `complete` or `unknown`. |
-| Chip | A feature's illustration status: `needs illustration`, `no illustration`, `illustrated` or `check illustration`. sw-spec's `scripts/illustration_check.py` prints it. |
+| Chip | A feature's illustration status: `needs illustration`, `no illustration`, `illustrated` or `check illustration`. sw-spec's illustration_check script prints it. |
 | Spec root | The folder holding `project.yaml` (flat) or `workspace.yaml` (program). |
 | Flat / program | Flat: one project at the spec root. Program: several projects under `projects/<SCOPE>/` that share a workspace. |
 | Scope | The short name of one project, for example `REF`. Pass it as `--scope`; a program needs it for every write. |
@@ -50,5 +50,5 @@ external key mappings in the ID registry. Use qualified IDs (`SCOPE:FEAT-NNN`) a
 | Lead, worker | In a parallel batch the lead is the session agent that guards the writes and saves shared state; a worker is a sub-agent that writes one item's files. |
 | Lint gate | `sw_lint.py --root <project> --gate draft\|review\|publish` (in `_shared/scripts` of the skills that lint). Exit 0 clean; 10, 20 or 30 means blocking findings at that gate. |
 | DoR | The definition of ready for review: `dor.md`. |
-| TRANSITION token | `TRANSITION <SCOPE>:FEAT-NNN <action> <digest>`, printed by sw-start's `scripts/transition.py` preview. After the user's plain yes the agent passes it; the user never types it. |
+| TRANSITION token | `TRANSITION <SCOPE>:FEAT-NNN <action> <digest>`, printed by sw-start's transition script preview. After the user's plain yes the agent passes it; the user never types it. |
 | PUBLISH token | `PUBLISH <SCOPE>:FEAT-NNN <short-hash>`, printed by sw-publish's `publish.py plan`. |

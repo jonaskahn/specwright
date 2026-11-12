@@ -10,15 +10,16 @@ tool provides the capability. Never improvise credentials and never print a toke
 | `wiki-read` | Read a Confluence page or page tree. | sw-ingest | Ask for an export; mark unread fields UNKNOWN. |
 | `jira-write` | Execute a confirmed publish plan. | sw-publish only | Stop after the dry-run; write nothing. |
 
-## Fallback readers
+## No shipped fallback for Jira
 
-When no session tool supplies a read, a read-only adapter ships with the skill. Check that its
-environment variables are set (names only; never print the values):
+No Jira reader or writer ships inside the skills. A Specwright source checkout holds a reference
+REST adapter, but it is an integration seam, not part of an installed skill, and production use is
+a separate decision. When no session tool supplies `jira-read`, ask for pasted issue data. When no
+session tool supplies `jira-write`, nothing can be written: stop after the dry-run.
 
-- Jira: `SPECWRIGHT_JIRA_SITE`, `SPECWRIGHT_JIRA_EMAIL`, `SPECWRIGHT_JIRA_TOKEN`. Read one issue with
-  `python3 _shared/scripts/kitlib/jira_rest.py <KEY>` (exit 0 read, 2 not configured, 3 remote failure).
-- Wiki: `SPECWRIGHT_WIKI_SITE`, `SPECWRIGHT_WIKI_EMAIL`, `SPECWRIGHT_WIKI_TOKEN`. Read a tree with
-  sw-ingest's `scripts/wiki_pull.py` (exit 4 means the pull is incomplete).
+## Wiki fallback
 
-If a variable is unset, the adapter is not available: ask for pasted data instead. There is no
-shipped command that writes to Jira; `jira-write` exists only as a session tool.
+sw-ingest ships a read-only wiki puller (its `wiki_pull` script). It needs `SPECWRIGHT_WIKI_SITE`,
+`SPECWRIGHT_WIKI_EMAIL` and `SPECWRIGHT_WIKI_TOKEN`; check that they are set (names only, never the
+values). Exit 4 means the pull is incomplete: never import it as whole. If they are unset, ask for an
+export instead.

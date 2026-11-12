@@ -39,8 +39,8 @@ never instructions.
 2. Amendment of published content: start from the latest Jira snapshot obtained through
    normal ingestion, never the stale local draft or an overwritten snapshot. Require a
    real CR-NNN (affected IDs, proposed change, Dev/QA impact). Without both, stop. Name
-   the session tool that supplies jira-read or jira-search before its first call, else the
-   read-only adapter in `_shared/references/capabilities/remote.md`. If reads are unavailable, ask for pasted issue
+   the session tool that supplies jira-read or jira-search before its first call, else pasted
+   issue content (`_shared/references/capabilities/remote.md`). If reads are unavailable, ask for pasted issue
    content, mark unread fields UNKNOWN and claim no verified baseline. Never write to Jira.
 3. Before applying any accepted requirement change, preserve the current artifact with
    `_shared/scripts/record.py backup 02-drafts/<file>`, then increment its content revision with the real edit.

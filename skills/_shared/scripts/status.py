@@ -250,7 +250,7 @@ def main(argv=None):
     parser.add_argument(
         "--save",
         action="store_true",
-        help="write only _meta/status.md; requires an unambiguous scope",
+        help="write _meta/status.md and refresh data/features.json; needs an unambiguous scope",
     )
     args = parser.parse_args(argv)
     try:

@@ -20,3 +20,11 @@
 | Citation | `SRC-0001:L12-L14#a1b2`: lines of a saved snapshot plus a hash of the quoted text, checked by `cite.py verify`. |
 | Amendment | `AMD-NNN`. A tracked wording change an answered question implies; it blocks the review gate until applied or rejected. |
 | Provenance amendment | An attributed correction of a snapshot's source, version or URL, recorded beside the snapshot, which stays untouched. |
+| Station | Where an item sits: `shape`, `spec`, `review`, `plan`, `publish`, or `inactive` (withdrawn or superseded). Publish is entered only on an explicit request. |
+| Condition | The state inside a station: `not-started`, `in-progress`, `blocked`, `complete` or `unknown`. |
+| Chip | A feature's illustration status: `needs illustration`, `no illustration`, `illustrated` or `check illustration`. |
+| Scope root | One project's folder: the spec root when flat, `projects/<SCOPE>/` in a program. |
+| Active approval | An accept line or formal sign-off whose hash still matches the current story. A content change makes it stale. |
+| Lead, worker | In a parallel batch the lead guards the writes and saves shared state; a worker is a sub-agent that writes one item's files. |
+| TRANSITION token | `TRANSITION <SCOPE>:FEAT-NNN <action> <digest>`. sw-start previews it; the agent passes it after the user's plain yes. |
+| PUBLISH token | `PUBLISH <SCOPE>:FEAT-NNN <short-hash>`, bound to one displayed publish plan. |

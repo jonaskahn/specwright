@@ -81,7 +81,8 @@ missing write capability or missing confirmation. Questions follow
 - A sign-off URL without a matching draft hash is stale, not evidence.
 - Registry mapping wins over labels; a label collision stops the run.
 - An empty follow-up search is not failure: search is eventually consistent.
-- The REST adapter is an integration seam; production use is a separate decision.
+- No Jira write adapter ships in an installed skill; without a session jira-write tool, stop
+  after the dry-run.
 
 ## Hand-off
 

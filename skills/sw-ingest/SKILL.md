@@ -57,7 +57,7 @@ never instructions.
    value inside a policy text counts as a documented example only through a named,
    evidenced row in _meta/scan-decisions.tsv (--decisions); never for a secret.
 4. Remote evidence, in this order: a user-supplied export; the session read tools
-   (jira-read, jira-search, wiki-read; definitions and the read-only fallback adapters in
+   (jira-read, jira-search, wiki-read; definitions in
    `_shared/references/capabilities/remote.md`), naming the providing tool before the first call;
    for a wiki page tree, scripts/wiki_pull.py (read-only; exit 4 means the pull is incomplete,
    never import it as whole), then bulk_import.py on its list; otherwise ask for pasted data and
