@@ -12,5 +12,8 @@ Thanks to the authors of these projects for ideas examined during research:
 - agentskills/agentskills — the portable Agent Skills specification.
 
 Specwright's implementation and instructions were independently authored.
-No upstream templates, prose, source code, fonts or icon packs are distributed.
+No upstream templates, prose, source code or icon packs are distributed.
+The sw-view console bundles two typefaces, each under the SIL Open Font License 1.1:
+Inter (c) The Inter Project Authors, and IBM Plex Mono (c) IBM Corp. The console's
+visual system follows the project's own Kumo cockpit design.
 See docs/sources.md for references. Specwright is licensed under MIT.
