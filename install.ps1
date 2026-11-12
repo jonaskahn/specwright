@@ -1,4 +1,4 @@
-# Specwright installer for Windows: all seven skills, into the agents you choose.
+# Specwright installer for Windows: all eight skills, into the agents you choose.
 #
 #   irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1 | iex
 #
@@ -249,7 +249,7 @@ function Write-ScreenOpen {
 	Write-Row ''
 	Write-Center 'I N S T A L L E R' 'bright'
 	Write-Row ''
-	Write-Center "seven skills $($script:Dot) $Ref" 'rose'
+	Write-Center "eight skills $($script:Dot) $Ref" 'rose'
 	Write-Row ''
 	Write-Separator ([string][char]0x251C) ([string][char]0x2524)
 }
@@ -717,7 +717,7 @@ if ($Agent) {
 Write-ScreenOpen
 if ($interactive) {
 	Write-Section 'Make it yours'
-	Write-Row '  All seven skills install together. Pick a scope and the agents.'
+	Write-Row '  All eight skills install together. Pick a scope and the agents.'
 	Write-Row ("  " + (Paint "Project: $script:Target" 'mid'))
 	Write-Row ''
 	if ($Global -or $Project) {
@@ -859,14 +859,14 @@ foreach ($dest in $script:Destinations) {
 	foreach ($skill in $Skills) {
 		Copy-Item -Recurse -Path (Join-Rel $script:SkillRoot "skills/$skill") -Destination (Join-Path $dest $skill)
 	}
-	Write-OK "Copied 7 skills into $dest"
+	Write-OK "Copied 8 skills into $dest"
 }
 
 Write-Rule
 Write-OK (Paint 'Specwright is installed.' 'bold')
 Write-Row ''
 Write-Row ("  " + (Paint 'Scope' 'mid') + "    $($script:Scope)")
-Write-Row ("  " + (Paint 'Skills' 'mid') + "   7 skills in $($script:Destinations.Count) location(s)")
+Write-Row ("  " + (Paint 'Skills' 'mid') + "   8 skills in $($script:Destinations.Count) location(s)")
 Write-Row ''
 foreach ($dest in $script:Destinations) { Write-Row ("  " + (Paint $script:Dot 'mid') + " $dest") }
 Write-Row ''
@@ -874,6 +874,18 @@ Write-Row (Paint '  Your next step' 'bold')
 Write-Row '  Open the project in your agent and say what you want:'
 Write-Row '    start a spec for the refunds flow'
 Write-Row ''
+$hasPython = $false
+foreach ($name in @('python3', 'python')) {
+	$exe = Get-Command $name -ErrorAction SilentlyContinue | Select-Object -First 1
+	if (-not $exe) { continue }
+	& $exe.Source -c 'import sys; sys.exit(sys.version_info < (3, 10))' 2>$null
+	if ($LASTEXITCODE -eq 0) { $hasPython = $true; break }
+}
+if (-not $hasPython) { Write-Note 'Python 3.10 or newer was not found. The skills run on it; /sw-start offers a setup plan.' }
+$nodeMajor = 0
+$node = Get-Command node -ErrorAction SilentlyContinue | Select-Object -First 1
+if ($node) { $nodeMajor = [int](& $node.Source -p 'process.versions.node.split(".")[0]' 2>$null) }
+if ($nodeMajor -lt 24) { Write-Note 'Node 24 was not found. Only sw-view needs it; /sw-start offers to install it.' }
 Write-Note 'To update, run this installer again.'
 Write-ScreenClose
 if ($script:DownloadDir) { Remove-Item -Recurse -Force $script:DownloadDir -ErrorAction SilentlyContinue }

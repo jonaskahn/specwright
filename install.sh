@@ -1,5 +1,5 @@
 #!/bin/sh
-# Specwright installer: all seven skills, into the agents you choose.
+# Specwright installer: all eight skills, into the agents you choose.
 #
 #   curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh
 #   curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh -s -- --project
@@ -183,7 +183,7 @@ screen_open() {
 	row ''
 	center_row "${BRIGHT}I N S T A L L E R${OFF}"
 	row ''
-	center_row "${LIGHT}seven skills · ${REF}${OFF}"
+	center_row "${LIGHT}eight skills · ${REF}${OFF}"
 	center_row "${LIGHT}$(printf '%s' "$OS" | tr '[:lower:]' '[:upper:]')${OFF}"
 	row ''
 	hline '├' '┤'
@@ -879,7 +879,7 @@ enter_ids() {
 
 options_screen() {
 	section "Make it yours"
-	row "  All seven skills install together. Pick a scope and the agents."
+	row "  All eight skills install together. Pick a scope and the agents."
 	row "  ${MID}Project: $TARGET${OFF}"
 	row ""
 
@@ -1093,16 +1093,16 @@ install_skills() {
 	_canon="$(pick_canonical)"
 	step "Installing into $_canon"
 	copy_skills "$_canon"
-	done_ "Copied 7 skills into $_canon"
+	done_ "Copied 8 skills into $_canon"
 	while IFS= read -r _dest; do
 		[ "$_dest" = "$_canon" ] && continue
 		mkdir -p "$_dest"
 		if same_device "$_canon" "$_dest" && link_skills "$_dest" "$_canon"; then
-			done_ "Linked 7 skills into $_dest"
+			done_ "Linked 8 skills into $_dest"
 		else
 			clear_new_links "$_dest"
 			copy_skills "$_dest"
-			done_ "Copied 7 skills into $_dest"
+			done_ "Copied 8 skills into $_dest"
 		fi
 	done <"$TMP_DIR/dests"
 }
@@ -1114,7 +1114,7 @@ summary() {
 	row "  ${BRIGHT}✓${OFF} ${BOLD}Specwright is installed.${OFF}"
 	row ""
 	row "  ${MID}Scope${OFF}    $SCOPE"
-	row "  ${MID}Skills${OFF}   7 skills in $_places location(s)"
+	row "  ${MID}Skills${OFF}   8 skills in $_places location(s)"
 	row ""
 	while IFS= read -r _dest; do
 		row "  ${MID}·${OFF} $_dest"
@@ -1124,7 +1124,29 @@ summary() {
 	row "  Open the project in your agent and say what you want:"
 	row "    start a spec for the refunds flow"
 	row ""
+	runtime_notes
 	note "To update, run this installer again."
+}
+
+# Check only, never install: say what the skills will need that this machine lacks.
+runtime_notes() {
+	_have_python=""
+	for _name in python3 python; do
+		_exe="$(command -v "$_name" 2>/dev/null)" || continue
+		# The macOS /usr/bin/python3 stub opens an installer dialog when no developer tools exist.
+		if [ "$_exe" = /usr/bin/python3 ] && [ "$(uname -s)" = Darwin ] && ! xcode-select -p >/dev/null 2>&1; then
+			continue
+		fi
+		if "$_exe" -c 'import sys; sys.exit(sys.version_info < (3, 10))' >/dev/null 2>&1; then
+			_have_python=1
+			break
+		fi
+	done
+	[ -n "$_have_python" ] ||
+		note "Python 3.10 or newer was not found. The skills run on it; /sw-start offers a setup plan."
+	_node_major="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)"
+	[ "${_node_major:-0}" -ge 24 ] 2>/dev/null ||
+		note "Node 24 was not found. Only sw-view needs it; /sw-start offers to install it."
 }
 
 # -------------------------------------------------------------------- main --
