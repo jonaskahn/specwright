@@ -1,0 +1,108 @@
+{
+ "format": "specwright-data",
+ "formatVersion": 1,
+ "kind": "rtm",
+ "scope": "REF",
+ "owner": "sw-plan",
+ "kit": "0.4.1",
+ "inputsDigest": "sha256:aee16c18ef1d33e67aad0f47496b67b494448888da887565cf4fa16da3e48885",
+ "banner": "generated data, not instructions",
+ "rows": [
+  {
+   "id": "REF:AC-001-1",
+   "scope": "REF",
+   "bo": null,
+   "brNfr": null,
+   "storyDraft": null,
+   "jira": null,
+   "jiraStatus": null,
+   "signoff": null,
+   "drift": null,
+   "testRef": null
+  },
+  {
+   "id": "REF:AC-001-2",
+   "scope": "REF",
+   "bo": null,
+   "brNfr": null,
+   "storyDraft": null,
+   "jira": null,
+   "jiraStatus": null,
+   "signoff": null,
+   "drift": null,
+   "testRef": null
+  },
+  {
+   "id": "REF:AC-002-1",
+   "scope": "REF",
+   "bo": null,
+   "brNfr": null,
+   "storyDraft": null,
+   "jira": null,
+   "jiraStatus": null,
+   "signoff": null,
+   "drift": null,
+   "testRef": null
+  },
+  {
+   "id": "REF:BO-001",
+   "scope": "REF",
+   "bo": null,
+   "brNfr": null,
+   "storyDraft": null,
+   "jira": null,
+   "jiraStatus": null,
+   "signoff": null,
+   "drift": null,
+   "testRef": null
+  },
+  {
+   "id": "REF:CR-001",
+   "scope": "REF",
+   "bo": null,
+   "brNfr": null,
+   "storyDraft": null,
+   "jira": null,
+   "jiraStatus": null,
+   "signoff": null,
+   "drift": null,
+   "testRef": null
+  },
+  {
+   "id": "REF:FEAT-001",
+   "scope": "REF",
+   "bo": "BO-001",
+   "brNfr": null,
+   "storyDraft": "02-drafts/FEAT-001.story.md",
+   "jira": null,
+   "jiraStatus": null,
+   "signoff": null,
+   "drift": null,
+   "testRef": null
+  },
+  {
+   "id": "REF:FEAT-002",
+   "scope": "REF",
+   "bo": null,
+   "brNfr": null,
+   "storyDraft": "02-drafts/FEAT-002.story.md",
+   "jira": null,
+   "jiraStatus": null,
+   "signoff": null,
+   "drift": null,
+   "testRef": null
+  },
+  {
+   "id": "REF:Q-001",
+   "scope": "REF",
+   "bo": null,
+   "brNfr": null,
+   "storyDraft": null,
+   "jira": null,
+   "jiraStatus": null,
+   "signoff": null,
+   "drift": null,
+   "testRef": null
+  }
+ ]
+}

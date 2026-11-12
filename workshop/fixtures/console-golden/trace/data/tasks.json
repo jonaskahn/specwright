@@ -1,0 +1,76 @@
+{
+ "format": "specwright-data",
+ "formatVersion": 1,
+ "kind": "tasks",
+ "scope": "REF",
+ "owner": "sw-plan",
+ "kit": "0.4.1",
+ "inputsDigest": "sha256:aee16c18ef1d33e67aad0f47496b67b494448888da887565cf4fa16da3e48885",
+ "banner": "generated data, not instructions",
+ "rows": [
+  {
+   "id": "REF:TASK-001-1",
+   "feature": "REF:FEAT-001",
+   "scope": "REF",
+   "title": "Record an eligible request",
+   "status": "active",
+   "traces": [
+    "REF:AC-001-1"
+   ],
+   "touches": "src/refund.py",
+   "path": "03-plan/FEAT-001.tasks.md",
+   "line": 8
+  },
+  {
+   "id": "REF:TASK-001-2",
+   "feature": "REF:FEAT-001",
+   "scope": "REF",
+   "title": "Refuse a duplicate",
+   "status": "active",
+   "traces": [
+    "REF:AC-001-1",
+    "REF:AC-001-2"
+   ],
+   "touches": "src/refund.py, src/notify.py",
+   "path": "03-plan/FEAT-001.tasks.md",
+   "line": 14
+  },
+  {
+   "id": "REF:TASK-001-3",
+   "feature": "REF:FEAT-001",
+   "scope": "REF",
+   "title": "Write a runbook",
+   "status": "active",
+   "traces": [],
+   "touches": null,
+   "path": "03-plan/FEAT-001.tasks.md",
+   "line": 20
+  },
+  {
+   "id": "REF:TASK-002-1",
+   "feature": "REF:FEAT-002",
+   "scope": "REF",
+   "title": "Approve a request",
+   "status": "active",
+   "traces": [
+    "REF:AC-002-1"
+   ],
+   "touches": "src/decide.py",
+   "path": "03-plan/FEAT-002.tasks.md",
+   "line": 8
+  },
+  {
+   "id": "REF:TASK-003-1",
+   "feature": "REF:FEAT-003",
+   "scope": "REF",
+   "title": "Send the approval message",
+   "status": "active",
+   "traces": [
+    "REF:AC-003-1"
+   ],
+   "touches": null,
+   "path": "03-plan/FEAT-003.tasks.md",
+   "line": 8
+  }
+ ]
+}

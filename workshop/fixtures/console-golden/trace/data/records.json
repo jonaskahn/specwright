@@ -1,0 +1,38 @@
+{
+ "format": "specwright-data",
+ "formatVersion": 1,
+ "kind": "records",
+ "scope": "REF",
+ "owner": "sw-shape",
+ "kit": "0.4.1",
+ "inputsDigest": "sha256:aee16c18ef1d33e67aad0f47496b67b494448888da887565cf4fa16da3e48885",
+ "banner": "generated data, not instructions",
+ "rows": [
+  {
+   "id": "REF:CR-001",
+   "kind": "cr",
+   "scope": "REF",
+   "title": "Additional approval",
+   "status": "proposed",
+   "affects": [
+    "REF:FEAT-002"
+   ],
+   "updated": "2026-11-10",
+   "path": "records/CR-001.md",
+   "line": 1
+  },
+  {
+   "id": "REF:Q-001",
+   "kind": "q",
+   "scope": "REF",
+   "title": "Which refund window applies",
+   "status": "open",
+   "affects": [
+    "REF:FEAT-001"
+   ],
+   "updated": "2026-11-10",
+   "path": "records/Q-001.md",
+   "line": 1
+  }
+ ]
+}

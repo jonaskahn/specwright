@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Write the console's golden files: real data files plus the answers graph_query.py gives.
 
-For a flat project (refund) and a two-project program, this builds the graph, writes every data
-kind through the shared writer, and records the expected result of many graph queries computed
-by the Python implementation. The console's tests replay the same queries in TypeScript.
+For a flat project (refund), a two-project program and a "trace" project that carries the whole
+chain (business objective, epic, features, criteria, tasks, code, Jira) with deliberate gaps, this
+builds the graph, writes every data kind through the shared writer, and records the expected
+result of many graph queries computed by the Python implementation. The console's tests replay
+the same queries in TypeScript.
 """
 
 import argparse
@@ -45,6 +47,150 @@ def make_program(base: Path) -> Path:
     (root / "workspace.yaml").write_text(
         "mode: program\nprojects:\n- ORD\n- REF\ndefault_scope: ORD\n"
     )
+    return root
+
+
+TRACE_EPIC = """---
+id: EPIC-001
+type: epic
+scope: REF
+status: approved
+title: Self-service refunds
+updated: 2026-11-10
+---
+# Self-service refunds
+"""
+TRACE_BO = """---
+id: BO-002
+type: bo
+scope: REF
+status: approved
+title: Cut manual approval work
+updated: 2026-11-10
+---
+# Approval workload
+
+Reviewers decide only the requests that need a person.
+"""
+TRACE_NOTIFY = """---
+id: FEAT-003
+type: feature
+scope: REF
+title: Tell the buyer the outcome
+aliases: []
+status: draft
+bo: [BO-002]
+updated: 2026-11-10
+---
+# Tell the buyer the outcome
+
+## Goal
+Buyers hear the result of a refund request without asking.
+
+## Acceptance criteria
+### AC-003-1 — Approval notice
+Given request R100 is approved,
+when the decision is saved,
+then the buyer receives an approval message.
+
+### AC-003-2 — Rejection notice
+Given request R100 is rejected,
+when the decision is saved,
+then the buyer receives a rejection message with the reason.
+"""
+
+
+def tasks_file(feature: str, blocks: list[str]) -> str:
+    head = f"---\nfeat: {feature}\nspec_hash: sha256:{'0' * 64}\nstatus: draft\n---\n## Tasks\n\n"
+    return head + "\n".join(blocks)
+
+
+def task(number: str, title: str, traces: str, touches: str = "") -> str:
+    lines = [f"### TASK-{number} — {title}", f"Traces to: {traces}"]
+    if touches:
+        lines.append(f"Touches: {touches}")
+    lines += [
+        "Done when: the behaviour is observable.",
+        "Stop and ask if: the rule is unclear.",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def make_trace(base: Path) -> Path:
+    """An embedded project whose graph holds the full chain, with gaps a reader should see.
+
+    Gaps on purpose: FEAT-003 is in no epic, FEAT-002 names no business objective, AC-003-2 has
+    no task, TASK-001-3 implements nothing, one touched code file is missing, and FEAT-002
+    mentions FEAT-009, which nothing defines.
+    """
+    root = base / "trace" / ".specwright"
+    shutil.copytree(FIXTURE, root)
+    code = base / "trace" / "src"
+    code.mkdir()
+    (code / "refund.py").write_text("# refund handling\n", encoding="utf-8")
+    (code / "decide.py").write_text("# decisions\n", encoding="utf-8")
+    (root / "01-analysis" / "epics").mkdir(parents=True)
+    (root / "01-analysis" / "epics" / "EPIC-001.md").write_text(TRACE_EPIC, encoding="utf-8")
+    (root / "01-analysis" / "BO-002.md").write_text(TRACE_BO, encoding="utf-8")
+    drafts = root / "02-drafts"
+    first = drafts / "FEAT-001.story.md"
+    first.write_text(
+        first.read_text().replace("bo: [BO-001]\n", "bo: [BO-001]\nepic: EPIC-001\n"),
+        encoding="utf-8",
+    )
+    second = drafts / "FEAT-002.story.md"
+    second.write_text(
+        second.read_text()
+        .replace("status: draft\n", "status: draft\nepic: EPIC-001\n")
+        .replace(
+            "## Open questions",
+            "## Dependencies and relations\nNeeds FEAT-009.\n\n## Open questions",
+        ),
+        encoding="utf-8",
+    )
+    (drafts / "FEAT-003.story.md").write_text(TRACE_NOTIFY, encoding="utf-8")
+    plan = root / "03-plan"
+    (plan / "FEAT-001.tasks.md").write_text(
+        tasks_file(
+            "FEAT-001",
+            [
+                task("001-1", "Record an eligible request", "AC-001-1", "src/refund.py"),
+                task(
+                    "001-2",
+                    "Refuse a duplicate",
+                    "AC-001-1, AC-001-2",
+                    "src/refund.py, src/notify.py",
+                ),
+                task("001-3", "Write a runbook", "FEAT-001"),
+            ],
+        ),
+        encoding="utf-8",
+    )
+    (plan / "FEAT-002.tasks.md").write_text(
+        tasks_file("FEAT-002", [task("002-1", "Approve a request", "AC-002-1", "src/decide.py")]),
+        encoding="utf-8",
+    )
+    (plan / "FEAT-003.tasks.md").write_text(
+        tasks_file("FEAT-003", [task("003-1", "Send the approval message", "AC-003-1")]),
+        encoding="utf-8",
+    )
+    registry = root / "_meta" / "id-registry.md"
+    rows = registry.read_text().splitlines()
+    out = []
+    for line in rows:
+        if line.startswith("| REF:FEAT-001 "):
+            line = line.replace("| story | — |", "| story | PROJ-101 |", 1)
+        out.append(line)
+    blank = " — |" * 10
+    extra = [
+        f"| REF:AC-003-1 | ac |{blank}",
+        f"| REF:AC-003-2 | ac |{blank}",
+        f"| REF:BO-002 | bo |{blank}",
+        f"| REF:EPIC-001 | epic | PROJ-100 |{' — |' * 9}",
+        f"| REF:FEAT-003 | story |{blank}",
+    ]
+    registry.write_text("\n".join(out + extra) + "\n", encoding="utf-8")
     return root
 
 
@@ -164,6 +310,7 @@ def generate(out: Path) -> None:
         base = Path(tmp)
         write("flat", make_flat(base), out)
         write("program", make_program(base), out)
+        write("trace", make_trace(base), out)
 
 
 def main(argv=None):

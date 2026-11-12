@@ -1,0 +1,24 @@
+{
+ "format": "specwright-data",
+ "formatVersion": 1,
+ "kind": "quality",
+ "scope": "REF",
+ "owner": "sw-review",
+ "kit": "0.4.1",
+ "inputsDigest": "sha256:aee16c18ef1d33e67aad0f47496b67b494448888da887565cf4fa16da3e48885",
+ "banner": "generated data, not instructions",
+ "gates": [],
+ "results": [
+  {
+   "scope": "REF",
+   "id": "REF:FEAT-001",
+   "result": "review: pass"
+  },
+  {
+   "scope": "REF",
+   "id": "REF:FEAT-002",
+   "result": "review: fail L-005"
+  }
+ ],
+ "findings": []
+}
