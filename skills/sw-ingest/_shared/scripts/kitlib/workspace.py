@@ -254,6 +254,32 @@ def project_manifest(
     return manifest
 
 
+WORK_FOLDER = "_meta/work"
+WORK_IGNORE = "*\n!.gitignore\n"
+# Folders a project may hold next to its spec folders without the stray-folder report noticing.
+ALWAYS_ALLOWED = {"node_modules", "projects", "skills"}
+
+
+def stray_folders(base: Path, ignore: list[str] | tuple[str, ...] = ()) -> list[str]:
+    """Top-level folders of a project that the kit does not know; nothing in them is read."""
+    known = {d.split("/")[0] for d in schema.SCOPE_DIRS}
+    allowed = known | ALWAYS_ALLOWED | {str(i).strip("/") for i in ignore}
+    return sorted(
+        p.name
+        for p in base.iterdir()
+        if p.is_dir() and not p.name.startswith(".") and p.name not in allowed
+    )
+
+
+def _make_folder(base: Path, folder: str, created: list[str], root: Path) -> None:
+    (base / folder).mkdir(parents=True, exist_ok=True)
+    if folder == WORK_FOLDER:
+        # Working files are ephemeral: version control and the graph never see them.
+        _write_new(base / folder / ".gitignore", WORK_IGNORE, created, root)
+    else:
+        _write_new(base / folder / ".gitkeep", "", created, root)
+
+
 def _registry_text() -> str:
     table = tables.Table(list(schema.REGISTRY_COLUMNS))
     return "# ID registry\n\nExternal keys live here and nowhere else.\n\n" + table.render()
@@ -368,8 +394,7 @@ def init(
         created.append(PROGRAM_MANIFEST)
     _write_new(base / FLAT_MANIFEST, miniyaml.dumps(manifest), created, root)
     for folder in schema.SCOPE_DIRS:
-        (base / folder).mkdir(parents=True, exist_ok=True)
-        _write_new(base / folder / ".gitkeep", "", created, root)
+        _make_folder(base, folder, created, root)
     meta = base / "_meta"
     _write_new(meta / "id-registry.md", _registry_text(), created, root)
     _write_new(meta / "asset-registry.md", _asset_registry_text(), created, root)
@@ -451,8 +476,7 @@ def upgrade(root: Path, scope: str, apply: bool = False, code: str | None = None
     if changed:
         fsio.atomic_write(manifest_path, miniyaml.dumps(data))
     for folder in missing:
-        (base / folder).mkdir(parents=True, exist_ok=True)
-        _write_new(base / folder / ".gitkeep", "", [], root)
+        _make_folder(base, folder, [], root)
     _write_new(asset_registry, _asset_registry_text(), [], root)
     from kitlib import rtm  # imported here because rtm depends on this module
 

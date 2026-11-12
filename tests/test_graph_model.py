@@ -83,3 +83,21 @@ class GraphModelTests(WorkflowTestCase):
             "# Mentions FEAT-001 only\n",
         )
         self.assertEqual(self.lifecycle()["open_q"], [])
+
+    def test_a_stray_folder_is_reported_by_build_check_and_the_work_folder_is_ignored(self):
+        (self.base / "scratch").mkdir()
+        (self.base / "_meta/work").mkdir(parents=True, exist_ok=True)
+        (self.base / "_meta/work/notes.md").write_text("---\nid: FEAT-009\n---\nnot evidence\n")
+        graph.build(self.root, "REF")
+        self.assertIn(
+            "REF: stray folder scratch/ is not read as evidence",
+            graph.drift_warnings(self.root, "REF"),
+        )
+        self.assertIn(
+            "REF: stray folder scratch/ is not read as evidence", graph.check(self.root, "REF")
+        )
+        store = graph_query.Store(self.root, "REF")
+        self.assertIsNone(store.node("REF:FEAT-009"))
+        self.assertEqual(store.freshness(), "fresh")
+        (self.base / "_meta/work/more.md").write_text("changed working file")
+        self.assertEqual(store.freshness(), "fresh")

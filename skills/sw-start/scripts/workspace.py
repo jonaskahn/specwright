@@ -33,10 +33,19 @@ def main(argv=None):
         source = _here.parent / "assets/standing-rules.md"
         try:
             text = source.read_text(encoding="utf-8")
-            for name in ("AGENTS.md", "CLAUDE.md", "GEMINI.md"):
+            # AGENTS.md holds the only copy of the rules; the others point at it.
+            pointer = (
+                "# Project instructions\n\n"
+                "Read and follow AGENTS.md, the only copy of the rules.\n\n@AGENTS.md\n"
+            )
+            for name, content in (
+                ("AGENTS.md", text),
+                ("CLAUDE.md", pointer),
+                ("GEMINI.md", pointer),
+            ):
                 target = root / name
                 if not target.exists():
-                    fsio.atomic_write(target, text)
+                    fsio.atomic_write(target, content)
                     print(f"  {name}")
         except OSError as exc:
             print(f"error: standing rules could not be installed: {exc}", file=sys.stderr)

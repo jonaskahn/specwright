@@ -422,6 +422,15 @@ class RuleTests(unittest.TestCase):
         found = self.findings(doc(GOOD + "\nSource: SRC-0001:L5\n"))
         self.assertEqual([f.sev for f in found if f.rule == "L-057"], ["warn"])
 
+    def test_l058(self):
+        self.base.joinpath("old-notes").mkdir()
+        self.base.joinpath(".git").mkdir()
+        ctx = self.context([doc()])
+        found = [f for f in lint.graph_findings(ctx) if f.rule == "L-058"]
+        self.assertEqual([(f.sev, f.subject) for f in found], [("warn", "old-notes")])
+        ctx.manifest = {"ignore_folders": ["old-notes"]}
+        self.assertEqual([f for f in lint.graph_findings(ctx) if f.rule == "L-058"], [])
+
     def test_l059(self):
         head = "---\nid: Q-001\ntype: q\nscope: REF\ntitle: Window\naliases: []\nstatus: open\n"
         bad = doc(head + "---\n# Window\n", "records/Q-001.md")

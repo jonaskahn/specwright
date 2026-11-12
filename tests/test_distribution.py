@@ -107,7 +107,8 @@ class DistributionTests(unittest.TestCase):
         canonical = self.target / ".agents" / "skills" / "sw-start"
         alias = self.target / ".claude" / "skills" / "sw-start"
         self.assertEqual(alias.resolve(), canonical.resolve())
-        self.assertEqual(
+        self.assertIn("@AGENTS.md", (self.target / "CLAUDE.md").read_text())
+        self.assertNotEqual(
             (self.target / "CLAUDE.md").read_bytes(), (self.target / "AGENTS.md").read_bytes()
         )
         self.assertTrue((self.target / ".github" / "copilot-instructions.md").exists())
@@ -120,7 +121,7 @@ class DistributionTests(unittest.TestCase):
         alias = self.target / ".claude" / "skills" / "sw-start"
         self.assertTrue(alias.is_dir())
         self.assertFalse(alias.is_symlink())
-        self.assertEqual((self.target / "GEMINI.md").read_text(), "# Existing\n")
+        self.assertIn("@AGENTS.md", (self.target / "GEMINI.md").read_text())
 
     def test_collision_is_rejected_before_any_skill_is_written(self):
         collision = self.target / ".claude" / "skills" / "sw-start"

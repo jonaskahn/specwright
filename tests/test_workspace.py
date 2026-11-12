@@ -137,6 +137,33 @@ class FlatTests(WorkspaceTestCase):
         self.assertEqual(sum("project.yaml: add" in line for line in plan), 3)
         self.assertEqual(miniyaml.loads(path.read_text())["sources"], [])
 
+    def test_init_makes_import_and_work_folders_and_ignores_the_work_folder(self):
+        self.init_flat()
+        self.assertTrue((self.root / "00-inbox/imports").is_dir())
+        self.assertTrue((self.root / "01-analysis/candidates").is_dir())
+        self.assertEqual((self.root / "_meta/work/.gitignore").read_text(), "*\n!.gitignore\n")
+        self.assertFalse((self.root / "_meta/work/.gitkeep").exists())
+
+    def test_stray_folders_are_reported_but_known_and_hidden_ones_are_not(self):
+        self.init_flat()
+        self.assertEqual(workspace.stray_folders(self.root), [])
+        for name in ("scratch", "old-notes", ".git", "node_modules", "skills", ".hidden"):
+            (self.root / name).mkdir(exist_ok=True)
+        (self.root / "README.md").write_text("a file, not a folder")
+        self.assertEqual(workspace.stray_folders(self.root), ["old-notes", "scratch"])
+        self.assertEqual(workspace.stray_folders(self.root, ["scratch/"]), ["old-notes"])
+
+    def test_upgrade_adds_the_new_folders_to_an_older_workspace(self):
+        self.init_flat()
+        import shutil
+
+        shutil.rmtree(self.root / "_meta/work")
+        shutil.rmtree(self.root / "00-inbox/imports")
+        plan = workspace.upgrade(self.root, "REF", apply=True)
+        self.assertIn("create _meta/work/", plan)
+        self.assertTrue((self.root / "_meta/work/.gitignore").is_file())
+        self.assertTrue((self.root / "00-inbox/imports/.gitkeep").is_file())
+
     def test_init_refuses_to_overwrite(self):
         self.init_flat()
         with self.assertRaises(workspace.WorkspaceError):

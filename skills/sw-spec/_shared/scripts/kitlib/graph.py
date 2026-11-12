@@ -226,6 +226,11 @@ def collect(root: Path, scopes: list[str], known: list[str]) -> Graph:
     graph = Graph()
     entities, findings = rtm.scan(root)
     graph.findings += [f for f in findings if f.split(":")[0] in scopes or ":" not in f]
+    for scope in scopes:
+        manifest = workspace.load(workspace.scope_dir(root, scope) / workspace.FLAT_MANIFEST)
+        base = workspace.scope_dir(root, scope)
+        for name in workspace.stray_folders(base, manifest.get("ignore_folders") or []):
+            graph.findings.append(f"{scope}: stray folder {name}/ is not read as evidence")
     texts: dict[Path, tuple[list[str], Any]] = {}
 
     def read(path: Path):
@@ -916,7 +921,7 @@ def build(root: Path, scope: str | None = None) -> list[Path]:
 
 
 def drift_warnings(root: Path, scope: str | None = None) -> list[str]:
-    """Files changed outside a logged write since the last one, per scope."""
+    """Files changed outside a logged write, and folders the kit does not know, per scope."""
     from kitlib import writelog
 
     root = root.resolve()
@@ -925,7 +930,12 @@ def drift_warnings(root: Path, scope: str | None = None) -> list[str]:
     for item in scopes:
         log = workspace.scope_dir(root, item) / "_meta/write-log.md"
         out += [f"{item}: {line}" for line in writelog.drift(log)]
+    out += [f for f in build_graph(root, scopes_for(root, scope)).findings if "stray folder" in f]
     return out
+
+
+def scopes_for(root: Path, scope: str | None) -> list[str]:
+    return [scope] if scope else workspace.list_scopes(root)
 
 
 def check(root: Path, scope: str | None = None) -> list[str]:
@@ -973,6 +983,9 @@ def check(root: Path, scope: str | None = None) -> list[str]:
         findings += [
             f
             for f in graph.findings
-            if "duplicate" in f or "not valid JSON" in f or "invalid accepted split" in f
+            if "duplicate" in f
+            or "not valid JSON" in f
+            or "invalid accepted split" in f
+            or "stray folder" in f
         ]
     return sorted(set(findings))

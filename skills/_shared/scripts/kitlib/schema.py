@@ -110,6 +110,7 @@ REGISTRY_COLUMNS = [
 
 SCOPE_DIRS = [
     "00-inbox/raw",
+    "00-inbox/imports",
     "01-analysis/ideas",
     "01-analysis/epics",
     "01-analysis/candidates",
@@ -122,6 +123,7 @@ SCOPE_DIRS = [
     "snapshots/jira",
     "snapshots/confluence",
     "_meta",
+    "_meta/work",
 ]
 
 OUTPUT_CHOICES = ("ask", "markdown", "jira", "both")

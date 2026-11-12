@@ -37,7 +37,7 @@ GATES = {"draft": 10, "review": 20, "publish": 30}
 REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {"L-017", "L-062"}
 PUBLISH = {"L-018", "L-037", "L-045", "L-046"}
 SYNC = set()
-RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), 57, *range(59, 63))}
+RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), *range(57, 63))}
 # Artifacts a reader looks up by name; each needs a title and an alias list (possibly empty).
 NAMED_TYPES = {
     "feature",
@@ -995,6 +995,15 @@ def graph_findings(ctx):
         if list(GATES).index(gate) <= list(GATES).index(ctx.gate):
             out.append(Finding(rule, gate, sev, path, line, msg, subject))
 
+    for name in workspace.stray_folders(ctx.base, ctx.manifest.get("ignore_folders") or []):
+        add(
+            "L-058",
+            "warn",
+            f"{name}/",
+            1,
+            "folder is unknown to the kit; nothing in it is read",
+            name,
+        )
     for row in ctx.registry.rows:
         cell = row[ctx.registry.col("Last snapshot")]
         if cell.startswith("/") or re.match(r"^[A-Za-z]:[\\/]", cell):

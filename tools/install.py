@@ -62,12 +62,16 @@ def install(
     if agents.exists() and agents.read_text(encoding="utf-8") != rules:
         skipped.append("AGENTS.md: existing project instructions preserved")
     _put_if_absent(agents, rules, created, target)
-    project_rules = agents.read_text(encoding="utf-8")
+    # AGENTS.md is the only copy of the rules; the other agent files point at it.
+    rules_pointer = (
+        "# Project instructions\n\n"
+        "Read and follow AGENTS.md, the only copy of the rules.\n\n@AGENTS.md\n"
+    )
     for name in ("CLAUDE.md", "GEMINI.md"):
         existing = target / name
         if existing.exists():
             skipped.append(f"{name}: existing instructions preserved")
-        _put_if_absent(existing, project_rules, created, target)
+        _put_if_absent(existing, rules_pointer, created, target)
     pointer = "# Project instructions\n\nRead and follow ../AGENTS.md.\n"
     _put_if_absent(target / ".github" / "copilot-instructions.md", pointer, created, target)
     return {"created": created, "preserved": skipped}
