@@ -7,16 +7,42 @@ Specwright ships seven public `skills/<name>/SKILL.md` folders: `sw-start`, `sw-
 references live once in `skills/_shared/`. Packaging embeds a local `_shared/` copy in
 each shipped folder, so an uploaded ZIP is self-contained and never depends on a sibling.
 
-Project install:
+### Command-line installer
+
+`install.sh` and `install.ps1` install every public skill without Node or Python. They do not ask which skills to install. They do ask which agents to install for, using the same agent ids and skill directories as `npx skills add`. All projects is the default. `--project` / `-Project` installs into this project only. `-y` / `-Yes` skips prompts: every detected agent is selected, or Universal (`~/.config/agents/skills`, or `.agents/skills` in this project) when none are detected.
 
 ```sh
-npx skills add jonaskahn/specwright
+curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh -s -- --project
+curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh -s -- --agent cursor --agent claude-code -y
 ```
 
-Global install, skipping prompts:
+```powershell
+irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1 | iex
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1))) -Project
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1))) -Agent cursor,claude-code -Yes
+```
+
+Useful flags: `--agent` / `-Agent` (repeatable or comma-separated), `--target` / `-Target` for the project directory, `--list-agents` / `-ListAgents`. `SPECWRIGHT_REPO`, `SPECWRIGHT_REF`, `SPECWRIGHT_URL` and `SPECWRIGHT_ROOT` choose the source tree. `SPECWRIGHT_INSTALL_YES=1` is the same as `-y` / `-Yes`. `NO_COLOR` turns the framed screen off.
+
+macOS and Linux need `curl` or `wget`, plus `tar`. Windows needs PowerShell and `tar`. When the script file itself sits inside a Specwright checkout, that checkout is the source. A piped download uses GitHub `main` unless the variables above say otherwise.
+
+On macOS and Linux, one destination is a real copy (preferring `.agents/skills` when it is selected) and other destinations on the same disk become relative symlinks. Windows always copies. The installer writes skill folders only. It does not write `AGENTS.md`, `CLAUDE.md` or plugin files.
+
+If a selected destination already has a Specwright `sw-*` skill, that folder is removed and the new copy is installed. A same-named folder that is not a Specwright skill stops the install. Run the installer again to update.
+
+### Skills CLI
+
+All projects:
 
 ```sh
 npx skills add jonaskahn/specwright -g
+```
+
+This project:
+
+```sh
+npx skills add jonaskahn/specwright
 ```
 
 Claude Code plugin marketplace:
@@ -41,7 +67,7 @@ repository (embedded), for one project or a program of several. See the Layouts 
 the README and `docs/conventions.md`. Opening a skill in a client and checking
 discovery remains a manual compatibility check because client support varies by version.
 
-Python 3.10 or newer is required to run the shipped scripts. Runtime code uses only the
+Python 3.10 or newer is required to run the skill scripts. `install.sh` and `install.ps1` do not need it. Runtime code uses only the
 standard library; no JavaScript runtime or dependency lockfile is used.
 
 ## Offline fallback
