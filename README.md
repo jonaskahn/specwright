@@ -35,7 +35,23 @@ A rough idea goes in. A story, a plan, and a task list come out. Product, engine
 | Review | `sw-review` | Your plain-words accept, bound to a content hash; formal sign-off when you require it |
 | Plan | `sw-plan` | An approach and tasks checked against the current story |
 | Publish | `sw-publish` | A delivery you asked for, including a guarded Jira write |
-| View | `sw-view` | A local, read-only web console: overview, metrics, features, tasks, board, tree, and the knowledge graph with queries |
+| View | `sw-view` | A local, read-only web console: overview, metrics, features, tasks, a kanban board, and the knowledge graph (trace, network, table, outline) with queries |
+
+### See it
+
+`sw-view` opens a local, read-only console on `127.0.0.1`. It never writes a spec file.
+
+**The trace.** Objectives, epics and features sit side by side. A feature's criteria and tasks stay folded into a count (`7 criteria · 6 tasks`, `▲` for open work) until you choose it. Then only its own fan out beside it, and the previous one folds back.
+
+<p align="center">
+  <img src="docs/assets/graph.webp" alt="The Specwright console on the Graph page: an outline on the left, coverage measures on top, and the trace from business objective to epic, feature, acceptance criteria and tasks, with the chosen feature open and the others folded" width="920" />
+</p>
+
+**The story, with its picture.** Choose any item and its file opens in a panel on the right: the story with the criterion lines marked, and the flow diagram that `sw-spec` drew, embedded in the story as an SVG.
+
+<p align="center">
+  <img src="docs/assets/feature.webp" alt="The Features page with a preview panel open on a draft story, showing its Visuals list and an embedded swimlane diagram of the invite, activate and remind flow" width="920" />
+</p>
 
 Every artifact has a stable ID, a title and aliases, and `graph.py show <any name>` finds it by a legacy ID, a remote page ID or a title fragment. The build also writes `_meta/INDEX.md`, `CROSSWALK.tsv` and `READ-FIRST.md`, so a new session can start from one short list instead of crawling folders. A project that already runs many capabilities starts from its legacy register (`sw-start` routes it), imports a page tree in one logged batch, and checks every citation by script.
 
@@ -48,7 +64,7 @@ Four ways in. Pick the one that matches the machine in front of you.
 - **To open the console (`sw-view`):** Node 24+. `sw-start` offers to install it, and only after you say yes.
 - **Richer documents** can use local tools such as pandoc. A missing tool says so. It never invents the document.
 
-A new docs workspace starts a Git repo only when it is not already inside one. An embedded workspace reuses the code repo, including worktrees. Setup does not change Git config, stage files, or commit. New workspaces default to Markdown.
+A new docs workspace starts a Git repo only when it is not already inside one. An embedded workspace reuses the code repo, including worktrees. Setup does not change Git config or stage files. Each skill command then ends with a checkpoint commit of its own spec files (see House rules). New workspaces default to Markdown.
 
 ### Command-line installer
 
