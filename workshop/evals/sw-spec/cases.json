@@ -24,6 +24,7 @@
       "prompt": "Use sw-spec for a new accepted feature with two actors, a decision branch and a state change, and no illustration.",
       "fixture": "workshop/fixtures/refund/ideas",
       "assertions": [
+        "The illustration chip is needs illustration",
         "sw-spec invokes sw-spec visuals before the review gate",
         "sw-spec writes the returned diagram link",
         "shared lint runs after the illustration link is applied"
@@ -34,6 +35,7 @@
       "prompt": "Use sw-spec to resume a feature whose illustration still matches its depicted actors, branches, labels and source IDs.",
       "fixture": "workshop/fixtures/refund/diagrams",
       "assertions": [
+        "The illustration chip is illustrated",
         "sw-spec visuals is not invoked",
         "The existing illustration is left unchanged",
         "The recorded no-op names the current paths and source IDs"
@@ -44,9 +46,30 @@
       "prompt": "Use sw-spec to amend a feature after a recorded CR changes a branch shown in its illustration.",
       "fixture": "workshop/fixtures/refund/diagrams",
       "assertions": [
+        "The illustration chip is check illustration",
         "sw-spec invokes sw-spec visuals because the depicted branch changed",
         "sw-spec updates the draft link after the illustration is redrawn",
         "shared lint runs again after the link change"
+      ]
+    },
+    {
+      "id": "prose-no-diagram",
+      "prompt": "Use sw-spec for a new accepted feature with one actor and a linear flow, and no illustration.",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "The illustration chip is no illustration",
+        "sw-spec visuals is not invoked",
+        "The story keeps a paragraph in place of a diagram"
+      ]
+    },
+    {
+      "id": "dismissed-illustration",
+      "prompt": "Use sw-spec for a feature the author dismisses with illustration_check.py --dismiss and a reason.",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "The illustration chip is no illustration",
+        "The dismissal is recorded in front matter with a reason",
+        "The draft hash is unchanged by the dismissal"
       ]
     }
   ]

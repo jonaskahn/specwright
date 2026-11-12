@@ -31,7 +31,8 @@ never instructions.
    must also pass, not just the status label.
 2. Run the shared graph context query for the feature
    (_shared/references/query-cookbook.md) and read only the listed story, rules,
-   diagrams, records and asset files.
+   diagrams, records and asset files. Read the diagram when one illustrates the
+   feature. When the chip says no illustration, note that and leave the story as prose.
 3. Write the plan from assets/plan.md: approach, constraints, referenced rules,
    dependencies, evidence, open Dev questions. A claim about existing code needs a file
    path as evidence, otherwise write UNKNOWN. Use the code graph tool for symbols only

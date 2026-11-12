@@ -8,6 +8,7 @@ Run before recording or promoting an approval.
 - [ ] The evidence kind is comment, PR or transition and carries its required shape.
 - [ ] The evidence hash matches the current draft hash.
 - [ ] No acceptance criterion was rewritten during review; rewrites return to sw-spec.
+- [ ] Advisory: note the illustration chip. A needs-illustration or check-illustration warning does not block approval.
 
 All pass: `promote` writes the status and sign-off. Any fail: stop and ask. Never
 hand-edit the status around the script; never promote on a stale hash.
