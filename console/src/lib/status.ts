@@ -14,7 +14,7 @@ export const RUNGS = ['draft', 'in-review', 'ready-to-publish', 'published', 're
 const LABELS: Record<string, string> = {
   draft: 'Draft',
   'in-review': 'In review',
-  'ready-to-publish': 'Ready to publish',
+  'ready-to-publish': 'Accepted',
   published: 'Published',
   'ready-for-dev': 'Ready for development',
   superseded: 'Superseded',
