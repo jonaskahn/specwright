@@ -37,7 +37,7 @@
   "scripts/kitlib/task_validation.py": "e775798548a1",
   "scripts/kitlib/view_build.py": "9062bd7d5c82",
   "scripts/kitlib/view_extract.py": "9fdcbd8a26dc",
-  "scripts/kitlib/view_server.py": "20a82cd5033d",
+  "scripts/kitlib/view_server.py": "fbb0da521e1f",
   "scripts/kitlib/workspace.py": "304523e323d8",
   "scripts/kitlib/writelog.py": "c75ee83de4ff",
   "scripts/runtime-pins.tsv": "ce9b02898b76",

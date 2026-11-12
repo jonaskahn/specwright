@@ -192,7 +192,8 @@ def serve(args) -> int:
     if not (dist / "index.html").is_file():
         print(f"error: {dist} is not built; run: view.py prepare --cwd {root}", file=sys.stderr)
         return EXIT_ERROR
-    server = view_server.make_server(dist, dataformat.data_dir(root, None), args.port)
+    docs = {scope: workspace.scope_dir(root, scope) for scope in workspace.list_scopes(root)}
+    server = view_server.make_server(dist, dataformat.data_dir(root, None), args.port, docs=docs)
     port = server.server_address[1]
     print(f"Serving the console on http://127.0.0.1:{port}/ (Ctrl+C stops it)", flush=True)
     try:

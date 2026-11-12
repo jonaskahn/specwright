@@ -201,6 +201,128 @@ class ServerTests(unittest.TestCase):
         self.assertGreater(other.server_address[1], self.port)
 
 
+class DocTests(unittest.TestCase):
+    """The preview panel reads one project's documents, and nothing else."""
+
+    def setUp(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        tmp = Path(temp.name)
+        (tmp / "dist").mkdir()
+        (tmp / "data").mkdir()
+        project = tmp / "project"
+        for folder in ("02-drafts", "assets", "_meta/data", "console/src", ".git", "records"):
+            (project / folder).mkdir(parents=True)
+        (project / "02-drafts/FEAT-001.story.md").write_text("# Story\n")
+        (project / "00-brief.pdf").write_bytes(b"%PDF-1.4 brief")
+        (project / "assets/ASSET-001.png").write_bytes(b"\x89PNG")
+        (project / "assets/ASSET-002.svg").write_text("<svg onload='x()'/>")
+        (project / "assets/ASSET-003.url").write_text("[InternetShortcut]\nURL=https://x.test\n")
+        (project / "_meta/status.md").write_text("# Status\n")
+        (project / "_meta/data/tasks.json").write_text("{}")
+        (project / "_meta/write-log.json").write_text("{}")
+        (project / "workspace.yaml").write_text("secret: 1\n")
+        (project / "records/Q-001.py").write_text("print(1)\n")
+        (project / ".git/notes.md").write_text("hidden\n")
+        (project / "console/src/README.md").write_text("# app\n")
+        (tmp / "outside.md").write_text("private\n")
+        (project / "02-drafts/leak.md").symlink_to(tmp / "outside.md")
+        (project / "big.pdf").write_bytes(b"x")
+        self.server = view_server.make_server(
+            tmp / "dist", tmp / "data", 47200, docs={"REF": project}
+        )
+        self.port = self.server.server_address[1]
+        thread = threading.Thread(target=self.server.serve_forever, daemon=True)
+        thread.start()
+        self.addCleanup(thread.join, 5)
+        self.addCleanup(self.server.server_close)
+        self.addCleanup(self.server.shutdown)
+        self.tmp = tmp
+
+    def get(self, path, method="GET", host=None):
+        conn = http.client.HTTPConnection("127.0.0.1", self.port, timeout=5)
+        conn.request(method, path, headers={"Host": host or f"127.0.0.1:{self.port}"})
+        response = conn.getresponse()
+        body = response.read()
+        headers = dict(response.getheaders())
+        conn.close()
+        return response.status, headers, body
+
+    def test_serves_markdown_pdf_images_and_link_files(self):
+        status, headers, body = self.get("/doc/REF/02-drafts/FEAT-001.story.md")
+        self.assertEqual((status, body), (200, b"# Story\n"))
+        self.assertEqual(headers["Content-Type"], "text/markdown; charset=utf-8")
+        self.assertIn("default-src 'none'", headers["Content-Security-Policy"])
+        self.assertEqual(self.get("/doc/REF/assets/ASSET-001.png")[1]["Content-Type"], "image/png")
+        self.assertEqual(self.get("/doc/REF/assets/ASSET-003.url")[0], 200)
+        self.assertEqual(self.get("/doc/REF/_meta/status.md")[0], 200)
+
+    def test_a_pdf_can_be_framed_by_the_console_and_an_svg_is_sandboxed(self):
+        _, headers, body = self.get("/doc/REF/00-brief.pdf")
+        self.assertEqual(body, b"%PDF-1.4 brief")
+        self.assertEqual(headers["Content-Type"], "application/pdf")
+        self.assertEqual(headers["Content-Security-Policy"], "frame-ancestors 'self'")
+        self.assertEqual(headers["Content-Disposition"], "inline")
+        _, svg, _ = self.get("/doc/REF/assets/ASSET-002.svg")
+        self.assertTrue(svg["Content-Security-Policy"].startswith("sandbox;"))
+
+    def test_the_page_may_frame_only_its_own_documents(self):
+        self.assertIn("frame-src 'self'", self.get("/")[1]["Content-Security-Policy"])
+
+    def test_head_gives_the_length_without_the_body(self):
+        status, headers, body = self.get("/doc/REF/00-brief.pdf", "HEAD")
+        self.assertEqual((status, body), (200, b""))
+        self.assertEqual(headers["Content-Length"], str(len(b"%PDF-1.4 brief")))
+
+    def test_the_project_list_tells_the_console_previews_are_on(self):
+        status, _, body = self.get("/doc/")
+        self.assertEqual((status, json.loads(body)), (200, {"scopes": ["REF"]}))
+
+    def test_nothing_outside_a_project_or_of_another_kind_is_served(self):
+        for path in (
+            "/doc/REF/../outside.md",
+            "/doc/REF/%2e%2e/outside.md",
+            "/doc/REF/%252e%252e/outside.md",
+            "/doc/REF//etc/passwd",
+            "/doc/REF/..%2foutside.md",
+            "/doc/REF/02-drafts%5c..%5cleak.md",
+            "/doc/REF/02-drafts/leak.md",
+            "/doc/REF/.git/notes.md",
+            "/doc/REF/workspace.yaml",
+            "/doc/REF/records/Q-001.py",
+            "/doc/REF/_meta/data/tasks.json",
+            "/doc/REF/_meta/write-log.json",
+            "/doc/REF/console/src/README.md",
+            "/doc/REF/02-drafts/",
+            "/doc/REF/missing.md",
+            "/doc/ORD/02-drafts/FEAT-001.story.md",
+            "/doc/REF",
+            "/doc/%00",
+        ):
+            self.assertEqual(self.get(path)[0], 404, path)
+
+    def test_a_large_file_is_refused(self):
+        with mock.patch.object(view_server, "DOC_MAX", 0):
+            self.assertEqual(self.get("/doc/REF/00-brief.pdf")[0], 413)
+
+    def test_only_get_and_head_and_only_for_the_right_host(self):
+        self.assertEqual(self.get("/doc/REF/02-drafts/FEAT-001.story.md", "POST")[0], 405)
+        self.assertEqual(self.get("/doc/", host="evil.example")[0], 403)
+
+    def test_without_projects_the_documents_are_off(self):
+        server = view_server.make_server(self.tmp / "dist", self.tmp / "data", 47300)
+        self.addCleanup(server.server_close)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        self.addCleanup(thread.join, 5)
+        self.addCleanup(server.shutdown)
+        port = server.server_address[1]
+        conn = http.client.HTTPConnection("127.0.0.1", port, timeout=5)
+        conn.request("GET", "/doc/", headers={"Host": f"127.0.0.1:{port}"})
+        self.assertEqual(conn.getresponse().status, 404)
+        conn.close()
+
+
 class BuildTests(unittest.TestCase):
     def setUp(self):
         temp = tempfile.TemporaryDirectory()

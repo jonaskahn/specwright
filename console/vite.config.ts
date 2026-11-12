@@ -29,7 +29,7 @@ function serveData(): Plugin {
 // The built page carries a strict policy. The dev server needs inline styles for hot reload, so
 // the policy is added only to the production build.
 export const CSP =
-  "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'";
+  "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; frame-src 'self'; base-uri 'none'; form-action 'none'";
 
 function policy(): Plugin {
   return {

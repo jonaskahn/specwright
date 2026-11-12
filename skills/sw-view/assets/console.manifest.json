@@ -1,5 +1,5 @@
 {
- "bytes": 387253,
+ "bytes": 387271,
  "console": "0.5.0",
  "files": {
   ".nvmrc": "sha256:68ca3fba3b7e864770cb61aeb306d4bd4354b68ab4dd38450860c5d823e42a53",
@@ -75,9 +75,9 @@
   "tests/tree.test.ts": "sha256:3214094257803b8073622856019521607aaba51fea50cf54a9a901716fcf8326",
   "tests/vocabulary.test.ts": "sha256:64853fc338fe138b5dae441dad762e7e62d83d74a79fc31f201cc0752a873b81",
   "tsconfig.json": "sha256:570966f0723394c2a3e120ea1198f9ec9d153380ae6c9ac3c303579c311ea8df",
-  "vite.config.ts": "sha256:500a2492b90c3a9add4255e31f68a0934a9d56013011a401d3cfd70612c76d23"
+  "vite.config.ts": "sha256:9e5a5fa2907e4884db59d61b8d15ea40b8fdf088fc5173d590d8c8b070caf716"
  },
  "formatVersion": 1,
- "tree": "sha256:c93a3aec57a0341445fd9afbc0bd2c2c77d2627e6adfe5d1597720cf70b09990",
- "zip": "sha256:cb18d6fa3265bc51eef0704fd9d2b3267b750314ffad2ada812a55b5bbc62375"
+ "tree": "sha256:ece4ab76f0bbfeba1204b1209828a5c452bd9cb1f84899c433eb5daea6b4a67e",
+ "zip": "sha256:79f8f86cb7ba56319a39bd813d2d7f0c3c3fe7a644d7922d21fb9528075f8480"
 }
