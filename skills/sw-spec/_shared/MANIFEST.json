@@ -48,5 +48,5 @@
   "scripts/sw_lint.py": "7f59b22ae3b2",
   "scripts/trace.py": "74bfe2e50aea"
  },
- "kit_version": "0.4.1"
+ "kit_version": "0.5.0"
 }

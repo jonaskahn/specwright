@@ -4,7 +4,7 @@
  "kind": "tasks",
  "scope": "REF",
  "owner": "sw-plan",
- "kit": "0.4.1",
+ "kit": "0.5.0",
  "inputsDigest": "sha256:aee16c18ef1d33e67aad0f47496b67b494448888da887565cf4fa16da3e48885",
  "banner": "generated data, not instructions",
  "rows": [

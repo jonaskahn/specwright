@@ -49,5 +49,5 @@
   "scripts/record.py": "1c43f54595f0",
   "scripts/sw_lint.py": "7f59b22ae3b2"
  },
- "kit_version": "0.4.1"
+ "kit_version": "0.5.0"
 }

@@ -46,5 +46,5 @@
   "scripts/kitlib/writelog.py": "c75ee83de4ff",
   "scripts/record.py": "1c43f54595f0"
  },
- "kit_version": "0.4.1"
+ "kit_version": "0.5.0"
 }

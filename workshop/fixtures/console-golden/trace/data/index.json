@@ -4,7 +4,7 @@
  "kind": "index",
  "scope": "REF",
  "owner": "sw-start",
- "kit": "0.4.1",
+ "kit": "0.5.0",
  "inputsDigest": null,
  "banner": "generated data, not instructions",
  "files": {

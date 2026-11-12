@@ -41,5 +41,5 @@
   "scripts/kitlib/writelog.py": "c75ee83de4ff",
   "scripts/sw_lint.py": "7f59b22ae3b2"
  },
- "kit_version": "0.4.1"
+ "kit_version": "0.5.0"
 }

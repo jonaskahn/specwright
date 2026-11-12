@@ -4,7 +4,7 @@
  "kind": "quality",
  "scope": "*",
  "owner": "sw-review",
- "kit": "0.4.1",
+ "kit": "0.5.0",
  "inputsDigest": "sha256:ec48ab426dc0a89a3b2b831bec48d089e8d81486f99210432e8365af7353cfaa",
  "banner": "generated data, not instructions",
  "gates": [],
