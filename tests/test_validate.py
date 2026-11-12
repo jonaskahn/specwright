@@ -125,6 +125,35 @@ class ValidateTests(unittest.TestCase):
         (self.skill / "LICENSE").unlink()
         self.assertIn("V050", self.codes(self.run_validate()))
 
+    def bundle(self, shared):
+        entry = {"capabilities": [], "shared": shared}
+        (self.root / "skills/_shared/bundle-map.json").write_text(
+            json.dumps({"capabilities": {}, "skills": {"sw-demo": entry}})
+        )
+
+    def test_v097_names_a_script_the_bundle_does_not_ship(self):
+        self.bundle([])
+        (self.skill / "references" / "guide.md").write_text(
+            "Run _shared/scripts/graph.py build, or sw-start/scripts/start.py.\n"
+        )
+        report = self.run_validate()
+        self.assertEqual(self.codes(report), {"V097"})
+        self.assertIn("graph.py", report.errors[0].message)
+
+    def test_v097_accepts_a_shipped_script(self):
+        self.bundle(["scripts/graph.py"])
+        (self.skill / "references" / "guide.md").write_text(
+            "Run _shared/scripts/graph.py build, then scripts/run.py.\n"
+        )
+        self.assertEqual(self.run_validate().errors, [])
+
+    def test_every_real_skill_ships_the_graph_script(self):
+        skills = Path(__file__).resolve().parent.parent / "skills"
+        for skill in sorted(skills.glob("sw-*")):
+            self.assertTrue(
+                (skill / "_shared/scripts/graph.py").is_file(), f"{skill.name} lacks graph.py"
+            )
+
     def test_symlink_inside_a_skill(self):
         target = self.root / "outside.md"
         target.write_text("external\n")

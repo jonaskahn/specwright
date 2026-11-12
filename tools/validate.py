@@ -337,6 +337,31 @@ def _check_skill_files(skill: Path, root: Path, report: Report) -> None:
                     report.add(path, number, "V062", "CWD-relative runtime command under skills/")
 
 
+SCRIPT_MENTION = re.compile(r"(sw-[a-z]+/)?(?:_shared/)?scripts/(\w+\.py)")
+
+
+def _check_script_mentions(skill: Path, root: Path, report: Report) -> None:
+    """A skill may only tell the agent to run scripts its own bundle ships."""
+    map_path = root / "skills" / "_shared" / "bundle-map.json"
+    if not map_path.is_file():
+        return
+    try:
+        entry = json.loads(map_path.read_text(encoding="utf-8"))["skills"].get(skill.name, {})
+    except (ValueError, KeyError, AttributeError):
+        return
+    shipped = {Path(rel).name for rel in entry.get("shared", []) if rel.startswith("scripts/")}
+    local = skill / "scripts"
+    if local.is_dir():
+        shipped |= {p.name for p in local.glob("*.py")}
+    for path in sorted(skill.rglob("*.md")):
+        if "_shared" in path.relative_to(skill).parts:
+            continue
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            for sibling, name in SCRIPT_MENTION.findall(line):
+                if not sibling and name not in shipped:
+                    report.add(path, number, "V097", f"{name} is not shipped with {skill.name}")
+
+
 def _check_draw_contract(skill: Path, root: Path, report: Report, packaged: bool = False) -> None:
     """Inspect the closed catalog without executing installed Python modules.
 
@@ -440,6 +465,8 @@ def validate_skill(
     if not packaged:
         _check_vendored(skill, root, report)
     _check_skill_files(skill, root, report)
+    if not packaged:
+        _check_script_mentions(skill, root, report)
     if (skill / "scripts" / "draw_types").is_dir():
         _check_draw_contract(skill, root, report, packaged)
 
