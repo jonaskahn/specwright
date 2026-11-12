@@ -17,7 +17,10 @@
   {:else if item.t === 'ref'}<button class="md-ref mono" type="button" onclick={() => md.openRef(item.id)}>{item.id}</button>
   {:else if item.t === 'image'}
     {@const src = imageUrl(md.scope, md.dir, item.src)}
-    {#if src}<img class="md-img" {src} alt={item.alt} loading="lazy" />{:else}<span class="muted">[{item.alt || 'image'}]</span>{/if}
+    {@const full = resolveLink(item.src, md.dir)}
+    {#if src && full.kind === 'doc'}
+      <button class="md-picture" type="button" title="Open the picture full size" onclick={() => md.openDoc(full.path)}><img class="md-img" {src} alt={item.alt} loading="lazy" /></button>
+    {:else if src}<img class="md-img" {src} alt={item.alt} loading="lazy" />{:else}<span class="muted">[{item.alt || 'image'}]</span>{/if}
   {:else if item.t === 'link'}
     {@const target = resolveLink(item.href, md.dir)}
     {#if target.kind === 'external'}<a class="md-link" href={target.href} target="_blank" rel="noopener noreferrer"><MdInline items={item.c} /></a>

@@ -59,6 +59,8 @@ ol.md-list { list-style: decimal; }
 .md-table tr:last-child td { border-block-end: 0; }
 .md-table .center { text-align: center; } .md-table .right { text-align: end; }
 .md-img { max-inline-size: 100%; border-radius: var(--radius); }
+.md-picture { all: unset; display: block; cursor: zoom-in; border-radius: var(--radius); }
+.md-picture:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
 .md-meta { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 2px var(--space-sm); margin: 0 0 var(--space-md); padding: var(--space-sm); border-radius: var(--radius); background: var(--fill); font-size: var(--text-sm); }
 .md-meta dt { color: var(--muted); font-family: var(--font-mono); }
 .md-meta dd { margin: 0; }

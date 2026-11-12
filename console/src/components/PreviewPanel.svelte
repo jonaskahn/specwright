@@ -24,6 +24,16 @@
     const parent = app.graph.neighbors(t.key, 'in', 'has_ac')[0] ?? app.graph.neighbors(t.key, 'in', 'has_task')[0];
     return parent?.other ?? null;
   });
+  /** Rendered diagrams that cite this feature or one of its criteria, embedded in the story or not. */
+  const pictures = $derived.by(() => {
+    if (!feature) return [];
+    const keys = [feature.id, ...app.graph.neighbors(feature.id, 'out', 'has_ac').map((l) => l.other)];
+    const found = new Set(keys.flatMap((k) => app.graph.neighbors(k, 'in', 'illustrates').map((l) => l.other)));
+    return [...found].flatMap((k) => {
+      const n = app.graph.node(k);
+      return n ? [n] : [];
+    });
+  });
   const suffix = $derived(t?.path ? suffixOf(t.path) : '');
   const readable = $derived(t?.scope && t.path && previewable(t.path) ? { scope: t.scope, path: t.path } : null);
   const raw = $derived(readable && preview.docs !== 'off' ? docUrl(readable.scope, readable.path) : null);
@@ -178,6 +188,7 @@
             <dt>Tasks</dt><dd>{feature.taskCount}</dd>
             {#if feature.next}<dt>Next</dt><dd>{feature.next}{feature.turn ? ` · ${feature.turn}'s turn` : ''}</dd>{/if}
             {#if feature.updated}<dt>Updated</dt><dd>{feature.updated}</dd>{/if}
+            {#if pictures.length}<dt>Pictures</dt><dd class="stack-sm">{#each pictures as p (p.key)}<button class="btn" type="button" onclick={() => preview.openKey(p.key)}>{p.title || p.key}</button>{/each}</dd>{/if}
             {#if feature.blockers.length}<dt>Blocked by</dt><dd>{feature.blockers.join('; ')}</dd>{/if}
             {#if feature.openQuestions.length}<dt>Open questions</dt><dd>{feature.openQuestions.join(', ')}</dd>{/if}
             {#if feature.openChanges.length}<dt>Open changes</dt><dd>{feature.openChanges.join(', ')}</dd>{/if}

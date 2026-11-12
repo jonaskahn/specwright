@@ -1,5 +1,5 @@
 {
- "bytes": 519651,
+ "bytes": 521339,
  "console": "0.5.0",
  "files": {
   ".nvmrc": "sha256:68ca3fba3b7e864770cb61aeb306d4bd4354b68ab4dd38450860c5d823e42a53",
@@ -24,7 +24,7 @@
   "src/components/Mark.svelte": "sha256:3a6f6c6d432ba91aa8c6c3bad354409479ff18c0d82193e1fc2a5ca92ac88a8e",
   "src/components/Markdown.svelte": "sha256:03b5ceb4de49429e2cb4b2112002d93d482068e00d9188dff058dd1f8f9e6e49",
   "src/components/MdBlocks.svelte": "sha256:7333cad185e03e17b1c9aed3f4609fc0f6879da107626cb931db3e59fd589295",
-  "src/components/MdInline.svelte": "sha256:19a8cea8d090768adb4cb1afbfdd7ac6d16d0793a2f5cc9943683fdbac38e82d",
+  "src/components/MdInline.svelte": "sha256:5a77fd2b23fd08a69923d654e16e976494f8762910c2899ca6874ccb4ba971bc",
   "src/components/NodeLinks.svelte": "sha256:6d9218e902a417284d834fb86d2c96b773261286558e55dfd8907568eeeef7a0",
   "src/components/OutlineNode.svelte": "sha256:b56eedc70e64805da05758d6c89c7cef2f297024f9ed3a66da3909cea594ccc8",
   "src/components/OutlinePane.svelte": "sha256:85017f9b7fbe16db44ad9049157603055654e727eab0f5a8b807014519831f49",
@@ -32,7 +32,7 @@
   "src/components/PageHead.svelte": "sha256:d92beee5e3abd49f87effb0fa978a8bc2d40bcf87495e56d0fb4e8f5dddadbf7",
   "src/components/Palette.svelte": "sha256:35e8dfc3145c3d5998fdc28480002ef56ab07b513d5a549716477d9b8484a5a9",
   "src/components/Pill.svelte": "sha256:b6d62bff0ebd6bf17c3e03add4db659afa5569578a905c1b9011b98180e84e92",
-  "src/components/PreviewPanel.svelte": "sha256:b5b091d18653e76169e269b05552d8fbd9f622203fc2bde7a1180975fb8e2567",
+  "src/components/PreviewPanel.svelte": "sha256:be8eaecae8c9c4eede0c96df4bfbb1144f0ca8af5dc4cc32a9340c153e5212d8",
   "src/components/Rung.svelte": "sha256:b8e7e70d7e42d85a5e0c3f6f051f7ee3d09fc79a7206990b54d1725614724866",
   "src/components/Sidebar.svelte": "sha256:3d1e2745288dcdf239141b09dc750cb66a54a9a5a2c85e9e7014a6527feef69b",
   "src/components/StaleBanner.svelte": "sha256:39c17628efd77af83d9be802c985564b5489a425f15d941dd1604046a453b816",
@@ -76,14 +76,14 @@
   "src/routes/Sources.svelte": "sha256:a65a9139d9ea4c9f2e2a521c64f8753ad5095770d0374f77255339c01281f7e2",
   "src/routes/Tasks.svelte": "sha256:04eb19e31345b4ea1842cdfab4afbbe708331f837e32413854ee4e322fa91a0c",
   "src/styles/components.css": "sha256:81a26906e7602e7df15c488b600f472347e34afe4bcd8da8a30fbc5ba18993d7",
-  "src/styles/preview.css": "sha256:de8e6021632d19bc6901e5680f429809c3b2e70f3863bea15b7b6f4c126cdb34",
+  "src/styles/preview.css": "sha256:3b44c9467da5adc370daf0028ba3038fdcc247f0b7428fce4a2ea2378a3702de",
   "src/styles/shell.css": "sha256:dafa6377ebd7e14e83bc505b0230f7798add0fefc873eff1aefd282aa73194d0",
   "src/styles/tokens.css": "sha256:11d8c7fa0293ef947e495c721857900459b118001c2d6065554b10c133be5966",
   "svelte.config.js": "sha256:38f4ed7a7ec5e5c793b4f3809b8f85876ce2ee232392e56c25c2d076e30370a4",
   "tests/board.test.ts": "sha256:ad4f564c483eca58cf25a862527a4eb562645853df85bf2380399c1b2c7b70ae",
   "tests/golden.ts": "sha256:eb368df231154c10dde8b05e5e75d83aea17d47b548dc6488c6810656bca4939",
   "tests/loader.test.ts": "sha256:4f117aa90df9240ff1fe4d83a4030a63f1fca6d441e7b81af28816ddbb2fdf46",
-  "tests/markdown.test.ts": "sha256:9025309feb5aafca8dd714db9953db411adda8a923056688d4b97e413dfd21da",
+  "tests/markdown.test.ts": "sha256:f2679c1184c012c2533f3eff74d076a9b0fbfa57c32595bb9fa58cf8f3cbf2a9",
   "tests/metrics.test.ts": "sha256:80e4a9d3207bcccb7f41a60de2a64b1dadc63b514787a19bbc9c839ea2c668b5",
   "tests/preview.test.ts": "sha256:54e840951dbfe55a982a800438e1d9b7dae5194255bd0b3c58d1f9cd40dcf098",
   "tests/projects.test.ts": "sha256:b838e57a0b0796ec27d4aba048c37fa336983e88ce0d1abddb0e91bec1f8f5f5",
@@ -98,6 +98,6 @@
   "vite.config.ts": "sha256:9e5a5fa2907e4884db59d61b8d15ea40b8fdf088fc5173d590d8c8b070caf716"
  },
  "formatVersion": 1,
- "tree": "sha256:aedf5a593604fd57ac57f5727f6f0be0eddee6c19f6287f3cc5d1ec7bdd46049",
- "zip": "sha256:269fca8d0d58a69ee92b709ab47d83e358075babd937af56a6edc3dad0fd5e06"
+ "tree": "sha256:855c6ef3c965a3b56f48e57982918ac9c637e868b0cacd231bbf864f2391e33e",
+ "zip": "sha256:5fed14fa2bfd707fe3e904dd2a43271b388e28e1d9b9b2a3bba1371057778145"
 }

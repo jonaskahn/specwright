@@ -142,6 +142,13 @@ describe('where a link may lead', () => {
     for (const bad of ['javascript:alert(1)', 'JavaScript:alert(1)', 'data:text/html,x', 'file:///etc/passwd', 'vbscript:x']) expect(resolveLink(bad, ''), bad).toEqual({ kind: 'none' });
   });
 
+  it('draws a diagram embedded in a story and opens it as a file', () => {
+    expect(imageUrl('REF', '02-drafts', '../diagrams/FEAT-001.flow.svg')).toBe('./doc/REF/diagrams/FEAT-001.flow.svg');
+    expect(resolveLink('../diagrams/FEAT-001.flow.svg', '02-drafts')).toEqual({ kind: 'doc', path: 'diagrams/FEAT-001.flow.svg', fragment: '' });
+    expect(imageUrl('REF', '02-drafts', '../../outside.svg')).toBeNull();
+    expect(imageUrl('REF', '02-drafts', 'https://example.test/a.svg')).toBeNull();
+  });
+
   it('resolves a relative document against the file, staying inside the project', () => {
     expect(resolveLink('../records/CR-001.md#why', '02-drafts')).toEqual({ kind: 'doc', path: 'records/CR-001.md', fragment: 'why' });
     expect(resolveLink('../../x.md', '02-drafts')).toEqual({ kind: 'none' });
