@@ -111,6 +111,7 @@
         "scripts/kitlib/miniyaml.py",
         "scripts/kitlib/recordops.py",
         "scripts/kitlib/rtm.py",
+        "scripts/kitlib/scanlog.py",
         "scripts/kitlib/schema.py",
         "scripts/kitlib/tables.py",
         "scripts/kitlib/task_validation.py",

@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 """Scan sensitive text without disclosing values in reports.
 
-Exit codes: 0 no secrets (PII may warn), 1 secrets found even after redaction,
-2 invalid arguments, unreadable input or unsafe output. Stdout is JSON data.
+Exit codes: 0 no secrets (PII may warn), or a redacted copy that scans clean; 1 secrets found
+(without --redact) or still found in the redacted copy; 2 invalid arguments, unreadable input or
+unsafe output. Stdout is JSON data.
+
+Personal-data matches inside a front matter block and inside plain hashes (hex runs of 24 or more
+characters) are not reported. Secrets are always reported. A reviewed documented example, a sample
+value in a policy text, is allowed only through a named row in the decisions file (--decisions),
+and never for a secret.
 """
 
 from __future__ import annotations
@@ -25,7 +31,7 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import fsio  # noqa: E402
+from kitlib import frontmatter, fsio, hashing, scanlog  # noqa: E402
 
 PATTERNS = (
     ("atlassian-token", True, r"ATATT[0-9A-Za-z_\-=]{20,}"),
@@ -55,14 +61,35 @@ def luhn(value: str) -> bool:
     return total % 10 == 0
 
 
-def scan(text: str) -> list[dict]:
-    """Retain offsets, not values, so reports cannot accidentally serialize a secret."""
+HASH_RUN = re.compile(r"(?<![0-9A-Za-z])[0-9a-fA-F]{24,}(?![0-9A-Za-z])")
+
+
+def _header_length(text: str) -> int:
+    """Characters taken by a leading front matter block, or 0."""
+    parsed = frontmatter.parse(text)
+    return len(text) - len(parsed.body) if parsed.fm is not None else 0
+
+
+def scan(text: str, allowed: frozenset[tuple[int, str]] = frozenset()) -> list[dict]:
+    """Retain offsets, not values, so reports cannot accidentally serialize a secret.
+
+    `allowed` holds `(line, type)` pairs a reviewer accepted as documented examples; only
+    personal-data findings can be allowed.
+    """
     findings = []
+    header = _header_length(text)
+    hashes = [(m.start(), m.end()) for m in HASH_RUN.finditer(text)]
     for kind, secret, pattern in PATTERNS:
         for match in re.finditer(pattern, text, re.S):
             if "[REDACTED:" in match.group():
                 continue
             if kind == "card" and not luhn(match.group()):
+                continue
+            if not secret and match.start() < header:
+                continue  # kit-written header fields are not personal data
+            if not secret and any(s <= match.start() and match.end() <= e for s, e in hashes):
+                continue  # a plain hash is not a card or an ID number
+            if not secret and (text.count("\n", 0, match.start()) + 1, kind) in allowed:
                 continue
             findings.append(
                 {
@@ -108,19 +135,41 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("file", type=Path)
     parser.add_argument("--redact", action="store_true", help="replace findings with typed markers")
     parser.add_argument("--out", type=Path, help="redacted copy; defaults to the input text file")
+    parser.add_argument(
+        "--decisions", type=Path, help="scan-decisions.tsv with reviewed documented examples"
+    )
     args = parser.parse_args(argv)
     if args.out and not args.redact:
         parser.error("--out requires --redact")
     try:
         text = args.file.read_text(encoding="utf-8")
-        findings = scan(text)
+        digest = hashing.bytes_hash(args.file.read_bytes())
+        allowed = (
+            scanlog.allowed(scanlog.read(args.decisions), digest) if args.decisions else frozenset()
+        )
+        findings = scan(text, allowed)
+        leftover = findings
+        markers = 0
         if args.redact:
             target = (args.out or args.file).resolve()
             if "raw" in target.parts:
                 raise ValueError("raw originals cannot be redacted in place")
-            fsio.atomic_write(target, redact(text, findings))
-        print(json.dumps({"findings": report(findings), "redacted": args.redact}))
-        return 1 if any(f["secret"] for f in findings) else 0
+            clean_text = redact(text, findings)
+            fsio.atomic_write(target, clean_text)
+            leftover = scan(clean_text, allowed)
+            markers = clean_text.count("[REDACTED:")
+        print(
+            json.dumps(
+                {
+                    "findings": report(findings),
+                    "redacted": args.redact,
+                    "source_sha256": digest,
+                    "redaction_markers": markers,
+                    "clean": not any(f["secret"] for f in leftover),
+                }
+            )
+        )
+        return 1 if any(f["secret"] for f in leftover) else 0
     except (OSError, UnicodeError, ValueError):
         print("error: cannot read UTF-8 input or write a safe redacted output", file=sys.stderr)
         return 2

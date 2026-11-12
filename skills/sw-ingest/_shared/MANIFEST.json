@@ -22,6 +22,7 @@
   "scripts/kitlib/miniyaml.py": "73a1bbe68a05",
   "scripts/kitlib/recordops.py": "4c3f7d1630a7",
   "scripts/kitlib/rtm.py": "dc57dda3403f",
+  "scripts/kitlib/scanlog.py": "29f8a9ecdd77",
   "scripts/kitlib/schema.py": "7f39f1014106",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "a72c8fe85965",
