@@ -159,6 +159,32 @@ class ValidateTests(unittest.TestCase):
         )
         self.assertEqual(self.run_validate().errors, [])
 
+    def test_v103_vendored_text_names_an_unshipped_shared_script(self):
+        self.bundle([])
+        vendored = self.skill / "_shared" / "references"
+        vendored.mkdir(parents=True)
+        (vendored / "note.md").write_text("Run _shared/scripts/record.py q new.\n")
+        self.assertIn("V103", self.codes(self.run_validate()))
+
+    def test_v104_and_v105_path_bases(self):
+        self.bundle(["scripts/trace.py"])
+        (self.root / "skills/_shared/scripts/trace.py").write_text("pass\n")
+        (self.skill / "references" / "guide.md").write_text(
+            "Run scripts/trace.py set, or read skills/sw-spec/SKILL.md.\n"
+        )
+        self.assertEqual(self.codes(self.run_validate()), {"V104", "V105"})
+        (self.skill / "references" / "guide.md").write_text("Run _shared/scripts/trace.py set.\n")
+        self.assertNotIn("V104", self.codes(self.run_validate()))
+
+    def test_v063_and_v064_eval_sanity(self):
+        evals = self.root / "workshop" / "evals" / "sw-demo"
+        rows = [{"query": f"q{i}", "should_trigger": i < 8} for i in range(15)]
+        rows.append({"query": "x", "should_trigger": False, "near_miss_of": "sw-demo"})
+        (evals / "triggers.jsonl").write_text("\n".join(json.dumps(r) for r in rows))
+        report = validate.Report(self.root)
+        validate._check_siblings([self.skill], self.root, report)
+        self.assertEqual({f.code for f in report.items}, {"V063"})
+
     def test_every_real_skill_ships_the_graph_script(self):
         skills = Path(__file__).resolve().parents[2] / "skills"
         for skill in sorted(skills.glob("sw-*")):

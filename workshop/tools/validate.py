@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import importlib.util
 import json
 import re
 import sys
@@ -394,6 +395,113 @@ def _check_script_mentions(skill: Path, root: Path, report: Report) -> None:
                     report.add(path, number, "V097", f"{name} is not shipped with {skill.name}")
 
 
+SHARED_SCRIPT_PATH = re.compile(r"_shared/scripts/(\w+\.py)")
+BARE_SHARED_SCRIPT = re.compile(r"(?<![\w./-])scripts/(\w+\.py)")
+SKILL_TREE_PATH = re.compile(r"(?<![\w-])skills/sw-")
+RECORD_COMMAND = re.compile(r"record\.py\s+((?:[a-z][a-z-]*\s+)*)((?:--[a-z-]+[^`\n]*)?)")
+
+
+def _shipped_scripts(skill: Path, root: Path) -> set[str] | None:
+    map_path = root / "skills" / "_shared" / "bundle-map.json"
+    if not map_path.is_file():
+        return None
+    try:
+        entry = json.loads(map_path.read_text(encoding="utf-8"))["skills"].get(skill.name, {})
+    except (ValueError, KeyError, AttributeError):
+        return None
+    return {Path(rel).name for rel in entry.get("shared", []) if rel.startswith("scripts/")}
+
+
+def _shipped_markdown(skill: Path) -> list[Path]:
+    """Every Markdown file an agent reads in this skill, vendored shared references included."""
+    return sorted(skill.rglob("*.md"))
+
+
+def _check_shared_closure(skill: Path, root: Path, report: Report) -> None:
+    """Vendored shared text may name a shared tool by full path only if this skill ships it (V103).
+    All shipped text writes shared tools from the skill root (V104) and names no source-tree
+    path (V105). SKILL.md and own references are held to shipped scripts by V097."""
+    shipped = _shipped_scripts(skill, root)
+    if shipped is None:
+        return
+    shared_names = {p.name for p in (root / "skills" / "_shared" / "scripts").glob("*.py")}
+    own = (
+        {p.name for p in (skill / "scripts").glob("*.py")}
+        if (skill / "scripts").is_dir()
+        else set()
+    )
+    for path in _shipped_markdown(skill):
+        parts = path.relative_to(skill).parts
+        vendored = "_shared" in parts
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            for name in SHARED_SCRIPT_PATH.findall(line):
+                # SKILL.md and a skill's own references are covered by V097.
+                if vendored and name not in shipped:
+                    report.add(path, number, "V103", f"_shared/scripts/{name} is not shipped")
+            for name in BARE_SHARED_SCRIPT.findall(line):
+                if (
+                    name in shared_names
+                    and name not in own
+                    and f"_shared/scripts/{name}" not in line
+                ):
+                    report.add(
+                        path, number, "V104", f"write _shared/scripts/{name} from the skill root"
+                    )
+            if SKILL_TREE_PATH.search(line):
+                report.add(
+                    path, number, "V105", "no source-tree path (skills/sw-...) in shipped text"
+                )
+
+
+def _record_parser(root: Path):
+    path = root / "skills" / "_shared" / "scripts" / "record.py"
+    if not path.is_file():
+        return None
+    spec = importlib.util.spec_from_file_location("sw_record_cli", path)
+    module = importlib.util.module_from_spec(spec)
+    sys.path.insert(0, str(path.parent))
+    try:
+        spec.loader.exec_module(module)
+        return module._parser()
+    except Exception:  # noqa: BLE001 - a parser that cannot load is reported by its own tests
+        return None
+    finally:
+        sys.path.remove(str(path.parent))
+
+
+def _walk_parser(parser, words: list[str]):
+    """Follow subcommand words; return (parser, remaining words)."""
+    import argparse
+
+    current = parser
+    rest = list(words)
+    while rest:
+        subs = [a for a in current._actions if isinstance(a, argparse._SubParsersAction)]
+        if not subs or rest[0] not in subs[0].choices:
+            break
+        current = subs[0].choices[rest.pop(0)]
+    return current, rest
+
+
+def _check_record_commands(skill: Path, root: Path, report: Report) -> None:
+    """Every `record.py ... --flag` in shipped text must name flags the command accepts (V106)."""
+    parser = _record_parser(root)
+    if parser is None:
+        return
+    for path in _shipped_markdown(skill):
+        if "_shared" in path.relative_to(skill).parts:
+            continue
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            for words, flags in RECORD_COMMAND.findall(line):
+                command, _ = _walk_parser(parser, words.split())
+                valid = {o for action in command._actions for o in action.option_strings}
+                for flag in re.findall(r"--[a-z][a-z-]*", flags):
+                    if flag not in valid:
+                        report.add(
+                            path, number, "V106", f"record.py {words.strip()}: unknown flag {flag}"
+                        )
+
+
 def _check_draw_contract(skill: Path, root: Path, report: Report, packaged: bool = False) -> None:
     """Inspect the closed catalog without executing installed Python modules.
 
@@ -499,6 +607,8 @@ def validate_skill(
     _check_skill_files(skill, root, report)
     if not packaged:
         _check_script_mentions(skill, root, report)
+        _check_shared_closure(skill, root, report)
+        _check_record_commands(skill, root, report)
     if (skill / "scripts" / "draw_types").is_dir():
         _check_draw_contract(skill, root, report, packaged)
 
@@ -513,6 +623,38 @@ def _check_siblings(skills: list[Path], root: Path, report: Report) -> None:
                     skill, 1, "V061", f"positive query also claimed by {seen[query]}: '{query}'"
                 )
             seen[query] = skill.name
+        _check_eval_sanity(skill, root, report)
+    prompts: dict[str, str] = {}
+    for skill in skills:
+        cases = root / "workshop" / "evals" / skill.name / "cases.json"
+        try:
+            listed = json.loads(cases.read_text(encoding="utf-8")).get("cases", [])
+        except (OSError, ValueError, AttributeError):
+            continue
+        for case in listed:
+            prompt = case.get("prompt") if isinstance(case, dict) else None
+            if prompt in prompts and prompts[prompt] != skill.name:
+                report.add(
+                    cases, 1, "V064", f"case prompt copied from {prompts[prompt]}: '{prompt}'"
+                )
+            if isinstance(prompt, str):
+                prompts[prompt] = skill.name
+
+
+def _check_eval_sanity(skill: Path, root: Path, report: Report) -> None:
+    """A negative trigger must not name the skill itself as the near miss (V063)."""
+    path = root / "workshop" / "evals" / skill.name / "triggers.jsonl"
+    if not path.is_file():
+        return
+    for number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        try:
+            row = json.loads(raw)
+        except json.JSONDecodeError:
+            continue
+        if row.get("should_trigger") is False and row.get("near_miss_of") == skill.name:
+            report.add(
+                path, number, "V063", "a negative row cannot be a near miss of its own skill"
+            )
 
 
 def _positive_queries(skill: Path, root: Path) -> list[str]:
@@ -675,6 +817,27 @@ def _check_commands(root: Path, report: Report) -> None:
             report.add(wrapper, 1, "V095", f"command must load {expected}")
 
 
+DATA_ROW = re.compile(r"^\| `(\w+)\.json` \| ([^|]+) \|", re.M)
+
+
+def _check_data_owner_table(root: Path, report: Report) -> None:
+    """The owner table in data-format.md must agree with the kinds the code defines (V107)."""
+    doc = root / "skills" / "_shared" / "references" / "data-format.md"
+    if not doc.is_file():
+        return
+    from kitlib import dataformat
+
+    rows = {
+        name: re.findall(r"sw-[a-z]+", cell) for name, cell in DATA_ROW.findall(doc.read_text())
+    }
+    for name, kind in dataformat.KINDS.items():
+        owners = rows.get(name)
+        if not owners:
+            report.add(doc, 1, "V107", f"{name}.json is missing from the owner table")
+        elif owners[0] != kind.owner or not set(owners) <= set(kind.writers):
+            report.add(doc, 1, "V107", f"{name}.json owners differ from kitlib.dataformat.KINDS")
+
+
 def _check_source_tree(root: Path, report: Report) -> None:
     shared = root / "skills" / "_shared"
     if not shared.is_dir():
@@ -689,6 +852,7 @@ def _check_source_tree(root: Path, report: Report) -> None:
                 report.add(
                     shared / "references" / name, 1, "V100", f"shared reference missing: {name}"
                 )
+    _check_data_owner_table(root, report)
     agents = root / "AGENTS.md"
     standing = root / "skills" / "sw-start" / "assets" / "standing-rules.md"
     if not agents.is_file() or not standing.is_file():
