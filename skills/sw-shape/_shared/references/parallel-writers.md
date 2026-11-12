@@ -44,5 +44,6 @@ scope and the host can run sub-agents. It gives speed without shared-write races
 ## Report
 
 One line per item: station, condition, guard result, lint result, open questions. Name
-anything unverified. Questions a worker proposed are saved by the lead, at most five ranked
-per item, with options and a stated default.
+anything unverified. Questions workers proposed are saved by the lead. The lead merges duplicates, ranks the rest
+and asks the user at most five at once (`stop-and-ask.md`); the others stay saved as open
+questions with options and a stated default and are asked in the next round.

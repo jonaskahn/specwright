@@ -52,16 +52,16 @@ optional parallel exit, never a next step.
   passes the TRANSITION token itself after that yes; the user never types a token.
 - Stop only on a blocker: a blocking question, a lint error, an ambiguous scope, a missing
   input or a publish step. Ask, and let the user decide.
-- Save a non-blocking unknown as a question with its default applied
-  (`record.py q new --non-blocking --default <text> --status assumed`), list it in the summary
-  and keep going. An assumed question can still be answered later.
+- Save a non-blocking unknown as a question with its default applied (the command is in
+  `stop-and-ask.md`), list it in the summary and keep going. An assumed question can still be
+  answered later.
 - `flow: step` keeps one stop per station and waits for the user to name the next one.
 
 ## Jira only when wanted
 
 New workspaces deliver Markdown. There is no destination question in normal flow. When the user
 says "push" or "publish": if Jira is configured, go to sw-publish; if not, say that Markdown
-is already delivered and offer the Jira setup in `workspace.py`. A stored answer never
+is already delivered and offer `workspace.py jira set --site <url> --project-key <KEY>` (read it back with `jira get`). A stored answer never
 authorizes a write.
 
 For the exact-plan confirmation, the user may reply "yes" to the dry-run just displayed. The

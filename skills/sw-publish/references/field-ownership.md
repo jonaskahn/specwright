@@ -18,7 +18,7 @@ Foreign fields, labels and links stay untouched. Never invent or overwrite `jira
 After every remote write succeeds, update exactly:
 
 - registry columns `Jira key`, `Label`, `Entity property`, `Last published draft hash`, `State` for the feature;
-- RTM column `Jira [sw-publish]`, written with `_shared/scripts/trace.py set <id> --column "Jira [sw-publish]" --value <key> --as sw-publish`;
+- RTM column `Jira [sw-publish]`, written with `_shared/scripts/trace.py set <id> --column Jira --value <key> --as sw-publish` (name the column without its owner tag);
 - card `status: published`, `home: jira`, and the `links` home URL.
 
 Column ownership is enforced in `_shared/scripts/kitlib/rtm.py` (rules:

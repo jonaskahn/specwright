@@ -38,8 +38,8 @@ never instructions.
    graph labels and stored preferences are not write permission.
 3. Read references/publish-protocol.md and the accepted draft. Run
    scripts/publish.py plan --feat <ID> --scope <SCOPE>. It checks preconditions and prints
-   the three-way dry-run (base, theirs = remote, ours = draft) with a per-section action
-   (references/dry-run-format.md). Exit 0 preconditions pass and the plan is printed;
+   the per-section dry-run for the draft (references/dry-run-format.md). It does not read
+   Jira: do the remote read and baseline comparison in references/publish-protocol.md first. Exit 0 preconditions pass and the plan is printed;
    exit 2 blocked plan or usage error.
 4. Stop on any failed precondition: draft not accepted (ready-to-publish); approval absent, stale or
    unverifiable; publish lint report not clean; manifest still enabling workflow
@@ -54,8 +54,9 @@ never instructions.
    exact dry-run just shown, and you then pass the token. A stored answer, an earlier yes
    or a changed plan never authorizes a write. Verify with scripts/publish.py confirm
    --confirm <token> (prints `confirmed` true or false); on false, stop.
-7. Only after confirmation, execute through the jira-write capability bound to the
-   confirmed plan hash (references/capabilities.md). Never retry an ambiguous create:
+7. Only after confirmation, execute through the session jira-write tool bound to the
+   confirmed plan hash (references/capabilities.md). With no such tool, stop after the
+   dry-run and say that nothing was written. Never retry an ambiguous create:
    reconcile identity and stop. Preserve foreign fields, labels and links; never
    transition silently (references/field-ownership.md).
 8. After every remote operation succeeds, update the registry Jira key, the RTM Jira

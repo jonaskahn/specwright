@@ -1,6 +1,6 @@
 # Rule catalog
 
-scripts/sw_lint.py checks decidable contracts only; wording quality stays a human
+`_shared/scripts/sw_lint.py` checks decidable contracts only; wording quality stays a human
 judgment. A finding prints `path:line: L-NNN message`. Pick the gate by what must be true next.
 
 ## Gates

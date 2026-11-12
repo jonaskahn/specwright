@@ -25,7 +25,7 @@ the manifest; `governance.md` is the one table of what each setting allows.
 ## Read order
 
 1. sw-start/SKILL.md, then safety.md.
-2. Route: scripts/start.py output and sw-start/references/routing.md.
+2. Route: the output of sw-start's `scripts/start.py` and its `references/routing.md`.
 3. Work: the routed skill's SKILL.md and the references it names.
 4. Finish: completion.md, then next-step-table.md; stop at the next human decision.
 

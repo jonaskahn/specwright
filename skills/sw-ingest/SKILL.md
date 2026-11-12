@@ -112,8 +112,8 @@ Fuzzy objectives → sw-shape; clear features → sw-spec; open questions → th
 PO. Pass SRC ids, evidence lines, scanner results, conversion limits and Q ids. Import
 implies no approval. If ingestion supported an explicitly requested shape conversation,
 resume it; otherwise report the item's station and proposed impacts per
-_shared/references/next-step.md. The skill that later applies an accepted edit backs
-up the artifact with kitlib.ingest_impact.backup first.
+_shared/references/next-step.md. The skill that later applies an accepted edit first runs
+`_shared/scripts/record.py backup <project-relative path>` on the artifact.
 
 After an import or snapshot, refresh the data you own:
 `_shared/scripts/data.py export sources --as sw-ingest` (format: `_shared/references/data-format.md`).

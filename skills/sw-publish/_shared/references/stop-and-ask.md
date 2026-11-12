@@ -13,6 +13,13 @@ most two at routing time). Use this shape:
 > Default if unanswered: leave Q-001 open; publication stays blocked.
 
 Separate blocking decisions from assumptions that can be tested later. Save a non-blocking
-unknown as a question with its default applied (`--status assumed`), list it in the summary
-and keep going; only a blocker stops the run. Never invent approval or choose a project
+unknown as a question with its default applied, list it in the summary and keep going; only a
+blocker stops the run. The command, with every required flag:
+
+```sh
+_shared/scripts/record.py q new --title <text> --owner <role> --affects <FEAT-NNN> \
+  --non-blocking --default <text> --status assumed
+```
+
+Run it from the project folder or add `--cwd <project>`; add `--scope <SCOPE>` in a program. Never invent approval or choose a project
 scope for an external write just to keep moving.

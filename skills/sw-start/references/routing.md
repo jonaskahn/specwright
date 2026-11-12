@@ -18,7 +18,7 @@ own prerequisites.
 | Submitted feature, stale or invalidated approval | sw-review; accept in plain words, or formal sign-off when `signoff: required`. |
 | Accepted feature without a current passing plan/tasks | sw-plan. |
 | Passing plan, no publication request | Markdown delivery complete; stay in plan. |
-| Explicit publication request, accepted story | Jira configured: sw-publish (no plan needed; exact-plan confirmation still required). Otherwise Markdown is delivered; offer Jira setup. |
+| Explicit publication request, accepted story | Jira configured: sw-publish (no plan needed; exact-plan confirmation still required). Otherwise Markdown is delivered; offer `scripts/workspace.py jira set --site <url> --project-key <KEY>`. |
 | Published feature, no tasks or task-only changes | sw-plan; never poll Jira. |
 | Dashboard, overview, console, graph in a browser, metrics for the whole workspace | sw-view; it only reads and never advances a stage. |
 | Published-text amendment | Stop until a current supplied baseline and a CR exist. |

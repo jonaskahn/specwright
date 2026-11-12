@@ -1,9 +1,9 @@
 # Finish the requested action, not the whole pipeline
 
-Run bounded completion maintenance, then read sw-start/scripts/start.py with --cwd
-and --item when the feature is known. Resolve scripts against the loaded skill root.
-When start.py reports a stale or missing graph, run the command it prints; every skill
-ships `_shared/scripts/graph.py`.
+Run bounded completion maintenance, then report the item's station. Where sw-start is installed
+beside this skill, run `../sw-start/scripts/start.py --cwd <project> --item <key>` and read its
+JSON; otherwise run `_shared/scripts/graph.py board --item <key> --cwd <project>`. When the graph is
+stale or missing, run `_shared/scripts/graph.py build --cwd <project>`.
 
 Report the produced outputs and the named item's station/condition. Its siblings stay
 where they are. A draft remains in spec, including open questions. A passing plan is

@@ -16,7 +16,7 @@ Enforced in kitlib/rtm.py.
 | Drift | sw-publish |
 | Test ref | qa |
 
-`scripts/trace.py set <id> --column <name> --as <skill>` refuses a column the skill does
+`_shared/scripts/trace.py set <id> --column <name> --as <skill>` refuses a column the skill does
 not own (exit 4). Row creation (`rebuild`) belongs to the trace capability; every other
 skill updates only its own columns through it.
 

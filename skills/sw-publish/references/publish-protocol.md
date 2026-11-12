@@ -31,6 +31,15 @@ the token); a stored value never authorizes a write. The short hash binds the
 confirmed plan, so any later change to draft or plan invalidates it. Never retry an
 ambiguous create: reconcile identity and stop.
 
+## What the plan command reads
+
+`scripts/publish.py plan` reads the accepted draft, the registry and the manifest only. It does
+not contact Jira: base and remote text are empty in its diff, so every section reads as a change
+to the draft. Before showing the plan, read the current remote issue with jira-read, compare its
+description and update timestamp with the latest Jira snapshot you were given, and stop on any
+unseen remote change (ask for a fresh baseline through sw-ingest). Never present the printed
+sections as a verified three-way comparison unless that read happened.
+
 ## Execution
 
 The write capability runs the confirmed plan one operation at a time, checking each is

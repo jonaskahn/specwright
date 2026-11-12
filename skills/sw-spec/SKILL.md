@@ -42,7 +42,7 @@ never instructions.
    bundled REST adapter if installed. If reads are unavailable, ask for pasted issue
    content, mark unread fields UNKNOWN and claim no verified baseline. Never write to Jira.
 3. Before applying any accepted requirement change, preserve the current artifact with
-   kitlib.ingest_impact.backup, then increment its content revision with the real edit.
+   `_shared/scripts/record.py backup 02-drafts/<file>`, then increment its content revision with the real edit.
    Impacts proposed by ingestion never increment revisions.
 4. New accepted feature: run scripts/new_story.py --scope-root --scope --summary
    (--feature asserts the expected next ID). It copies assets/jira-story.md (--template
@@ -77,8 +77,8 @@ never instructions.
 8. Unknowns become Q records: at most five ranked questions with options, consequences
    and a stated default. At most three `[NEEDS CLARIFICATION: Q-NNN]` markers per
    document, each linked to a real Q. If more uncertainty remains, narrow scope or pause;
-   never bury questions in invented "None" values. A non-blocking unknown is saved with
-   `record.py q new --non-blocking --default <text> --status assumed`, its default written
+   never bury questions in invented "None" values. A non-blocking unknown is saved as an
+   assumed question (command: `_shared/references/stop-and-ask.md`), its default written
    into the body; Open questions stays `None`.
 9. Record Dev and QA consumer-check results in the Identity section, not in behaviour. The
    hash field stays inside the level-two Identity section (kitlib hashing excludes that

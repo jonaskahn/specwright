@@ -27,11 +27,12 @@ content stay serial.
 
 Give each worker only this, with its FEAT filled in:
 
-> You write one feature: FEAT-NNN in scope-root <path>. Follow skills/sw-spec/SKILL.md steps
-> 4 to 10 for this one item with its references (ac-writing, ears, business-rules,
-> nfr-defaults, dor). Context pack: <graph.py context output>. Reserved BR/NFR IDs: <list>.
+> You write one feature: FEAT-NNN in scope-root <path>. Follow the loaded sw-spec SKILL.md,
+> steps 4 to 7, 9 and 10, for this one item with its references (ac-writing, ears,
+> business-rules, nfr-defaults, dor). Skip step 8: return unknowns as proposed questions.
+> Context pack: <graph.py context output>. Reserved BR/NFR IDs: <list>.
 > Run `new_story.py --reserved FEAT-NNN`, fill all twelve sections, write the criteria, run
-> `illustration_check.py` and draw only when it says so (name files
+> `illustration_check.py FEAT-NNN --json` and draw only when it says so (name files
 > `diagrams/FEAT-NNN-<slug>.*`), then `spec_hash.py --stamp` and `card_gen.py`.
 > Write only `02-drafts/FEAT-NNN.*`, `diagrams/FEAT-NNN-*` and
 > `_meta/work/illustration-FEAT-NNN.json`. Do not write records, the registry, the RTM, the

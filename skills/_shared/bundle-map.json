@@ -281,6 +281,7 @@
         "scripts/kitlib/invest.py",
         "scripts/kitlib/jira_diff.py",
         "scripts/kitlib/jira_port.py",
+        "scripts/kitlib/jira_rest.py",
         "scripts/kitlib/lifecycle.py",
         "scripts/kitlib/markdown.py",
         "scripts/kitlib/miniyaml.py",

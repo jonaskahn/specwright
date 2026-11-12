@@ -74,8 +74,8 @@ anything else; every other step needs it.
    add) only when `governance` is `required` and `setup` is not empty. Never ask what the
    script answered. Never infer approval, scope or a publish destination.
 6. Delivery is Markdown; no destination question. On "push" or "publish": Jira configured
-   -> sw-publish; not configured -> report that Markdown is delivered and offer the
-   workspace.py Jira setup. A stored value never authorizes a Jira write.
+   -> sw-publish; not configured -> report that Markdown is delivered and offer
+   `scripts/workspace.py jira set --site <url> --project-key <KEY>`. A stored value never authorizes a Jira write.
 7. Runtimes: use the step 0 output (`runtime` in the start.py JSON agrees). Python is required:
    if it is missing, show `runtime.sh plan python` and ask once; after a yes run
    `runtime.sh install python --yes` (Linux package managers need sudo, so the script prints
@@ -97,8 +97,8 @@ without the user's confirmation. With `flow: guided` (JSON `flow`), after a stat
 finishes with no blocker show a short summary and ask "Continue to <next station>?
 (Y/n)"; a plain yes advances and you pass the TRANSITION token yourself for local
 transitions; for a parallel batch that one yes covers every item in it. Stop only on a blocker (blocking question, lint error, ambiguous scope,
-missing input, publish). Save non-blocking unknowns with `record.py q new --non-blocking
---default <text> --status assumed` and continue. `flow: step` stops at every station.
+missing input, publish). Save non-blocking unknowns as assumed questions (command:
+`_shared/references/stop-and-ask.md`) and continue. `flow: step` stops at every station.
 A yes is no formal sign-off under `required` and no remote permission unless it answers
 the exact dry-run shown. Rules: _shared/references/governance.md.
 

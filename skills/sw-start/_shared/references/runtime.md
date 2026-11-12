@@ -9,8 +9,8 @@ The check is a shell script, not Python, because a Python check cannot report th
 missing. Run it before any other script:
 
 ```sh
-sh scripts/runtime.sh check            # macOS, Linux, Git Bash
-powershell -NoProfile -File scripts/runtime.ps1 check   # Windows
+sh _shared/scripts/runtime.sh check            # macOS, Linux, Git Bash
+powershell -NoProfile -File _shared/scripts/runtime.ps1 check   # Windows
 ```
 
 It prints Python, Node and npm with their versions (`--json` / `-Json` for a machine reading),

@@ -5,7 +5,7 @@ files in one format, written by the skill that owns each file. The files are der
 are git-ignored: the folder holds a `.gitignore` with `*`, created with the folder.
 
 Place: `<project base>/_meta/data/`. A program root also holds merged copies, which are the
-ones a reader opens. Format: `specwright-data`, version 1, defined in `scripts/kitlib/dataformat.py`.
+ones a reader opens. Format: `specwright-data`, version 1, defined in `_shared/scripts/kitlib/dataformat.py`.
 
 ## Files and owners
 
