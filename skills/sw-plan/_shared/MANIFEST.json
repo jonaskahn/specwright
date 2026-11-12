@@ -5,7 +5,8 @@
   "references/data-format.md": "9d2b791aa323",
   "references/governance.md": "7fb76b7a3b0b",
   "references/graph-model.md": "5613266ed2ac",
-  "references/next-step.md": "b1a81299848b",
+  "references/next-step.md": "29960e0a0a7f",
+  "references/parallel-writers.md": "38db1f0a7304",
   "references/query-cookbook.md": "6f8a7beedc70",
   "references/rule-catalog.md": "4bf7e45714ae",
   "references/stop-and-ask.md": "f7f51360ce13",
@@ -39,6 +40,7 @@
   "scripts/kitlib/task_validation.py": "a182b597a8b2",
   "scripts/kitlib/workspace.py": "8f837193d951",
   "scripts/kitlib/writelog.py": "c75ee83de4ff",
+  "scripts/parallel_guard.py": "c393aea1d3ee",
   "scripts/sw_lint.py": "7f59b22ae3b2"
  },
  "kit_version": "0.5.0"

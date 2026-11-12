@@ -9,6 +9,9 @@ Report the produced outputs and the named item's station/condition. Its siblings
 where they are. A draft remains in spec, including open questions. A passing plan is
 the Markdown delivery; do not suggest publication unprompted.
 
+After a parallel batch, run maintenance once at the end and report each item's station and
+condition (`parallel-writers.md`).
+
 Resume unfinished work in the same station without repeating its entry confirmation.
 Advancing into review, accepting a reopened split, entering plan, regenerating stale
 tasks, or requesting publication requires the user's confirmation. Under `flow: guided`

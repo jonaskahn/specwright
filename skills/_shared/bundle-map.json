@@ -95,6 +95,13 @@
         "scripts/runtime.ps1",
         "scripts/runtime.sh"
       ]
+    },
+    "parallel": {
+      "why": "Fan out per-feature work to parallel workers and check that each wrote only its own files.",
+      "roots": [
+        "references/parallel-writers.md",
+        "scripts/parallel_guard.py"
+      ]
     }
   },
   "skills": {
@@ -104,7 +111,8 @@
         "citations",
         "records",
         "knowledge",
-        "data"
+        "data",
+        "parallel"
       ],
       "shared": [
         "references/capabilities/citations.md",
@@ -113,6 +121,7 @@
         "references/data-format.md",
         "references/graph-model.md",
         "references/next-step.md",
+        "references/parallel-writers.md",
         "references/query-cookbook.md",
         "references/stop-and-ask.md",
         "references/untrusted-content.md",
@@ -151,6 +160,7 @@
         "scripts/kitlib/wiki_rest.py",
         "scripts/kitlib/workspace.py",
         "scripts/kitlib/writelog.py",
+        "scripts/parallel_guard.py",
         "scripts/record.py"
       ]
     },
@@ -159,7 +169,8 @@
         "core",
         "quality",
         "knowledge",
-        "data"
+        "data",
+        "parallel"
       ],
       "shared": [
         "references/capabilities/knowledge.md",
@@ -168,6 +179,7 @@
         "references/governance.md",
         "references/graph-model.md",
         "references/next-step.md",
+        "references/parallel-writers.md",
         "references/query-cookbook.md",
         "references/rule-catalog.md",
         "references/stop-and-ask.md",
@@ -201,6 +213,7 @@
         "scripts/kitlib/task_validation.py",
         "scripts/kitlib/workspace.py",
         "scripts/kitlib/writelog.py",
+        "scripts/parallel_guard.py",
         "scripts/sw_lint.py"
       ]
     },
@@ -267,7 +280,8 @@
         "citations",
         "records",
         "knowledge",
-        "data"
+        "data",
+        "parallel"
       ],
       "shared": [
         "references/capabilities/citations.md",
@@ -277,6 +291,7 @@
         "references/governance.md",
         "references/graph-model.md",
         "references/next-step.md",
+        "references/parallel-writers.md",
         "references/query-cookbook.md",
         "references/stop-and-ask.md",
         "references/untrusted-content.md",
@@ -311,6 +326,7 @@
         "scripts/kitlib/task_validation.py",
         "scripts/kitlib/workspace.py",
         "scripts/kitlib/writelog.py",
+        "scripts/parallel_guard.py",
         "scripts/record.py"
       ]
     },
@@ -321,7 +337,8 @@
         "citations",
         "records",
         "knowledge",
-        "data"
+        "data",
+        "parallel"
       ],
       "shared": [
         "references/capabilities/citations.md",
@@ -332,6 +349,7 @@
         "references/governance.md",
         "references/graph-model.md",
         "references/next-step.md",
+        "references/parallel-writers.md",
         "references/query-cookbook.md",
         "references/rule-catalog.md",
         "references/stop-and-ask.md",
@@ -370,6 +388,7 @@
         "scripts/kitlib/task_validation.py",
         "scripts/kitlib/workspace.py",
         "scripts/kitlib/writelog.py",
+        "scripts/parallel_guard.py",
         "scripts/record.py",
         "scripts/sw_lint.py"
       ]
@@ -382,7 +401,8 @@
         "visuals",
         "citations",
         "records",
-        "data"
+        "data",
+        "parallel"
       ],
       "shared": [
         "references/capabilities/citations.md",
@@ -391,6 +411,7 @@
         "references/capabilities/visuals.md",
         "references/data-format.md",
         "references/next-step.md",
+        "references/parallel-writers.md",
         "references/rtm-contract.md",
         "references/rule-catalog.md",
         "references/stop-and-ask.md",
@@ -429,6 +450,7 @@
         "scripts/kitlib/task_validation.py",
         "scripts/kitlib/workspace.py",
         "scripts/kitlib/writelog.py",
+        "scripts/parallel_guard.py",
         "scripts/record.py",
         "scripts/sw_lint.py",
         "scripts/trace.py"
@@ -458,7 +480,8 @@
         "assets",
         "completion",
         "data",
-        "runtime"
+        "runtime",
+        "parallel"
       ],
       "shared": [
         "references/asset-kind.md",
@@ -473,6 +496,7 @@
         "references/lifecycle.md",
         "references/next-step-table.md",
         "references/next-step.md",
+        "references/parallel-writers.md",
         "references/query-cookbook.md",
         "references/rtm-contract.md",
         "references/rule-catalog.md",
@@ -513,6 +537,7 @@
         "scripts/kitlib/task_validation.py",
         "scripts/kitlib/workspace.py",
         "scripts/kitlib/writelog.py",
+        "scripts/parallel_guard.py",
         "scripts/runtime-pins.tsv",
         "scripts/runtime.ps1",
         "scripts/runtime.sh",
