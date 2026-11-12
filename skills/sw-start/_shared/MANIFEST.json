@@ -13,7 +13,7 @@
   "references/next-step.md": "a0aa69e4a0ab",
   "references/query-cookbook.md": "6f8a7beedc70",
   "references/rtm-contract.md": "06bfa00b178d",
-  "references/rule-catalog.md": "c116df9a2159",
+  "references/rule-catalog.md": "3b4fd5dc9655",
   "references/runtime.md": "fcfea52ecfc2",
   "references/safety.md": "acf96cd3a709",
   "references/status-map.md": "56c9de252529",
@@ -36,6 +36,7 @@
   "scripts/kitlib/guard.py": "4cecf2eb3041",
   "scripts/kitlib/hashing.py": "8236e6704e63",
   "scripts/kitlib/ids.py": "88a0e53a1198",
+  "scripts/kitlib/illustration.py": "be060190a7ac",
   "scripts/kitlib/index.py": "d1455540d597",
   "scripts/kitlib/invest.py": "952e723ae1fa",
   "scripts/kitlib/lifecycle.py": "aff4c529a805",
@@ -54,7 +55,7 @@
   "scripts/runtime.sh": "0728558e61b1",
   "scripts/status.py": "e35d617f18aa",
   "scripts/store.py": "71798bc4689c",
-  "scripts/sw_lint.py": "58b9aa413c7d",
+  "scripts/sw_lint.py": "23241cc73046",
   "scripts/trace.py": "74bfe2e50aea"
  },
  "kit_version": "0.4.1"

@@ -539,6 +539,42 @@ class RuleTests(unittest.TestCase):
         )
         self.assertNotIn("L-063", {f.rule for f in self.findings(plain)})
 
+    def test_l064(self):
+        bad = doc((ROOT / "workshop/fixtures/lint/illustration-draw.md").read_text())
+        good = doc(
+            frontmatter.update(
+                bad.raw,
+                {"illustration": "none", "illustration_reason": "one screen of prose"},
+            )
+        )
+        self.check_rule("L-064", bad, good)
+        found = [f for f in self.findings(bad) if f.rule == "L-064"]
+        self.assertEqual([f.sev for f in found], ["warn"])
+        self.assertNotIn("L-064", {f.rule for f in self.findings(bad, gate="draft")})
+        self.assertNotIn("L-064", {f.rule for f in self.findings(doc())})
+        # submit-review reads this sentence and ignores warnings.
+        self.assertIn("0 blocking error(s)", lint.report_text(self.context([bad]), found))
+
+    def test_l065(self):
+        (self.base / "diagrams").mkdir()
+        (self.base / "diagrams/flow.json").write_text(
+            '{"title": "Return", "spec_ids": ["AC-001-1"]}\n'
+        )
+        old = (
+            "### AC-001-1 — Return during the window\n"
+            "Given a parcel delivered 6 days ago\n"
+            "When the buyer requests a return\n"
+            'Then the request has status "Awaiting inspection" '
+            "and the original price is recorded\n"
+        )
+        withdrawn = GOOD.replace(old, "~~AC-001-1~~ withdrawn — CR-001\n")
+        self.check_rule("L-065", doc(withdrawn), doc())
+        found = [f for f in self.findings(doc(withdrawn)) if f.rule == "L-065"]
+        self.assertEqual([f.sev for f in found], ["warn"])
+        self.assertIn(
+            "0 blocking error(s)", lint.report_text(self.context([doc(withdrawn)]), found)
+        )
+
     def test_l062(self):
         amendment = doc(
             "---\nid: AMD-001\ntype: amendment\nscope: REF\ntitle: Amend FEAT-001\naliases: []\n"

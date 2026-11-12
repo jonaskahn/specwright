@@ -27,6 +27,7 @@ from kitlib import (  # noqa: E402
     graph,
     hashing,
     ids,
+    illustration,
     invest,
     markdown,
     schema,
@@ -35,10 +36,10 @@ from kitlib import (  # noqa: E402
 )
 
 GATES = {"draft": 10, "review": 20, "publish": 30}
-REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {"L-017", "L-062"}
+REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {"L-017", "L-062", "L-064", "L-065"}
 PUBLISH = {"L-018", "L-037", "L-045", "L-046"}
 SYNC = set()
-RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), *range(56, 64))}
+RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), *range(56, 66))}
 RULE_HELP = {
     "L-001": "Front matter needs a mapping with non-empty id, type, status (scope in a program).",
     "L-002": "The id must use the grammar for its type, e.g. FEAT-003, BO-001, NFR-REF-001.",
@@ -86,6 +87,8 @@ RULE_HELP = {
     "L-061": "The decision's decider must be a manifest approver.",
     "L-062": "A proposed amendment must be applied before review continues.",
     "L-063": "The INVEST split table needs pass/fail marks, not free text.",
+    "L-064": "A feature needs an illustration and has no picture and no recorded dismissal.",
+    "L-065": "A diagram cites an ID that is withdrawn or missing.",
 }
 # Artifacts a reader looks up by name; each needs a title and an alias list (possibly empty).
 NAMED_TYPES = {
@@ -462,7 +465,7 @@ def lint_document(doc, ctx):
     def emit(rule, message, line=1, subject="", sev="error"):
         gate = rule_gate(rule)
         if list(GATES).index(gate) <= list(GATES).index(ctx.gate):
-            if rule in {"L-009", "L-015", "L-041", "L-044"}:
+            if rule in {"L-009", "L-015", "L-041", "L-044", "L-064", "L-065"}:
                 sev = "warn"
             if rule == "L-012" and ctx.gate == "review":
                 sev = "warn"
@@ -865,6 +868,23 @@ def lint_document(doc, ctx):
             emit(
                 "L-046",
                 "use a recognized action verb, summary <=100 chars and all three identity labels",
+            )
+    if fm.get("type") == "feature" and doc.story and not doc.card:
+        try:
+            picture = illustration.assess(doc.raw, ctx.base, ctx.scope)
+        except ValueError:
+            picture = None
+        if picture and picture["chip"] == illustration.NEEDS:
+            emit(
+                "L-064",
+                "feature needs an illustration and has no recorded dismissal",
+                sev="warn",
+            )
+        if picture and picture["stale"]:
+            emit(
+                "L-065",
+                "a diagram cites a withdrawn or missing ID: " + ", ".join(picture["stale"]),
+                sev="warn",
             )
     return findings
 

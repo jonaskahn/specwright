@@ -21,6 +21,7 @@ Exit 0 pass; 2 usage or unexpected checker failure. No network.
 | Names | L-054 `title` and `aliases` required (warning on an immutable snapshot); L-055 placeholder title, including a reserved feature with no Title in the registry |
 | Citations and amendments | L-057 a citation names a missing, blank or changed line (weak or superseded source is a warning); L-062 a feature has a proposed amendment (review gate) |
 | Shape | L-063 the INVEST table of an idea brief is malformed or hides a fail or unknown without a Reason |
+| Illustration | L-064 a feature needs an illustration and has no picture and no dismissal (warning, review gate); L-065 a diagram cites a withdrawn or missing ID (warning, review gate) |
 | Legacy names | L-056 a legacy ID (manifest `legacy_id_pattern`) in a body is not an alias of any artifact |
 | Records and folders | L-058 unknown top-level folder (warning); L-059 a question without `affects`; L-060 a decision without decider and evidence; L-061 decider not in the manifest approvers |
 | Graph and plan | L-047 stale `.feature`; L-048 task trace; L-049 graph stale or missing; L-050/L-051 epic reference and scopes; L-052 Touches path; L-053 absolute registry path |
