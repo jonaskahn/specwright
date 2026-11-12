@@ -167,9 +167,10 @@ class PackageTests(BundleFixture):
         shipped = {
             p.relative_to(self.output / "sw-demo/_shared").as_posix()
             for p in (self.output / "sw-demo/_shared").rglob("*")
-            if p.is_file()
+            if p.is_file() and p.name != "MANIFEST.json"
         }
         self.assertEqual(shipped, set(self.read_map()["skills"]["sw-demo"]["shared"]))
+        self.assertTrue((self.output / "sw-demo/_shared/MANIFEST.json").is_file())
         self.assertNotIn("references/extra.md", shipped)
         self.assertFalse((self.output / "sw-demo/_shared" / bundle.MAP_NAME).exists())
 

@@ -16,8 +16,11 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "skills" / "_shared" / "scripts"))
 
 import bundle  # noqa: E402
+
+from kitlib import guard  # noqa: E402
 
 SHARED = "_shared"
 
@@ -57,8 +60,14 @@ def actual_files(skill: Path) -> set[str]:
     return {
         p.relative_to(folder).as_posix()
         for p in folder.rglob("*")
-        if p.is_file() and not bundle.is_junk(p.relative_to(folder))
+        if p.is_file() and p.name != guard.MANIFEST and not bundle.is_junk(p.relative_to(folder))
     }
+
+
+def expected_manifest(root: Path, skill: Path) -> str:
+    """The manifest the skill's copy must carry, built from the canonical files."""
+    shared = shared_folder(root)
+    return guard.manifest_for({rel: shared / rel for rel in expected_files(root, skill)})
 
 
 def drift(root: Path, skill: Path) -> list[str]:
@@ -72,6 +81,11 @@ def drift(root: Path, skill: Path) -> list[str]:
         copy = skill / SHARED / rel
         if rel in have and copy.read_bytes() != (shared / rel).read_bytes():
             problems.append(f"{skill.name}: _shared/{rel} differs from skills/_shared/{rel}")
+    manifest = skill / SHARED / guard.MANIFEST
+    if not manifest.is_file() or manifest.read_text(encoding="utf-8") != expected_manifest(
+        root, skill
+    ):
+        problems.append(f"{skill.name}: _shared/{guard.MANIFEST} is missing or out of date")
     return problems
 
 
@@ -107,6 +121,9 @@ def write(root: Path) -> list[str]:
             target = skill / SHARED / rel
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(shared / rel, target)
+        (skill / SHARED / guard.MANIFEST).write_text(
+            expected_manifest(root, skill), encoding="utf-8"
+        )
         changed.append(skill.name)
     return changed
 

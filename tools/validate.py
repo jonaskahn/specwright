@@ -525,6 +525,13 @@ def _check_manifests(root: Path, report: Report) -> None:
     metadata = _project_metadata(root / "pyproject.toml")
     expected_version = metadata["version"]
     expected_description = metadata["description"]
+    if expected_version != schema.KIT_VERSION:
+        report.add(
+            root / "skills/_shared/scripts/kitlib/schema.py",
+            1,
+            "V096",
+            "KIT_VERSION must match the pyproject.toml version",
+        )
     expected_skills = {f"./skills/{name}" for name in EXPECTED_SKILLS}
     plugin_path = root / ".claude-plugin" / "plugin.json"
     plugin = _read_json(plugin_path, "V073", report)

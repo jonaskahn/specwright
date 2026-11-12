@@ -48,6 +48,20 @@ class VerifyPackageTests(unittest.TestCase):
         )
         self.assertTrue(any("names missing" in p for p in problems))
 
+    def test_a_changed_or_missing_shared_file_is_reported(self):
+        with tempfile.TemporaryDirectory() as raw:
+            with zipfile.ZipFile(self.dist / "sw-start.zip") as archive:
+                archive.extractall(raw)
+            skill = Path(raw) / "sw-start"
+            (skill / "_shared/scripts/trace.py").write_text("# edited\n")
+            (skill / "_shared/scripts/status.py").unlink()
+            problems = verify.verify_skill(skill)
+            (skill / "_shared/MANIFEST.json").unlink()
+            unlisted = verify.verify_skill(skill)
+        self.assertTrue(any("trace.py differs" in p for p in problems))
+        self.assertTrue(any("status.py is missing" in p for p in problems))
+        self.assertTrue(any("MANIFEST.json is missing" in p for p in unlisted))
+
     def test_each_source_skill_works_when_copied_alone(self):
         # `npx skills add` copies one skill folder, never its sibling skills/_shared.
         for source in sorted((ROOT / "skills").glob("sw-*")):

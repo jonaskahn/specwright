@@ -24,7 +24,7 @@ if str(_shared) not in sys.path:
 import argparse
 import json
 
-from kitlib import frontmatter, graph_query, schema, workspace  # noqa: E402
+from kitlib import frontmatter, graph_query, guard, schema, workspace  # noqa: E402
 
 CODE_MARKERS = (
     "package.json",
@@ -162,7 +162,10 @@ def report(cwd, target=None):
 def hook_lines(data):
     if data.get("fresh_setup"):
         return []
-    lines = [f"Specwright: {data['layout']} workspace at {data['spec_root']} ({data['mode']})"]
+    lines = [
+        f"Specwright {data['kit_version']}: {data['layout']} workspace at "
+        f"{data['spec_root']} ({data['mode']})"
+    ]
     for item in data["scopes_state"][:5]:
         feats = ", ".join(f"{n} {s}" for s, n in sorted(item["feats"].items())) or "no features"
         lines.append(f"- {item['scope']}: {feats}; graph {item['graph']}; next: {item['next'][0]}")
@@ -176,8 +179,12 @@ def main(argv=None):
     parser.add_argument("--item", help="qualified epic or feature to resume")
     parser.add_argument("--hook", action="store_true", help="short session summary")
     args = parser.parse_args(argv)
+    problems = guard.check(_here.parent)
+    if problems:
+        print(guard.explain(problems), file=sys.stderr if not args.hook else sys.stdout)
+        return 0 if args.hook else 2
     try:
-        data = report(Path(args.cwd).resolve(), args.item)
+        data = {"kit_version": schema.KIT_VERSION, **report(Path(args.cwd).resolve(), args.item)}
         if args.hook:
             print("\n".join(hook_lines(data)))
             return 0

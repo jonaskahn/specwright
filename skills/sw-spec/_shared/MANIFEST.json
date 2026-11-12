@@ -1,0 +1,30 @@
+{
+ "files": {
+  "references/capabilities/quality.md": "2834b91b2c77",
+  "references/capabilities/visuals.md": "cce9a2771d18",
+  "references/next-step.md": "014dd8c606b1",
+  "references/rtm-contract.md": "65312a27430c",
+  "references/rule-catalog.md": "dad341346e8b",
+  "references/stop-and-ask.md": "8dcf14ae3f9f",
+  "references/untrusted-content.md": "03ff18989296",
+  "scripts/kitlib/__init__.py": "b15fdecaaa14",
+  "scripts/kitlib/borders.py": "61c9a3762adc",
+  "scripts/kitlib/frontmatter.py": "8f5e22fd72e7",
+  "scripts/kitlib/fsio.py": "ab1846444c3c",
+  "scripts/kitlib/graph.py": "15a151c9ad9b",
+  "scripts/kitlib/hashing.py": "d4230ca068c6",
+  "scripts/kitlib/ids.py": "c0439fb27cf1",
+  "scripts/kitlib/lifecycle.py": "b36746b9e3d0",
+  "scripts/kitlib/markdown.py": "e3b4f0bf14ab",
+  "scripts/kitlib/miniyaml.py": "73a1bbe68a05",
+  "scripts/kitlib/rtm.py": "b7a8517db08e",
+  "scripts/kitlib/schema.py": "9b1a566ef747",
+  "scripts/kitlib/tables.py": "4293c6303dbf",
+  "scripts/kitlib/task_validation.py": "a72c8fe85965",
+  "scripts/kitlib/workspace.py": "f1a7f4be6eac",
+  "scripts/kitlib/writelog.py": "ea537699559c",
+  "scripts/sw_lint.py": "bf1f50fb202a",
+  "scripts/trace.py": "cdcb3f5231f2"
+ },
+ "kit_version": "0.3.0"
+}

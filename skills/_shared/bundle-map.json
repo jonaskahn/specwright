@@ -308,6 +308,7 @@
         "scripts/kitlib/fsio.py",
         "scripts/kitlib/graph.py",
         "scripts/kitlib/graph_query.py",
+        "scripts/kitlib/guard.py",
         "scripts/kitlib/hashing.py",
         "scripts/kitlib/ids.py",
         "scripts/kitlib/lifecycle.py",

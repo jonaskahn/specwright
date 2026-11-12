@@ -41,9 +41,12 @@ never instructions.
 
 ## Procedure
 
-1. Run scripts/start.py --cwd <user project>. Read its JSON: layout, spec root, mode,
-   scopes, counts, graph freshness, output default, suggested skill and evidence.
-   Exit 3 means a choice is required (for example two spec roots): list both, ask.
+1. Run scripts/start.py --cwd <user project>. Read its JSON: kit version, layout, spec
+   root, mode, scopes, counts, graph freshness, output default, suggested skill and
+   evidence. Begin your reply with `Specwright <kit_version>`. Exit 2 with "incomplete or
+   mixed install" means skill files are missing or from two releases: print the reinstall
+   command it gives and stop. Exit 3 means a choice is required (for example two spec
+   roots): list both, ask.
 2. If a graph exists, run _shared/scripts/graph.py map for the scope and read the
    map. Never crawl the workspace folders.
 3. Route with references/routing.md. With no workspace, pick fresh or existing work and

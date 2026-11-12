@@ -20,6 +20,10 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "skills" / "_shared" / "scripts"))
+
+from kitlib import guard  # noqa: E402
+
 REFERENCE = re.compile(
     r"(?<![\w./-])((?:\.\./)?(?:_shared/)?(?:references|scripts|assets)/"
     r"[\w./-]*[\w-]\.(?:md|py|html|json|css|svg|txt|jsonl))"
@@ -64,8 +68,16 @@ def broken_scripts(skill: Path) -> list[str]:
     return problems
 
 
+def shared_problems(skill: Path) -> list[str]:
+    """A packaged skill must hold a manifest that matches its shared files."""
+    if not (skill / "_shared" / guard.MANIFEST).is_file():
+        return [f"_shared/{guard.MANIFEST} is missing"]
+    return guard.check(skill)
+
+
 def verify_skill(skill: Path) -> list[str]:
-    return [f"{skill.name}: {p}" for p in dangling_references(skill) + broken_scripts(skill)]
+    found = shared_problems(skill) + dangling_references(skill) + broken_scripts(skill)
+    return [f"{skill.name}: {p}" for p in found]
 
 
 def verify_zips(dist: Path) -> list[str]:

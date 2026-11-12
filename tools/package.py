@@ -25,6 +25,10 @@ from pathlib import Path
 import bundle
 import minify
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "skills" / "_shared" / "scripts"))
+
+from kitlib import guard  # noqa: E402
+
 SKILL_PREFIX = "sw-"
 SHARED = "_shared"
 SOURCE_REF = re.compile(r"(?<![\w.-])\.\./_shared/")
@@ -100,6 +104,8 @@ def bundle_skill(root: Path, source: Path, destination: Path, profile: str = "ex
         if path.is_file():
             _rewrite_text(path)
             minify.minify_file(path)
+    folder = destination / SHARED
+    (folder / guard.MANIFEST).write_text(guard.manifest_for(guard.folder_files(folder)), "utf-8")
 
 
 def zip_skill(folder: Path, target: Path) -> None:
