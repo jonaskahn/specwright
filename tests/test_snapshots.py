@@ -16,6 +16,15 @@ class ContentClassTests(unittest.TestCase):
     def test_a_bare_heading_and_nothing_else_is_index_only(self):
         self.assertEqual(snapshots.content_class("# Parent page\n"), "index-only")
 
+    def test_converted_child_titles_without_markup_are_index_only(self):
+        self.assertEqual(
+            snapshots.content_class("Refund space home\nEligibility\nPayout\n"), "index-only"
+        )
+        self.assertEqual(snapshots.content_class("Refunds close after 14 days\n"), "content")
+        self.assertEqual(
+            snapshots.content_class("Refund window\nRefunds close after 14 days.\n"), "content"
+        )
+
     def test_no_text_at_all_is_empty(self):
         self.assertEqual(snapshots.content_class(""), "empty")
         self.assertEqual(snapshots.content_class("\n\n   \n"), "empty")

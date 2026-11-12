@@ -121,6 +121,20 @@ class OperationTests(unittest.TestCase):
             writelog.drift(self.log), ["records/Q-001.md is gone since its last logged write"]
         )
 
+    def test_shared_state_and_worker_files_are_not_judged(self):
+        (self.base / "01-analysis/candidates").mkdir(parents=True)
+        files = [
+            self.base / "_meta/id-registry.md",
+            self.base / "01-analysis/candidates/CAND-001--x.md",
+        ]
+        with writelog.operation(self.log, "sw-shape", "x", "X") as op:
+            for f in files:
+                f.write_text("one\n")
+                op.wrote(f)
+        for f in files:
+            f.write_text("two\n")
+        self.assertEqual(writelog.drift(self.log), [])
+
     def test_line_ending_conversion_is_not_drift(self):
         note = self.base / "records/Q-001.md"
         with writelog.operation(self.log, "sw-shape", "q-new", "X") as op:

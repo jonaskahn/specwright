@@ -22,6 +22,8 @@ def content_class(text: str) -> str:
     """
     structural = 0
     prose: list[str] = []
+    titles = 0
+    lines = [ln for ln in text.splitlines() if ln.strip()]
     for line in text.splitlines():
         if not line.strip() or line.strip().startswith(">") and not line.strip("> "):
             continue
@@ -35,6 +37,10 @@ def content_class(text: str) -> str:
             continue
         prose.append(re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", line))
     words = sum(len(_WORD.findall(line)) for line in prose)
+    # A converted page tree entry is often just a short line per child title, with no markup left.
+    titles = sum(1 for ln in lines if len(ln.split()) <= 6 and not re.search(r"[.!?:;]\s*$", ln))
+    if not structural and words < PROSE_WORDS and len(lines) >= 2 and titles == len(lines):
+        return "index-only"
     if not structural and not words:
         return "empty"
     if words < PROSE_WORDS and structural:

@@ -41,7 +41,7 @@
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "a182b597a8b2",
   "scripts/kitlib/workspace.py": "034886a2acb8",
-  "scripts/kitlib/writelog.py": "1a34e6e3c8c9",
+  "scripts/kitlib/writelog.py": "c75ee83de4ff",
   "scripts/status.py": "785c604bad2b",
   "scripts/store.py": "71798bc4689c",
   "scripts/sw_lint.py": "161f710b77f7",

@@ -1,0 +1,39 @@
+{
+ "space": "REFUNDS",
+ "pages": {
+  "100": {
+   "title": "Refund space home",
+   "parent": "",
+   "version": 9,
+   "body": "<h1>Refund space home</h1><ul><li><a href=\"https://wiki.example.test/101\">Eligibility</a></li><li><a href=\"https://wiki.example.test/102\">Payout</a></li></ul>"
+  },
+  "101": {
+   "title": "Refund eligibility",
+   "parent": "100",
+   "version": 4,
+   "position": 1,
+   "body": "<h1>Refund eligibility</h1><p>An order is eligible for a refund when it was delivered within the refund window and the goods are unused, unopened and returned in their original packaging by the customer or an agent.</p><p>Refunds close after 14 days from delivery.</p><p>Example: write owner@example.test in the contact field of the request form when the customer has no account.</p>"
+  },
+  "102": {
+   "title": "Refund payout",
+   "parent": "100",
+   "version": 2,
+   "position": 2,
+   "body": "<h1>Refund payout</h1><p>A payout is released after the warehouse confirms the return and the finance team has approved the amount for the original payment method of the customer.</p><p>Refunds close after 30 days from delivery.</p>"
+  },
+  "103": {
+   "title": "Payment methods",
+   "parent": "100",
+   "version": 5,
+   "position": 3,
+   "body": "<h1>Payment methods</h1><p>Customers pay by card or by bank transfer and a payout always returns to the method that was used for the original order, never to a different method or account.</p>"
+  },
+  "104": {
+   "title": "Support notes",
+   "parent": "100",
+   "version": 1,
+   "position": 4,
+   "body": "<h1>Support notes</h1><p>Support agents record every refund request in the ticket tool and attach the delivery confirmation before they escalate any request to the finance team for approval.</p>"
+  }
+ }
+}

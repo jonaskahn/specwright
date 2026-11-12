@@ -174,10 +174,16 @@ def operation(
     result(log, run, 1, "ok", *written, now=now)
 
 
+# Shared state several tools rewrite, and files a worker (not a script) owns, are not judged.
+SHARED_STATE = frozenset({"_meta/id-registry.md", "_meta/rtm.md", "_meta/asset-registry.md"})
+WORKER_OWNED = ("01-analysis/candidates/",)
+
+
 def drift(path: str | Path) -> list[str]:
     """Logged files whose content changed after their last logged write (or that vanished).
 
     Only files that a logged operation wrote are judged; everything else is unknown, not drift.
+    The registry, trace matrix and worker-owned candidate files are rewritten by several parties.
     """
     log = Path(path)
     base = log.parent.parent
@@ -191,6 +197,8 @@ def drift(path: str | Path) -> list[str]:
                 last[name] = digest
     found = []
     for name, digest in sorted(last.items()):
+        if name in SHARED_STATE or name.startswith(WORKER_OWNED):
+            continue
         target = base / name
         if not target.is_file():
             found.append(f"{name} is gone since its last logged write")

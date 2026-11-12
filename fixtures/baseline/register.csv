@@ -1,0 +1,6 @@
+ID,Name,Module,Page
+LEG-100,Request a refund,Refunds,101
+LEG-101,Decide a refund,Refunds,102
+LEG-200,Issue a payout,Payments,103
+LEG-201,Escalate a refund,Payments,104
+LEG-300,Close a dormant account,Accounts,999
