@@ -50,14 +50,23 @@ never instructions.
    Never weaken the list to hide a hit; word-list changes (references/leakage-words.md)
    are a separate edit.
 6. Propose feature slices with references/invest.md. Each gets a verb-first title, one
-   principal actor, a valuable outcome, and I/N/V/E/S/T each marked pass, fail or
-   unknown with a one-line reason. Do not allocate FEAT IDs yet; state hard dependencies.
+   principal actor, a valuable outcome, and a row in the INVEST table (scripts/invest.py
+   check): I/N/V/E/S/T each pass, fail or unknown, a Reason when not all pass. Do not allocate FEAT IDs yet; state hard
+   dependencies.
    For an accepted epic, run scripts/new_epic.py (template assets/epic.md).
 7. Get PO acceptance of the split. Only then run `record.py accept-split` (`--dry-run`
    first): it reserves the FEAT IDs (the next number skips every historical or withdrawn
    ID), keeps each legacy ID as an alias, creates or fills the epic and writes one DEC
    with the decider's role and name and an evidence URL, all in one logged step. Without
    evidence keep the proposals as drafts with an open Q; never invent approval.
+
+## Existing baseline
+
+When the project already runs capabilities under its own IDs, start from its legacy register, not
+from an idea: scripts/baseline.py import-register, propose-grouping, then per group reserve
+(each legacy ID stays an alias; provisional, not an accepted split) and brief (one brief and a
+first question: keep each legacy item as one feature or re-split by INVEST). The PO's decision
+is recorded with `record.py accept-split --from-register <group>`.
 
 ## Consumer check
 
@@ -100,7 +109,9 @@ Never carry secrets or personal data into the brief.
 - Brief structure and technique: references/idea-method.md; template: assets/idea-brief.md.
 - Questions: references/question-bank.md.
 - Slicing: references/invest.md.
-- Leakage scan: scripts/leakage.py; word list: references/leakage-words.md.
+- Leakage scan: scripts/leakage.py (it names the sections it did not scan; `--also` adds
+  one); word list: references/leakage-words.md.
+- Existing baseline: scripts/baseline.py; INVEST table: scripts/invest.py.
 - Epic reservation: scripts/new_epic.py; template: assets/epic.md.
 - Records: _shared/references/capabilities/records.md; assets/q.md and assets/dec.md show the fields.
 - Blocking choices: _shared/references/stop-and-ask.md.

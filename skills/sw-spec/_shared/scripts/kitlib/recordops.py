@@ -181,7 +181,7 @@ def _item(raw: str) -> tuple[str, list[str]]:
     return _line(title, "item title", 100), aliases
 
 
-def _alias_owners(ctx: Ctx) -> dict[str, str]:
+def alias_owners(ctx: Ctx) -> dict[str, str]:
     owners: dict[str, str] = {}
     entities, _ = rtm.scan(ctx.root)
     for key, entity in entities.items():
@@ -493,7 +493,7 @@ def reserve_features(ctx: Ctx, items: list[str], plan: Plan | None = None) -> Pl
     if not items:
         raise RecordError("reserve at least one feature: --item 'Title|alias1,alias2'")
     plan = plan or new_plan(ctx)
-    taken = _alias_owners(ctx)
+    taken = alias_owners(ctx)
     for raw in items:
         title, aliases = _item(raw)
         _check_aliases(ctx, aliases, taken)
@@ -591,6 +591,27 @@ def _split_decision(ctx: Ctx, plan: Plan, who: dict[str, Any], epic_keys: list[s
     plan.creates[path] = frontmatter.render(fm, body)
     plan.summary.append(f"create {path.relative_to(ctx.base).as_posix()}")
     return plan
+
+
+def register_group(ctx: Ctx, group: str) -> tuple[list[str], list[str]]:
+    """`(new item args, existing feature IDs)` for every legacy item of a register group."""
+    from kitlib import baseline, index
+
+    rows = index.read_register(ctx.base / baseline.REGISTER)
+    if rows is None:
+        raise RecordError("no legacy register; run baseline.py import-register first")
+    wanted = [r for r in rows if (r.get("group") or "ungrouped") == group]
+    if not wanted:
+        raise RecordError(f"the register has no group '{group}'")
+    owners = alias_owners(ctx)
+    items, existing = [], []
+    for row in wanted:
+        owner = owners.get(row["legacy_id"].casefold(), "")
+        if ":FEAT-" in owner:
+            existing.append(owner.split(":")[1])
+        else:
+            items.append(baseline.item_arg(row))
+    return items, existing
 
 
 def register(ctx: Ctx, key: str, cells: dict[str, str]) -> Plan:

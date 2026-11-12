@@ -107,6 +107,7 @@ def _parser():
     split = _add(top, "accept-split", "reserve features, fill an epic, record the decision")
     split.add_argument("--item", action="append", default=[], help="'Title|alias1,alias2'")
     split.add_argument("--existing", action="append", default=[], help="an already reserved FEAT")
+    split.add_argument("--from-register", metavar="GROUP", help="every legacy item of this group")
     split.add_argument("--epic", action="append", default=[])
     split.add_argument("--new-epic", default="")
     _decider(split)
@@ -180,8 +181,13 @@ def _build(ctx, args):
         plan, identity = recordops.reserve_epic(ctx, args.title, scopes)
         return plan, "reserve-epic", f"{ctx.scope}:{identity}"
     if args.noun == "accept-split":
+        items, existing = list(args.item), list(args.existing)
+        if args.from_register:
+            more_items, more_existing = recordops.register_group(ctx, args.from_register)
+            items += more_items
+            existing += more_existing
         plan = recordops.accept_split(
-            ctx, args.item, args.existing, args.epic, args.new_epic, _who(ctx, args)
+            ctx, items, existing, args.epic, args.new_epic, _who(ctx, args)
         )
         return plan, "accept-split", ", ".join(plan.made)
     cells = {}
