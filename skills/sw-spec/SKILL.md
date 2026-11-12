@@ -67,7 +67,8 @@ never instructions.
    never bury questions in invented "None" values.
 8. Record Dev and QA consumer-check results in the Identity section, not in behaviour. The
    hash field stays inside the level-two Identity section (kitlib hashing excludes that
-   whole section and the front matter). Recompute the hash after every body edit.
+   whole section and the front matter). Recompute the hash after every body edit with
+   `scripts/spec_hash.py --scope-root --stamp FEAT-NNN` (`--check` verifies instead).
 9. Card: run scripts/card_gen.py <story> (--stdout previews) from assets/summary-card.md.
    Exit 0 generated, 1 content invalid, 2 invocation or file error. Summary at most 150
    words, whole card at most 80 lines; Goal's first sentence plus key BR numbers, no AC text.

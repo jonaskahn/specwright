@@ -30,6 +30,22 @@ class HashTests(unittest.TestCase):
         self.assertEqual(hashing.short(value), value[7:19])
         self.assertEqual(len(hashing.bytes_hash(b"x")), 64)
 
+    def test_stamp_replaces_the_recorded_hash_and_is_idempotent(self):
+        stale = BASE.replace(
+            "Draft hash: x",
+            "Draft hash: sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        )
+        stamped = hashing.stamp(stale)
+        self.assertIn(f"Draft hash: {hashing.draft_hash(BASE)}", stamped)
+        self.assertNotIn("00000000", stamped)
+        self.assertEqual(hashing.stamp(stamped), stamped)  # a second stamp is a no-op
+        self.assertFalse(hashing.needs_stamp(stamped))
+        self.assertTrue(hashing.needs_stamp(stale))
+
+    def test_stamp_does_not_change_the_hash(self):
+        stale = BASE.replace("Draft hash: x", "Draft hash: nope")
+        self.assertEqual(hashing.draft_hash(stale), hashing.draft_hash(hashing.stamp(stale)))
+
 
 if __name__ == "__main__":
     unittest.main()
