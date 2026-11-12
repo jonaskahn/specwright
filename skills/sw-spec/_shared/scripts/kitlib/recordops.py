@@ -13,7 +13,19 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from kitlib import cite, epics, frontmatter, fsio, hashing, ids, rtm, schema, workspace, writelog
+from kitlib import (
+    candidates,
+    cite,
+    epics,
+    frontmatter,
+    fsio,
+    hashing,
+    ids,
+    rtm,
+    schema,
+    workspace,
+    writelog,
+)
 
 
 class RecordError(ValueError):
@@ -103,7 +115,16 @@ def citations(ctx: Ctx, values: list[str], quote: str = "") -> tuple[list[str], 
     """Stamped citations and the exact cited text; a dangling or non-matching one is refused."""
     sources = cite.Sources(ctx.base)
     stamped, blocks = [], []
+    expanded: list[str] = []
     for raw in values:
+        if candidates.ITEM_KEY.match(raw.strip()):
+            try:
+                expanded.extend(candidates.item_citations(ctx.base, raw))
+            except ValueError as exc:
+                raise RecordError(str(exc)) from None
+        else:
+            expanded.append(raw)
+    for raw in expanded:
         c = cite.parse_one(raw)
         found = [p for p in cite.problems(sources, c.text()) if p.severity == "error"]
         if found:

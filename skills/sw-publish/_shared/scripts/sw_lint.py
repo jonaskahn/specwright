@@ -39,7 +39,18 @@ PUBLISH = {"L-018", "L-037", "L-045", "L-046"}
 SYNC = set()
 RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), 57, *range(59, 63))}
 # Artifacts a reader looks up by name; each needs a title and an alias list (possibly empty).
-NAMED_TYPES = {"feature", "idea", "epic", "q", "dec", "cr", "risk", "snapshot", "amendment"}
+NAMED_TYPES = {
+    "feature",
+    "idea",
+    "epic",
+    "q",
+    "dec",
+    "cr",
+    "risk",
+    "snapshot",
+    "amendment",
+    "candidates",
+}
 PLACEHOLDER_TITLES = {
     "reserved feature",
     "tbd",

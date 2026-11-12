@@ -191,6 +191,7 @@ def input_files(root: Path, scopes: list[str]) -> list[Path]:
             ("snapshots", "*.md"),
             ("diagrams", "*.json"),
             ("01-analysis/baseline", "*.tsv"),
+            ("01-analysis/candidates", "*.tsv"),
         ):
             for path in sorted((base / folder).rglob(pattern)):
                 if path.is_file() and not path.is_symlink():

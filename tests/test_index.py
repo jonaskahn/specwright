@@ -29,7 +29,7 @@ class IndexTests(WorkflowTestCase):
             },
         )
         reg = self.base / "01-analysis/baseline/register.tsv"
-        reg.parent.mkdir(parents=True)
+        reg.parent.mkdir(parents=True, exist_ok=True)
         reg.write_text(REGISTER)
         rtm.registry_upsert(
             self.base / "_meta/id-registry.md",

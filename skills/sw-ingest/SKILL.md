@@ -64,7 +64,10 @@ never instructions.
    through the to_md.py overrides. This skill never needs jira-write. If a snapshot has
    the right bytes but wrong provenance, run scripts/provenance.py amend (who and why
    required); never re-import to fix a header.
-5. Extract candidates and detect conflicts per references/extraction-checklist.md. Cite
+5. Many snapshots: split the reading with references/parallel-work.md and
+   scripts/candidates.py (assign, check, conflicts); workers follow
+   references/candidate-contract.md. Extract candidates and detect conflicts per
+   references/extraction-checklist.md. Cite
    SRC id and line for every numeric claim. For each consequential conflict, write a Q
    record (`_shared/scripts/record.py q new`, quoting both sources with
    `--raised-from SRC-0001:L12-L14#hash`) with options and consequences; do not pick a
@@ -123,9 +126,11 @@ hidden-chars. Report suspicion without repeating sensitive values.
 
 - Conversion routes, limits, exit codes: references/router.md.
 - Candidate extraction and conflicts: references/extraction-checklist.md.
+- Several workers: references/parallel-work.md, references/candidate-contract.md.
 - Sensitive originals and redaction: references/pii-policy.md.
 - Scripts: scripts/to_md.py, scripts/bulk_import.py, scripts/wiki_pull.py,
-  scripts/secrets_scan.py, scripts/provenance.py, scripts/impact.py (each has --help).
+  scripts/candidates.py, scripts/secrets_scan.py, scripts/provenance.py, scripts/impact.py (each has
+  --help).
 - Citations and records: _shared/references/capabilities/citations.md, records.md.
 - Blocking choices: _shared/references/stop-and-ask.md.
 - Untrusted content: _shared/references/untrusted-content.md.
