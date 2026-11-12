@@ -3,6 +3,7 @@
   import type { Simulation } from 'd3-force';
   import type { GraphEdge, GraphNode } from '../../contract/types';
   import { build, hue, simulate, type Link, type Vertex } from '../lib/graph/layout';
+  import { kindWords } from '../lib/vocabulary';
 
   let {
     nodes,
@@ -21,6 +22,17 @@
   let height = 0;
   let frame = 0;
   let touched = false;
+  /** The layout has been framed once; later reheats from the mouse never move the view. */
+  let framed = false;
+  /** The item under the pointer, and the items it links to; they stay lit while the rest fades. */
+  let hover: string | null = null;
+  let near = new Map<string, Set<string>>();
+  let cursor = $state<'grab' | 'grabbing' | 'pointer'>('grab');
+  let tip = $state<{ x: number; y: number; kind: string; title: string; key: string; links: number } | null>(null);
+  /** Where the pointer is in the layout; items close to it step aside a little. */
+  const field = { x: 0, y: 0, on: false };
+  const PUSH = { radius: 64, force: 0.9 };
+  const calm = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const css = (name: string) => (canvas ? getComputedStyle(canvas).getPropertyValue(name).trim() : '#888');
 
@@ -28,8 +40,31 @@
     sim?.stop();
     const previous = new Map(vertices.map((v) => [v.key, v]));
     ({ vertices, links } = build(nodes, edges, previous));
+    near = new Map();
+    for (const l of links) {
+      const a = (l.source as Vertex).key;
+      const b = (l.target as Vertex).key;
+      near.set(a, (near.get(a) ?? new Set()).add(b));
+      near.set(b, (near.get(b) ?? new Set()).add(a));
+    }
+    hover = null;
+    tip = null;
     touched = false;
+    framed = false;
     sim = simulate(vertices, links, schedule);
+    sim.force('pointer', (alpha: number) => {
+      if (!field.on || !alpha) return;
+      for (const v of vertices) {
+        const dx = (v.x ?? 0) - field.x;
+        const dy = (v.y ?? 0) - field.y;
+        const d = Math.hypot(dx, dy);
+        if (d > 0.1 && d < PUSH.radius) {
+          const f = (1 - d / PUSH.radius) * PUSH.force;
+          v.vx = (v.vx ?? 0) + (dx / d) * f;
+          v.vy = (v.vy ?? 0) + (dy / d) * f;
+        }
+      }
+    });
     sim.on('end', fit);
     sim.alpha(0.9).restart();
     schedule();
@@ -37,7 +72,8 @@
 
   /** Frame the settled layout, unless the person has already panned or zoomed. */
   function fit() {
-    if (touched || !vertices.length || !width || !height) return;
+    if (touched || framed || !vertices.length || !width || !height) return;
+    framed = true;
     const xs = vertices.map((v) => v.x ?? 0);
     const ys = vertices.map((v) => v.y ?? 0);
     const dx = Math.max(...xs) - Math.min(...xs) + 80;
@@ -56,7 +92,8 @@
   }
 
   function shape(ctx: CanvasRenderingContext2D, v: Vertex) {
-    const { x = 0, y = 0, r } = v;
+    const { x = 0, y = 0 } = v;
+    const r = v.key === hover ? v.r * 1.3 : v.r;
     ctx.beginPath();
     if (v.kind === 'task') ctx.rect(x - r, y - r, r * 2, r * 2);
     else if (['q', 'dec', 'cr', 'amendment', 'risk'].includes(v.kind)) { ctx.moveTo(x, y - r * 1.2); ctx.lineTo(x + r * 1.15, y + r * 0.9); ctx.lineTo(x - r * 1.15, y + r * 0.9); ctx.closePath(); }
@@ -73,12 +110,14 @@
     ctx.clearRect(0, 0, width, height);
     ctx.translate(width / 2 + view.x, height / 2 + view.y);
     ctx.scale(view.k, view.k);
-    const dim = highlight.size > 0;
+    const focus = hover ? new Set([hover, ...(near.get(hover) ?? [])]) : highlight;
+    const dim = focus.size > 0;
+    const touching = (s: Vertex, t: Vertex) => (hover ? s.key === hover || t.key === hover : dim && focus.has(s.key) && focus.has(t.key));
     const rule = css('--rule-strong') || '#999';
     for (const l of links) {
       const s = l.source as Vertex;
       const t = l.target as Vertex;
-      const lit = dim && highlight.has(s.key) && highlight.has(t.key);
+      const lit = touching(s, t);
       ctx.globalAlpha = dim && !lit ? 0.12 : l.cls === 'mentioned' ? 0.5 : 0.9;
       ctx.strokeStyle = lit ? css('--accent') : rule;
       ctx.lineWidth = (lit ? 2 : l.cls === 'structural' ? 1.4 : 1) / view.k;
@@ -98,7 +137,7 @@
         const dy = (t.y ?? 0) - (s.y ?? 0);
         const len = Math.hypot(dx, dy);
         if (len < t.r * 2.5) continue;
-        const lit = dim && highlight.has(s.key) && highlight.has(t.key);
+        const lit = touching(s, t);
         const ux = dx / len;
         const uy = dy / len;
         const tipX = (t.x ?? 0) - ux * (t.r + 1);
@@ -118,19 +157,19 @@
     ctx.font = `${11 / Math.min(view.k, 1.4)}px ${css('--font-body') || 'sans-serif'}`;
     ctx.textAlign = 'center';
     for (const v of vertices) {
-      const lit = !dim || highlight.has(v.key);
+      const lit = !dim || focus.has(v.key);
       ctx.globalAlpha = lit ? 1 : 0.18;
       shape(ctx, v);
       ctx.fillStyle = color(v.kind);
       ctx.fill();
-      if (v.key === selected || (dim && highlight.has(v.key))) {
+      if (v.key === selected || v.key === hover || (dim && focus.has(v.key))) {
         ctx.lineWidth = 2.2 / view.k;
-        ctx.strokeStyle = v.key === selected ? ink : css('--accent');
+        ctx.strokeStyle = v.key === selected || v.key === hover ? ink : css('--accent');
         ctx.stroke();
       }
-      if (v.key === selected || (lit && (view.k > 1.4 || (dim && highlight.size < 14)))) {
+      if (v.key === selected || v.key === hover || (lit && (view.k > 1.4 || (dim && focus.size < 14)))) {
         ctx.fillStyle = ink;
-        ctx.fillText(v.key.replace(/^[A-Z][A-Z0-9]*:/, ''), v.x ?? 0, (v.y ?? 0) - v.r - 5);
+        ctx.fillText(v.key.replace(/^[A-Z][A-Z0-9]*:/, ''), v.x ?? 0, (v.y ?? 0) - v.r * (v.key === hover ? 1.3 : 1) - 5);
       }
     }
     ctx.globalAlpha = 1;
@@ -163,24 +202,74 @@
     return best?.key ?? null;
   }
 
-  let drag: { x: number; y: number; moved: boolean } | null = null;
+  let drag: { x: number; y: number; moved: boolean; node: Vertex | null } | null = null;
   function down(e: PointerEvent) {
     touched = true;
     canvas!.setPointerCapture(e.pointerId);
-    drag = { x: e.clientX, y: e.clientY, moved: false };
+    const key = hit(e);
+    const node = key ? (vertices.find((v) => v.key === key) ?? null) : null;
+    if (node) {
+      node.fx = node.x;
+      node.fy = node.y;
+      if (!calm()) sim?.alphaTarget(0.2).restart();
+    }
+    drag = { x: e.clientX, y: e.clientY, moved: false, node };
+    cursor = 'grabbing';
+    field.on = false;
   }
   function move(e: PointerEvent) {
-    if (!drag) return;
+    if (!drag) {
+      const key = hit(e);
+      const p = world(e);
+      const box = canvas!.getBoundingClientRect();
+      field.x = p.x;
+      field.y = p.y;
+      field.on = !key && !calm();
+      if (field.on && sim && sim.alpha() < 0.05) sim.alpha(0.06).restart();
+      if (key !== hover) {
+        hover = key;
+        cursor = key ? 'pointer' : 'grab';
+      }
+      const v = key ? vertices.find((x) => x.key === key) : null;
+      tip = v ? { x: Math.min(e.clientX - box.left + 18, Math.max(0, width - 240)), y: e.clientY - box.top + 20, kind: kindWords(v.kind), title: v.title, key: v.key, links: near.get(v.key)?.size ?? 0 } : null;
+      schedule();
+      return;
+    }
     const dx = e.clientX - drag.x;
     const dy = e.clientY - drag.y;
     if (Math.abs(dx) + Math.abs(dy) > 3) drag.moved = true;
-    view.x += dx; view.y += dy;
-    drag.x = e.clientX; drag.y = e.clientY;
+    if (drag.node) {
+      const p = world(e);
+      drag.node.fx = p.x;
+      drag.node.fy = p.y;
+      if (calm()) {
+        drag.node.x = p.x;
+        drag.node.y = p.y;
+      }
+    } else {
+      view.x += dx;
+      view.y += dy;
+    }
+    drag.x = e.clientX;
+    drag.y = e.clientY;
     schedule();
   }
   function up(e: PointerEvent) {
     if (drag && !drag.moved) onselect(hit(e));
+    if (drag?.node) {
+      drag.node.fx = null;
+      drag.node.fy = null;
+      sim?.alphaTarget(0);
+    }
     drag = null;
+    cursor = hover ? 'pointer' : 'grab';
+  }
+  function leave() {
+    field.on = false;
+    hover = null;
+    tip = null;
+    if (!drag) cursor = 'grab';
+    schedule();
   }
   function wheel(e: WheelEvent) {
     e.preventDefault();
@@ -192,7 +281,7 @@
     view.y = e.clientY - box.top - height / 2 - before.y * view.k;
     schedule();
   }
-  function reset() { touched = false; fit(); }
+  function reset() { touched = false; framed = false; fit(); }
 
   $effect(() => {
     void nodes; void edges;
@@ -217,6 +306,15 @@
   onpointerdown={down}
   onpointermove={move}
   onpointerup={up}
+  onpointerleave={leave}
+  style:cursor={cursor}
   onwheel={wheel}
   ondblclick={reset}
 ></canvas>
+{#if tip}
+  <div class="graph-tip" role="presentation" style:left={`${tip.x}px`} style:top={`${tip.y}px`}>
+    <p class="sub">{tip.kind} · <span class="mono">{tip.key.replace(/^[A-Z][A-Z0-9]*:/, '')}</span></p>
+    <strong>{tip.title}</strong>
+    <p class="sub">{tip.links} {tip.links === 1 ? 'link' : 'links'}</p>
+  </div>
+{/if}

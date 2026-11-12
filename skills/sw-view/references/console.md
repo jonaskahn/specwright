@@ -39,6 +39,15 @@ match inside a folded feature marks that feature, and choosing a criterion or ta
 outline or an address opens its feature. A map with more than 250 objectives, epics and features
 shows the chain around one chosen item instead.
 
+## Graph page views
+
+The outline stays beside all four views (Trace, Network, Table, Outline); on a narrow screen it
+gives way to the Outline view. In the Outline view the chosen item's status, file and links are
+shown beside the outline. In the Network view the item under the pointer grows, its neighbours and
+links stay lit while the rest fade, and a tip names it. Items close to the pointer step aside a
+little, and an item can be dragged; a click still chooses it. With reduced motion set, items do
+not move on their own.
+
 ## Preview and tables
 
 Pressing View on a table row or board card, or the eye on a graph card or outline row, opens the

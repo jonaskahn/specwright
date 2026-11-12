@@ -2,6 +2,7 @@
   import DataTable from '../components/DataTable.svelte';
   import GraphCanvas from '../components/GraphCanvas.svelte';
   import Icon from '../components/Icon.svelte';
+  import OutlineDetail from '../components/OutlineDetail.svelte';
   import OutlinePane from '../components/OutlinePane.svelte';
   import OwnerEmpty from '../components/OwnerEmpty.svelte';
   import PageHead from '../components/PageHead.svelte';
@@ -134,11 +135,12 @@
       </div>
     {/if}
 
-    <div class="graph-split" class:shut={!outlineOpen || view === 'outline'}>
-      {#if view !== 'outline'}<aside class="outline-side" aria-label="Outline"><OutlinePane {roots} {selected} onpick={pick} onview={view_} /></aside>{/if}
+    <div class="graph-split" class:shut={!outlineOpen && view !== 'outline'}>
+      <aside class="outline-side" aria-label="Outline"><OutlinePane {roots} {selected} onpick={pick} onview={view_} /></aside>
       <div class="stack-sm">
         {#if view === 'outline'}
-          <OutlinePane {roots} {selected} onpick={pick} onview={view_} />
+          <OutlineDetail {selected} onpick={pick} onview={view_} />
+          <div class="outline-narrow"><OutlinePane {roots} {selected} onpick={pick} onview={view_} /></div>
         {:else if view === 'trace'}
           {#if project === '*'}
             {#each sections as s (s.scope)}
