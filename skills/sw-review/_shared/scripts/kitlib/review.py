@@ -2,14 +2,11 @@
 
 from __future__ import annotations
 
-import argparse
-import json
 import re
-import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from kitlib import frontmatter, hashing, miniyaml
+from kitlib import frontmatter, hashing, miniyaml, schema
 
 MARKER = re.compile(r"\[sw:approve ([A-Z]{2,5}:FEAT-\d{3}) sha256:([0-9a-f]{12})\]")
 SAFE_URL = re.compile(r"^https://[^\s]+$")
@@ -19,18 +16,36 @@ class ApprovalError(ValueError):
     """Evidence is absent, unverifiable or bound to another draft."""
 
 
+KINDS = {"comment", "transition", "pr", "chat", "meeting"}
+# Chat and meeting evidence is the weakest: a project opts in and the reference must be auditable.
+OPT_IN = {"chat", "meeting"}
+
+
 @dataclass
 class Evidence:
-    kind: str  # comment, transition or pr
-    author: str
+    kind: str  # comment, transition, pr, chat or meeting
+    author: str  # the approver's account ID
     url: str
     body: str = ""
     verified: bool = True
+    role: str = ""
+    name: str = ""
+    session_ref: str = ""
+
+
+def approver_records(manifest: Path) -> list[dict]:
+    data = miniyaml.loads(manifest.read_text(encoding="utf-8"))
+    return [dict(person) for person in data.get("approvers") or []]
 
 
 def approvers(manifest: Path) -> set[str]:
+    return {str(person.get("account_id")) for person in approver_records(manifest)}
+
+
+def allowed_kinds(manifest: Path) -> list[str]:
     data = miniyaml.loads(manifest.read_text(encoding="utf-8"))
-    return {str(person.get("account_id")) for person in data.get("approvers") or []}
+    kinds = (data.get("evidence") or {}).get("allowed_kinds")
+    return [str(k) for k in kinds] if kinds else list(schema.DEFAULT_EVIDENCE_KINDS)
 
 
 def marker_for(draft: str, scope_id: str) -> str:
@@ -41,13 +56,27 @@ def verify_evidence(draft: str, scope_id: str, manifest: Path, evidence: Evidenc
     """Accept only a configured approver, an HTTPS reference and a matching draft hash."""
     if not evidence.verified:
         raise ApprovalError("evidence identity has not been verified")
-    if evidence.kind not in {"comment", "transition", "pr"}:
+    if evidence.kind not in KINDS:
         raise ApprovalError("unknown evidence kind")
     if not SAFE_URL.match(evidence.url):
         raise ApprovalError("evidence URL must be https")
-    if evidence.author not in approvers(manifest):
+    person = next(
+        (p for p in approver_records(manifest) if str(p.get("account_id")) == evidence.author),
+        None,
+    )
+    if person is None:
         raise ApprovalError("author is not a configured approver")
-    if evidence.kind == "comment":
+    for field, given in (("role", evidence.role), ("name", evidence.name)):
+        if given and str(person.get(field, "")).casefold() != given.strip().casefold():
+            raise ApprovalError(f"{field} does not match the configured approver")
+    if evidence.kind in OPT_IN:
+        if evidence.kind not in allowed_kinds(manifest):
+            raise ApprovalError(f"this project does not accept {evidence.kind} evidence")
+        if not evidence.session_ref.strip():
+            raise ApprovalError(
+                f"{evidence.kind} evidence needs a session reference to audit later"
+            )
+    if evidence.kind in ("comment", *OPT_IN):
         match = MARKER.search(evidence.body)
         if not match:
             raise ApprovalError("comment lacks an approval marker")
@@ -61,6 +90,8 @@ def verify_evidence(draft: str, scope_id: str, manifest: Path, evidence: Evidenc
         raise ApprovalError("transition evidence must name the transition")
     digest = hashing.short(hashing.draft_hash(draft))
     signoff = f"{evidence.author} | {evidence.kind} | sha256:{digest} | {evidence.url}"
+    if evidence.kind in OPT_IN:
+        signoff += f" | session:{' '.join(evidence.session_ref.split())}"
     return {"status": "ready-to-publish", "signoff": signoff, "verified": evidence.verified}
 
 
@@ -93,45 +124,3 @@ def promote(draft_path: Path, scope_id: str, manifest: Path, evidence: Evidence)
 def stale(draft: str, signoffs: list[str]) -> bool:
     expected = hashing.short(hashing.draft_hash(draft))
     return not any(expected in str(line) and "https://" in str(line) for line in signoffs)
-
-
-def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("draft", type=Path)
-    parser.add_argument("--scope-id", required=True)
-    parser.add_argument("--manifest", type=Path, required=True)
-    parser.add_argument("--author", required=True)
-    parser.add_argument("--url", required=True)
-    parser.add_argument("--kind", choices=["comment", "transition", "pr"], required=True)
-    parser.add_argument("--body", default="")
-    parser.add_argument("--apply", action="store_true")
-    args = parser.parse_args(argv)
-    try:
-        draft = args.draft.read_text(encoding="utf-8")
-        result = verify_evidence(
-            draft,
-            args.scope_id,
-            args.manifest,
-            Evidence(args.kind, args.author, args.url, args.body),
-        )
-        if args.apply:
-            from kitlib import fsio
-
-            fsio.atomic_write(
-                args.draft,
-                promote(
-                    args.draft,
-                    args.scope_id,
-                    args.manifest,
-                    Evidence(args.kind, args.author, args.url, args.body),
-                ),
-            )
-        print(json.dumps(result))
-        return 0
-    except (ApprovalError, OSError, ValueError) as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        return 2
-
-
-if __name__ == "__main__":
-    sys.exit(main())

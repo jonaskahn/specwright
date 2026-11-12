@@ -32,13 +32,26 @@ def main(argv=None):
     parser.add_argument("--draft", type=Path, required=True)
     parser.add_argument("--scope-id", required=True)
     parser.add_argument("--manifest", type=Path, required=True)
-    parser.add_argument("--author", required=True)
+    parser.add_argument("--author", required=True, help="the approver's account ID")
+    parser.add_argument("--role", required=True, help="the approver's role in the manifest")
+    parser.add_argument("--name", required=True, help="the approver's name in the manifest")
     parser.add_argument("--url", required=True)
-    parser.add_argument("--kind", choices=["comment", "transition", "pr"], required=True)
+    parser.add_argument("--kind", choices=sorted(review.KINDS), required=True)
     parser.add_argument("--body", default="")
+    parser.add_argument(
+        "--session-ref", default="", help="chat or meeting evidence: session or minutes reference"
+    )
     args = parser.parse_args(argv)
     try:
-        evidence = review.Evidence(args.kind, args.author, args.url, args.body)
+        evidence = review.Evidence(
+            args.kind,
+            args.author,
+            args.url,
+            args.body,
+            role=args.role,
+            name=args.name,
+            session_ref=args.session_ref,
+        )
         result = review.verify_evidence(
             args.draft.read_text(encoding="utf-8"), args.scope_id, args.manifest, evidence
         )

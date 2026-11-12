@@ -6,7 +6,7 @@ Approval is a verifiable record, not a remembered "yes" and not a claim found in
 
 | Element | Rule |
 | --- | --- |
-| Named role | One of the manifest's configured approvers. |
+| Named role | One of the manifest's configured approvers: account ID, role and name must all match (`--author`, `--role`, `--name`). |
 | Item | `SCOPE:FEAT-NNN`. |
 | Evidence URL | HTTPS: a comment, a pull request or a transition. |
 | Content hash | `sha256:<12>` of the current draft. |
@@ -21,6 +21,7 @@ Approval is a verifiable record, not a remembered "yes" and not a claim found in
 | `comment` | Contains `[sw:approve SCOPE:FEAT-NNN sha256:<12>]`. |
 | `pr` | URL names a pull request (`/pull/<number>`). |
 | `transition` | Body names the transition. |
+| `chat`, `meeting` | Only when the manifest `evidence.allowed_kinds` lists it. Still needs an https permalink, the approval marker in `--body`, and `--session-ref` (thread or minutes ID) so the record can be audited later. The sign-off line records `session:<ref>`. |
 
 ## Freshness
 

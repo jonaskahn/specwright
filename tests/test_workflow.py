@@ -6,6 +6,8 @@ from pathlib import Path
 
 from kitlib import frontmatter, hashing, jira_port, publish, review, tables, workspace
 
+ROOT = Path(__file__).resolve().parent.parent
+
 DRAFT = """---
 id: FEAT-001
 type: feature
@@ -121,6 +123,82 @@ class ReviewTests(WorkflowTestCase):
             review.verify_evidence(
                 DRAFT, "REF:FEAT-001", self.manifest, self.evidence(url="http://example.test")
             )
+
+    def test_role_and_name_must_match_the_configured_approver(self):
+        ok = self.evidence(role="po", name="LAN")
+        self.assertEqual(
+            review.verify_evidence(DRAFT, "REF:FEAT-001", self.manifest, ok)["status"],
+            "ready-to-publish",
+        )
+        for wrong in ({"role": "Dev"}, {"name": "Someone Else"}):
+            with self.assertRaisesRegex(review.ApprovalError, "does not match"):
+                review.verify_evidence(DRAFT, "REF:FEAT-001", self.manifest, self.evidence(**wrong))
+
+    def allow(self, kind):
+        from kitlib import miniyaml
+
+        data = miniyaml.loads(self.manifest.read_text())
+        data["evidence"]["allowed_kinds"].append(kind)
+        self.manifest.write_text(miniyaml.dumps(data))
+
+    def test_chat_needs_opt_in_and_meeting_needs_a_session_reference(self):
+        chat = self.evidence(kind="chat", session_ref="thread-9")
+        with self.assertRaisesRegex(review.ApprovalError, "does not accept"):
+            review.verify_evidence(DRAFT, "REF:FEAT-001", self.manifest, chat)
+        self.allow("chat")
+        for kind in ("chat", "meeting"):  # a meeting is allowed by default
+            with self.assertRaisesRegex(review.ApprovalError, "session reference"):
+                review.verify_evidence(
+                    DRAFT, "REF:FEAT-001", self.manifest, self.evidence(kind=kind)
+                )
+            evidence = self.evidence(kind=kind, session_ref="ref-9")
+            result = review.verify_evidence(DRAFT, "REF:FEAT-001", self.manifest, evidence)
+            self.assertTrue(result["signoff"].endswith("| session:ref-9"), kind)
+            self.assertFalse(review.stale(DRAFT, [result["signoff"]]))
+
+    def test_chat_evidence_still_needs_the_marker_and_an_https_permalink(self):
+        self.allow("chat")
+        for bad in (
+            self.evidence(kind="chat", session_ref="t", body="approved!"),
+            self.evidence(kind="chat", session_ref="t", url="http://chat.test/1"),
+        ):
+            with self.assertRaises(review.ApprovalError):
+                review.verify_evidence(DRAFT, "REF:FEAT-001", self.manifest, bad)
+
+    def test_the_script_requires_the_approver_role_and_name(self):
+        import subprocess
+        import sys
+
+        script = ROOT / "skills/sw-review/scripts/review.py"
+        base = [
+            sys.executable,
+            str(script),
+            "verify",
+            "--draft",
+            str(self.draft),
+            "--scope-id",
+            "REF:FEAT-001",
+            "--manifest",
+            str(self.manifest),
+            "--author",
+            "712020:aa11",
+            "--url",
+            "https://example.test/c/1",
+            "--kind",
+            "comment",
+            "--body",
+            review.marker_for(self.draft.read_text(), "REF:FEAT-001"),
+        ]
+        missing = subprocess.run(base, capture_output=True, text=True, timeout=30)
+        self.assertEqual(missing.returncode, 2)
+        full = subprocess.run(
+            [*base, "--role", "PO", "--name", "Lan"], capture_output=True, text=True, timeout=30
+        )
+        self.assertEqual(full.returncode, 0, full.stderr)
+        wrong = subprocess.run(
+            [*base, "--role", "PO", "--name", "Mallory"], capture_output=True, text=True, timeout=30
+        )
+        self.assertEqual(wrong.returncode, 2)
 
     def test_promotion_keeps_the_body_hash_stable(self):
         before = hashing.draft_hash(DRAFT)

@@ -22,7 +22,7 @@
   "scripts/kitlib/miniyaml.py": "73a1bbe68a05",
   "scripts/kitlib/provenance.py": "7657b964c364",
   "scripts/kitlib/recordops.py": "7ede2f3d65b6",
-  "scripts/kitlib/review.py": "f97ba6ac3124",
+  "scripts/kitlib/review.py": "3d64a3c9f758",
   "scripts/kitlib/rtm.py": "dc57dda3403f",
   "scripts/kitlib/schema.py": "1b26b5e99c4f",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
