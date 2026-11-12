@@ -483,6 +483,15 @@ def _walk_parser(parser, words: list[str]):
     return current, rest
 
 
+def _check_checkpoint(skill: Path, report: Report) -> None:
+    """Every skill that writes the spec ends with a checkpoint (V131); sw-view writes none."""
+    if skill.name == "sw-view" or not (skill / "_shared").is_dir():
+        return
+    path = skill / "SKILL.md"
+    if path.is_file() and "_shared/scripts/checkpoint.py" not in path.read_text(encoding="utf-8"):
+        report.add(path, 1, "V131", "name _shared/scripts/checkpoint.py as the final step")
+
+
 def _check_record_commands(skill: Path, root: Path, report: Report) -> None:
     """Every `record.py ... --flag` in shipped text must name flags the command accepts (V106)."""
     parser = _record_parser(root)
@@ -609,6 +618,7 @@ def validate_skill(
         _check_script_mentions(skill, root, report)
         _check_shared_closure(skill, root, report)
         _check_record_commands(skill, root, report)
+        _check_checkpoint(skill, report)
     if (skill / "scripts" / "draw_types").is_dir():
         _check_draw_contract(skill, root, report, packaged)
 

@@ -192,6 +192,12 @@ class ValidateTests(unittest.TestCase):
                 (skill / "_shared/scripts/graph.py").is_file(), f"{skill.name} lacks graph.py"
             )
 
+    def test_v131_a_writing_skill_names_the_checkpoint(self):
+        (self.skill / "_shared").mkdir()
+        self.assertIn("V131", self.codes(self.run_validate()))
+        (self.skill / "SKILL.md").write_text(GOOD + "Run _shared/scripts/checkpoint.py commit.\n")
+        self.assertNotIn("V131", self.codes(self.run_validate()))
+
     def test_symlink_inside_a_skill(self):
         target = self.root / "outside.md"
         target.write_text("external\n")
