@@ -37,7 +37,7 @@ GATES = {"draft": 10, "review": 20, "publish": 30}
 REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {"L-017", "L-062"}
 PUBLISH = {"L-018", "L-037", "L-045", "L-046"}
 SYNC = set()
-RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), 57, 62)}
+RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), 57, *range(59, 63))}
 # Artifacts a reader looks up by name; each needs a title and an alias list (possibly empty).
 NAMED_TYPES = {"feature", "idea", "epic", "q", "dec", "cr", "risk", "snapshot", "amendment"}
 PLACEHOLDER_TITLES = {
@@ -440,6 +440,31 @@ def lint_document(doc, ctx):
         emit("L-016", "status is not valid for this type")
     if fm.get("scope", ctx.scope) != ctx.scope:
         emit("L-043", "front matter scope differs from the selected project")
+    if fm["type"] == "q" and fm.get("status") != "withdrawn":
+        targets = [r for f in ("affects", "affected") for r in ids.find_refs(str(fm.get(f, "")))]
+        if not targets:
+            emit("L-059", "a question names the items it blocks in `affects`")
+    if fm["type"] == "dec" and not (
+        fm.get("subtype") == "lifecycle"
+        or fm.get("origin") == "local-transition"
+        or fm.get("waives")
+    ):
+        who = fm.get("decided_by")
+        who = who if isinstance(who, dict) else {}
+        if not str(who.get("role", "")).strip() or not str(who.get("name", "")).strip():
+            emit("L-060", "a decision records decided_by with a role and a name")
+        elif (approvers := sequence(ctx.manifest.get("approvers"))) and not any(
+            str(a.get("role", "")).casefold() == str(who["role"]).casefold()
+            and str(a.get("name", "")).casefold() == str(who["name"]).casefold()
+            for a in approvers
+            if isinstance(a, dict)
+        ):
+            emit("L-061", f"{who['name']} ({who['role']}) is not in the manifest approvers")
+        if (
+            fm.get("evidence_kind") not in schema.EVIDENCE_KINDS
+            or not str(fm.get("evidence_ref", "")).strip()
+        ):
+            emit("L-060", "a decision records evidence_kind and evidence_ref")
     if fm["type"] == "feature" and not doc.card:
         pending = sorted(
             d.spec_id

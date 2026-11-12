@@ -40,7 +40,7 @@
   "scripts/kitlib/writelog.py": "1a34e6e3c8c9",
   "scripts/status.py": "785c604bad2b",
   "scripts/store.py": "71798bc4689c",
-  "scripts/sw_lint.py": "fbd6827f1c63",
+  "scripts/sw_lint.py": "ea53b08c5802",
   "scripts/trace.py": "cdcb3f5231f2"
  },
  "kit_version": "0.3.0"

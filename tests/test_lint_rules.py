@@ -422,6 +422,46 @@ class RuleTests(unittest.TestCase):
         found = self.findings(doc(GOOD + "\nSource: SRC-0001:L5\n"))
         self.assertEqual([f.sev for f in found if f.rule == "L-057"], ["warn"])
 
+    def test_l059(self):
+        head = "---\nid: Q-001\ntype: q\nscope: REF\ntitle: Window\naliases: []\nstatus: open\n"
+        bad = doc(head + "---\n# Window\n", "records/Q-001.md")
+        good = doc(head + "affects: [FEAT-001]\n---\n# Window\n", "records/Q-001.md")
+        self.check_rule("L-059", bad, good)
+        withdrawn = doc(head.replace("open", "withdrawn") + "---\n# Window\n", "records/Q-001.md")
+        self.assertNotIn("L-059", {f.rule for f in self.findings(withdrawn)})
+
+    def decision(self, extra):
+        head = (
+            "---\nid: DEC-001\ntype: dec\nscope: REF\ntitle: Window\naliases: []\n"
+            "status: accepted\n"
+        )
+        return doc(head + extra + "---\n# Decision\n", "records/DEC-001.md")
+
+    GOOD_WHO = (
+        "decided_by:\n  role: PO\n  name: Lan\nevidence_kind: url\nevidence_ref: https://e.test/1\n"
+    )
+
+    def test_l060(self):
+        self.check_rule("L-060", self.decision(""), self.decision(self.GOOD_WHO))
+        no_evidence = self.decision("decided_by:\n  role: PO\n  name: Lan\n")
+        self.assertIn("L-060", {f.rule for f in self.findings(no_evidence)})
+        blank = self.decision(
+            "decided_by:\n  role: PO\n  name: ''\nevidence_kind: url\nevidence_ref: x\n"
+        )
+        self.assertIn("L-060", {f.rule for f in self.findings(blank)})
+        lifecycle = self.decision("subtype: lifecycle\norigin: local-transition\n")
+        self.assertNotIn("L-060", {f.rule for f in self.findings(lifecycle)})
+        waiver = self.decision("waives: L-009\n")
+        self.assertNotIn("L-060", {f.rule for f in self.findings(waiver)})
+
+    def test_l061(self):
+        manifest = {"approvers": [{"role": "PO", "name": "Lan", "account_id": "1"}]}
+        good = self.decision(self.GOOD_WHO)
+        bad = self.decision(self.GOOD_WHO.replace("Lan", "Stranger"))
+        self.assertNotIn("L-061", {f.rule for f in self.findings(good, manifest=manifest)})
+        self.assertIn("L-061", {f.rule for f in self.findings(bad, manifest=manifest)})
+        self.assertNotIn("L-061", {f.rule for f in self.findings(bad)})
+
     def test_l062(self):
         amendment = doc(
             "---\nid: AMD-001\ntype: amendment\nscope: REF\ntitle: Amend FEAT-001\naliases: []\n"

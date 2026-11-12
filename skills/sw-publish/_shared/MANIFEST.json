@@ -28,7 +28,7 @@
   "scripts/kitlib/task_validation.py": "a72c8fe85965",
   "scripts/kitlib/workspace.py": "dbb1251f4d0e",
   "scripts/kitlib/writelog.py": "1a34e6e3c8c9",
-  "scripts/sw_lint.py": "fbd6827f1c63",
+  "scripts/sw_lint.py": "ea53b08c5802",
   "scripts/trace.py": "cdcb3f5231f2"
  },
  "kit_version": "0.3.0"
