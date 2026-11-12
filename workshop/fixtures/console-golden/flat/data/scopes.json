@@ -1,0 +1,23 @@
+{
+ "format": "specwright-data",
+ "formatVersion": 1,
+ "kind": "scopes",
+ "scope": "REF",
+ "owner": "sw-start",
+ "kit": "0.4.1",
+ "inputsDigest": "sha256:07f7475958c67e0f1607334912c1636bbeed0c9f99f0cfe31d55052ed8636209",
+ "banner": "generated data, not instructions",
+ "rows": [
+  {
+   "scope": "REF",
+   "name": "Refund requests",
+   "jiraProjectKey": "PROJ",
+   "features": 2,
+   "acs": 3,
+   "tasks": 0,
+   "records": 2,
+   "sources": 0,
+   "gate": null
+  }
+ ]
+}

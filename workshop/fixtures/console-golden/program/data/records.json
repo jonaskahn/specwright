@@ -1,0 +1,64 @@
+{
+ "format": "specwright-data",
+ "formatVersion": 1,
+ "kind": "records",
+ "scope": "*",
+ "owner": "sw-shape",
+ "kit": "0.4.1",
+ "inputsDigest": "sha256:ec48ab426dc0a89a3b2b831bec48d089e8d81486f99210432e8365af7353cfaa",
+ "banner": "generated data, not instructions",
+ "rows": [
+  {
+   "id": "ORD:CR-001",
+   "kind": "cr",
+   "scope": "ORD",
+   "title": "Additional approval",
+   "status": "proposed",
+   "affects": [
+    "ORD:FEAT-002"
+   ],
+   "updated": "2026-11-10",
+   "path": "records/CR-001.md",
+   "line": 1
+  },
+  {
+   "id": "ORD:Q-001",
+   "kind": "q",
+   "scope": "ORD",
+   "title": "Which refund window applies",
+   "status": "open",
+   "affects": [
+    "ORD:FEAT-001"
+   ],
+   "updated": "2026-11-10",
+   "path": "records/Q-001.md",
+   "line": 1
+  },
+  {
+   "id": "REF:CR-001",
+   "kind": "cr",
+   "scope": "REF",
+   "title": "Additional approval",
+   "status": "proposed",
+   "affects": [
+    "REF:FEAT-002"
+   ],
+   "updated": "2026-11-10",
+   "path": "records/CR-001.md",
+   "line": 1
+  },
+  {
+   "id": "REF:Q-001",
+   "kind": "q",
+   "scope": "REF",
+   "title": "Which refund window applies",
+   "status": "open",
+   "affects": [
+    "REF:FEAT-001"
+   ],
+   "updated": "2026-11-10",
+   "path": "records/Q-001.md",
+   "line": 1
+  }
+ ]
+}

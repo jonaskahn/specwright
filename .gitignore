@@ -6,3 +6,10 @@ dist/
 .DS_Store
 .idea/
 .claude/worktrees/
+console/node_modules/
+console/dist/
+console/.vite/
+console/coverage/
+# generated from kitlib/dataformat.py; packed into the sw-view skill, never committed
+console/contract/
+!skills/sw-view/assets/console.zip

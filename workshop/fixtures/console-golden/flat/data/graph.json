@@ -1,0 +1,190 @@
+{
+ "format": "specwright-data",
+ "formatVersion": 1,
+ "kind": "graph",
+ "scope": "REF",
+ "owner": "sw-start",
+ "kit": "0.4.1",
+ "inputsDigest": "sha256:07f7475958c67e0f1607334912c1636bbeed0c9f99f0cfe31d55052ed8636209",
+ "banner": "generated data, not instructions",
+ "nodes": [
+  {
+   "key": "REF:AC-001-1",
+   "kind": "ac",
+   "status": "active",
+   "title": "Eligible request",
+   "scope": "REF",
+   "path": "02-drafts/FEAT-001.story.md",
+   "line": 20,
+   "jira": null,
+   "aliases": [],
+   "station": null,
+   "condition": null
+  },
+  {
+   "key": "REF:AC-001-2",
+   "kind": "ac",
+   "status": "active",
+   "title": "Duplicate request",
+   "scope": "REF",
+   "path": "02-drafts/FEAT-001.story.md",
+   "line": 25,
+   "jira": null,
+   "aliases": [],
+   "station": null,
+   "condition": null
+  },
+  {
+   "key": "REF:AC-002-1",
+   "kind": "ac",
+   "status": "active",
+   "title": "Approval",
+   "scope": "REF",
+   "path": "02-drafts/FEAT-002.story.md",
+   "line": 16,
+   "jira": null,
+   "aliases": [],
+   "station": null,
+   "condition": null
+  },
+  {
+   "key": "REF:BO-001",
+   "kind": "bo",
+   "status": "approved",
+   "title": "Reduce refund waiting time",
+   "scope": "REF",
+   "path": "01-analysis/BO-001.md",
+   "line": 1,
+   "jira": null,
+   "aliases": [],
+   "station": null,
+   "condition": null
+  },
+  {
+   "key": "REF:CR-001",
+   "kind": "cr",
+   "status": "proposed",
+   "title": "Additional approval",
+   "scope": "REF",
+   "path": "records/CR-001.md",
+   "line": 1,
+   "jira": null,
+   "aliases": [],
+   "station": null,
+   "condition": null
+  },
+  {
+   "key": "REF:FEAT-001",
+   "kind": "feat",
+   "status": "in-review",
+   "title": "Submit a refund request",
+   "scope": "REF",
+   "path": "02-drafts/FEAT-001.story.md",
+   "line": 1,
+   "jira": null,
+   "aliases": [],
+   "station": "review",
+   "condition": "in-progress"
+  },
+  {
+   "key": "REF:FEAT-002",
+   "kind": "feat",
+   "status": "draft",
+   "title": "Decide a refund request",
+   "scope": "REF",
+   "path": "02-drafts/FEAT-002.story.md",
+   "line": 1,
+   "jira": null,
+   "aliases": [],
+   "station": "spec",
+   "condition": "in-progress"
+  },
+  {
+   "key": "REF:Q-001",
+   "kind": "q",
+   "status": "open",
+   "title": "Which refund window applies",
+   "scope": "REF",
+   "path": "records/Q-001.md",
+   "line": 1,
+   "jira": null,
+   "aliases": [],
+   "station": null,
+   "condition": null
+  }
+ ],
+ "edges": [
+  {
+   "from": "REF:CR-001",
+   "rel": "affects",
+   "to": "REF:FEAT-002",
+   "class": "declared",
+   "file": "records/CR-001.md",
+   "line": 8,
+   "resolution": "resolved"
+  },
+  {
+   "from": "REF:FEAT-001",
+   "rel": "has_ac",
+   "to": "REF:AC-001-1",
+   "class": "structural",
+   "file": "02-drafts/FEAT-001.story.md",
+   "line": 20,
+   "resolution": "resolved"
+  },
+  {
+   "from": "REF:FEAT-001",
+   "rel": "has_ac",
+   "to": "REF:AC-001-2",
+   "class": "structural",
+   "file": "02-drafts/FEAT-001.story.md",
+   "line": 25,
+   "resolution": "resolved"
+  },
+  {
+   "from": "REF:FEAT-001",
+   "rel": "mentions",
+   "to": "REF:Q-001",
+   "class": "mentioned",
+   "file": "02-drafts/FEAT-001.story.md",
+   "line": 49,
+   "resolution": "resolved"
+  },
+  {
+   "from": "REF:FEAT-001",
+   "rel": "realizes",
+   "to": "REF:BO-001",
+   "class": "declared",
+   "file": "02-drafts/FEAT-001.story.md",
+   "line": 8,
+   "resolution": "resolved"
+  },
+  {
+   "from": "REF:FEAT-002",
+   "rel": "has_ac",
+   "to": "REF:AC-002-1",
+   "class": "structural",
+   "file": "02-drafts/FEAT-002.story.md",
+   "line": 16,
+   "resolution": "resolved"
+  },
+  {
+   "from": "REF:FEAT-002",
+   "rel": "mentions",
+   "to": "REF:CR-001",
+   "class": "mentioned",
+   "file": "02-drafts/FEAT-002.story.md",
+   "line": 22,
+   "resolution": "resolved"
+  },
+  {
+   "from": "REF:Q-001",
+   "rel": "affects",
+   "to": "REF:FEAT-001",
+   "class": "declared",
+   "file": "records/Q-001.md",
+   "line": 9,
+   "resolution": "resolved"
+  }
+ ]
+}

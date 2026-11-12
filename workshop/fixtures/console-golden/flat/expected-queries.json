@@ -1,0 +1,1129 @@
+[
+ {
+  "type": "find",
+  "args": {
+   "text": "refund",
+   "kind": null,
+   "status": null
+  },
+  "expect": [
+   "REF:BO-001",
+   "REF:FEAT-001",
+   "REF:FEAT-002",
+   "REF:Q-001"
+  ]
+ },
+ {
+  "type": "find",
+  "args": {
+   "text": "",
+   "kind": "feat",
+   "status": null
+  },
+  "expect": [
+   "REF:FEAT-001",
+   "REF:FEAT-002"
+  ]
+ },
+ {
+  "type": "find",
+  "args": {
+   "text": "",
+   "kind": null,
+   "status": "open"
+  },
+  "expect": [
+   "REF:Q-001"
+  ]
+ },
+ {
+  "type": "find",
+  "args": {
+   "text": "request",
+   "kind": "ac",
+   "status": null
+  },
+  "expect": [
+   "REF:AC-001-1",
+   "REF:AC-001-2"
+  ]
+ },
+ {
+  "type": "neighbors",
+  "args": {
+   "key": "REF:AC-001-1",
+   "dir": "both"
+  },
+  "expect": [
+   [
+    "in",
+    "has_ac",
+    "REF:FEAT-001",
+    "structural",
+    "resolved"
+   ]
+  ]
+ },
+ {
+  "type": "neighbors",
+  "args": {
+   "key": "REF:AC-001-1",
+   "dir": "out",
+   "declaredOnly": true
+  },
+  "expect": []
+ },
+ {
+  "type": "up",
+  "args": {
+   "key": "REF:AC-001-1"
+  },
+  "expect": [
+   [
+    1,
+    "REF:FEAT-001",
+    "has_ac"
+   ],
+   [
+    2,
+    "REF:BO-001",
+    "realizes"
+   ]
+  ]
+ },
+ {
+  "type": "down",
+  "args": {
+   "key": "REF:AC-001-1",
+   "depth": 3
+  },
+  "expect": []
+ },
+ {
+  "type": "impact",
+  "args": {
+   "key": "REF:AC-001-1"
+  },
+  "expect": {
+   "features": [
+    "REF:FEAT-001"
+   ],
+   "criteria": [
+    "REF:AC-001-1",
+    "REF:AC-001-2"
+   ],
+   "tasks": [],
+   "jira": []
+  }
+ },
+ {
+  "type": "neighbors",
+  "args": {
+   "key": "REF:AC-001-2",
+   "dir": "both"
+  },
+  "expect": [
+   [
+    "in",
+    "has_ac",
+    "REF:FEAT-001",
+    "structural",
+    "resolved"
+   ]
+  ]
+ },
+ {
+  "type": "neighbors",
+  "args": {
+   "key": "REF:AC-001-2",
+   "dir": "out",
+   "declaredOnly": true
+  },
+  "expect": []
+ },
+ {
+  "type": "up",
+  "args": {
+   "key": "REF:AC-001-2"
+  },
+  "expect": [
+   [
+    1,
+    "REF:FEAT-001",
+    "has_ac"
+   ],
+   [
+    2,
+    "REF:BO-001",
+    "realizes"
+   ]
+  ]
+ },
+ {
+  "type": "down",
+  "args": {
+   "key": "REF:AC-001-2",
+   "depth": 3
+  },
+  "expect": []
+ },
+ {
+  "type": "impact",
+  "args": {
+   "key": "REF:AC-001-2"
+  },
+  "expect": {
+   "features": [
+    "REF:FEAT-001"
+   ],
+   "criteria": [
+    "REF:AC-001-1",
+    "REF:AC-001-2"
+   ],
+   "tasks": [],
+   "jira": []
+  }
+ },
+ {
+  "type": "neighbors",
+  "args": {
+   "key": "REF:AC-002-1",
+   "dir": "both"
+  },
+  "expect": [
+   [
+    "in",
+    "has_ac",
+    "REF:FEAT-002",
+    "structural",
+    "resolved"
+   ]
+  ]
+ },
+ {
+  "type": "neighbors",
+  "args": {
+   "key": "REF:AC-002-1",
+   "dir": "out",
+   "declaredOnly": true
+  },
+  "expect": []
+ },
+ {
+  "type": "up",
+  "args": {
+   "key": "REF:AC-002-1"
+  },
+  "expect": [
+   [
+    1,
+    "REF:FEAT-002",
+    "has_ac"
+   ]
+  ]
+ },
+ {
+  "type": "down",
+  "args": {
+   "key": "REF:AC-002-1",
+   "depth": 3
+  },
+  "expect": []
+ },
+ {
+  "type": "impact",
+  "args": {
+   "key": "REF:AC-002-1"
+  },
+  "expect": {
+   "features": [
+    "REF:FEAT-002"
+   ],
+   "criteria": [
+    "REF:AC-002-1"
+   ],
+   "tasks": [],
+   "jira": []
+  }
+ },
+ {
+  "type": "neighbors",
+  "args": {
+   "key": "REF:BO-001",
+   "dir": "both"
+  },
+  "expect": [
+   [
+    "in",
+    "realizes",
+    "REF:FEAT-001",
+    "declared",
+    "resolved"
+   ]
+  ]
+ },
+ {
+  "type": "neighbors",
+  "args": {
+   "key": "REF:BO-001",
+   "dir": "out",
+   "declaredOnly": true
+  },
+  "expect": []
+ },
+ {
+  "type": "up",
+  "args": {
+   "key": "REF:BO-001"
+  },
+  "expect": []
+ },
+ {
+  "type": "down",
+  "args": {
+   "key": "REF:BO-001",
+   "depth": 3
+  },
+  "expect": []
+ },
+ {
+  "type": "impact",
+  "args": {
+   "key": "REF:BO-001"
+  },
+  "expect": {
+   "features": [
+    "REF:FEAT-001"
+   ],
+   "criteria": [
+    "REF:AC-001-1",
+    "REF:AC-001-2"
+   ],
+   "tasks": [],
+   "jira": []
+  }
+ },
+ {
+  "type": "neighbors",
+  "args": {
+   "key": "REF:CR-001",
+   "dir": "both"
+  },
+  "expect": [
+   [
+    "out",
+    "affects",
+    "REF:FEAT-002",
+    "declared",
+    "resolved"
+   ],
+   [
+    "in",
+    "mentions",
+    "REF:FEAT-002",
+    "mentioned",
+    "resolved"
+   ]
+  ]
+ },
+ {
+  "type": "neighbors",
+  "args": {
+   "key": "REF:CR-001",
+   "dir": "out",
+   "declaredOnly": true
+  },
+  "expect": [
+   [
+    "out",
+    "affects",
+    "REF:FEAT-002",
+    "declared",
+    "resolved"
+   ]
+  ]
+ },
+ {
+  "type": "up",
+  "args": {
+   "key": "REF:CR-001"
+  },
+  "expect": []
+ },
+ {
+  "type": "down",
+  "args": {
+   "key": "REF:CR-001",
+   "depth": 3
+  },
+  "expect": []
+ },
+ {
+  "type": "impact",
+  "args": {
+   "key": "REF:CR-001"
+  },
+  "expect": {
+   "features": [],
+   "criteria": [],
+   "tasks": [],
+   "jira": []
+  }
+ },
+ {
+  "type": "neighbors",
+  "args": {
+   "key": "REF:FEAT-001",
+   "dir": "both"
+  },
+  "expect": [
+   [
+    "out",
+    "has_ac",
+    "REF:AC-001-1",
+    "structural",
+    "resolved"
+   ],
+   [
+    "out",
+    "has_ac",
+    "REF:AC-001-2",
+    "structural",
+    "resolved"
+   ],
+   [
+    "out",
+    "mentions",
+    "REF:Q-001",
+    "mentioned",
+    "resolved"
+   ],
+   [
+    "out",
+    "realizes",
+    "REF:BO-001",
+    "declared",
+    "resolved"
+   ],
+   [
+    "in",
+    "affects",
+    "REF:Q-001",
+    "declared",
+    "resolved"
+   ]
+  ]
+ },
+ {
+  "type": "neighbors",
+  "args": {
+   "key": "REF:FEAT-001",
+   "dir": "out",
+   "declaredOnly": true
+  },
+  "expect": [
+   [
+    "out",
+    "has_ac",
+    "REF:AC-001-1",
+    "structural",
+    "resolved"
+   ],
+   [
+    "out",
+    "has_ac",
+    "REF:AC-001-2",
+    "structural",
+    "resolved"
+   ],
+   [
+    "out",
+    "realizes",
+    "REF:BO-001",
+    "declared",
+    "resolved"
+   ]
+  ]
+ },
+ {
+  "type": "up",
+  "args": {
+   "key": "REF:FEAT-001"
+  },
+  "expect": [
+   [
+    1,
+    "REF:BO-001",
+    "realizes"
+   ]
+  ]
+ },
+ {
+  "type": "down",
+  "args": {
+   "key": "REF:FEAT-001",
+   "depth": 3
+  },
+  "expect": [
+   [
+    1,
+    "REF:AC-001-1",
+    "has_ac"
+   ],
+   [
+    1,
+    "REF:AC-001-2",
+    "has_ac"
+   ]
+  ]
+ },
+ {
+  "type": "impact",
+  "args": {
+   "key": "REF:FEAT-001"
+  },
+  "expect": {
+   "features": [
+    "REF:FEAT-001"
+   ],
+   "criteria": [
+    "REF:AC-001-1",
+    "REF:AC-001-2"
+   ],
+   "tasks": [],
+   "jira": []
+  }
+ },
+ {
+  "type": "neighbors",
+  "args": {
+   "key": "REF:FEAT-002",
+   "dir": "both"
+  },
+  "expect": [
+   [
+    "out",
+    "has_ac",
+    "REF:AC-002-1",
+    "structural",
+    "resolved"
+   ],
+   [
+    "out",
+    "mentions",
+    "REF:CR-001",
+    "mentioned",
+    "resolved"
+   ],
+   [
+    "in",
+    "affects",
+    "REF:CR-001",
+    "declared",
+    "resolved"
+   ]
+  ]
+ },
+ {
+  "type": "neighbors",
+  "args": {
+   "key": "REF:FEAT-002",
+   "dir": "out",
+   "declaredOnly": true
+  },
+  "expect": [
+   [
+    "out",
+    "has_ac",
+    "REF:AC-002-1",
+    "structural",
+    "resolved"
+   ]
+  ]
+ },
+ {
+  "type": "up",
+  "args": {
+   "key": "REF:FEAT-002"
+  },
+  "expect": []
+ },
+ {
+  "type": "down",
+  "args": {
+   "key": "REF:FEAT-002",
+   "depth": 3
+  },
+  "expect": [
+   [
+    1,
+    "REF:AC-002-1",
+    "has_ac"
+   ]
+  ]
+ },
+ {
+  "type": "impact",
+  "args": {
+   "key": "REF:FEAT-002"
+  },
+  "expect": {
+   "features": [
+    "REF:FEAT-002"
+   ],
+   "criteria": [
+    "REF:AC-002-1"
+   ],
+   "tasks": [],
+   "jira": []
+  }
+ },
+ {
+  "type": "neighbors",
+  "args": {
+   "key": "REF:Q-001",
+   "dir": "both"
+  },
+  "expect": [
+   [
+    "out",
+    "affects",
+    "REF:FEAT-001",
+    "declared",
+    "resolved"
+   ],
+   [
+    "in",
+    "mentions",
+    "REF:FEAT-001",
+    "mentioned",
+    "resolved"
+   ]
+  ]
+ },
+ {
+  "type": "neighbors",
+  "args": {
+   "key": "REF:Q-001",
+   "dir": "out",
+   "declaredOnly": true
+  },
+  "expect": [
+   [
+    "out",
+    "affects",
+    "REF:FEAT-001",
+    "declared",
+    "resolved"
+   ]
+  ]
+ },
+ {
+  "type": "up",
+  "args": {
+   "key": "REF:Q-001"
+  },
+  "expect": []
+ },
+ {
+  "type": "down",
+  "args": {
+   "key": "REF:Q-001",
+   "depth": 3
+  },
+  "expect": []
+ },
+ {
+  "type": "impact",
+  "args": {
+   "key": "REF:Q-001"
+  },
+  "expect": {
+   "features": [],
+   "criteria": [],
+   "tasks": [],
+   "jira": []
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-001-1",
+   "to": "REF:AC-001-2"
+  },
+  "expect": {
+   "found": true,
+   "hops": [
+    [
+     "REF:AC-001-1",
+     "in",
+     "has_ac",
+     "REF:FEAT-001",
+     "structural",
+     "resolved"
+    ],
+    [
+     "REF:FEAT-001",
+     "out",
+     "has_ac",
+     "REF:AC-001-2",
+     "structural",
+     "resolved"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-001-1",
+   "to": "REF:AC-002-1"
+  },
+  "expect": {
+   "found": false,
+   "hops": []
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-001-1",
+   "to": "REF:BO-001"
+  },
+  "expect": {
+   "found": true,
+   "hops": [
+    [
+     "REF:AC-001-1",
+     "in",
+     "has_ac",
+     "REF:FEAT-001",
+     "structural",
+     "resolved"
+    ],
+    [
+     "REF:FEAT-001",
+     "out",
+     "realizes",
+     "REF:BO-001",
+     "declared",
+     "resolved"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-001-1",
+   "to": "REF:CR-001"
+  },
+  "expect": {
+   "found": false,
+   "hops": []
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-001-1",
+   "to": "REF:FEAT-001"
+  },
+  "expect": {
+   "found": true,
+   "hops": [
+    [
+     "REF:AC-001-1",
+     "in",
+     "has_ac",
+     "REF:FEAT-001",
+     "structural",
+     "resolved"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-001-1",
+   "to": "REF:FEAT-002"
+  },
+  "expect": {
+   "found": false,
+   "hops": []
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-001-1",
+   "to": "REF:Q-001"
+  },
+  "expect": {
+   "found": true,
+   "hops": [
+    [
+     "REF:AC-001-1",
+     "in",
+     "has_ac",
+     "REF:FEAT-001",
+     "structural",
+     "resolved"
+    ],
+    [
+     "REF:FEAT-001",
+     "out",
+     "mentions",
+     "REF:Q-001",
+     "mentioned",
+     "resolved"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-001-2",
+   "to": "REF:AC-002-1"
+  },
+  "expect": {
+   "found": false,
+   "hops": []
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-001-2",
+   "to": "REF:BO-001"
+  },
+  "expect": {
+   "found": true,
+   "hops": [
+    [
+     "REF:AC-001-2",
+     "in",
+     "has_ac",
+     "REF:FEAT-001",
+     "structural",
+     "resolved"
+    ],
+    [
+     "REF:FEAT-001",
+     "out",
+     "realizes",
+     "REF:BO-001",
+     "declared",
+     "resolved"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-001-2",
+   "to": "REF:CR-001"
+  },
+  "expect": {
+   "found": false,
+   "hops": []
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-001-2",
+   "to": "REF:FEAT-001"
+  },
+  "expect": {
+   "found": true,
+   "hops": [
+    [
+     "REF:AC-001-2",
+     "in",
+     "has_ac",
+     "REF:FEAT-001",
+     "structural",
+     "resolved"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-001-2",
+   "to": "REF:FEAT-002"
+  },
+  "expect": {
+   "found": false,
+   "hops": []
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-001-2",
+   "to": "REF:Q-001"
+  },
+  "expect": {
+   "found": true,
+   "hops": [
+    [
+     "REF:AC-001-2",
+     "in",
+     "has_ac",
+     "REF:FEAT-001",
+     "structural",
+     "resolved"
+    ],
+    [
+     "REF:FEAT-001",
+     "out",
+     "mentions",
+     "REF:Q-001",
+     "mentioned",
+     "resolved"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-002-1",
+   "to": "REF:BO-001"
+  },
+  "expect": {
+   "found": false,
+   "hops": []
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-002-1",
+   "to": "REF:CR-001"
+  },
+  "expect": {
+   "found": true,
+   "hops": [
+    [
+     "REF:AC-002-1",
+     "in",
+     "has_ac",
+     "REF:FEAT-002",
+     "structural",
+     "resolved"
+    ],
+    [
+     "REF:FEAT-002",
+     "out",
+     "mentions",
+     "REF:CR-001",
+     "mentioned",
+     "resolved"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-002-1",
+   "to": "REF:FEAT-001"
+  },
+  "expect": {
+   "found": false,
+   "hops": []
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-002-1",
+   "to": "REF:FEAT-002"
+  },
+  "expect": {
+   "found": true,
+   "hops": [
+    [
+     "REF:AC-002-1",
+     "in",
+     "has_ac",
+     "REF:FEAT-002",
+     "structural",
+     "resolved"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:AC-002-1",
+   "to": "REF:Q-001"
+  },
+  "expect": {
+   "found": false,
+   "hops": []
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:BO-001",
+   "to": "REF:CR-001"
+  },
+  "expect": {
+   "found": false,
+   "hops": []
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:BO-001",
+   "to": "REF:FEAT-001"
+  },
+  "expect": {
+   "found": true,
+   "hops": [
+    [
+     "REF:BO-001",
+     "in",
+     "realizes",
+     "REF:FEAT-001",
+     "declared",
+     "resolved"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:BO-001",
+   "to": "REF:FEAT-002"
+  },
+  "expect": {
+   "found": false,
+   "hops": []
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:BO-001",
+   "to": "REF:Q-001"
+  },
+  "expect": {
+   "found": true,
+   "hops": [
+    [
+     "REF:BO-001",
+     "in",
+     "realizes",
+     "REF:FEAT-001",
+     "declared",
+     "resolved"
+    ],
+    [
+     "REF:FEAT-001",
+     "out",
+     "mentions",
+     "REF:Q-001",
+     "mentioned",
+     "resolved"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:CR-001",
+   "to": "REF:FEAT-001"
+  },
+  "expect": {
+   "found": false,
+   "hops": []
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:CR-001",
+   "to": "REF:FEAT-002"
+  },
+  "expect": {
+   "found": true,
+   "hops": [
+    [
+     "REF:CR-001",
+     "out",
+     "affects",
+     "REF:FEAT-002",
+     "declared",
+     "resolved"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:CR-001",
+   "to": "REF:Q-001"
+  },
+  "expect": {
+   "found": false,
+   "hops": []
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:FEAT-001",
+   "to": "REF:FEAT-002"
+  },
+  "expect": {
+   "found": false,
+   "hops": []
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:FEAT-001",
+   "to": "REF:Q-001"
+  },
+  "expect": {
+   "found": true,
+   "hops": [
+    [
+     "REF:FEAT-001",
+     "out",
+     "mentions",
+     "REF:Q-001",
+     "mentioned",
+     "resolved"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "path",
+  "args": {
+   "from": "REF:FEAT-002",
+   "to": "REF:Q-001"
+  },
+  "expect": {
+   "found": false,
+   "hops": []
+  }
+ }
+]
