@@ -17,7 +17,7 @@
   "scripts/kitlib/blockers.py": "d03d32f54080",
   "scripts/kitlib/borders.py": "61c9a3762adc",
   "scripts/kitlib/cite.py": "e68bc074e2bf",
-  "scripts/kitlib/data_export.py": "4cf84bc082c9",
+  "scripts/kitlib/data_export.py": "56834b6897ce",
   "scripts/kitlib/dataformat.py": "5922f8e12182",
   "scripts/kitlib/frontmatter.py": "8f5e22fd72e7",
   "scripts/kitlib/fsio.py": "ab1846444c3c",

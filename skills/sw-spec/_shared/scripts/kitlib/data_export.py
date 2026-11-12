@@ -131,7 +131,17 @@ def export_graph(root: Path, scopes: list[str]) -> dict[str, Any]:
         for e in store.edges("out")
     ]
     nodes.sort(key=lambda r: r["key"])
-    edges.sort(key=lambda r: (r["from"], r["rel"], r["to"], r["file"] or "", r["line"]))
+    edges.sort(
+        key=lambda r: (
+            r["from"],
+            r["rel"],
+            r["to"],
+            r["class"],
+            r["file"] or "",
+            r["line"],
+            r["resolution"] or "",
+        )
+    )
     return {"nodes": nodes, "edges": edges}
 
 
