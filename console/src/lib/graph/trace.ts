@@ -14,11 +14,12 @@ export const LEVEL_NAMES = ['bo', 'epic', 'feat', 'ac', 'task', 'code'];
 const CHAIN_RELS = new Set(['realizes', 'member_of', 'has_ac', 'implements', 'touches']);
 const RETIRED = new Set(['withdrawn', 'superseded']);
 
-export type GapKind = 'epic' | 'bo' | 'ac' | 'task' | 'task-criterion';
+export type GapKind = 'epic' | 'bo' | 'epic-bo' | 'ac' | 'task' | 'task-criterion';
 
 const GAP_WORDS: Record<GapKind, { title: string; next: string; level: number; kind: string }> = {
   epic: { title: 'No epic yet', next: 'sw-shape', level: 1, kind: 'epic' },
   bo: { title: 'No business objective', next: 'sw-shape', level: 0, kind: 'bo' },
+  'epic-bo': { title: 'No business objective', next: 'sw-shape', level: 0, kind: 'bo' },
   ac: { title: 'No acceptance criterion', next: 'sw-spec', level: 3, kind: 'ac' },
   task: { title: 'No task covers this criterion', next: 'sw-plan', level: 4, kind: 'task' },
   'task-criterion': { title: 'Not tied to an acceptance criterion', next: 'sw-plan', level: 3, kind: 'ac' },
@@ -49,6 +50,8 @@ export interface TraceLink {
   gap: boolean;
   /** True when the stored link points from the right-hand item to the left-hand one. */
   reversed: boolean;
+  /** A feature's own link to an objective that its epic already serves: kept for the chain, not drawn. */
+  implied: boolean;
   sentence: string;
 }
 
@@ -132,7 +135,11 @@ export function traceCoverage(nodes: GraphNode[], edges: GraphEdge[]): Coverage[
     measures.push({ id, label, have: items.length - gaps.length, total: items.length, gaps });
   };
   if (live('epic').length && features.length) add('epic', 'Features in an epic', features, out('member_of', 'from'));
-  if (live('bo').length && features.length) add('bo', 'Features serving a business objective', features, out('realizes', 'from'));
+  const served = out('realizes', 'from');
+  const viaEpic = new Set(links.filter((e) => e.rel === 'member_of' && served.has(e.to)).map((e) => e.from));
+  const serving = new Set([...served, ...viaEpic]);
+  if (live('bo').length && features.length) add('bo', 'Features serving a business objective', features, serving);
+  if (live('bo').length && live('epic').length) add('epic-bo', 'Epics serving a business objective', live('epic'), served);
   if (features.length) add('ac', 'Features with an acceptance criterion', features, out('has_ac', 'from'));
   if (tasks.length && criteria.length) add('covered', 'Acceptance criteria covered by a task', criteria, out('implements', 'to'));
   if (tasks.length) add('tied', 'Tasks tied to an acceptance criterion', tasks, out('implements', 'from'));
@@ -159,9 +166,11 @@ export function buildTrace(nodes: GraphNode[], edges: GraphEdge[], opts: TraceOp
       cls: e.class,
       gap: false,
       reversed,
+      implied: false,
       sentence: `${title(e.from)} ${relationWords(e.rel, 'out')} ${title(e.to)}`,
     });
   }
+  markImplied(model.links);
 
   if (opts.gaps !== false) {
     const hasEpics = [...chain.values()].some((n) => n.kind === 'epic');
@@ -172,6 +181,8 @@ export function buildTrace(nodes: GraphNode[], edges: GraphEdge[], opts: TraceOp
     const linked = (rel: string, side: 'from' | 'to') => new Set(model.links.filter((l) => l.rel === rel).map(side === 'from' ? origin : target));
     const inEpic = linked('member_of', 'from');
     const serving = linked('realizes', 'from');
+    const epicOf = new Map(model.links.filter((l) => l.rel === 'member_of').map((l) => [origin(l), target(l)]));
+    const viaEpic = (key: string) => serving.has(epicOf.get(key) ?? '');
     const withCriterion = linked('has_ac', 'from');
     const covered = linked('implements', 'to');
     const tied = linked('implements', 'from');
@@ -186,6 +197,7 @@ export function buildTrace(nodes: GraphNode[], edges: GraphEdge[], opts: TraceOp
         cls: 'gap',
         gap: true,
         reversed: false,
+        implied: false,
         sentence: `${title(owner)}: ${g.title.toLowerCase()}`,
       });
       return g;
@@ -194,8 +206,10 @@ export function buildTrace(nodes: GraphNode[], edges: GraphEdge[], opts: TraceOp
       if (retired(n)) continue;
       if (n.kind === 'feat') {
         if (hasEpics && !inEpic.has(n.key)) add('epic', n.key, 'left', n.key, 'member_of');
-        if (hasObjectives && !serving.has(n.key)) add('bo', n.key, 'left', n.key, 'realizes');
+        if (hasObjectives && !serving.has(n.key) && !viaEpic(n.key)) add('bo', n.key, 'left', n.key, 'realizes');
         if (!withCriterion.has(n.key)) add('ac', n.key, 'right', n.key, 'has_ac');
+      } else if (n.kind === 'epic') {
+        if (hasObjectives && !serving.has(n.key)) add('epic-bo', n.key, 'left', n.key, 'realizes');
       } else if (n.kind === 'ac' && hasTasks && !covered.has(n.key)) {
         add('task', n.key, 'right', n.key, 'implements');
       } else if (n.kind === 'task' && !tied.has(n.key)) {
@@ -210,6 +224,7 @@ export function buildTrace(nodes: GraphNode[], edges: GraphEdge[], opts: TraceOp
             cls: 'gap',
             gap: true,
             reversed: false,
+            implied: false,
             sentence: `${title(parent)} has task ${n.title}`,
           });
         }
@@ -233,6 +248,19 @@ export function buildTrace(nodes: GraphNode[], edges: GraphEdge[], opts: TraceOp
   return model;
 }
 
+/** A feature's direct link to an objective is implied when one of its epics already serves it. */
+function markImplied(links: TraceLink[]): void {
+  const origin = (l: TraceLink) => (l.reversed ? l.right : l.left);
+  const target = (l: TraceLink) => (l.reversed ? l.left : l.right);
+  const epicsOf = new Map<string, string[]>();
+  for (const l of links) if (l.rel === 'member_of') epicsOf.set(origin(l), [...(epicsOf.get(origin(l)) ?? []), target(l)]);
+  const serves = new Set(links.filter((l) => l.rel === 'realizes').map((l) => `${origin(l)}|${target(l)}`));
+  for (const l of links) {
+    if (l.rel !== 'realizes') continue;
+    if ((epicsOf.get(origin(l)) ?? []).some((epic) => serves.has(`${epic}|${target(l)}`))) l.implied = true;
+  }
+}
+
 /** Rows are ordered by the average row of linked neighbours, two sweeps, so lines cross less. */
 function place(model: TraceModel): void {
   const levels = [...new Set(model.nodes.map((n) => n.level))].sort((a, b) => a - b);
@@ -243,7 +271,7 @@ function place(model: TraceModel): void {
   index();
   const neighbours = (n: TraceNode, towards: 'left' | 'right'): number[] =>
     model.links
-      .filter((l) => (towards === 'left' ? l.right === n.id : l.left === n.id))
+      .filter((l) => !l.implied && (towards === 'left' ? l.right === n.id : l.left === n.id))
       .map((l) => row.get(towards === 'left' ? l.left : l.right) ?? 0);
   const sweep = (order: number[], towards: 'left' | 'right') => {
     for (const lv of order) {

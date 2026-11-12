@@ -56,9 +56,21 @@ type: epic
 scope: REF
 status: approved
 title: Self-service refunds
+bo: [BO-001]
 updated: 2026-11-10
 ---
 # Self-service refunds
+"""
+TRACE_EPIC_BARE = """---
+id: EPIC-002
+type: epic
+scope: REF
+status: draft
+title: Approval desk
+bo: []
+updated: 2026-11-10
+---
+# Approval desk
 """
 TRACE_BO = """---
 id: BO-002
@@ -120,7 +132,7 @@ def task(number: str, title: str, traces: str, touches: str = "") -> str:
 def make_trace(base: Path) -> Path:
     """An embedded project whose graph holds the full chain, with gaps a reader should see.
 
-    Gaps on purpose: FEAT-003 is in no epic, FEAT-002 names no business objective, AC-003-2 has
+    Gaps on purpose: FEAT-003 is in no epic, EPIC-002 names no business objective, AC-003-2 has
     no task, TASK-001-3 implements nothing, one touched code file is missing, and FEAT-002
     mentions FEAT-009, which nothing defines.
     """
@@ -132,6 +144,7 @@ def make_trace(base: Path) -> Path:
     (code / "decide.py").write_text("# decisions\n", encoding="utf-8")
     (root / "01-analysis" / "epics").mkdir(parents=True)
     (root / "01-analysis" / "epics" / "EPIC-001.md").write_text(TRACE_EPIC, encoding="utf-8")
+    (root / "01-analysis" / "epics" / "EPIC-002.md").write_text(TRACE_EPIC_BARE, encoding="utf-8")
     (root / "01-analysis" / "BO-002.md").write_text(TRACE_BO, encoding="utf-8")
     drafts = root / "02-drafts"
     first = drafts / "FEAT-001.story.md"
@@ -188,6 +201,7 @@ def make_trace(base: Path) -> Path:
         f"| REF:AC-003-2 | ac |{blank}",
         f"| REF:BO-002 | bo |{blank}",
         f"| REF:EPIC-001 | epic | PROJ-100 |{' — |' * 9}",
+        f"| REF:EPIC-002 | epic |{blank}",
         f"| REF:FEAT-003 | story |{blank}",
     ]
     registry.write_text("\n".join(out + extra) + "\n", encoding="utf-8")

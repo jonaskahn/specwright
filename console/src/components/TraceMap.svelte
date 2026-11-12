@@ -85,7 +85,7 @@
       {#each columns as c (c.lv)}
         <text class="trace-col" x={c.x} y={20}>{c.words}</text>
       {/each}
-      {#each model.links as l (l.id)}
+      {#each model.links.filter((x) => !x.implied) as l (l.id)}
         <path class="trace-link {l.cls}" class:lit={lit(l)} class:dim={linkDim(l)} d={path(l)} marker-end="url(#trace-arrow)">
           <title>{l.sentence}</title>
         </path>

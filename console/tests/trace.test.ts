@@ -34,7 +34,7 @@ describe('the trace map lays the chain out from why to how', () => {
     const sentence = (text: string) => real.some((l) => l.sentence === text);
     expect(sentence('Submit a refund request belongs to epic Self-service refunds')).toBe(true);
     expect(sentence('Submit a refund request serves business objective Reduce refund waiting time')).toBe(true);
-    expect(sentence('Refuse a duplicate implements Duplicate request')).toBe(true);
+    expect(sentence('[backend] Refuse a duplicate implements Duplicate request')).toBe(true);
     expect(real.filter((l) => l.rel === 'implements')).toHaveLength(5);
     expect(real.filter((l) => l.rel === 'has_ac')).toHaveLength(5);
   });
@@ -58,7 +58,7 @@ describe('the trace map lays the chain out from why to how', () => {
 
   it('shows every missing link as a placeholder that names the skill to ask', () => {
     expect(gaps()).toEqual([
-      'bo:REF:FEAT-002',
+      'epic-bo:REF:EPIC-002',
       'epic:REF:FEAT-003',
       'task-criterion:REF:TASK-001-3',
       'task:REF:AC-003-2',
@@ -66,7 +66,8 @@ describe('the trace map lays the chain out from why to how', () => {
     const epic = model.nodes.find((n) => n.id === 'gap:epic:REF:FEAT-003')!;
     expect([epic.title, epic.next, epic.level]).toEqual(['No epic yet', 'sw-shape', 1]);
     expect(model.nodes.find((n) => n.id === 'gap:task:REF:AC-003-2')!.next).toBe('sw-plan');
-    expect(model.nodes.find((n) => n.id === 'gap:bo:REF:FEAT-002')!.next).toBe('sw-shape');
+    const bare = model.nodes.find((n) => n.id === 'gap:epic-bo:REF:EPIC-002')!;
+    expect([bare.title, bare.next, bare.level]).toEqual(['No business objective', 'sw-shape', 0]);
   });
 
   it('lists a reference to something nobody defined', () => {
@@ -77,7 +78,8 @@ describe('the trace map lays the chain out from why to how', () => {
     const cover = Object.fromEntries(traceCoverage(nodes, edges).map((c) => [c.id, [c.have, c.total, c.gaps]]));
     expect(cover).toEqual({
       epic: [2, 3, ['REF:FEAT-003']],
-      bo: [2, 3, ['REF:FEAT-002']],
+      bo: [3, 3, []],
+      'epic-bo': [1, 2, ['REF:EPIC-002']],
       ac: [3, 3, []],
       covered: [4, 5, ['REF:AC-003-2']],
       tied: [4, 5, ['REF:TASK-001-3']],
@@ -118,6 +120,39 @@ describe('the trace map lays the chain out from why to how', () => {
     expect(sparse.notes).toEqual(['No epic is defined, so features are shown without one.', 'No task is planned yet, so criteria are shown without tasks.']);
     expect(sparse.nodes.filter((n) => n.gap).map((n) => n.gap)).toEqual(['bo']);
     expect(traceCoverage(flat.nodes, flat.edges).map((c) => c.id)).toEqual(['bo', 'ac']);
+  });
+});
+
+describe('an epic serves business objectives and its features inherit them', () => {
+  const real = model.links.filter((l) => !l.gap);
+  const between = (rel: string, from: string, to: string) => real.find((l) => l.rel === rel && l.id === `${from}|${rel}|${to}`);
+
+  it('draws the epic to its objective', () => {
+    const link = between('realizes', 'REF:EPIC-001', 'REF:BO-001')!;
+    expect(link.implied).toBe(false);
+    expect(byKey('REF:BO-001').level).toBeLessThan(byKey('REF:EPIC-001').level);
+  });
+
+  it('hides a feature\'s own link to an objective its epic already serves', () => {
+    expect(between('realizes', 'REF:FEAT-001', 'REF:BO-001')!.implied).toBe(true);
+    expect(between('realizes', 'REF:FEAT-003', 'REF:BO-002')!.implied).toBe(false);
+  });
+
+  it('still lights the feature from the objective', () => {
+    const chain = chainOf(model, 'REF:BO-001').nodes;
+    for (const key of ['REF:EPIC-001', 'REF:FEAT-001', 'REF:FEAT-002', 'REF:AC-001-2']) expect(chain.has(key), key).toBe(true);
+  });
+
+  it('counts a feature as serving an objective through its epic', () => {
+    const cover = traceCoverage(nodes, edges).find((c) => c.id === 'bo')!;
+    expect(cover.gaps).not.toContain('REF:FEAT-002');
+  });
+
+  it('keeps an epic with no objective visible as a gap, next to the objective column', () => {
+    const gap = model.nodes.find((n) => n.id === 'gap:epic-bo:REF:EPIC-002')!;
+    expect(gap.level).toBe(0);
+    const link = model.links.find((l) => l.right === 'REF:EPIC-002' && l.gap)!;
+    expect(link.left).toBe(gap.id);
   });
 });
 

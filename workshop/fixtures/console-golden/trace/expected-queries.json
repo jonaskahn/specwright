@@ -277,6 +277,11 @@
     2,
     "REF:EPIC-001",
     "member_of"
+   ],
+   [
+    3,
+    "REF:BO-001",
+    "realizes"
    ]
   ]
  },
@@ -463,6 +468,13 @@
    [
     "in",
     "realizes",
+    "REF:EPIC-001",
+    "declared",
+    "resolved"
+   ],
+   [
+    "in",
+    "realizes",
     "REF:FEAT-001",
     "declared",
     "resolved"
@@ -500,18 +512,22 @@
   },
   "expect": {
    "features": [
-    "REF:FEAT-001"
+    "REF:FEAT-001",
+    "REF:FEAT-002"
    ],
    "criteria": [
     "REF:AC-001-1",
-    "REF:AC-001-2"
+    "REF:AC-001-2",
+    "REF:AC-002-1"
    ],
    "tasks": [
     "REF:TASK-001-1",
     "REF:TASK-001-2",
-    "REF:TASK-001-3"
+    "REF:TASK-001-3",
+    "REF:TASK-002-1"
    ],
    "jira": [
+    "PROJ-100",
     "PROJ-101"
    ]
   }
@@ -1017,14 +1033,6 @@
     ],
     [
      "REF:EPIC-001",
-     "in",
-     "member_of",
-     "REF:FEAT-001",
-     "declared",
-     "resolved"
-    ],
-    [
-     "REF:FEAT-001",
      "out",
      "realizes",
      "REF:BO-001",
@@ -1225,14 +1233,6 @@
      "REF:BO-001",
      "in",
      "realizes",
-     "REF:FEAT-001",
-     "declared",
-     "resolved"
-    ],
-    [
-     "REF:FEAT-001",
-     "out",
-     "member_of",
      "REF:EPIC-001",
      "declared",
      "resolved"

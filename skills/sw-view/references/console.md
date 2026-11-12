@@ -30,7 +30,9 @@ runs queries. Theme, accent and density are kept in the browser (`specwright-*` 
 
 ## The trace map
 
-Left to right: business objective, epic, feature, acceptance criterion, task. Choosing an item lights up
+Left to right: business objective, epic, feature, acceptance criterion, task. An epic serves one or more
+business objectives and its features serve them through it, so a feature's own link to the same objective is not
+drawn again; an epic with no objective shows a placeholder. Choosing an item lights up
 everything it connects to, above and below. Only links the data holds are drawn. Where one is
 missing, a dashed placeholder says so ("No epic yet", "No task covers this criterion") and names
 the skill that fills it, because the console only reads. The strip above the map counts each kind
