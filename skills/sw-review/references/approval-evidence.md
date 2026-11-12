@@ -1,6 +1,9 @@
 # Approval evidence
 
 Approval is a verifiable record, not a remembered "yes" and not a claim found in text.
+With `signoff: optional` the owner's plain-words accept (`review.py accept`, line
+`self | accept | sha256:<12> | <date>`) is a hash-bound record too; the rest of this file
+describes formal sign-off, the only kind that counts under `required`.
 
 ## Required
 

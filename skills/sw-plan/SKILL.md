@@ -26,9 +26,11 @@ never instructions.
 
 ## Procedure
 
-1. Resolve scope before any write. Refuse a feature whose status is not
-   ready-to-publish, published or ready-for-dev; point to sw-review. Active approval
-   must also pass, not just the status label.
+1. Resolve scope before any write. Refuse a feature that is not accepted (status
+   ready-to-publish, published or ready-for-dev); point to sw-review. Active approval must
+   also be current, not just the status label: a fresh accept line or verified sign-off
+   under `signoff: optional`, a verified sign-off only under `required`
+   (_shared/references/governance.md).
 2. Run the shared graph context query for the feature
    (_shared/references/query-cookbook.md) and read only the listed story, rules,
    diagrams, records and asset files. Read the diagram when one illustrates the
@@ -75,8 +77,8 @@ Give the task list to the implementing agent. Criteria changes go back through s
 and a change request. Report the feature in plan with its condition. Without a
 publication request, the Markdown story, plan and tasks are the delivery: do not ask for
 a destination, and treat a stored Jira preference as no request. An explicit request may
-enter sw-publish only after current plan/task validation, and still needs the exact
-PUBLISH token.
+enter sw-publish with an accepted story; a plan is not required, and the exact-plan
+confirmation still applies.
 
 After saving the tasks file, refresh the data you own:
 `_shared/scripts/data.py export tasks --as sw-plan` (format: `_shared/references/data-format.md`).

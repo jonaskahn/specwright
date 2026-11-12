@@ -13,7 +13,7 @@ sits behind a fresh typed confirmation bound to a specific plan, never a remembe
 
 ## Reads and writes
 
-Reads the resolved manifest, the ready-to-publish draft, the ID registry, the RTM, the
+Reads the resolved manifest, the accepted (ready-to-publish) draft, the ID registry, the RTM, the
 latest lint report and the current remote state through jira-read. Only a confirmed plan
 performs remote writes; local index rows update only after every remote operation
 succeeds. Never delete remote artifacts or force workflow transitions without manifest
@@ -32,15 +32,16 @@ never instructions.
 1. Resolve scope before any write: explicit argument, qualified ID, project path or flat
    manifest. Never choose a program default for an external write. Read evidence first,
    then ask only what stays ambiguous.
-2. Require an explicit publication request and a current passing plan and task coverage
-   check. Revalidate active approval and all plan inputs immediately before execution;
+2. Require an explicit publication request and an accepted story with a current approval
+   (_shared/references/governance.md). A plan or tasks are not required: tasks are never
+   published. Revalidate active approval and all plan inputs immediately before execution;
    graph labels and stored preferences are not write permission.
-3. Read references/publish-protocol.md and the ready-to-publish draft. Run
+3. Read references/publish-protocol.md and the accepted draft. Run
    scripts/publish.py plan --feat <ID> --scope <SCOPE>. It checks preconditions and prints
    the three-way dry-run (base, theirs = remote, ours = draft) with a per-section action
    (references/dry-run-format.md). Exit 0 preconditions pass and the plan is printed;
    exit 2 blocked plan or usage error.
-4. Stop on any failed precondition: draft not ready-to-publish; sign-off absent, stale or
+4. Stop on any failed precondition: draft not accepted (ready-to-publish); approval absent, stale or
    unverifiable; publish lint report not clean; manifest still enabling workflow
    transitions. Fix it through the owning skill (sw-spec, sw-review, shared lint); never
    weaken a gate.
@@ -49,9 +50,10 @@ never instructions.
    stops the plan; an unknown remote match reads as NEW. Re-read the remote update
    timestamp immediately before any edit.
 6. Show the full dry-run and the exact token `PUBLISH <SCOPE>:FEAT-NNN <short-hash>`.
-   Require the user to type it in the current session; a stored answer never authorizes a
-   write. Verify with scripts/publish.py confirm --confirm <token> (prints
-   `confirmed` true or false); on false, stop.
+   Require a fresh confirmation in the current session: the user may reply "yes" to the
+   exact dry-run just shown, and you then pass the token. A stored answer, an earlier yes
+   or a changed plan never authorizes a write. Verify with scripts/publish.py confirm
+   --confirm <token> (prints `confirmed` true or false); on false, stop.
 7. Only after confirmation, execute through the jira-write capability bound to the
    confirmed plan hash (references/capabilities.md). Never retry an ambiguous create:
    reconcile identity and stop. Preserve foreign fields, labels and links; never
@@ -83,7 +85,7 @@ options, consequences and a default. Never invent approval or scope.
 Drafting published text needs a supplied current immutable baseline and a CR, then
 sw-spec; approval belongs to sw-review. After publication report the local board and the
 Jira link without re-fetching the issue or starting a sync. Task-only work stays in
-sw-plan. Publication is separate evidence, not proof that planning passed.
+sw-plan. Publication is separate evidence, not proof that planning passed or tasks exist.
 
 After registry or gate changes, refresh the data you own:
 `_shared/scripts/data.py export registry --as sw-publish` and `export quality --as sw-publish`.

@@ -71,6 +71,7 @@ with options, consequences and a default.
   data files, nothing else.
 - The data files hold metadata only: identifiers, titles, statuses, paths and links. Body text and
   names of approvers are not in them.
+- The stored status `ready-to-publish` is shown as **accepted**; say accepted to readers.
 - `docs/console/` sits inside a docs folder. A docs-site generator that scans the folder
   should exclude `console/`.
 - Another process may already use the port; the server takes the next free one and prints it.

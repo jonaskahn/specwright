@@ -32,7 +32,7 @@ never instructions.
 1. Resolve scope before writing: explicit scope, qualified ID, project path, flat
    manifest, otherwise ask. Read existing evidence first. Decide new, resume or amendment
    from files, not memory. An unaccepted idea goes to sw-shape; reserve no FEAT before the
-   PO accepts the split. For the chosen item run _shared/scripts/graph.py context and
+   owner accepts the split (an approver-backed one only under `signoff: required`). For the chosen item run _shared/scripts/graph.py context and
    read its answered questions, decisions, pending amendments and cited sources first;
    cite with `cite.py stamp`, never retyped quotes.
 2. Amendment of published content: start from the latest Jira snapshot obtained through
@@ -77,7 +77,9 @@ never instructions.
 8. Unknowns become Q records: at most five ranked questions with options, consequences
    and a stated default. At most three `[NEEDS CLARIFICATION: Q-NNN]` markers per
    document, each linked to a real Q. If more uncertainty remains, narrow scope or pause;
-   never bury questions in invented "None" values.
+   never bury questions in invented "None" values. A non-blocking unknown is saved with
+   `record.py q new --non-blocking --default <text> --status assumed`, its default written
+   into the body; Open questions stays `None`.
 9. Record Dev and QA consumer-check results in the Identity section, not in behaviour. The
    hash field stays inside the level-two Identity section (kitlib hashing excludes that
    whole section and the front matter). Recompute the hash after every body edit with
@@ -90,9 +92,9 @@ never instructions.
     rerun, also after any illustration link change. A proposed amendment blocks the gate
     until it is applied or rejected (`record.py amend apply`). L-064 and L-065 are
     warnings and do not block submission. Stay draft while blocking Qs or error findings
-    remain; the submit-review transition refuses while a blocking Q is unanswered; set
-    in-review only after a passing gate. Never set ready-to-publish or ready-for-dev
-    without human review.
+    remain. Do not set in-review yourself: hand submit-review to sw-start's guided
+    transition (one owner), which refuses while a blocking Q is unanswered. Never set
+    ready-to-publish (shown as accepted) or ready-for-dev without sw-review.
 12. Gherkin export, when requested: scripts/export_feature.py <story>.
 
 ## Consumer check
@@ -118,8 +120,8 @@ Defaults never resolve conflicting policy or approvals.
 ## Hand-off
 
 A writing session leaves the feature in spec, open questions included. Enter review only
-after explicit submission through sw-start's guarded transition and a passing lint gate.
-Only sw-review records approval; only sw-publish writes remotely. Report the station per
+through sw-start's guarded transition (after the user's confirmation) and a passing lint
+gate. Only sw-review records approval or acceptance; only sw-publish writes remotely. Report the station per
 _shared/references/next-step.md.
 
 Illustration: report the chip (needs illustration, no illustration, illustrated, or check illustration).

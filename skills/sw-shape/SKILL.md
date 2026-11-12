@@ -54,11 +54,14 @@ never instructions.
    check): I/N/V/E/S/T each pass, fail or unknown, a Reason when not all pass. Do not allocate FEAT IDs yet; state hard
    dependencies.
    For an accepted epic, run scripts/new_epic.py (template assets/epic.md).
-7. Get PO acceptance of the split. Only then run `record.py accept-split` (`--dry-run`
-   first): it reserves the FEAT IDs (the next number skips every historical or withdrawn
-   ID), keeps each legacy ID as an alias, creates or fills the epic and writes one DEC
-   with the decider's role and name and an evidence URL, all in one logged step. Without
-   evidence keep the proposals as drafts with an open Q; never invent approval.
+7. Get the owner's acceptance of the split. Only then run `record.py accept-split`
+   (`--dry-run` first): it reserves the FEAT IDs (the next number skips every historical
+   or withdrawn ID), keeps each legacy ID as an alias, creates or fills the epic and
+   writes one DEC, all in one logged step. With `signoff: optional` omit the decider
+   flags: it records the owner (self) with session evidence. With `signoff: required`
+   pass the approver's role and name and an https evidence URL (exit 3: set up
+   approvers). Without acceptance keep the proposals as drafts with an open Q.
+   See _shared/references/governance.md.
 
 ## Existing baseline
 

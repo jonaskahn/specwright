@@ -67,12 +67,13 @@ anything else; every other step needs it.
    Then read and follow
    ../<skill>/SKILL.md. If that file is absent (single-skill install), name the skill and
    ask for it to be invoked; do not search for it.
-5. Ask at most two questions, each with options, consequences and a default. If `setup`
-   is not empty, ask once for the approvers (role, name, account ID) and run
-   workspace.py approvers add. Never ask what the script answered. Never infer approval, scope or a publish destination.
-6. Push/publish/ship request without a named destination (Markdown, Jira or both): read
-   the stored output default. If `ask`, ask once, store the answer with the workspace
-   output command, then hand to sw-publish. A stored value never authorizes a Jira write.
+5. Ask at most five questions, each with options, consequences and a default (at most two
+   at routing time). Ask for approvers (role, name, account ID; workspace.py approvers
+   add) only when `governance` is `required` and `setup` is not empty. Never ask what the
+   script answered. Never infer approval, scope or a publish destination.
+6. Delivery is Markdown; no destination question. On "push" or "publish": Jira configured
+   -> sw-publish; not configured -> report that Markdown is delivered and offer the
+   workspace.py Jira setup. A stored value never authorizes a Jira write.
 7. Runtimes: use the step 0 output (`runtime` in the start.py JSON agrees). Python is required:
    if it is missing, show `runtime.sh plan python` and ask once; after a yes run
    `runtime.sh install python --yes` (Linux package managers need sudo, so the script prints
@@ -88,10 +89,16 @@ anything else; every other step needs it.
 After the routed skill finishes, run bounded maintenance per
 _shared/references/completion.md, then rerun scripts/start.py with --item when known.
 Report the named item's station and condition from
-_shared/references/next-step-table.md. Siblings stay unchanged. Resume an unfinished
-station without re-confirming entry. Never advance a stage without its explicit
-decision. A passing plan is the Markdown delivery; ask destination only for an explicit,
-ambiguous publish request.
+_shared/references/next-step-table.md (show `ready-to-publish` as accepted). Siblings
+stay unchanged. Resume an unfinished station without re-confirming entry. Never advance
+without the user's confirmation. With `flow: guided` (JSON `flow`), after a station
+finishes with no blocker show a short summary and ask "Continue to <next station>?
+(Y/n)"; a plain yes advances and you pass the TRANSITION token yourself for local
+transitions. Stop only on a blocker (blocking question, lint error, ambiguous scope,
+missing input, publish). Save non-blocking unknowns with `record.py q new --non-blocking
+--default <text> --status assumed` and continue. `flow: step` stops at every station.
+A yes is no formal sign-off under `required` and no remote permission unless it answers
+the exact dry-run shown. Rules: _shared/references/governance.md.
 
 Refresh the data you own: `_shared/scripts/status.py --save` (features) and
 `_shared/scripts/data.py export scopes --as sw-start`; `graph.py build` refreshes the graph.
@@ -109,8 +116,8 @@ Name any UNKNOWN value instead of guessing.
 
 ## Stop and ask
 
-Ask only what evidence does not settle, at most two questions, ranked by blocking
-impact. Never choose a program default for a write.
+Ask only what evidence does not settle, at most five questions (two at routing time),
+ranked by blocking impact. Never choose a program default for a write.
 
 ## Gotchas
 
