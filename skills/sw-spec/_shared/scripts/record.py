@@ -19,7 +19,7 @@ if str(_here) not in sys.path:
 import argparse
 import json
 
-from kitlib import recordops, rtm, schema, workspace  # noqa: E402
+from kitlib import dataformat, recordops, rtm, schema, workspace  # noqa: E402
 
 COMMON = {
     "--cwd": {"default": "."},
@@ -216,6 +216,8 @@ def main(argv=None):
         ctx = recordops.Ctx(root, scope, args.skill)
         plan, action, target = _build(ctx, args)
         warnings = [] if args.dry_run else recordops.execute(ctx, plan, action, target)
+        if not args.dry_run:
+            dataformat.refresh(root, "records", scope)
         result = {
             "dry_run": args.dry_run,
             "made": plan.made,

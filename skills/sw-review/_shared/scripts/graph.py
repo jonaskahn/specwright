@@ -16,7 +16,7 @@ if str(_here) not in sys.path:
 import argparse
 import json
 
-from kitlib import graph, graph_query, workspace  # noqa: E402
+from kitlib import dataformat, graph, graph_query, workspace  # noqa: E402
 
 EXIT_FINDINGS, EXIT_ERROR, EXIT_ASK, EXIT_STALE = 1, 2, 3, 4
 
@@ -116,6 +116,7 @@ def main(argv=None):
                 else None
             )
             changed = graph.build(root, scope)
+            dataformat.refresh(root, "graph", scope)
             print(f"graph built: {len(changed)} file(s) changed")
             for line in graph.drift_warnings(root, scope):
                 print(f"warning: {line}", file=sys.stderr)

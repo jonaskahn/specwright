@@ -16,7 +16,17 @@ import json
 import re
 from datetime import date, datetime, timezone
 
-from kitlib import fsio, graph, hashing, ids, rtm, schema, tables, workspace  # noqa: E402
+from kitlib import (  # noqa: E402
+    dataformat,
+    fsio,
+    graph,
+    hashing,
+    ids,
+    rtm,
+    schema,
+    tables,
+    workspace,
+)
 
 UNKNOWN = "unknown"
 
@@ -244,6 +254,7 @@ def main(argv=None):
             fsio.atomic_write(
                 workspace.scope_dir(root, scopes[0]) / "_meta/status.md", render(report)
             )
+            dataformat.refresh(root, "features", scopes[0])
         print(
             json.dumps(report, indent=2) if args.json else render(report),
             end="\n" if args.json else "",

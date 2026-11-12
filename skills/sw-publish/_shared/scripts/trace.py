@@ -14,7 +14,7 @@ if str(_here) not in sys.path:
 import argparse
 import json
 
-from kitlib import rtm, workspace  # noqa: E402
+from kitlib import dataformat, rtm, workspace  # noqa: E402
 
 
 def main(argv=None):
@@ -48,6 +48,7 @@ def main(argv=None):
             return 0
         if args.command == "rebuild":
             rtm.rebuild(root, scope)
+            dataformat.refresh(root, "rtm", scope)
         findings = rtm.check(root, scope)
         for finding in findings:
             print(finding)

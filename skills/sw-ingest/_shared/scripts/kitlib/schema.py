@@ -128,6 +128,8 @@ SCOPE_DIRS = [
 
 OUTPUT_CHOICES = ("ask", "markdown", "jira", "both")
 GRAPH_DIR = "_meta/graph"
+# Derived, git-ignored views of the spec for the console and any other reader (dataformat.py).
+DATA_DIR = "_meta/data"
 GRAPH_SCHEMA_VERSION = 3
 
 # The closed set of graph relations; a link outside this set is never recorded.
