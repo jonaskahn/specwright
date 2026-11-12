@@ -50,7 +50,12 @@ def _parser():
             )
             cmd.add_argument("--replace", action="store_true", help="overwrite a derived register")
         if name in ("reserve", "brief"):
-            cmd.add_argument("--group", required=True)
+            cmd.add_argument("--group")
+            if name == "reserve":
+                cmd.add_argument(
+                    "--item",
+                    help="reserve one legacy item by its ID instead of a whole group",
+                )
         if name == "brief":
             cmd.add_argument("--owner", default="PO", help="who answers the first question")
     return parser
@@ -106,6 +111,26 @@ def main(argv=None):
         rows = _register(base)
         grouped = baseline.groups(rows)
         mapped = set(_features_by_legacy(ctx))
+        if args.command == "reserve" and args.item:
+            found = next(
+                (r for r in rows if r["legacy_id"].casefold() == args.item.casefold()), None
+            )
+            if found is None:
+                raise baseline.BaselineError(
+                    f"no legacy item '{args.item}'; IDs: {', '.join(r['legacy_id'] for r in rows)}"
+                )
+            todo = [found] if found["legacy_id"].casefold() not in mapped else []
+            if not todo:
+                print("this legacy item already has a feature")
+                return 0
+            plan = recordops.reserve_features(ctx, [baseline.item_arg(r) for r in todo])
+            ids_text = ", ".join(f"{ctx.scope}:{i}" for i in plan.made)
+            print(f"reserving {len(plan.made)} id(s): {ids_text}")
+            print("plan:\n  " + "\n  ".join(plan.summary))
+            if not args.dry_run:
+                for line in recordops.execute(ctx, plan, "reserve-feat", ", ".join(plan.made)):
+                    print(f"warning: {line}", file=sys.stderr)
+            return 0
         if args.command == "propose-grouping":
             text = baseline.proposal_text(grouped, mapped)
             for group, items in grouped.items():
@@ -126,6 +151,8 @@ def main(argv=None):
                 print("every legacy item of this group already has a feature")
                 return 0
             plan = recordops.reserve_features(ctx, [baseline.item_arg(r) for r in todo])
+            ids_text = ", ".join(f"{ctx.scope}:{i}" for i in plan.made)
+            print(f"reserving {len(plan.made)} id(s): {ids_text}")
             print("plan:\n  " + "\n  ".join(plan.summary))
             if not args.dry_run:
                 for line in recordops.execute(ctx, plan, "reserve-feat", ", ".join(plan.made)):

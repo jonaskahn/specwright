@@ -106,6 +106,35 @@ class BaselineTests(WorkflowTestCase):
         self.assertIn("already has a feature", again.stdout)
         self.assertEqual(self.baseline_cli("reserve", "--group", "Nope").returncode, 2)
 
+    def test_reserve_item_burns_one_number_and_names_the_withdraw_path(self):
+        self.register()
+        dry = self.baseline_cli("reserve", "--item", "LEG-200", "--dry-run")
+        self.assertIn("reserving 1 id(s): REF:FEAT-002", dry.stdout)
+        self.assertIn("reserve REF:FEAT-002 'Issue a payout'", dry.stdout)
+        done = self.baseline_cli("reserve", "--item", "LEG-200")
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual(
+            self.baseline_cli("reserve", "--item", "LEG-200").stdout,
+            "this legacy item already has a feature\n",
+        )
+        self.assertEqual(self.baseline_cli("reserve", "--item", "LEG-999").returncode, 2)
+        # the other group is still unreserved, proving a single number was burned
+        self.assertIn("2 without a feature", self.baseline_cli("propose-grouping").stdout)
+
+    def test_a_withdrawn_reservation_frees_the_legacy_id_but_keeps_the_number(self):
+        self.register()
+        self.baseline_cli("reserve", "--item", "LEG-200")
+        withdraw = self.run_cli(
+            RECORD, "register", "REF:FEAT-002", "--set", "State=withdrawn", "--as", "sw-shape"
+        )
+        self.assertEqual(withdraw.returncode, 0, withdraw.stderr)
+        owners = recordops.alias_owners(recordops.Ctx(self.root, "REF", "sw-shape"))
+        self.assertNotIn("leg-200", owners)
+        # the FEAT number stays a tombstone, so the same legacy item reserves a fresh number
+        self.assertEqual(self.baseline_cli("reserve", "--item", "LEG-200").returncode, 0)
+        owners = recordops.alias_owners(recordops.Ctx(self.root, "REF", "sw-shape"))
+        self.assertNotIn("FEAT-002", owners["leg-200"])
+
     # ---- brief
 
     def test_a_brief_needs_reservations_then_carries_the_table_and_the_first_question(self):
