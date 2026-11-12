@@ -125,6 +125,45 @@
         "L-066 reports ASSET-009 as missing from the asset registry",
         "The agent registers the real asset or removes the id; it does not weaken the rule"
       ]
+    },
+    {
+      "id": "draw-and-embed-svg",
+      "prompt": "Use sw-spec for a draft feature with three actors, a branch and a state change; the chip says needs illustration.",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "The picture is rendered as SVG under diagrams/ beside its JSON spec, which cites the feature's acceptance criteria",
+        "sw-spec runs embed_diagram.py, which writes a Visuals line and an image line under UI/UX and restamps the draft hash",
+        "The card is regenerated and the review lint rerun after the embed",
+        "The chip afterwards is illustrated and no not-embedded line remains"
+      ]
+    },
+    {
+      "id": "unsure-must-resolve",
+      "prompt": "Use sw-spec on a draft whose illustration chip is check illustration because exactly two signals fired.",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "sw-spec decides in the same run: it draws and embeds the smallest fitting type, or records a dismissal with one line of reason",
+        "The hand-off never reports check illustration as the final state"
+      ]
+    },
+    {
+      "id": "approved-story-not-embedded",
+      "prompt": "Use sw-spec to illustrate an accepted feature whose story needs a picture.",
+      "fixture": "workshop/fixtures/refund/diagrams",
+      "assertions": [
+        "The picture is drawn as SVG under diagrams/",
+        "embed_diagram.py is refused with exit 3 and the story file is unchanged, so the approval stays current",
+        "The report says embedding changes the hash and goes through a change request"
+      ]
+    },
+    {
+      "id": "html-only-picture",
+      "prompt": "Use sw-spec on a feature whose only picture is an HTML file linked in the Visuals list.",
+      "fixture": "workshop/fixtures/refund/diagrams",
+      "assertions": [
+        "sw-spec renders an SVG from the same JSON spec and embeds it in the story",
+        "The HTML file may stay as a companion but is not the only picture"
+      ]
     }
   ]
 }

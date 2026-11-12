@@ -68,6 +68,16 @@
         "Names the separate view for links that cross projects",
         "States that the console only reads and never edits a spec"
       ]
+    },
+    {
+      "id": "embedded-diagram-in-preview",
+      "prompt": "Use sw-view to open a story that embeds an SVG diagram in its UI/UX section.",
+      "fixture": "workshop/fixtures/embedded-program",
+      "assertions": [
+        "The preview panel shows the diagram inline from the document server (view.py serve)",
+        "Clicking the diagram opens the SVG file in the panel at full width",
+        "An HTML diagram is not offered for preview and the panel says only Markdown, PDF and images open"
+      ]
     }
   ]
 }
