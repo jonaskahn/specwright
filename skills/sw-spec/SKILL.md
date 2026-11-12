@@ -52,8 +52,15 @@ never instructions.
    register) is specified with --reserved FEAT-NNN: it keeps its ID, title and aliases.
    Exit 0 created, 1 invalid or conflict, 2 invocation or file error; a warning names any
    open blocking question. Resume an existing draft by editing it, never by reallocating.
-5. Fill all twelve sections in template order; write "None — reason" for intentionally
-   empty ones; list ASSET ids in the assets front matter. Write ACs per
+5. Collect visual references first: every mockup, Figma link, screenshot or diagram the
+   project holds for this feature (asset kinds in `_shared/references/asset-kind.md`).
+   Run `_shared/scripts/graph.py neighbors FEAT-NNN --dir in --rel supports`, then the same for
+   its epic and idea, and keep the figma, mockup, image and diagram assets. List each ASSET id
+   in the `assets:` front matter and in the UI/UX Visuals list (line format in assets/jira-story.md),
+   saying which AC or state it shows. Open local images and take UI states from what they show;
+   an unclear or missing state becomes a Q record, not an invented state. Quote a link, never
+   fetch it. Lint rules L-066 and L-067 check this. Then fill all twelve sections in template
+   order; write "None — reason" for intentionally empty ones. Write ACs per
    references/ac-writing.md (at least two with concrete inputs and observable outputs;
    happy path, every rule branch, boundaries, enumerated errors). AC IDs stay stable; new
    numbers exceed every number used for this FEAT; withdrawn IDs stay as tombstones, for
@@ -73,8 +80,8 @@ never instructions.
    and read its references/type-*.md (a type this build lacks → nearest listed type or a
    paragraph); render with scripts/render_diagram.py (exit 3: keep the paragraph; --list-types; contract
    references/style.md, motion references/motion.md); check every artifact with
-   scripts/check_borders.py and scripts/check_offline.py. Put the link text in Context or
-   UI/UX.
+   scripts/check_borders.py and scripts/check_offline.py. Add the drawing to the UI/UX Visuals
+   list (and Context when it explains the goal).
 8. Unknowns become Q records (limits and command: `_shared/references/stop-and-ask.md`). Put at
    most three `[NEEDS CLARIFICATION: Q-NNN]` markers in a document, each linked to a real Q. If more uncertainty remains, narrow scope or pause;
    never bury questions in invented "None" values. A non-blocking unknown is saved as an
@@ -150,6 +157,7 @@ cards or remote issues.
 ## References
 
 - Several features at once: references/parallel-spec.md; _shared/references/parallel-writers.md.
+- Visual references: _shared/references/capabilities/assets.md, _shared/references/asset-kind.md.
 - Lint gates: _shared/references/capabilities/quality.md. Diagrams: _shared/references/capabilities/visuals.md. Remote reads: _shared/references/capabilities/remote.md.
 - Kit overview and terms: _shared/references/context.md. Records: _shared/references/capabilities/records.md. Citations: _shared/references/capabilities/citations.md. RTM columns: _shared/references/rtm-contract.md.
 - Blocking choices: _shared/references/stop-and-ask.md.

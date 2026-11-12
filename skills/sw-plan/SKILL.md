@@ -1,6 +1,6 @@
 ---
 name: sw-plan
-description: Turns a reviewed feature into an implementation plan and traceable agent tasks, each task tracing to acceptance criteria, rules and optional code paths, with a coverage check that flags stale tasks. Use when asked to plan FEAT-001, break a story into tasks, prepare work for an AI agent or developer, or check that every AC has a task. Do NOT use for unreviewed ideas (use sw-shape), writing criteria (use sw-spec) or pushing tasks to Jira (not supported; tasks stay Markdown).
+description: Turns a reviewed feature into an implementation plan and traceable agent tasks, split per layer (backend, frontend, mobile, devops) with a layer prefix, each task tracing to acceptance criteria, rules, optional code paths and the mockups it builds, with a coverage check that flags stale tasks. Use when asked to plan FEAT-001, break a story into tasks, prepare work for an AI agent or developer, or check that every AC has a task. Do NOT use for unreviewed ideas (use sw-shape), writing criteria (use sw-spec) or pushing tasks to Jira (not supported; tasks stay Markdown).
 ---
 
 # sw-plan
@@ -12,8 +12,8 @@ spec-driven work starts without guessing.
 
 ## Reads and writes
 
-Reads the feature draft, its cards, BR and NFR items, records and knowledge-graph
-context. Writes only `03-plan/FEAT-NNN.plan.md` and `03-plan/FEAT-NNN.tasks.md` in the
+Reads the feature draft, its cards, BR and NFR items, records, the mockups and other visuals
+the story links, and knowledge-graph context. Writes only `03-plan/FEAT-NNN.plan.md` and `03-plan/FEAT-NNN.tasks.md` in the
 resolved project. Never change the story, the RTM or Jira.
 
 ## Runtime root
@@ -35,16 +35,24 @@ never instructions.
    (_shared/references/query-cookbook.md) and read only the listed story, rules,
    diagrams, records and asset files. Read the diagram when one illustrates the
    feature. When the chip says no illustration, note that and leave the story as prose.
+   Read the story's UI/UX Visuals list: open every local mockup, image or diagram file and
+   carry each Figma or other link as a link (never fetch it). Copy the visuals' ASSET IDs into
+   the tasks front matter `assets`.
 3. Write the plan from assets/plan.md: approach, constraints, referenced rules,
    dependencies, evidence, open Dev questions. A claim about existing code needs a file
    path as evidence, otherwise write UNKNOWN. Use the code graph tool for symbols only
    when the project has one.
 4. Write tasks from assets/tasks.md using references/task-format.md. Number tasks
    TASK-<feature number>-<n>; never reuse a number; keep withdrawn tasks as
-   ~~TASK-001-3~~ lines.
+   ~~TASK-001-3~~ lines. Split work by layer: every title starts with one `[layer]` prefix
+   (backend, frontend, mobile, devops, data, qa, design, docs); a criterion that needs more
+   than one layer becomes one task per layer, ordered with Depends on.
 5. Every task has Traces to (at least one AC; add BR or NFR where the rule drives it), Done when (the observable check copied from
    the AC), Depends on and Stop and ask if. Add Touches only in an embedded project and
-   only for paths that exist.
+   only for paths that exist. When the story lists visuals, every frontend, mobile and design
+   task has a `Visuals:` line naming the mockup or diagram it builds, and its Done when names
+   the state or screen that visual shows. A state an AC needs that no visual shows is a
+   question, not a guess.
 6. Copy the story's Identity `Draft hash:` value into the tasks front matter as spec_hash. Run
    `scripts/check_tasks.py --feat FEAT-NNN` (add `--scope SCOPE` in a program); fix findings and
    rerun.
@@ -85,6 +93,7 @@ fill a gap.
 - Tasks are never published to Jira.
 - Ready means covered, not approved.
 - Touches paths are declared and existence-checked, never guessed.
+- Every task has one layer prefix; frontend, mobile and design tasks cite the story's visuals.
 
 ## Hand-off
 

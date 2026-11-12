@@ -8,6 +8,8 @@ Run before recording or promoting an approval. Evidence shapes: `approval-eviden
 - [ ] The lint gate (`_shared/scripts/sw_lint.py --root <project> --gate review`) shows 0 blocking
       errors and `_shared/references/dor.md` is met.
 - [ ] No acceptance criterion was rewritten during review; rewrites return to sw-spec.
+- [ ] Each mockup, link or diagram in UI/UX Visuals matches the AC or state it is listed for;
+      a mismatch returns to sw-spec.
 - [ ] Advisory: note the illustration chip. A needs-illustration or check-illustration warning
       does not block approval.
 

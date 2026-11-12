@@ -114,9 +114,12 @@
         "records",
         "knowledge",
         "data",
-        "parallel"
+        "parallel",
+        "assets"
       ],
       "shared": [
+        "references/asset-kind.md",
+        "references/capabilities/assets.md",
         "references/capabilities/citations.md",
         "references/capabilities/knowledge.md",
         "references/capabilities/records.md",
@@ -167,7 +170,8 @@
         "scripts/kitlib/workspace.py",
         "scripts/kitlib/writelog.py",
         "scripts/parallel_guard.py",
-        "scripts/record.py"
+        "scripts/record.py",
+        "scripts/store.py"
       ]
     },
     "sw-plan": {
@@ -376,9 +380,12 @@
         "records",
         "knowledge",
         "data",
-        "parallel"
+        "parallel",
+        "assets"
       ],
       "shared": [
+        "references/asset-kind.md",
+        "references/capabilities/assets.md",
         "references/capabilities/citations.md",
         "references/capabilities/knowledge.md",
         "references/capabilities/quality.md",
@@ -432,6 +439,7 @@
         "scripts/kitlib/writelog.py",
         "scripts/parallel_guard.py",
         "scripts/record.py",
+        "scripts/store.py",
         "scripts/sw_lint.py"
       ]
     },
@@ -444,9 +452,12 @@
         "citations",
         "records",
         "data",
-        "parallel"
+        "parallel",
+        "assets"
       ],
       "shared": [
+        "references/asset-kind.md",
+        "references/capabilities/assets.md",
         "references/capabilities/citations.md",
         "references/capabilities/quality.md",
         "references/capabilities/records.md",
@@ -500,6 +511,7 @@
         "scripts/kitlib/writelog.py",
         "scripts/parallel_guard.py",
         "scripts/record.py",
+        "scripts/store.py",
         "scripts/sw_lint.py",
         "scripts/trace.py"
       ],

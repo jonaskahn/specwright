@@ -50,7 +50,10 @@ Then <result>
 
 ## UI/UX
 
-<Required content or None with reason.>
+<Four UI states (default, empty, loading, error) or None with a reason.>
+
+Visuals: <one line per mockup, Figma link, screenshot or diagram, or None — no visual supplied>
+- <ASSET-NNN> (<kind>) — <screen or state it shows, AC-NNN-n> — <assets/ASSET-NNN.png | URL | diagrams/FEAT-NNN.flow.svg>
 
 ## Out of scope
 
@@ -69,7 +72,7 @@ None
 - [ ] Goal links a BO.
 - [ ] At least two concrete G/W/T criteria.
 - [ ] BR examples and measurable NFRs.
-- [ ] UI states and exclusions with reasons.
+- [ ] UI states and exclusions with reasons; every mockup, link or diagram is in `assets:` and the UI/UX Visuals list.
 - [ ] No unresolved questions or markers.
 - [ ] Dev and QA checks pass for each AC.
 - [ ] Approval recorded through sw-review (accept, or sign-off under `required`).

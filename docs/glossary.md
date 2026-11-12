@@ -23,6 +23,8 @@
 | Station | Where an item sits: `shape`, `spec`, `review`, `plan`, `publish`, or `inactive` (withdrawn or superseded). Publish is entered only on an explicit request. |
 | Condition | The state inside a station: `not-started`, `in-progress`, `blocked`, `complete` or `unknown`. |
 | Chip | A feature's illustration status: `needs illustration`, `no illustration`, `illustrated` or `check illustration`. |
+| Visual reference | A mockup, Figma link, screenshot or diagram (asset kinds figma, mockup, image, diagram, or a drawing in `diagrams/`) that shows what to build. The story lists it in `assets:` and UI/UX; UI tasks cite it in `Visuals:`. |
+| Layer | The delivery area of a task, written as a title prefix: backend, frontend, mobile, devops, data, qa, design or docs. One layer per task. |
 | Scope root | One project's folder: the spec root when flat, `projects/<SCOPE>/` in a program. |
 | Active approval | An accept line or formal sign-off whose hash still matches the current story. A content change makes it stale. |
 | Lead, worker | In a parallel batch the lead guards the writes and saves shared state; a worker is a sub-agent that writes one item's files. |

@@ -1,13 +1,15 @@
 {
  "files": {
+  "references/asset-kind.md": "477063eb5f4a",
+  "references/capabilities/assets.md": "1c17e474aaf9",
   "references/capabilities/citations.md": "d3c8ec81a8fb",
   "references/capabilities/quality.md": "c22c117eff5f",
   "references/capabilities/records.md": "cd1d1eecf6bb",
   "references/capabilities/remote.md": "8d305ce0bbff",
   "references/capabilities/visuals.md": "78d0110394bc",
-  "references/context.md": "7e103581d98f",
+  "references/context.md": "bffa0c26ef88",
   "references/data-format.md": "5ff853a951b5",
-  "references/dor.md": "b66a000bddf8",
+  "references/dor.md": "f98a0bc522f7",
   "references/governance.md": "f5b1903daddc",
   "references/next-step.md": "99625bb29f36",
   "references/parallel-writers.md": "9738f2a45d00",
@@ -53,6 +55,7 @@
   "scripts/kitlib/writelog.py": "c75ee83de4ff",
   "scripts/parallel_guard.py": "c393aea1d3ee",
   "scripts/record.py": "50fadb8cdedf",
+  "scripts/store.py": "71798bc4689c",
   "scripts/sw_lint.py": "a9c5819aaa35",
   "scripts/trace.py": "74bfe2e50aea"
  },

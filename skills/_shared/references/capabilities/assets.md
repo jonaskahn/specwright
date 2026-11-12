@@ -24,6 +24,13 @@ discussion, detect newly supplied or mentioned concrete assets as they appear.
 5. Include newly collected assets and their relationships in the next graph update.
    Report collected, reused and unresolved counts succinctly.
 
+## Linking to a story
+
+Capture a mockup, Figma link, screenshot or diagram with `--refs FEAT-NNN` (or the epic or idea
+ID when no feature exists yet). The registry Refs column is what lets sw-spec find it with the
+graph query `neighbors FEAT-NNN --dir in --rel supports`; sw-spec then lists it in the story's
+`assets:` and UI/UX Visuals, and sw-plan cites it on the frontend, mobile and design tasks.
+
 ## Usage
 
 Run _shared/scripts/store.py with --root <project> and the resolved scope. Classify the

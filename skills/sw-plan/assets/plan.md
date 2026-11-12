@@ -9,6 +9,10 @@ assets: []
 
 <How the work will be done, in terms of observable behaviour.>
 
+## Visual references
+
+<Each ASSET ID or diagram from the story's UI/UX list with the tasks that build from it, or None with a reason.>
+
 ## Constraints
 
 <Rules and limits taken from BR and NFR items, with their IDs.>

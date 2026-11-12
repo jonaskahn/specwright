@@ -135,6 +135,7 @@ without repeating sensitive values.
 - Scripts: scripts/to_md.py, scripts/bulk_import.py, scripts/wiki_pull.py,
   scripts/candidates.py, scripts/secrets_scan.py, scripts/provenance.py, scripts/impact.py (each has
   --help).
+- Mockups, links and images found in a batch: _shared/references/capabilities/assets.md (capture with `--refs`).
 - Citations and records: _shared/references/capabilities/citations.md, records.md.
 - Kit overview and terms: _shared/references/context.md. Graph: _shared/references/capabilities/knowledge.md.
 - Blocking choices: _shared/references/stop-and-ask.md.

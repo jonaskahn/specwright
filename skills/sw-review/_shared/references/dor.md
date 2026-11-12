@@ -7,7 +7,8 @@ Before requesting review, check:
 - At least two ACs have concrete G/W/T examples; every rule branch and error row is
   covered, including boundary inputs. Withdrawn IDs remain tombstoned.
 - Rules contain key numbers and worked examples. NFRs state conditions and method.
-- UI states are named, or no-UI scope is explicit. Out-of-scope items have reasons.
+- UI states are named, or no-UI scope is explicit. Every supplied mockup, Figma link, screenshot
+  or diagram is listed in `assets:` and in the UI/UX Visuals list. Out-of-scope items have reasons.
 - Dependencies are actual references, not invented IDs. Cross-scope IDs are qualified.
 - Open questions are resolved for readiness, with decisions and evidence retained.
 - Dev and QA checks say yes per AC, with an explanation, or the draft stays blocked.

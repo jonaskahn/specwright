@@ -117,6 +117,7 @@ brief.
   one); word list: references/leakage-words.md.
 - Existing baseline: scripts/baseline.py; INVEST table: scripts/invest.py.
 - Epic reservation: scripts/new_epic.py; template: assets/epic.md.
+- Mockups, links and images the user supplies: _shared/references/capabilities/assets.md (capture with `--refs`).
 - Records: _shared/references/capabilities/records.md; assets/q.md and assets/dec.md show the fields.
 - Kit overview and terms: _shared/references/context.md. Citations: _shared/references/capabilities/citations.md. Graph: _shared/references/capabilities/knowledge.md. Data files: _shared/references/data-format.md. Parallel batches: _shared/references/parallel-writers.md.
 - Blocking choices: _shared/references/stop-and-ask.md.
