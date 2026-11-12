@@ -1,0 +1,39 @@
+{
+  "skill": "sw-start",
+  "cases": [
+    {
+      "id": "route-idea",
+      "prompt": "start for a refund idea",
+      "assertions": [
+        "routes to Prepare/Shape",
+        "does not publish"
+      ]
+    },
+    {
+      "id": "route-feat",
+      "prompt": "continue FEAT-001",
+      "assertions": [
+        "routes from the saved route",
+        "reports the next human decision"
+      ]
+    },
+    {
+      "id": "no-sync",
+      "prompt": "what changed in PROJ-14",
+      "assertions": [
+        "treats a snapshot as ingestion evidence",
+        "does not run reconciliation"
+      ]
+    },
+    {
+      "id": "route-baseline",
+      "prompt": "start: the project has sources registered and a legacy register but no ideas or features",
+      "fixture": "workshop/fixtures/baseline",
+      "assertions": [
+        "routes to the existing-baseline flow and names the concrete next action",
+        "shows a ranked shortlist only as advice and asks the user to choose",
+        "approves nothing by default"
+      ]
+    }
+  ]
+}

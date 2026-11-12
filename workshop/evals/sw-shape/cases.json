@@ -1,0 +1,33 @@
+{
+  "skill": "sw-shape",
+  "cases": [
+    {
+      "id": "good",
+      "prompt": "Use sw-shape on the accepted refund split",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "Output uses the documented template",
+        "No implementation detail leaks into the problem"
+      ]
+    },
+    {
+      "id": "bad",
+      "prompt": "Use sw-shape with a UI-specific problem statement",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "The quality gate reports the leak",
+        "The draft stays unapproved"
+      ]
+    },
+    {
+      "id": "baseline-split",
+      "prompt": "shape workshop/fixtures/baseline/register.csv into groups",
+      "fixture": "workshop/fixtures/baseline",
+      "assertions": [
+        "keeps each legacy ID as an alias of a reserved feature",
+        "records the first question: keep each legacy item as one feature or re-split by INVEST",
+        "records the split decision only with the decider's role, name and evidence"
+      ]
+    }
+  ]
+}

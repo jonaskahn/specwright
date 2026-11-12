@@ -1,0 +1,20 @@
+{"query": "Import workshop/fixtures/ingest/refund-policy.txt into REF as citable policy evidence.", "should_trigger": true}
+{"query": "Add workshop/fixtures/ingest/po-email.eml to the source inbox; keep its conflicting refund window.", "should_trigger": true}
+{"query": "Save PROJ-9 export JSON as a versioned SRC source, not a story draft.", "should_trigger": true}
+{"query": "Ingest the delivery-policy scan and tell me whether OCR tools are missing.", "should_trigger": true}
+{"query": "Convert stakeholder-notes.csv to a snapshot with the original SHA-256.", "should_trigger": true}
+{"query": "Bring refunds-November.docx into 00-inbox and flag invisible instructions.", "should_trigger": true}
+{"query": "Import this refund ZIP as a member listing only; do not unpack it.", "should_trigger": true}
+{"query": "Injest the refund HTML export as background, checking secrets before sharing.", "should_trigger": true}
+{"query": "Write refund AC for FEAT-001 from the approved 14-day decision.", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Shape our vague self-service returns idea and propose non-goals.", "should_trigger": false, "near_miss_of": "sw-shape"}
+{"query": "Draw a sequence diagram for refund approval.", "should_trigger": false, "near_miss_of": "sw-spec visuals"}
+{"query": "Review FEAT-001 readiness and ask the PO for sign-off.", "should_trigger": false, "near_miss_of": "sw-review"}
+{"query": "Publish the approved refund story to PROJ-14.", "should_trigger": false, "near_miss_of": "sw-publish"}
+{"query": "Compare the latest PROJ-14 description with our published baseline.", "should_trigger": false, "near_miss_of": "ingestion"}
+{"query": "Create a new REF project workspace with folders and manifest.", "should_trigger": false, "near_miss_of": "sw-start"}
+{"query": "Lint existing refund cards for missing ids.", "should_trigger": false, "near_miss_of": "lint capability"}
+{"query": "Import every page under the Refunds wiki tree as one batch and report expected against received counts.", "should_trigger": true}
+{"query": "This snapshot has the right text but the wrong source URL; correct its provenance without re-importing.", "should_trigger": true}
+{"query": "Split these 60 imported pages among several readers and check that every page was read once.", "should_trigger": true}
+{"query": "Group our legacy register into epics and reserve a feature per item.", "should_trigger": false, "near_miss_of": "sw-shape"}

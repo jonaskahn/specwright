@@ -55,7 +55,7 @@ Claude Code plugin marketplace:
 Both routes read `skills/` straight from the repository. Each skill folder carries its own
 generated `_shared/` copy, so installing a skill on its own works. They always carry the full
 `extended` set of 20 diagram types (`skills/sw-spec` holds core and extended; only
-`extras/` is left out). Only `tools/package.py` defaults to the 10-type core profile.
+`extras/` is left out). Only `workshop/tools/package.py` defaults to the 10-type core profile.
 
 The plugin manifests declare all seven public skills and seven command wrappers. Commands
 carry Claude-specific `${CLAUDE_PLUGIN_ROOT}` paths; skill folders themselves remain
@@ -76,7 +76,7 @@ Use the bundled installer when a checkout is air-gapped or a project wants gener
 instruction files:
 
 ```sh
-python3 tools/install.py --target /absolute/path/to/spec-repo
+python3 workshop/tools/install.py --target /absolute/path/to/spec-repo
 ```
 
 It copies the same self-contained skills to `.agents/skills/sw-*` and mirrors them to
@@ -103,7 +103,7 @@ python3 /absolute/path/to/spec-repo/.agents/skills/sw-start/scripts/workspace.py
 ## Standalone skill archives
 
 ```sh
-python3 tools/package.py --zip --out dist
+python3 workshop/tools/package.py --zip --out dist
 ```
 
 Packaging copies each public skill and the canonical `skills/_shared/` tree, rewrites
@@ -117,7 +117,7 @@ Archives default to the `core` profile (10 diagram types) to stay well inside th
 cap; `--profile extended` adds the 8 extended types. The skill adapts to whichever set is
 present, so either archive works without further changes.
 
-Check an archive set with `python3 tools/verify_package.py --dist dist` (`make package`
+Check an archive set with `python3 workshop/tools/verify_package.py --dist dist` (`make package`
 runs it). It unzips every skill, fails on any `references/`, `scripts/` or `assets/` file a
 text names but the zip lacks, and starts each script with `--help`. If a host drops the
 `_shared` folder on upload, every script stops with "shared library missing at ...; reinstall

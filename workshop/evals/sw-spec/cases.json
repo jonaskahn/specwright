@@ -1,0 +1,53 @@
+{
+  "skill": "sw-spec",
+  "cases": [
+    {
+      "id": "good",
+      "prompt": "Use sw-spec on the accepted refund split",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "Output uses the documented template",
+        "No implementation detail leaks into the problem"
+      ]
+    },
+    {
+      "id": "bad",
+      "prompt": "Use sw-spec with a UI-specific problem statement",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "The quality gate reports the leak",
+        "The draft stays unapproved"
+      ]
+    },
+    {
+      "id": "fresh-diagram-needed",
+      "prompt": "Use sw-spec for a new accepted feature with two actors, a decision branch and a state change, and no illustration.",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "sw-spec invokes sw-spec visuals before the review gate",
+        "sw-spec writes the returned diagram link",
+        "shared lint runs after the illustration link is applied"
+      ]
+    },
+    {
+      "id": "existing-current",
+      "prompt": "Use sw-spec to resume a feature whose illustration still matches its depicted actors, branches, labels and source IDs.",
+      "fixture": "workshop/fixtures/refund/diagrams",
+      "assertions": [
+        "sw-spec visuals is not invoked",
+        "The existing illustration is left unchanged",
+        "The recorded no-op names the current paths and source IDs"
+      ]
+    },
+    {
+      "id": "existing-stale",
+      "prompt": "Use sw-spec to amend a feature after a recorded CR changes a branch shown in its illustration.",
+      "fixture": "workshop/fixtures/refund/diagrams",
+      "assertions": [
+        "sw-spec invokes sw-spec visuals because the depicted branch changed",
+        "sw-spec updates the draft link after the illustration is redrawn",
+        "shared lint runs again after the link change"
+      ]
+    }
+  ]
+}

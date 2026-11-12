@@ -18,6 +18,7 @@ SHELL := /bin/bash
 
 PYTHON ?= python3
 RUFF ?= uvx ruff
+RUFF_CONFIG := --config workshop/pyproject.toml
 DIST_DIR := dist
 
 GROUPS := lint format test build package clean
@@ -56,27 +57,27 @@ lint.default: lint.format lint.ruff lint.validate lint.vendor lint.bundle lint.h
 
 ## lint.format: check formatting without writing
 lint.format:
-	$(RUFF) format --check .
+	$(RUFF) format --check $(RUFF_CONFIG) .
 
 ## lint.ruff: lint Python sources
 lint.ruff:
-	$(RUFF) check .
+	$(RUFF) check $(RUFF_CONFIG) .
 
 ## lint.validate: validate skill sources and repository contracts
 lint.validate:
-	$(PYTHON) tools/validate.py
+	$(PYTHON) workshop/tools/validate.py
 
 ## lint.vendor: fail when a skill vendors a duplicate of skills/_shared
 lint.vendor:
-	$(PYTHON) tools/vendor.py --check
+	$(PYTHON) workshop/tools/vendor.py --check
 
 ## lint.bundle: fail when bundle-map.json drifts from real imports, links or the file cap
 lint.bundle:
-	$(PYTHON) tools/bundle.py --check
+	$(PYTHON) workshop/tools/bundle.py --check
 
 ## lint.hygiene: scan text for work-tracking labels and attribution
 lint.hygiene:
-	$(PYTHON) tools/hygiene.py files
+	$(PYTHON) workshop/tools/hygiene.py files
 
 ##@ format: → apply Ruff fixes, format sources, regenerate vendored files and the bundle map
 
@@ -84,19 +85,19 @@ format.default: format.ruff format.write format.bundle format.vendor
 
 ## format.ruff: apply Ruff's safe lint fixes
 format.ruff:
-	$(RUFF) check --fix .
+	$(RUFF) check --fix $(RUFF_CONFIG) .
 
 ## format.write: format Python sources
 format.write:
-	$(RUFF) format .
+	$(RUFF) format $(RUFF_CONFIG) .
 
 ## format.vendor: regenerate each skill's _shared copy (run after format.bundle)
 format.vendor:
-	$(PYTHON) tools/vendor.py --write
+	$(PYTHON) workshop/tools/vendor.py --write
 
 ## format.bundle: regenerate each skill's shared-file list in bundle-map.json
 format.bundle:
-	$(PYTHON) tools/bundle.py --write
+	$(PYTHON) workshop/tools/bundle.py --write
 
 ##@ test: → the unit test suite
 
@@ -104,14 +105,14 @@ test.default: test.unit
 
 ## test.unit: run the unit test suite
 test.unit:
-	$(PYTHON) -m unittest discover -s tests -t .
+	$(PYTHON) -m unittest discover -s workshop/tests -t workshop
 
 ## test.docker: run the unit test suite in Python 3.13 with git installed
 test.docker:
 	docker run --rm -v "$(CURDIR):/workspace:ro" -w /workspace python:3.13-slim \
 		sh -ec 'apt-get update -qq && \
 		        apt-get install -y -qq --no-install-recommends git && \
-		        PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -t .'
+		        PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s workshop/tests -t workshop'
 
 ##@ build: → lint and test the repository
 
@@ -124,15 +125,15 @@ package.default: clean.default build.default package.zip package.verify
 
 ## package.zip: package every public skill into dist/ (core diagram types; see docs/install.md)
 package.zip:
-	$(PYTHON) tools/package.py --zip --out "$(DIST_DIR)"
+	$(PYTHON) workshop/tools/package.py --zip --out "$(DIST_DIR)"
 
 ## package.verify: unzip each skill and check it names no missing file and every script starts
 package.verify:
-	$(PYTHON) tools/verify_package.py --dist "$(DIST_DIR)"
+	$(PYTHON) workshop/tools/verify_package.py --dist "$(DIST_DIR)"
 
 ## package.report: show each skill's file count, size and shared capabilities
 package.report:
-	$(PYTHON) tools/bundle.py --report
+	$(PYTHON) workshop/tools/bundle.py --report
 
 ##@ clean: → remove distribution output, caches and Python bytecode
 

@@ -1,22 +1,14 @@
 <p align="center">
   <img src="logo.svg" alt="Specwright — interlocking geometric shapes in a ring, with a dot that travels once around its edge" width="112" />
 </p>
-
-
-<h1 align="center">SPEC-WRIGHT</h1>
-
+<h2 align="center">SPEC-WRIGHT</h2>
 <p align="center">
   <strong>From raw idea to implementation-ready work.</strong><br />
   Seven portable agent skills. One trail of evidence.<br />
 </p>
-
-
 <p align="center">
   <code>SHAPE</code> &nbsp;▸&nbsp; <code>SPEC</code> &nbsp;▸&nbsp; <code>REVIEW</code> &nbsp;▸&nbsp; <code>PLAN</code> &nbsp;▸&nbsp; <code>MARKDOWN READY</code><br />
-  <sub>Publishing is a separate yes, after the plan passes.</sub>
 </p>
-
-
 <p align="center">
   <img alt="Python 3.10+" src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white" />
   <img alt="No external dependencies" src="https://img.shields.io/badge/Dependencies-Standard%20Library-64748B?style=flat-square" />
@@ -120,7 +112,7 @@ This project:
 npx skills add jonaskahn/specwright
 ```
 
-This path and the Claude plugin install the skills as they are in the repo, including all 20 diagram types. Zip builds from `tools/package.py` default to the smaller set of 10.
+This path and the Claude plugin install the skills as they are in the repo, including all 20 diagram types. Zip builds from `workshop/tools/package.py` default to the smaller set of 10.
 
 ### Claude Code plugin
 
@@ -147,13 +139,13 @@ Install the plugin:
 Install into a project:
 
 ```sh
-python3 tools/install.py --target /absolute/path/to/spec-repo
+python3 workshop/tools/install.py --target /absolute/path/to/spec-repo
 ```
 
 Build skill zips:
 
 ```sh
-python3 tools/package.py --zip --out dist
+python3 workshop/tools/package.py --zip --out dist
 ```
 
 This one also writes project instruction files.
@@ -239,7 +231,7 @@ docker run --rm -v "$PWD:/workspace:ro" -w /workspace python:3.13-slim \
 ```
 
 - The real runtime is `skills/_shared/`. Each skill folder carries a generated copy so it still works alone.
-- `tools/vendor.py --write` refreshes those copies. `--check` verifies them.
+- `workshop/tools/vendor.py --write` refreshes those copies. `--check` verifies them.
 - Trigger evals are fixtures. They are not a score of model accuracy.
 - Publish tests talk to a local Jira mock. They never touch a real Jira site.
 - Production use needs a sandbox trial and a human sign-off.
