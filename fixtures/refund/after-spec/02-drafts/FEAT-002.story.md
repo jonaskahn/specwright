@@ -3,6 +3,7 @@ id: FEAT-002
 type: feature
 scope: REF
 title: Decide a refund request
+aliases: []
 status: draft
 updated: 2026-10-27
 ---

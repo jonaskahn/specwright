@@ -12,7 +12,7 @@
   "references/next-step.md": "014dd8c606b1",
   "references/query-cookbook.md": "6f8a7beedc70",
   "references/rtm-contract.md": "06bfa00b178d",
-  "references/rule-catalog.md": "dad341346e8b",
+  "references/rule-catalog.md": "2b54c90358b1",
   "references/safety.md": "acf96cd3a709",
   "references/status-map.md": "56c9de252529",
   "references/stop-and-ask.md": "8dcf14ae3f9f",
@@ -39,7 +39,7 @@
   "scripts/kitlib/writelog.py": "ea537699559c",
   "scripts/status.py": "785c604bad2b",
   "scripts/store.py": "71798bc4689c",
-  "scripts/sw_lint.py": "f970507a8b4c",
+  "scripts/sw_lint.py": "f58b82877cf5",
   "scripts/trace.py": "cdcb3f5231f2"
  },
  "kit_version": "0.3.0"

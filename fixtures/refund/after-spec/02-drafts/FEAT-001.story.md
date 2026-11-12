@@ -3,6 +3,7 @@ id: FEAT-001
 type: feature
 scope: REF
 title: Submit a refund request
+aliases: []
 status: in-review
 bo: [BO-001]
 updated: 2026-11-10

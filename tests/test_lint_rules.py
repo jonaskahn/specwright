@@ -378,6 +378,24 @@ class RuleTests(unittest.TestCase):
         ctx = self.context([doc()], registry=reg)
         self.assertIn("L-053", {f.rule for f in lint.graph_findings(ctx)})
 
+    def test_l054(self):
+        self.check_rule("L-054", doc(GOOD.replace("aliases: []\n", "")))
+        self.check_rule("L-054", doc(GOOD.replace("title: Submit a return request\n", "")))
+        old_snapshot = snapshot().replace("aliases: []\n", "")
+        found = [f for f in self.findings(doc(old_snapshot, "00-inbox/SRC-0001.md"))]
+        self.assertEqual([f.sev for f in found if f.rule == "L-054"], ["warn"])
+
+    def test_l055(self):
+        self.check_rule("L-055", doc(update(title="TBD")))
+        self.check_rule("L-055", doc(update(title="FEAT-001")))
+        reg = tables.Table(list(schema.REGISTRY_COLUMNS))
+        reg.upsert("REF:FEAT-005", {"Kind": "story"})
+        bare = lint.registry_findings(self.context([doc()], registry=reg))
+        self.assertIn("L-055", {f.rule for f in bare})
+        reg.upsert("REF:FEAT-005", {"Title": "Payout"})
+        named = lint.registry_findings(self.context([doc()], registry=reg))
+        self.assertNotIn("L-055", {f.rule for f in named})
+
     def test_every_rule_has_a_named_test(self):
         covered = {"L-" + name.removeprefix("test_l") for name in dir(self) if re_rule(name)}
         self.assertEqual(lint.RULE_IDS, covered)

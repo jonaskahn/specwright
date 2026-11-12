@@ -36,7 +36,27 @@ GATES = {"draft": 10, "review": 20, "publish": 30}
 REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {"L-017"}
 PUBLISH = {"L-018", "L-037", "L-045", "L-046"}
 SYNC = set()
-RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 54))}
+RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56))}
+# Artifacts a reader looks up by name; each needs a title and an alias list (possibly empty).
+NAMED_TYPES = {"feature", "idea", "epic", "q", "dec", "cr", "risk", "snapshot"}
+PLACEHOLDER_TITLES = {
+    "reserved feature",
+    "tbd",
+    "tba",
+    "todo",
+    "untitled",
+    "placeholder",
+    "title",
+    "n/a",
+    "none",
+}
+
+
+def placeholder_title(title, identity=""):
+    plain = str(title).strip().strip("()[]<>.").casefold()
+    return not plain or plain in PLACEHOLDER_TITLES or plain == str(identity).casefold()
+
+
 BANNED = (
     "fast",
     "quick",
@@ -412,6 +432,18 @@ def lint_document(doc, ctx):
         emit("L-016", "status is not valid for this type")
     if fm.get("scope", ctx.scope) != ctx.scope:
         emit("L-043", "front matter scope differs from the selected project")
+    if fm["type"] in NAMED_TYPES and not doc.card:
+        # Snapshots are immutable, so an old one without a name is a warning, not a blocker.
+        severity = "warn" if fm["type"] == "snapshot" else "error"
+        absent = [k for k in ("title", "aliases") if k not in fm or (k == "title" and not fm[k])]
+        if absent or not isinstance(fm.get("aliases"), list):
+            emit(
+                "L-054",
+                f"front matter needs {' and '.join(absent or ['aliases as a list'])}",
+                sev=severity,
+            )
+        elif placeholder_title(fm["title"], doc.spec_id):
+            emit("L-055", f"title '{fm['title']}' is a placeholder; name the item", sev=severity)
     role = "card" if doc.card else "snapshot" if doc.snapshot else "definition"
     if role != "snapshot" and fm["type"] not in {"snapshot", "src"}:
         peers = [
@@ -763,10 +795,25 @@ def discover(base):
 def registry_findings(ctx):
     out = []
     by_feature, by_key = {}, {}
+    defined = {d.spec_id for d in ctx.docs if d.fm.get("type") == "feature"}
     for row in ctx.registry.rows:
         ref = ids.parse_ref(row[0])
         if not ref or (ref.scope and ref.scope != ctx.scope) or not ref.id.startswith("FEAT-"):
             continue
+        state = ctx.registry.value(row[0], "State")
+        reserved = ref.id not in defined and state not in ("withdrawn", "superseded")
+        if reserved and placeholder_title(ctx.registry.value(row[0], "Title"), ref.id):
+            out.append(
+                Finding(
+                    "L-055",
+                    "draft",
+                    "error",
+                    "_meta/id-registry.md",
+                    1,
+                    "reserved feature has no real title; record one with the reservation",
+                    ref.id,
+                )
+            )
         key = ctx.registry.get(row[0], "Jira key") or ""
         if key in EMPTY:
             continue
