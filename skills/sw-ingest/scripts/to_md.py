@@ -356,6 +356,7 @@ def ingest(
     source_parent: str | None = None,
     redacted_from: str | None = None,
     supersedes: list[str] | None = None,
+    labels: list[str] | None = None,
 ) -> dict:
     path, out = path.resolve(), out.resolve()
     if out.name != "00-inbox":
@@ -440,6 +441,8 @@ def ingest(
             fm[field] = value
     if supersedes:
         fm["supersedes"] = list(supersedes)
+    if labels:
+        fm["labels"] = [name.strip() for name in labels if name.strip()]
     if markers:
         fm["redaction_markers"] = markers
     flavor = snapshots.content_class(text)

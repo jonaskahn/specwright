@@ -45,7 +45,8 @@ These rules apply to every file in the kit.
 
 ## Scripts
 
-- Standard library only, offline except the explicit Jira REST adapter, Python 3.10+.
+- Standard library only, offline except the explicit REST adapters (Jira, and the read-only
+  wiki reader), Python 3.10+.
 - Every script has `--help`, never prompts, prints data on stdout and diagnostics on
   stderr, and uses distinct documented exit codes.
 - External programs run with a list argv, no shell, and a timeout.

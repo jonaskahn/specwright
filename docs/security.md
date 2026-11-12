@@ -43,6 +43,18 @@ Scan before sharing, review false negatives, and redact personal data. Do not co
 raw sensitive originals. Securely remove copies and rotate credentials if exposed.
 Environment variables used by REST must never appear in snapshots or error messages.
 
+The wiki reader (`sw-ingest` `wiki_pull.py`) is the second network seam and is read-only: GET
+requests to one HTTPS origin, no redirects, no path outside `/wiki/`, a next link that leaves
+the origin is refused, and a page, depth or request limit is reported as an incomplete pull. Its
+credentials come from `SPECWRIGHT_WIKI_SITE`, `SPECWRIGHT_WIKI_EMAIL` and `SPECWRIGHT_WIKI_TOKEN`
+and are never stored. Pulled text goes through the same scan as any import.
+
+The sensitive-content scan skips personal-data matches inside a front matter block and inside
+plain hashes (hex runs of 24 or more characters); a secret is always reported. A sample value in
+a policy text is a documented example only when a named person, with an evidence reference, adds
+a row to `_meta/scan-decisions.tsv`; that row can never cover a secret. Every imported document
+leaves a retain, redact or skip row in the same file.
+
 Unsupported ADF content is lossy: preserve its warning and original JSON. Do not
 publish over an unsupported node without reconciling it with a human reviewer.
 

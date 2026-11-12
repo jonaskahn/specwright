@@ -28,6 +28,7 @@
   "scripts/kitlib/snapshots.py": "85f742ca4127",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "a72c8fe85965",
+  "scripts/kitlib/wiki_rest.py": "6ff05aff177f",
   "scripts/kitlib/workspace.py": "dbb1251f4d0e",
   "scripts/kitlib/writelog.py": "1a34e6e3c8c9",
   "scripts/record.py": "ecce23ddfa0f"

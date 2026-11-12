@@ -2,9 +2,10 @@
 """Import many sources in one logged batch with a manifest of what happened to each.
 
 Input is a folder (`--input-dir`) or a tab-separated list (`--list-file`) with a header row and the
-columns path, title, source, source_version, remote_id, parent_id, tracker_key, url (only `path` is
-required). Parents are imported before children and linked as `source_parent`. The batch writes
-00-inbox/imports/<batch-id>/manifest.json with expected and received counts and one status per item.
+columns path, title, source, source_version, remote_id, parent_id, tracker_key, url, labels (only
+`path` is required). Parents are imported before children and linked as `source_parent`. The
+batch writes 00-inbox/imports/<batch-id>/manifest.json with expected and received counts and one
+status per item.
 
 A batch larger than the project limit (limits.max_pages) runs only with
 --confirm-over-limit <count>. --dry-run shows what would be created, including source and
@@ -54,6 +55,7 @@ COLUMNS = (
     "parent_id",
     "tracker_key",
     "url",
+    "labels",
 )
 
 
@@ -158,6 +160,7 @@ def run_item(item: dict[str, str], out: Path, scope: str, parents: dict[str, str
             remote_url=item.get("url") or None,
             tracker_key=item.get("tracker_key") or None,
             source_parent=parents.get(item.get("parent_id", "")),
+            labels=item["labels"].split(",") if item.get("labels") else None,
         )
         degraded = bool(result.get("degraded"))
         record.update(

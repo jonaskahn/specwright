@@ -117,6 +117,7 @@
         "scripts/kitlib/snapshots.py",
         "scripts/kitlib/tables.py",
         "scripts/kitlib/task_validation.py",
+        "scripts/kitlib/wiki_rest.py",
         "scripts/kitlib/workspace.py",
         "scripts/kitlib/writelog.py",
         "scripts/record.py"
