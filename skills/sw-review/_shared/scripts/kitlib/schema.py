@@ -132,6 +132,7 @@ RELATIONS = (
     "governed_by",
     "sourced_from",
     "shaped_from",
+    "source_parent",
     "has_ac",
     "has_task",
     "implements",

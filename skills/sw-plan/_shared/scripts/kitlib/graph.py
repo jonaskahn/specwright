@@ -35,6 +35,7 @@ FM_RELATIONS = {
     "affected": "affects",
     "supersedes": "supersedes",
     "assets": "uses_asset",
+    "source_parent": "source_parent",
 }
 KIND_OF_TYPE = {"feature": "feat"}
 TAG = re.compile(r"@((?:AC-\d{3}-\d+)|(?:BR-\d{3}))")

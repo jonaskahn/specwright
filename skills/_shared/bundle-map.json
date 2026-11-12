@@ -113,6 +113,7 @@
         "scripts/kitlib/rtm.py",
         "scripts/kitlib/scanlog.py",
         "scripts/kitlib/schema.py",
+        "scripts/kitlib/snapshots.py",
         "scripts/kitlib/tables.py",
         "scripts/kitlib/task_validation.py",
         "scripts/kitlib/workspace.py",

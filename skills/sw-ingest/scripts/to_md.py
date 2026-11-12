@@ -39,7 +39,18 @@ if str(_shared) not in sys.path:
 
 from secrets_scan import scan  # noqa: E402
 
-from kitlib import frontmatter, fsio, hashing, ids, schema, tables, workspace  # noqa: E402
+from kitlib import (  # noqa: E402
+    frontmatter,
+    fsio,
+    hashing,
+    ids,
+    rtm,
+    scanlog,
+    schema,
+    snapshots,
+    workspace,
+    writelog,
+)
 
 MAX_BYTES = 50 * 1024 * 1024
 MAX_PAGES = 300
@@ -303,6 +314,31 @@ def clean(text: str, warnings: list[str]) -> str:
     return text
 
 
+def _title(text: str, path: Path, given: str | None) -> str:
+    """The name a reader will look for: given, else the first heading, else the file name."""
+    if given and given.strip():
+        return " ".join(given.split())[:120]
+    for line in text.splitlines():
+        if line.startswith("# ") and line[2:].strip():
+            return " ".join(line[2:].split())[:120]
+    return path.stem.replace("_", " ").replace("-", " ")[:120] or "Untitled source"
+
+
+def _log_decision(log: Path, digest: str, decision: str, ref: str, kind: str = "-") -> None:
+    scanlog.append(
+        log,
+        {
+            "source_hash": digest,
+            "line": "-",
+            "type": kind,
+            "decision": decision,
+            "by": "sw-ingest",
+            "ref": ref,
+            "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        },
+    )
+
+
 def ingest(
     path: Path,
     out: Path,
@@ -312,6 +348,14 @@ def ingest(
     source_version: str | None = None,
     locale: str = "en",
     retain_sensitive_raw: bool = False,
+    title: str | None = None,
+    aliases: list[str] | None = None,
+    remote_id: str | None = None,
+    remote_url: str | None = None,
+    tracker_key: str | None = None,
+    source_parent: str | None = None,
+    redacted_from: str | None = None,
+    supersedes: list[str] | None = None,
 ) -> dict:
     path, out = path.resolve(), out.resolve()
     if out.name != "00-inbox":
@@ -322,19 +366,14 @@ def ingest(
         data = handle.read(MAX_BYTES + 1)
     if len(data) > MAX_BYTES:
         raise Refused("input exceeds 50 MB")
+    if redacted_from and not re.fullmatch(r"[0-9a-f]{64}", redacted_from):
+        raise ValueError("redacted-from must be the sha256 of the original file")
     digest = hashing.bytes_hash(data)
     root = out.parent
     registry_path = root / "_meta" / "id-registry.md"
-    registry = tables.parse(
-        registry_path.read_text(encoding="utf-8") if registry_path.exists() else "# ID registry\n\n"
-    )
-    if registry.table is None:
-        registry.table = tables.Table(list(schema.REGISTRY_COLUMNS))
-    for column in ("Kind", "Last snapshot", "State"):
-        registry.table.col(column)
-    taken = [str(ref) for ref in ids.find_refs(registry.render())]
+    scan_log = root / "_meta" / "scan-decisions.tsv"
+    taken = ids.taken_ids(root)
     for snapshot in sorted(out.glob("SRC-*.md")):
-        taken.append(snapshot.stem)
         parsed = frontmatter.parse(snapshot.read_text(encoding="utf-8"))
         if parsed.fm and parsed.fm.get("sha256") == digest:
             from kitlib import ingest_impact
@@ -357,18 +396,29 @@ def ingest(
             return {"duplicate": True, "raw": str(raw), "sha256": digest}
     text, kind, converter, warnings, degraded, inferred_version = convert(path, data, locale)
     text = clean(text, warnings)
-    findings = scan(text)
+    allowed = scanlog.allowed(scanlog.read(scan_log), digest)
+    findings = scan(text, allowed)
     if findings and not retain_sensitive_raw:
+        _log_decision(scan_log, digest, "skip", "refused: sensitive content", findings[0]["type"])
         raise Refused(
             "sensitive material requires explicit raw-retention consent; "
             "scan or redact a local copy first"
         )
     if findings:
         warnings.append("sensitive-content")
+    markers = snapshots.redaction_markers(text)
     number = ids.next_id("SRC", taken, width=4)
+    name = _title(text, path, title)
+    names = list(
+        dict.fromkeys(
+            a.strip() for a in [*(aliases or []), remote_id, tracker_key, remote_url] if a
+        )
+    )
     fm = {
         "id": number,
         "type": "snapshot",
+        "title": name,
+        "aliases": names,
         "source_kind": kind,
         "source": source or path.as_uri(),
         "source_version": source_version or inferred_version,
@@ -379,26 +429,58 @@ def ingest(
         "warnings": sorted(set(warnings)),
         "degraded": degraded,
     }
+    for field, value in (
+        ("remote_id", remote_id),
+        ("remote_url", remote_url),
+        ("tracker_key", tracker_key),
+        ("source_parent", source_parent),
+        ("redacted_from", redacted_from),
+    ):
+        if value:
+            fm[field] = value
+    if supersedes:
+        fm["supersedes"] = list(supersedes)
+    if markers:
+        fm["redaction_markers"] = markers
+    flavor = snapshots.content_class(text)
+    if flavor != "content":
+        fm["content_class"] = flavor
     if scope:
         fm["scope"] = scope
     rendered = frontmatter.render(fm, "\n" + text.rstrip() + "\n")
+    target = out / ids.record_filename(number, name)
     raw_path = out / "raw" / (digest[:12] + "-" + path.name)
-    raw_path.parent.mkdir(parents=True, exist_ok=True)
-    # Exclusive creation keeps originals append-only, including on a prefix collision.
-    with raw_path.open("xb") as handle:
-        handle.write(data)
-    fsio.atomic_write(out / (number + ".md"), rendered)
     key = ids.qualify(scope, number) if scope else number
-    registry.table.upsert(
-        key, {"Kind": "snapshot", "Last snapshot": "00-inbox/" + number + ".md", "State": "raw"}
-    )
-    fsio.atomic_write(registry_path, registry.render())
+    cells = {
+        "Kind": "snapshot",
+        "Last snapshot": "00-inbox/" + target.name,
+        "State": "raw",
+    }
+    if remote_id or tracker_key:
+        cells["Source ref"] = remote_id or str(tracker_key)
+    with writelog.operation(root / "_meta" / "write-log.md", "sw-ingest", "import", key) as op:
+        raw_path.parent.mkdir(parents=True, exist_ok=True)
+        # Exclusive creation keeps originals append-only, including on a prefix collision.
+        with raw_path.open("xb") as handle:
+            handle.write(data)
+        fsio.atomic_write(target, rendered)
+        op.wrote(target)
+        if scope:
+            rtm.registry_upsert(registry_path, key, cells, "sw-ingest")
+        else:
+            doc = rtm.read_table(registry_path, list(schema.REGISTRY_COLUMNS))
+            doc.table.upsert(key, cells)
+            fsio.atomic_write(registry_path, doc.render())
+        op.wrote(registry_path)
+    _log_decision(scan_log, digest, "redact" if markers else "retain", number)
     return {
         "id": number,
+        "file": target.name,
         "sha256": digest,
         "duplicate": False,
         "degraded": degraded,
         "warnings": fm["warnings"],
+        "content_class": flavor,
     }
 
 
@@ -412,6 +494,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--source")
     parser.add_argument("--source-version")
     parser.add_argument("--locale", default="en")
+    parser.add_argument("--title", help="name a reader will look for; default is the first heading")
+    parser.add_argument("--alias", action="append", default=[], help="another name; repeatable")
+    parser.add_argument("--remote-id", help="page or issue ID in the source system")
+    parser.add_argument("--remote-url")
+    parser.add_argument("--tracker-key")
+    parser.add_argument("--source-parent", help="SRC ID of the page this one sits under")
+    parser.add_argument(
+        "--redacted-from", help="sha256 of the original this copy was redacted from"
+    )
+    parser.add_argument("--supersedes", action="append", default=[], help="SRC ID this replaces")
     parser.add_argument(
         "--retain-sensitive-raw",
         action="store_true",
@@ -435,6 +527,14 @@ def main(argv: list[str] | None = None) -> int:
             source_version=args.source_version,
             locale=args.locale,
             retain_sensitive_raw=args.retain_sensitive_raw,
+            title=args.title,
+            aliases=args.alias,
+            remote_id=args.remote_id,
+            remote_url=args.remote_url,
+            tracker_key=args.tracker_key,
+            source_parent=args.source_parent,
+            redacted_from=args.redacted_from,
+            supersedes=args.supersedes,
         )
         print(json.dumps(result))
         if result.get("warnings"):

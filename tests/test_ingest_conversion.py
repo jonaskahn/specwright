@@ -13,7 +13,7 @@ import zipfile
 from pathlib import Path
 from unittest.mock import patch
 
-from kitlib import frontmatter, hashing, schema, tables
+from kitlib import frontmatter, hashing, ids, scanlog, schema, tables
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "skills/sw-ingest/scripts"
@@ -36,7 +36,7 @@ class IngestConversionTests(unittest.TestCase):
         return path
 
     def snapshot(self, number="SRC-0001"):
-        return frontmatter.parse((self.out / (number + ".md")).read_text())
+        return frontmatter.parse(ids.find_record(self.out, number).read_text())
 
     def cli(self, *args):
         stdout, stderr = io.StringIO(), io.StringIO()
@@ -58,7 +58,84 @@ class IngestConversionTests(unittest.TestCase):
         self.assertTrue(mod.ingest(source, self.out)["duplicate"])
         registry = tables.parse((self.out.parent / "_meta/id-registry.md").read_text()).table
         self.assertEqual(len(registry.rows), 1)
-        self.assertEqual(registry.get("REF:SRC-0001", "Last snapshot"), "00-inbox/SRC-0001.md")
+        self.assertEqual(
+            registry.get("REF:SRC-0001", "Last snapshot"), "00-inbox/SRC-0001--source.md"
+        )
+
+    def test_snapshot_is_named_titled_and_logged(self):
+        source = self.source(content="# Refund policy\n\nRefunds are accepted within 30 days.\n")
+        result = mod.ingest(
+            source,
+            self.out,
+            scope="REF",
+            remote_id="page-12",
+            remote_url="https://wiki.example.test/page-12",
+            tracker_key="WIKI-12",
+            aliases=["POL-7"],
+            source_parent="SRC-0009",
+        )
+        self.assertEqual(result["file"], "SRC-0001--refund-policy.md")
+        fm = self.snapshot().fm
+        self.assertEqual(fm["title"], "Refund policy")
+        self.assertEqual(
+            fm["aliases"], ["POL-7", "page-12", "WIKI-12", "https://wiki.example.test/page-12"]
+        )
+        self.assertEqual((fm["remote_id"], fm["source_parent"]), ("page-12", "SRC-0009"))
+        registry = tables.parse((self.out.parent / "_meta/id-registry.md").read_text()).table
+        self.assertEqual(registry.get("REF:SRC-0001", "Source ref"), "page-12")
+        log = (self.out.parent / "_meta/write-log.md").read_text()
+        self.assertIn("sw-ingest | import | REF:SRC-0001", log)
+        self.assertIn("file=00-inbox/SRC-0001--refund-policy.md@", log)
+
+    def test_untitled_text_takes_its_file_name(self):
+        mod.ingest(self.source("return_rules.txt"), self.out)
+        self.assertEqual(self.snapshot().fm["title"], "return rules")
+
+    def test_index_only_and_empty_pages_are_flagged_not_settled_evidence(self):
+        index = "# Space home\n\n- [Refunds](https://w.test/1)\n- [Returns](https://w.test/2)\n"
+        mod.ingest(self.source("home.md", index), self.out)
+        self.assertEqual(self.snapshot().fm["content_class"], "index-only")
+        mod.ingest(self.source("blank.md", "# Empty parent\n"), self.out)
+        self.assertEqual(self.snapshot("SRC-0002").fm["content_class"], "index-only")
+        mod.ingest(self.source("real.txt"), self.out)
+        self.assertNotIn("content_class", self.snapshot("SRC-0003").fm)
+
+    def test_redaction_is_recorded_in_the_header_and_the_decision_log(self):
+        original = "f" * 64
+        source = self.source(content="Owner is [REDACTED:email]; call [REDACTED:vn-mobile].\n")
+        mod.ingest(source, self.out, redacted_from=original)
+        fm = self.snapshot().fm
+        self.assertEqual((fm["redacted_from"], fm["redaction_markers"]), (original, 2))
+        rows = scanlog.read(self.out.parent / "_meta/scan-decisions.tsv")
+        self.assertEqual([r["decision"] for r in rows], ["redact"])
+        with self.assertRaises(ValueError):
+            mod.ingest(self.source("b.txt", "other text"), self.out, redacted_from="not-a-hash")
+
+    def test_every_document_leaves_a_retain_or_skip_row(self):
+        mod.ingest(self.source(), self.out)
+        with self.assertRaises(mod.Refused):
+            mod.ingest(self.source("pii.txt", "Contact owner@example.test"), self.out)
+        rows = scanlog.read(self.out.parent / "_meta/scan-decisions.tsv")
+        self.assertEqual([r["decision"] for r in rows], ["retain", "skip"])
+        self.assertEqual(rows[1]["type"], "email")
+
+    def test_a_reviewed_example_lets_a_policy_with_sample_data_in(self):
+        text = "Example: write owner@example.test in the form.\n"
+        source = self.source("policy.txt", text)
+        digest = hashing.bytes_hash(source.read_bytes())
+        scanlog.append(
+            self.out.parent / "_meta/scan-decisions.tsv",
+            {
+                "source_hash": digest,
+                "line": 1,
+                "type": "email",
+                "decision": "example",
+                "by": "PO | Lan",
+                "ref": "https://e.test/review/2",
+                "date": "2026-11-12",
+            },
+        )
+        self.assertEqual(mod.ingest(source, self.out)["id"], "SRC-0001")
 
     def test_ids_from_registry_and_inbox_preserve_other_rows(self):
         meta = self.out.parent / "_meta"
