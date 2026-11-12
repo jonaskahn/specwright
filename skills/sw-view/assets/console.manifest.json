@@ -1,5 +1,5 @@
 {
- "bytes": 374375,
+ "bytes": 375216,
  "console": "0.4.1",
  "files": {
   ".nvmrc": "sha256:68ca3fba3b7e864770cb61aeb306d4bd4354b68ab4dd38450860c5d823e42a53",
@@ -48,7 +48,7 @@
   "src/lib/vocabulary.ts": "sha256:8680795458d48dbf33cc34ed2654844ba5e32104e686eb3a722378150eca6de0",
   "src/main.ts": "sha256:ba9034888e6002c667c5efa20dfdc6fa567d857357d15ced68182fbb8eb9cb59",
   "src/routes/Board.svelte": "sha256:2563ab20aa58edc4d9926def8e914079e27f7cce5a6e90e7f6e2830d64c62260",
-  "src/routes/FeatureDetail.svelte": "sha256:46c292ab877a28b5f71bfbdb11e7035018adc011f9facbd8ca156dc454a71821",
+  "src/routes/FeatureDetail.svelte": "sha256:fdb66520a635cf53f1fd63317be887e6ae26cf29017adc6f901d34ff2a681a2f",
   "src/routes/Features.svelte": "sha256:67883485068c91b5d977703c809e354a30ccf7966abdcc9d540d5737631ac5d7",
   "src/routes/Graph.svelte": "sha256:9cdf340564abe5ec260460937a9137f43c196445a4a083ed99358f10fa664203",
   "src/routes/Metrics.svelte": "sha256:68fc9a8a000f2f110c571b90365c59d49b5c4ff2a1a56fc13080d13a5860d0f7",
@@ -77,6 +77,6 @@
   "vite.config.ts": "sha256:500a2492b90c3a9add4255e31f68a0934a9d56013011a401d3cfd70612c76d23"
  },
  "formatVersion": 1,
- "tree": "sha256:329ac4b7809f8ef3a8d88a9a9f6ae959deca9e5a2614309f4b88d52f8de2dbfc",
- "zip": "sha256:d1f8059344f7ed260b9d92f4875bd225c008659355dd21a036c125296825d79d"
+ "tree": "sha256:ac4308ba385322d4a4489d2411de1b20de27926d2f242ebfd9cae4eed24279fd",
+ "zip": "sha256:90fcb4ea23e8236d2e413e3d56833dad799a17f4f68b336d91e2cb3fe1ad5687"
 }

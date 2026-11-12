@@ -2,6 +2,9 @@
   import PageHead from '../components/PageHead.svelte';
   import Pill from '../components/Pill.svelte';
   import Rung from '../components/Rung.svelte';
+  import TraceMap from '../components/TraceMap.svelte';
+  import { scopedGraph } from '../lib/data/selectors';
+  import { focusModel } from '../lib/graph/trace';
   import { app } from '../lib/data/store.svelte';
   import { ago, daysSince } from '../lib/format';
   import { href } from '../lib/router';
@@ -13,6 +16,13 @@
   const criteria = $derived(app.graph.nodes.size ? app.graph.down(id, 1).filter((r) => r.rel === 'has_ac') : []);
   const tasks = $derived(app.tasks.filter((t) => t.feature === id));
   const records = $derived(app.records.filter((r) => r.affects.includes(id) || feature?.openQuestions.includes(r.id) || feature?.openChanges.includes(r.id)));
+  let picked = $state<string | null>(null);
+  const chain = $derived.by(() => {
+    if (!app.graph.nodes.has(id)) return null;
+    const g = scopedGraph(app.loaded, app.scope);
+    const jira = new Map(app.registry.filter((r) => r.jiraKey).map((r) => [r.id, r.jiraKey as string]));
+    return focusModel(g.nodes, g.edges, id, { jira });
+  });
   const links = $derived(app.graph.nodes.has(id) ? app.graph.neighbors(id, 'both').filter((l) => l.rel !== 'has_ac') : []);
 </script>
 
@@ -44,6 +54,13 @@
         <div class="banner danger"><div>{#each feature.blockers as b (b)}<p>{b}</p>{/each}</div></div>
       {/if}
     </div>
+
+    {#if chain && chain.nodes.length > 1}
+      <section>
+        <div class="sec-h"><h2>Where this feature sits</h2><span class="sub">Goal, epic, criteria and tasks it connects to. Missing links are shown too.</span></div>
+        <TraceMap model={chain} selected={picked} onselect={(k) => (picked = k)} />
+      </section>
+    {/if}
 
     <div class="grid">
       <section class="span-6">
