@@ -44,7 +44,11 @@ sources: []
 
 ## Proposed FEAT split
 
-<Unallocated proposal title, actor and outcome; I/N/V/E/S/T result and one-line reason each.>
+<Unallocated proposal title, actor and outcome, then one row per slice. Each letter is pass, fail or unknown; a fail or unknown needs a Reason. Never turn unknown into pass.>
+
+| Feature | I | N | V | E | S | T | Reason |
+|---|---|---|---|---|---|---|---|
+| <verb-first title> | unknown | unknown | unknown | unknown | unknown | unknown | <why each is not yet a pass> |
 
 ## Design-leakage self-check
 

@@ -20,6 +20,8 @@ Exit 0 pass; 2 usage or unexpected checker failure. No network.
 | Front matter and identity | L-001/L-002 name and ID grammar; L-003 duplicate ID; L-016 invalid status; L-043 scope, Jira key, https, refs |
 | Names | L-054 `title` and `aliases` required (warning on an immutable snapshot); L-055 placeholder title, including a reserved feature with no Title in the registry |
 | Citations and amendments | L-057 a citation names a missing, blank or changed line (weak or superseded source is a warning); L-062 a feature has a proposed amendment (review gate) |
+| Shape | L-063 the INVEST table of an idea brief is malformed or hides a fail or unknown without a Reason |
+| Records and folders | L-058 unknown top-level folder (warning); L-059 a question without `affects`; L-060 a decision without decider and evidence; L-061 decider not in the manifest approvers |
 | Graph and plan | L-047 stale `.feature`; L-048 task trace; L-049 graph stale or missing; L-050/L-051 epic reference and scopes; L-052 Touches path; L-053 absolute registry path |
 | Acceptance criteria | L-005 BO reference; L-007 Given/When/Then order; L-008 observable literal; L-014 clarification markers; L-017 numbered AC heading |
 | Business rules and NFRs | L-010 metric, threshold, condition; L-011 worked example; L-012 UI states; L-013 exclusions with reason |

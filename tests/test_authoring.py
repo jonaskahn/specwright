@@ -63,6 +63,21 @@ class LeakageTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             leakage.check("## Problem\nCustomers wait.\n", ["green button"])
 
+    def test_coverage_names_what_was_scanned_and_what_was_not(self):
+        brief = (
+            "## Actors\nA clerk uses a green button today.\n\n## Problem\nCustomers wait.\n\n"
+            "## Smallest valuable outcome\nThey get a result.\n\n"
+            "## Assumptions\nA green button helps.\n"
+        )
+        words = ["green button"]
+        found, scanned, skipped = leakage.scan(brief, words)
+        self.assertEqual(found, [])  # a clean scan, yet design words sit in other sections
+        self.assertEqual(scanned, ["Problem", "Smallest valuable outcome"])
+        self.assertEqual(skipped, ["Actors", "Assumptions"])
+        found, scanned, skipped = leakage.scan(brief, words, also=("assumptions",))
+        self.assertEqual([word for _, word in found], ["green button"])
+        self.assertEqual(skipped, ["Actors"])
+
 
 class CardTests(unittest.TestCase):
     def story(self):

@@ -471,6 +471,27 @@ class RuleTests(unittest.TestCase):
         self.assertIn("L-061", {f.rule for f in self.findings(bad, manifest=manifest)})
         self.assertNotIn("L-061", {f.rule for f in self.findings(bad)})
 
+    def test_l063(self):
+        head = (
+            "---\nid: IDEA-refunds\ntype: idea\nscope: REF\ntitle: Refunds\naliases: []\n"
+            "status: draft\n---\n## Proposed FEAT split\n\n"
+        )
+        cols = "| Feature | I | N | V | E | S | T | Reason |\n|---|---|---|---|---|---|---|---|\n"
+        good = doc(
+            head + cols + "| Request | pass | pass | pass | pass | pass | pass | — |\n",
+            "01-analysis/ideas/IDEA-refunds.md",
+        )
+        bad = doc(
+            head + cols + "| Request | yes | pass | pass | pass | pass | pass | — |\n",
+            "01-analysis/ideas/IDEA-refunds.md",
+        )
+        self.check_rule("L-063", bad, good)
+        plain = doc(
+            head.replace("## Proposed FEAT split", "## Problem") + "text\n",
+            "01-analysis/ideas/IDEA-refunds.md",
+        )
+        self.assertNotIn("L-063", {f.rule for f in self.findings(plain)})
+
     def test_l062(self):
         amendment = doc(
             "---\nid: AMD-001\ntype: amendment\nscope: REF\ntitle: Amend FEAT-001\naliases: []\n"

@@ -40,18 +40,26 @@ def load_words(path: Path = DEFAULT_WORDS) -> list[str]:
     return words
 
 
-def check(text: str, words: list[str]) -> list[tuple[int, str]]:
+CORE = {"problem", "outcome", "smallest valuable outcome"}
+
+
+def check(text: str, words: list[str], also: tuple[str, ...] = ()) -> list[tuple[int, str]]:
+    return scan(text, words, also)[0]
+
+
+def scan(
+    text: str, words: list[str], also: tuple[str, ...] = ()
+) -> tuple[list[tuple[int, str]], list[str], list[str]]:
+    """Findings, the sections scanned and the sections left unscanned."""
     parsed = frontmatter.parse(text)
     if parsed.error:
         raise ValueError(parsed.error)
-    sections = markdown.iter_sections(parsed.body, first_line=parsed.body_line)
-    selected = [
-        s
-        for s in sections
-        if s.name.casefold() in {"problem", "outcome", "smallest valuable outcome"}
-    ]
-    if len(selected) != 2 or sum(s.name.casefold() == "problem" for s in selected) != 1:
+    sections = list(markdown.iter_sections(parsed.body, first_line=parsed.body_line))
+    extra = {name.casefold() for name in also}
+    core = [s for s in sections if s.name.casefold() in CORE]
+    if len(core) != 2 or sum(s.name.casefold() == "problem" for s in core) != 1:
         raise ValueError("expected one Problem and one Smallest valuable outcome section")
+    selected = [s for s in sections if s.name.casefold() in CORE | extra]
     patterns = [
         (word, re.compile(r"(?<!\w)" + r"\s+".join(map(re.escape, word.split())) + r"(?!\w)", re.I))
         for word in words
@@ -62,21 +70,32 @@ def check(text: str, words: list[str]) -> list[tuple[int, str]]:
             for word, pattern in patterns:
                 if pattern.search(line):
                     findings.append((number, word))
-    return sorted(set(findings))
+    scanned = [s.name for s in selected]
+    skipped = [s.name for s in sections if s not in selected]
+    return sorted(set(findings)), scanned, skipped
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("files", nargs="+", type=Path)
     parser.add_argument("--words", type=Path, default=DEFAULT_WORDS)
+    parser.add_argument(
+        "--also", action="append", default=[], metavar="SECTION", help="scan this section too"
+    )
     args = parser.parse_args(argv)
     try:
         words = load_words(args.words)
-        results = [(p, check(p.read_text(encoding="utf-8"), words)) for p in args.files]
-        for path, findings in results:
+        results = [
+            (p, *scan(p.read_text(encoding="utf-8"), words, tuple(args.also))) for p in args.files
+        ]
+        for path, findings, scanned, skipped in results:
             for line, word in findings:
                 print(f"{path}:{line}: design leakage: {word}")
-        return int(any(findings for _, findings in results))
+            print(f"{path}: scanned {', '.join(scanned)}")
+            if skipped:
+                print(f"{path}: not scanned {', '.join(skipped)}")
+        print("A clean scan is not proof that no design leaked; read the sections above too.")
+        return int(any(findings for _, findings, _, _ in results))
     except (OSError, UnicodeError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2

@@ -1,7 +1,11 @@
 # INVEST and useful slices
 
 INVEST gives six discussion tests; it does not make story quality mechanically decidable.
-Record one reason per letter for every proposed FEAT:
+Record one row per proposed FEAT in the table under `## Proposed FEAT split`
+(`| Feature | I | N | V | E | S | T | Reason |`, each letter `pass`, `fail` or `unknown`, a Reason
+whenever any cell is not a pass). `scripts/invest.py check <brief>` validates the format and
+`scripts/invest.py totals` counts pass, fail and unknown per brief and per letter, so the board never
+counts an unknown as a pass. The tests below explain each letter:
 
 | Letter          | Test                                                                 | Refund submission example                                  |
 |-----------------|----------------------------------------------------------------------|------------------------------------------------------------|

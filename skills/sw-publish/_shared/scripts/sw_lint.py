@@ -27,6 +27,7 @@ from kitlib import (  # noqa: E402
     graph,
     hashing,
     ids,
+    invest,
     markdown,
     schema,
     tables,
@@ -37,7 +38,7 @@ GATES = {"draft": 10, "review": 20, "publish": 30}
 REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {"L-017", "L-062"}
 PUBLISH = {"L-018", "L-037", "L-045", "L-046"}
 SYNC = set()
-RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), *range(57, 63))}
+RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), *range(57, 64))}
 # Artifacts a reader looks up by name; each needs a title and an alias list (possibly empty).
 NAMED_TYPES = {
     "feature",
@@ -476,6 +477,9 @@ def lint_document(doc, ctx):
             or not str(fm.get("evidence_ref", "")).strip()
         ):
             emit("L-060", "a decision records evidence_kind and evidence_ref")
+    if fm["type"] == "idea":
+        for problem in invest.problems(doc.body):
+            emit("L-063", problem)
     if fm["type"] == "feature" and not doc.card:
         pending = sorted(
             d.spec_id

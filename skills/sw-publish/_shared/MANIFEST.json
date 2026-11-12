@@ -3,7 +3,7 @@
   "references/capabilities/quality.md": "2834b91b2c77",
   "references/next-step.md": "014dd8c606b1",
   "references/rtm-contract.md": "06bfa00b178d",
-  "references/rule-catalog.md": "00d8d35e8b57",
+  "references/rule-catalog.md": "14bd1d72e638",
   "references/stop-and-ask.md": "8dcf14ae3f9f",
   "references/untrusted-content.md": "03ff18989296",
   "scripts/kitlib/__init__.py": "b15fdecaaa14",
@@ -16,6 +16,7 @@
   "scripts/kitlib/hashing.py": "d4230ca068c6",
   "scripts/kitlib/ids.py": "88a0e53a1198",
   "scripts/kitlib/index.py": "d1455540d597",
+  "scripts/kitlib/invest.py": "952e723ae1fa",
   "scripts/kitlib/jira_diff.py": "8248f7e351d2",
   "scripts/kitlib/jira_port.py": "50b5c6c4062f",
   "scripts/kitlib/lifecycle.py": "fa5d945dc981",
@@ -29,7 +30,7 @@
   "scripts/kitlib/task_validation.py": "a72c8fe85965",
   "scripts/kitlib/workspace.py": "034886a2acb8",
   "scripts/kitlib/writelog.py": "1a34e6e3c8c9",
-  "scripts/sw_lint.py": "2f73f6ba77bd",
+  "scripts/sw_lint.py": "161f710b77f7",
   "scripts/trace.py": "cdcb3f5231f2"
  },
  "kit_version": "0.3.0"
