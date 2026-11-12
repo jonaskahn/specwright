@@ -20,11 +20,15 @@
   import Registry from './routes/Registry.svelte';
   import Sources from './routes/Sources.svelte';
   import Tasks from './routes/Tasks.svelte';
-  import Tree from './routes/Tree.svelte';
 
   const name = $derived(app.route.name);
   const phase = $derived(app.loaded.status);
   const fromDisk = location.protocol === 'file:';
+
+  // The tree became the outline of the graph page; old links still arrive there.
+  $effect(() => {
+    if (name === 'tree') location.replace(href('graph', null, { view: 'outline' }));
+  });
 
   $effect(() => {
     if (phase === 'ready') {
@@ -56,7 +60,6 @@
       {:else if name === 'features'}{#if app.route.param}<FeatureDetail id={app.route.param} />{:else}<Features />{/if}
       {:else if name === 'tasks'}<Tasks />
       {:else if name === 'board'}<Board />
-      {:else if name === 'tree'}<Tree />
       {:else if name === 'graph'}<Graph />
       {:else if name === 'query'}<Query />
       {:else if name === 'records'}<Records />

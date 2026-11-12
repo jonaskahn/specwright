@@ -17,6 +17,8 @@
   const fitted = $derived(room > 0 ? Math.min(1, Math.max(0.6, (room - 16) / model.width)) : 1);
   const zoom = $derived(manual ?? fitted);
   const chain = $derived(selected ? chainOf(model, selected) : null);
+  const several = $derived(new Set(model.nodes.map((n) => n.scope).filter(Boolean)).size > 1);
+  const where = (n: TraceNode) => (n.scope && (n.foreign || several) ? ` · ${n.scope}` : '');
   const byId = $derived(new Map(model.nodes.map((n) => [n.id, n])));
   const dimmed = (id: string) => (chain ? !chain.nodes.has(id) : emphasis.size > 0 && !emphasis.has(id));
   const columns = $derived(model.levels.map((lv) => ({ lv, x: BOX.pad + model.levels.indexOf(lv) * (BOX.w + BOX.gapX), words: kindWords(LEVEL_NAMES[lv], true) })));
@@ -42,7 +44,7 @@
     return { shape: found.shape, label: found.label };
   }
   const sentence = (n: TraceNode) =>
-    n.gap ? `${n.title}. Next step: ask ${n.next}.` : `${kindWords(n.kind)}: ${n.title}. ${n.status ? look(n).label + '.' : ''}${n.jira ? ' Jira issue ' + n.jira + '.' : ''}`;
+    n.gap ? `${n.title}. Next step: ask ${n.next}.` : `${kindWords(n.kind)}: ${n.title}. ${n.status ? look(n).label + '.' : ''}${n.foreign && n.scope ? ` In project ${n.scope}.` : ''}${n.jira ? ' Jira issue ' + n.jira + '.' : ''}`;
 
   function key(e: KeyboardEvent, n: TraceNode) {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -94,6 +96,7 @@
         <g
           class="trace-node"
           class:gap={!!n.gap}
+          class:foreign={n.foreign}
           class:picked={selected === n.id}
           class:dim={dimmed(n.id)}
           class:emph={emphasis.has(n.id)}
@@ -109,7 +112,7 @@
           <rect class="card-bg" width={BOX.w} height={BOX.h} rx="10" />
           {#if !n.gap}<rect class="bar" width="5" height={BOX.h} clip-path="url(#trace-card-clip)" style:fill={`oklch(58% 0.15 ${hue(n.kind)})`} />{/if}
           <rect class="card-edge" width={BOX.w} height={BOX.h} rx="10" />
-          <text class="t-kind" x="14" y="16">{n.gap ? 'Missing link' : n.kind === 'code' ? kindWords(n.kind) : `${kindWords(n.kind)} · ${shortKey(n.key ?? '')}`}</text>
+          <text class="t-kind" x="14" y="16">{n.gap ? 'Missing link' : n.kind === 'code' ? kindWords(n.kind) : `${kindWords(n.kind)} · ${shortKey(n.key ?? '')}${where(n)}`}</text>
           <text class="t-title" x="14" y="33">{fit(n.title)}</text>
           {#if n.gap}
             <text class="t-note" x="14" y="47">Next step: ask {n.next}</text>

@@ -12,6 +12,7 @@
    "ORD:FEAT-002",
    "ORD:Q-001",
    "REF:BO-001",
+   "REF:EPIC-001",
    "REF:FEAT-001",
    "REF:FEAT-002",
    "REF:Q-001"
@@ -97,6 +98,11 @@
     2,
     "ORD:BO-001",
     "realizes"
+   ],
+   [
+    2,
+    "REF:EPIC-001",
+    "member_of"
    ]
   ]
  },
@@ -165,6 +171,11 @@
     2,
     "ORD:BO-001",
     "realizes"
+   ],
+   [
+    2,
+    "REF:EPIC-001",
+    "member_of"
    ]
   ]
  },
@@ -268,6 +279,13 @@
     "ORD:FEAT-001",
     "declared",
     "resolved"
+   ],
+   [
+    "in",
+    "realizes",
+    "REF:EPIC-001",
+    "declared",
+    "resolved"
    ]
   ]
  },
@@ -302,11 +320,14 @@
   },
   "expect": {
    "features": [
-    "ORD:FEAT-001"
+    "ORD:FEAT-001",
+    "REF:FEAT-001"
    ],
    "criteria": [
     "ORD:AC-001-1",
-    "ORD:AC-001-2"
+    "ORD:AC-001-2",
+    "REF:AC-001-1",
+    "REF:AC-001-2"
    ],
    "tasks": [],
    "jira": []
@@ -402,6 +423,13 @@
    ],
    [
     "out",
+    "member_of",
+    "REF:EPIC-001",
+    "declared",
+    "resolved"
+   ],
+   [
+    "out",
     "mentions",
     "ORD:Q-001",
     "mentioned",
@@ -447,6 +475,13 @@
    ],
    [
     "out",
+    "member_of",
+    "REF:EPIC-001",
+    "declared",
+    "resolved"
+   ],
+   [
+    "out",
     "realizes",
     "ORD:BO-001",
     "declared",
@@ -464,6 +499,11 @@
     1,
     "ORD:BO-001",
     "realizes"
+   ],
+   [
+    1,
+    "REF:EPIC-001",
+    "member_of"
    ]
   ]
  },

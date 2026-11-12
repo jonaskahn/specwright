@@ -12,7 +12,6 @@ export const NAV: NavItem[] = [
   { route: 'features', label: 'Features', icon: 'features', group: 'Specs' },
   { route: 'tasks', label: 'Tasks', icon: 'tasks', group: 'Specs' },
   { route: 'board', label: 'Board', icon: 'board', group: 'Specs' },
-  { route: 'tree', label: 'Tree', icon: 'tree', group: 'Specs' },
   { route: 'graph', label: 'Graph', icon: 'graph', group: 'Knowledge' },
   { route: 'query', label: 'Query', icon: 'query', group: 'Knowledge' },
   { route: 'records', label: 'Records', icon: 'records', group: 'Governance' },

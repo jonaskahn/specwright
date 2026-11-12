@@ -44,6 +44,17 @@ def make_program(base: Path) -> Path:
             for path in target.rglob("*"):
                 if path.is_file() and path.suffix in {".md", ".yaml", ".tsv"}:
                     path.write_text(path.read_text().replace("REF", "ORD"), encoding="utf-8")
+    # One epic lives in REF and groups a feature of each project, so the program has links that
+    # cross projects.
+    epics = root / "projects" / "REF" / "01-analysis" / "epics"
+    epics.mkdir(parents=True)
+    (epics / "EPIC-001.md").write_text(SHARED_EPIC, encoding="utf-8")
+    for scope, ref in (("REF", "EPIC-001"), ("ORD", "REF:EPIC-001")):
+        story = root / "projects" / scope / "02-drafts" / "FEAT-001.story.md"
+        story.write_text(
+            story.read_text().replace("bo: [BO-001]\n", f"bo: [BO-001]\nepic: [{ref}]\n", 1),
+            encoding="utf-8",
+        )
     (root / "workspace.yaml").write_text(
         "mode: program\nprojects:\n- ORD\n- REF\ndefault_scope: ORD\n"
     )
@@ -71,6 +82,18 @@ bo: []
 updated: 2026-11-10
 ---
 # Approval desk
+"""
+SHARED_EPIC = """---
+id: EPIC-001
+type: epic
+scope: REF
+status: approved
+title: Shared refunds
+bo: [ORD:BO-001]
+scopes: [REF, ORD]
+updated: 2026-11-10
+---
+# Shared refunds
 """
 TRACE_BO = """---
 id: BO-002

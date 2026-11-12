@@ -11,7 +11,7 @@ import { relationWords } from '../vocabulary';
 export const LEVEL_KINDS: Record<string, number> = { bo: 0, epic: 1, feat: 2, ac: 3, task: 4, code: 5 };
 export const LEVEL_NAMES = ['bo', 'epic', 'feat', 'ac', 'task', 'code'];
 /** Links that make up the chain. Each is drawn from the lower level to the higher one. */
-const CHAIN_RELS = new Set(['realizes', 'member_of', 'has_ac', 'implements', 'touches']);
+export const CHAIN_RELS = new Set(['realizes', 'member_of', 'has_ac', 'implements', 'touches']);
 const RETIRED = new Set(['withdrawn', 'superseded']);
 
 export type GapKind = 'epic' | 'bo' | 'epic-bo' | 'ac' | 'task' | 'task-criterion';
@@ -35,6 +35,10 @@ export interface TraceNode {
   status: string | null;
   /** A published Jira issue key shown on the card (from the registry), never as a node of its own. */
   jira: string | null;
+  /** The project the item belongs to, shown on a card when a map holds more than one. */
+  scope: string | null;
+  /** Set when the item belongs to another project than the one the map is about. */
+  foreign: boolean;
   next: string | null;
   level: number;
   x: number;
@@ -90,6 +94,8 @@ export interface TraceOptions {
   code?: boolean;
   /** Published Jira issue keys by item key, read from the identifier registry (the only place they live). */
   jira?: Map<string, string>;
+  /** Items that belong to other projects than the one drawn; they are shown but never asked for missing links. */
+  foreign?: Set<string>;
 }
 
 function parts(nodes: GraphNode[], edges: GraphEdge[], code = false): Parts {
@@ -103,13 +109,13 @@ function level(kind: string): number {
   return LEVEL_KINDS[kind] ?? 0;
 }
 
-function node(n: GraphNode, jira: string | null): TraceNode {
-  return { id: n.key, key: n.key, gap: null, kind: n.kind, title: n.title || n.key, status: n.status, jira, next: null, level: level(n.kind), x: 0, y: 0 };
+function node(n: GraphNode, jira: string | null, foreign: boolean): TraceNode {
+  return { id: n.key, key: n.key, gap: null, kind: n.kind, title: n.title || n.key, status: n.status, jira, scope: n.scope, foreign, next: null, level: level(n.kind), x: 0, y: 0 };
 }
 
 function gapNode(kind: GapKind, owner: string): TraceNode {
   const words = GAP_WORDS[kind];
-  return { id: `gap:${kind}:${owner}`, key: null, gap: kind, kind: words.kind, title: words.title, status: null, jira: null, next: words.next, level: words.level, x: 0, y: 0 };
+  return { id: `gap:${kind}:${owner}`, key: null, gap: kind, kind: words.kind, title: words.title, status: null, jira: null, scope: null, foreign: false, next: words.next, level: words.level, x: 0, y: 0 };
 }
 
 export interface Coverage {
@@ -122,9 +128,9 @@ export interface Coverage {
 }
 
 /** How completely the chain is linked. A measure is omitted when the level it needs does not exist yet. */
-export function traceCoverage(nodes: GraphNode[], edges: GraphEdge[]): Coverage[] {
+export function traceCoverage(nodes: GraphNode[], edges: GraphEdge[], foreign: Set<string> = new Set()): Coverage[] {
   const { chain, edges: links } = parts(nodes, edges);
-  const live = (kind: string) => [...chain.values()].filter((n) => n.kind === kind && !retired(n));
+  const live = (kind: string) => [...chain.values()].filter((n) => n.kind === kind && !retired(n) && !foreign.has(n.key));
   const features = live('feat');
   const criteria = live('ac');
   const tasks = live('task');
@@ -134,12 +140,13 @@ export function traceCoverage(nodes: GraphNode[], edges: GraphEdge[]): Coverage[
     const gaps = items.filter((n) => !linked.has(n.key)).map((n) => n.key);
     measures.push({ id, label, have: items.length - gaps.length, total: items.length, gaps });
   };
-  if (live('epic').length && features.length) add('epic', 'Features in an epic', features, out('member_of', 'from'));
+  const some = (kind: string) => [...chain.values()].some((n) => n.kind === kind && !retired(n));
+  if (some('epic') && features.length) add('epic', 'Features in an epic', features, out('member_of', 'from'));
   const served = out('realizes', 'from');
   const viaEpic = new Set(links.filter((e) => e.rel === 'member_of' && served.has(e.to)).map((e) => e.from));
   const serving = new Set([...served, ...viaEpic]);
-  if (live('bo').length && features.length) add('bo', 'Features serving a business objective', features, serving);
-  if (live('bo').length && live('epic').length) add('epic-bo', 'Epics serving a business objective', live('epic'), served);
+  if (some('bo') && features.length) add('bo', 'Features serving a business objective', features, serving);
+  if (some('bo') && live('epic').length) add('epic-bo', 'Epics serving a business objective', live('epic'), served);
   if (features.length) add('ac', 'Features with an acceptance criterion', features, out('has_ac', 'from'));
   if (tasks.length && criteria.length) add('covered', 'Acceptance criteria covered by a task', criteria, out('implements', 'to'));
   if (tasks.length) add('tied', 'Tasks tied to an acceptance criterion', tasks, out('implements', 'from'));
@@ -150,7 +157,7 @@ export function buildTrace(nodes: GraphNode[], edges: GraphEdge[], opts: TraceOp
   const { chain, edges: chainEdges } = parts(nodes, edges, opts.code);
   const model: TraceModel = { nodes: [], links: [], broken: [], levels: [], width: 0, height: 0, notes: [] };
   const present = new Map<string, TraceNode>();
-  for (const n of [...chain.values()].sort((a, b) => (a.key < b.key ? -1 : 1))) present.set(n.key, node(n, opts.jira?.get(n.key) ?? null));
+  for (const n of [...chain.values()].sort((a, b) => (a.key < b.key ? -1 : 1))) present.set(n.key, node(n, opts.jira?.get(n.key) ?? null, opts.foreign?.has(n.key) ?? false));
 
   const title = (key: string) => present.get(key)?.title ?? key;
   for (const e of chainEdges) {
@@ -203,7 +210,7 @@ export function buildTrace(nodes: GraphNode[], edges: GraphEdge[], opts: TraceOp
       return g;
     };
     for (const n of chain.values()) {
-      if (retired(n)) continue;
+      if (retired(n) || opts.foreign?.has(n.key)) continue;
       if (n.kind === 'feat') {
         if (hasEpics && !inEpic.has(n.key)) add('epic', n.key, 'left', n.key, 'member_of');
         if (hasObjectives && !serving.has(n.key) && !viaEpic(n.key)) add('bo', n.key, 'left', n.key, 'realizes');

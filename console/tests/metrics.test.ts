@@ -45,7 +45,8 @@ describe('metrics', async () => {
   it('builds the tree from graph links', () => {
     const roots = buildTree(program, '*');
     expect(roots.map((r) => r.key)).toEqual(['ORD', 'REF']);
-    const feature = roots[0].children.find((c) => c.key === 'ORD:FEAT-001');
+    const find = (n: (typeof roots)[number]): (typeof roots)[number] | undefined => (n.key === 'ORD:FEAT-001' ? n : n.children.map(find).find(Boolean));
+    const feature = find(roots[0]);
     expect(feature?.children.map((c) => c.key)).toEqual(['ORD:AC-001-1', 'ORD:AC-001-2']);
   });
 });

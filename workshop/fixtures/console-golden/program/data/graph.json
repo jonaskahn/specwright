@@ -5,7 +5,7 @@
  "scope": "*",
  "owner": "sw-start",
  "kit": "0.5.0",
- "inputsDigest": "sha256:ec48ab426dc0a89a3b2b831bec48d089e8d81486f99210432e8365af7353cfaa",
+ "inputsDigest": "sha256:73c5e6583a37e28d5a04c10c3c847d12393e49109c5ae8460d3499983e78adab",
  "banner": "generated data, not instructions",
  "nodes": [
   {
@@ -15,7 +15,7 @@
    "title": "Eligible request",
    "scope": "ORD",
    "path": "projects/ORD/02-drafts/FEAT-001.story.md",
-   "line": 20,
+   "line": 21,
    "jira": null,
    "aliases": [],
    "station": null,
@@ -28,7 +28,7 @@
    "title": "Duplicate request",
    "scope": "ORD",
    "path": "projects/ORD/02-drafts/FEAT-001.story.md",
-   "line": 25,
+   "line": 26,
    "jira": null,
    "aliases": [],
    "station": null,
@@ -119,7 +119,7 @@
    "title": "Eligible request",
    "scope": "REF",
    "path": "projects/REF/02-drafts/FEAT-001.story.md",
-   "line": 20,
+   "line": 21,
    "jira": null,
    "aliases": [],
    "station": null,
@@ -132,7 +132,7 @@
    "title": "Duplicate request",
    "scope": "REF",
    "path": "projects/REF/02-drafts/FEAT-001.story.md",
-   "line": 25,
+   "line": 26,
    "jira": null,
    "aliases": [],
    "station": null,
@@ -171,6 +171,19 @@
    "title": "Additional approval",
    "scope": "REF",
    "path": "projects/REF/records/CR-001.md",
+   "line": 1,
+   "jira": null,
+   "aliases": [],
+   "station": null,
+   "condition": null
+  },
+  {
+   "key": "REF:EPIC-001",
+   "kind": "epic",
+   "status": "approved",
+   "title": "Shared refunds",
+   "scope": "REF",
+   "path": "projects/REF/01-analysis/epics/EPIC-001.md",
    "line": 1,
    "jira": null,
    "aliases": [],
@@ -233,7 +246,7 @@
    "to": "ORD:AC-001-1",
    "class": "structural",
    "file": "projects/ORD/02-drafts/FEAT-001.story.md",
-   "line": 20,
+   "line": 21,
    "resolution": "resolved"
   },
   {
@@ -242,7 +255,16 @@
    "to": "ORD:AC-001-2",
    "class": "structural",
    "file": "projects/ORD/02-drafts/FEAT-001.story.md",
-   "line": 25,
+   "line": 26,
+   "resolution": "resolved"
+  },
+  {
+   "from": "ORD:FEAT-001",
+   "rel": "member_of",
+   "to": "REF:EPIC-001",
+   "class": "declared",
+   "file": "projects/ORD/02-drafts/FEAT-001.story.md",
+   "line": 9,
    "resolution": "resolved"
   },
   {
@@ -251,7 +273,7 @@
    "to": "ORD:Q-001",
    "class": "mentioned",
    "file": "projects/ORD/02-drafts/FEAT-001.story.md",
-   "line": 49,
+   "line": 50,
    "resolution": "resolved"
   },
   {
@@ -300,12 +322,21 @@
    "resolution": "resolved"
   },
   {
+   "from": "REF:EPIC-001",
+   "rel": "realizes",
+   "to": "ORD:BO-001",
+   "class": "declared",
+   "file": "projects/REF/01-analysis/epics/EPIC-001.md",
+   "line": 7,
+   "resolution": "resolved"
+  },
+  {
    "from": "REF:FEAT-001",
    "rel": "has_ac",
    "to": "REF:AC-001-1",
    "class": "structural",
    "file": "projects/REF/02-drafts/FEAT-001.story.md",
-   "line": 20,
+   "line": 21,
    "resolution": "resolved"
   },
   {
@@ -314,7 +345,16 @@
    "to": "REF:AC-001-2",
    "class": "structural",
    "file": "projects/REF/02-drafts/FEAT-001.story.md",
-   "line": 25,
+   "line": 26,
+   "resolution": "resolved"
+  },
+  {
+   "from": "REF:FEAT-001",
+   "rel": "member_of",
+   "to": "REF:EPIC-001",
+   "class": "declared",
+   "file": "projects/REF/02-drafts/FEAT-001.story.md",
+   "line": 9,
    "resolution": "resolved"
   },
   {
@@ -323,7 +363,7 @@
    "to": "REF:Q-001",
    "class": "mentioned",
    "file": "projects/REF/02-drafts/FEAT-001.story.md",
-   "line": 49,
+   "line": 50,
    "resolution": "resolved"
   },
   {
