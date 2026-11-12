@@ -20,31 +20,19 @@ comparison but retain original wording. Check the same actor/action with differe
 numbers, dates, eligibility or exceptions. Different contexts may not conflict:
 first establish whether both govern the same event. A newer date alone does not
 establish authority. Create a Q- record instead of silently changing a rule.
-Allocate Q ids from records and registry without reusing withdrawn ids.
+Never allocate a Q id by hand: `record.py` does it from records and registry and never reuses
+a withdrawn id. Save the conflict with:
 
-Minimal record; replace bracketed values with real evidence:
+```sh
+_shared/scripts/record.py q new --title "Refund window: 14 or 30 days?" --owner <role> \
+  --affects <FEAT-NNN> --raised-from SRC-0001:L12-L14 --raised-from SRC-0002:L3 \
+  --quote "<exact words from the cited lines>" --option "14 days -> <consequence>" --option "30 days -> <consequence>"
+```
 
-~~~markdown
----
-id: Q-001
-type: q
-status: open
-sources: [SRC-0001, SRC-0002]
----
-# Refund window: 14 or 30 days?
-Question: Which window applies after delivery?
-Why it matters: eligibility and refund tiers change.
-Evidence: SRC-0001, lines [range]: "[exact policy quotation]"
-Evidence: SRC-0002, lines [range]: "[exact email quotation]"
-A: 14 days; Legal must revise the 30-day policy.
-B: 30 days; tier boundaries need a new PO decision.
-C: 14 days in product plus a 30-day support exception; adds manual handling.
-Owner: [responsible role and person, or UNKNOWN]
-Due: [agreed date, or UNKNOWN]
-Status: open
-Answer: UNKNOWN; once answered link evidence and DEC id.
-Affected IDs: [existing candidate rule ids, or UNKNOWN]
-~~~
+The record follows `assets/q.md` (Question, Why it matters, Options, Owner, Due, Status, Answer,
+Decision link). State each option with its consequence, for example
+`--option "14 days -> Legal must revise the 30-day policy"` and
+`--option "30 days -> tier boundaries need a new PO decision"`; do not pick a winner.
 
 Example conflict: policy says 30 days after delivery; an email says 14 days, full refund in
 the first week and half afterward. Keep both citable; approve neither BR until the PO

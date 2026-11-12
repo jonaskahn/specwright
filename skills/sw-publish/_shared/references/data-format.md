@@ -17,11 +17,14 @@ ones a reader opens. Format: `specwright-data`, version 1, defined in `_shared/s
 | `tasks.json` | sw-plan | `data.py export tasks --as sw-plan` after the tasks file is written |
 | `records.json` | sw-shape, sw-spec, sw-review | `record.py` |
 | `sources.json` | sw-ingest | `data.py export sources --as sw-ingest` after an import |
-| `registry.json` | sw-spec, sw-publish | `data.py export registry --as <skill>` after a registry write |
+| `registry.json` | sw-spec, sw-publish | `data.py export registry --as <skill>` after a registry write; `record.py` also refreshes it |
 | `quality.json` | sw-review, sw-publish | `data.py export quality --as <skill>` after a lint run |
-| `rtm.json` | sw-plan, sw-publish | `trace.py rebuild` |
+| `rtm.json` | sw-plan, sw-publish | `trace.py` refreshes it on every RTM change and rebuild |
 | `index.json` | the writer | every export; lists each file with its owner and sha256 |
 
+The Owner column lists the skills `data.py export --as <skill>` accepts for that kind (the first is
+the primary owner). A skill that only changes the inputs, such as sw-shape or sw-ingest writing
+registry rows, does not export it: `data.py check` reports the file stale and names the command.
 Only the owner writes a file. `data.py export` refuses another skill's kind. Nothing outside
 the owners writes here, and the console only reads.
 

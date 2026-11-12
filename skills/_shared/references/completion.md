@@ -1,6 +1,7 @@
 # Bounded completion maintenance
 
-Finish the requested action, run the maintenance below, then report. Never advance a
+Bounded means the eight steps below once, plus at most one repair pass (see Repair), and
+never the next station. Finish the requested action, run the maintenance below, then report. Never advance a
 stage without the user's confirmation: under `flow: guided` one plain yes to "Continue to
 <next station>?" is that confirmation for a local station (`governance.md`); under
 `flow: step` stop at the next human decision. Never recurse into a handoff unasked.
@@ -12,7 +13,9 @@ stage without the user's confirmation: under `flow: guided` one plain yes to "Co
 3. Recompute hashes; refresh derived cards.
 4. Apply permitted trace updates.
 5. Rebuild a stale graph from the final saved inputs.
-6. Run the relevant lint and status detection.
+6. Run `_shared/scripts/sw_lint.py --root <project> --gate <draft|review|publish>` for the gate that
+   matches the station (exit 0 clean; 10, 20 or 30 means blocking findings) and, where shipped,
+   `_shared/scripts/status.py`.
 7. Refresh the data files you own (`data-format.md`), after the graph and lint.
 8. Report results and the next human decision.
 
@@ -26,7 +29,7 @@ stage without the user's confirmation: under `flow: guided` one plain yes to "Co
 | Plan saved or revised; other content changed; graph stale | Build or update the graph and query it after asset and visual work. Verify freshness on a no-op. |
 | Spec, plan, source, record or registry content changed | Refresh only the data files your skill owns, with `data.py export <kind> --as <skill>`. Never write another skill's file. |
 | Before any hand-off | Lint the applicable scope. Report a failure; never waive it silently. |
-| Drawing requested, missing or stale | Run illustration_check.py and report the chip. Render only when the chip says a picture is needed. |
+| Drawing requested, missing or stale | Ask sw-spec for `scripts/illustration_check.py FEAT-NNN` (only sw-spec ships it) and report the chip. Render only when the chip says a picture is needed. |
 | Accepted draft ready for review | Prepare findings. Record approval only through sw-review: the owner's accept, or a verified sign-off under required. |
 | Published requirement amendment | Validate the user-supplied current baseline and require a CR; if unverifiable, stop. No sync, guessed baseline, overwritten snapshot or Jira edit. |
 | Review passes | The feature is accepted and eligible for plan, and for publication on request. A passing plan is Markdown delivery; publication stays a separate explicit decision. |

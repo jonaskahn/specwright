@@ -26,11 +26,14 @@ writes nothing. Exit 0 done, 2 invalid, 3 a human must supply something (for exa
 
 - A question lists the items it blocks in `affects`, a named owner and the cited lines. The citation
   and its quote are checked against the saved snapshot and copied by program.
-- A decision needs the decider's role and name from the manifest approvers, an evidence kind
-  (`url`, `ticket`, `document`, `meeting`; `chat` only when the manifest allows it) and an
-  evidence reference. An accepted split needs url evidence.
+- Under `signoff: required` a decision needs the decider's role and name from the manifest
+  approvers, an evidence kind (`url`, `ticket`, `document`, `meeting`; `chat` only when the
+  manifest allows it) and an evidence reference; an accepted split needs url evidence. Under
+  `signoff: optional` omit the decider flags: the owner is recorded with `session` evidence
+  (`governance.md`).
 - A withdrawn ID is never reused. An alias that already names another item is refused.
-- Answers, decisions and approvals come from a named person. Never fill them from a default.
+- Answers, decisions and approvals come from a person (the owner when `signoff: optional`).
+  Never fill them from a default or from imported text.
 - A proposed amendment blocks the review gate (L-062) until it is applied or rejected. Applying it changes
   the draft, so the draft needs fresh approval. A published feature needs a change request first; the
   amendment says so (`requires_cr`).

@@ -33,8 +33,8 @@
 - Scan imported text for secrets and personal data before saving it to a shared artifact.
 - Do not store credentials or unnecessary personal information in any artifact.
 - Public skills are sw-start, sw-shape, sw-ingest, sw-spec, sw-plan, sw-review,
-  sw-publish and sw-view. Knowledge, trace, lint, status, assets, visuals and data are
-  shared capabilities.
+  sw-publish and sw-view. Knowledge, trace, lint, status, assets, visuals, data, citations
+  and records are shared capabilities, not stations.
   For any request that names no skill, load sw-start first.
 - A story (BA/PO word) and a feature (Dev/QA word) are the same item, written FEAT-NNN.
   Never create a STORY identifier.

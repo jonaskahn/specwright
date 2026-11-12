@@ -1,6 +1,7 @@
 # Lifecycle
 
-`shape -> spec -> review (accept) -> plan`, with publish as an optional parallel exit.
+`shape -> spec -> review (accept) -> plan`. Publish is also a station, but it is entered only on an
+explicit request for an accepted story (`request-publish`), never as the next step.
 `governance.md` sets how much ceremony each step needs and whether the run is guided.
 
 Ingest, assets, visuals, knowledge, trace, lint and status support an action; they are
@@ -61,9 +62,6 @@ conflicting membership must be resolved, never inferred from loose mentions.
 
 ## Completion
 
-Finish the requested action, run completion.md maintenance, then report the item's
-station and condition. Under the guided flow, offer the next station with one plain
-confirmation; under the step flow, stop. More than one eligible item requires selection,
-even when all share a station. No oldest-draft fallback and no sibling auto-advancement.
-Only sw-publish may write remotely after the clean gate, three-way dry-run and fresh
-exact-plan PUBLISH confirmation; local TRANSITION tokens cannot substitute for it.
+After each action follow `completion.md` (maintenance, then report). More than one eligible item
+requires selection, even when all share a station. No oldest-draft fallback and no sibling
+auto-advancement. Local TRANSITION tokens never substitute for the PUBLISH confirmation.

@@ -1,6 +1,6 @@
 # Task format
 
-File: 03-plan/FEAT-001.tasks.md. Front matter holds feat, spec_hash and status (draft or ready).
+File: 03-plan/FEAT-001.tasks.md. Front matter holds feat, spec_hash, status (draft or ready) and assets.
 
 Each task is a level-three heading followed by labelled lines:
 

@@ -18,6 +18,17 @@ accept exists while sign-off is required).
 | superseded | Won't Do |
 | withdrawn | Won't Do |
 
+## Who sets each status
+
+| Status | Set by |
+| --- | --- |
+| `draft` | sw-spec when it creates the story; sw-start's `return-spec` transition |
+| `in-review` | sw-start's `submit-review` transition, after a passing review lint gate |
+| `ready-to-publish` (accepted) | sw-review only |
+| `published` | sw-publish, after every remote operation succeeded |
+| `ready-for-dev` | No skill writes it. It is recognised when a story already carries it (for example mirrored from Jira) and is treated like accepted for planning |
+| `superseded`, `withdrawn` | An authorized withdrawal or replacement; the ID stays as a tombstone |
+
 ## Ownership
 
 The manifest `status_map` is the mapping. sw-publish checks drift against it; the lint

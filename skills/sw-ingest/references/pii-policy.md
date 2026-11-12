@@ -19,8 +19,8 @@ share it. Binary originals need separate review: extraction can miss hidden data
 Restrict access to raw storage and exclude it from version control.
 
 Scan each snapshot before hand-off. --redact writes [REDACTED:<type>] markers
-atomically to --out, or to the input text if omitted. Raw originals cannot be
-redacted in place. Rerun the scan and visually check contextual leaks, attachments
+atomically to --out. Always pass --out for a snapshot: without it the input text is rewritten
+in place. Raw originals cannot be redacted in place. Rerun the scan and visually check contextual leaks, attachments
 and metadata. For append-only snapshots redact to a separate restricted copy;
 ask how to retain or withdraw the cited original rather than silently rewriting it.
 

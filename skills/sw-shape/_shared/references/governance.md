@@ -44,8 +44,8 @@ is never remote permission unless it answers the exact dry-run just shown.
 
 ## Guided flow
 
-`flow: guided` runs the stations in order: shape, spec, review (accept), plan. Publish is an
-optional parallel exit, never a next step.
+`flow: guided` runs the stations in order: shape, spec, review (accept), plan. Publish is entered
+only on an explicit request (`lifecycle.md`), never as a next step.
 
 - After a station finishes with no blocker, show a short summary and ask
   **"Continue to <next station>? (Y/n)"**. A plain yes advances. For a local transition the agent

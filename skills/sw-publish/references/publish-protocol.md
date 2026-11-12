@@ -42,6 +42,8 @@ sections as a verified three-way comparison unless that read happened.
 
 ## Execution
 
-The write capability runs the confirmed plan one operation at a time, checking each is
+Every remote call is first logged as an INTENT line and afterwards as a RESULT line in the
+append-only write log (the intent log). An INTENT with no RESULT means the call may or may not
+have landed: reconcile identity against Jira and stop; never retry. The write capability runs the confirmed plan one operation at a time, checking each is
 still part of the confirmed hash. Local index rows (registry Jira key, RTM Jira column,
 card status) update only after every remote operation succeeds.

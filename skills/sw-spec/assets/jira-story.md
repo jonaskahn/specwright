@@ -11,6 +11,7 @@ bo: []
 br: []
 nfr: []
 sources: []
+assets: []
 ---
 
 ## Goal
@@ -71,7 +72,7 @@ None
 - [ ] UI states and exclusions with reasons.
 - [ ] No unresolved questions or markers.
 - [ ] Dev and QA checks pass for each AC.
-- [ ] PO approval evidence recorded.
+- [ ] Approval recorded through sw-review (accept, or sign-off under `required`).
 
 ## Identity
 

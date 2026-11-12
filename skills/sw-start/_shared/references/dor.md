@@ -12,8 +12,9 @@ Before requesting review, check:
 - Open questions are resolved for readiness, with decisions and evidence retained.
 - Dev and QA checks say yes per AC, with an explanation, or the draft stays blocked.
 - The card fits its limits and does not carry a second copy of acceptance criteria.
-- Review lint passes. PO sign-off is requested and later recorded with role, name,
-  date, evidence URL and the exact approved draft hash through sw-review.
+- Review lint passes. Approval is later recorded only through sw-review: the owner's accept
+  (`signoff: optional`) or, under `signoff: required`, a sign-off with role, name, date,
+  evidence URL and the exact approved draft hash.
 
 INVEST (independent value, negotiable solution, estimable, team-confirmed size,
 observable tests) is a useful check, not a substitute for PO approval. A draft can be

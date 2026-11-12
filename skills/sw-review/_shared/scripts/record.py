@@ -241,7 +241,8 @@ def main(argv=None):
         plan, action, target = _build(ctx, args)
         warnings = [] if args.dry_run else recordops.execute(ctx, plan, action, target)
         if not args.dry_run:
-            dataformat.refresh(root, "records", scope)
+            for kind in ("records", "registry"):
+                dataformat.refresh(root, kind, scope)
         result = {
             "dry_run": args.dry_run,
             "made": plan.made,
