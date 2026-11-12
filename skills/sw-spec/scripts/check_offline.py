@@ -14,6 +14,11 @@ _here = Path(__file__).resolve().parent
 _source_shared = _here.parent.parent / "_shared" / "scripts"
 _local_shared = _here.parent / "_shared" / "scripts"
 _shared = _source_shared if _source_shared.is_dir() else _local_shared
+if not (_shared / "kitlib").is_dir():
+    sys.exit(
+        f"error: shared library missing at {_shared}/kitlib; "
+        "reinstall this skill from a zip that includes its _shared folder"
+    )
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 

@@ -120,11 +120,15 @@ build.default: lint.default test.default
 
 ##@ package: → clean, build and write one self-contained ZIP per public skill
 
-package.default: clean.default build.default package.zip
+package.default: clean.default build.default package.zip package.verify
 
 ## package.zip: package every public skill into dist/ (core diagram types; see docs/install.md)
 package.zip:
 	$(PYTHON) tools/package.py --zip --out "$(DIST_DIR)"
+
+## package.verify: unzip each skill and check it names no missing file and every script starts
+package.verify:
+	$(PYTHON) tools/verify_package.py --dist "$(DIST_DIR)"
 
 ## package.report: show each skill's file count, size and shared capabilities
 package.report:

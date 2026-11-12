@@ -134,7 +134,8 @@
     "sw-publish": {
       "capabilities": [
         "core",
-        "quality"
+        "quality",
+        "trace"
       ],
       "shared": [
         "references/capabilities/quality.md",
@@ -163,7 +164,8 @@
         "scripts/kitlib/task_validation.py",
         "scripts/kitlib/workspace.py",
         "scripts/kitlib/writelog.py",
-        "scripts/sw_lint.py"
+        "scripts/sw_lint.py",
+        "scripts/trace.py"
       ]
     },
     "sw-review": {

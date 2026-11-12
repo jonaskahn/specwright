@@ -128,13 +128,13 @@ class TemplateTests(unittest.TestCase):
     def test_story_template_sections_match_the_library(self):
         from kitlib import frontmatter, markdown, schema
 
-        text = (ROOT / "templates/jira-story.md").read_text()
+        text = (ROOT / "skills/sw-spec/assets/jira-story.md").read_text()
         fm, body = frontmatter.split(text)
         self.assertEqual(fm["type"], "feature")
         self.assertEqual([s.name for s in markdown.iter_sections(body)], schema.STORY_SECTIONS)
 
     def test_card_template_is_compact(self):
-        text = (ROOT / "templates/summary-card.md").read_text()
+        text = (ROOT / "skills/sw-spec/assets/summary-card.md").read_text()
         self.assertLessEqual(len(text.splitlines()), 80)
 
 

@@ -19,6 +19,8 @@ analysis. Writes:
 - questions → `records/Q-NNN.md`; proposed impacts → `records/CR-NNN.md` (via scripts/impact.py only);
 - candidate cards → `01-analysis/`, only after user agreement.
 
+Record shapes: assets/snapshot.md, assets/q.md, assets/cr.md.
+
 Never change published material, RTM columns or existing snapshots without explicit authorization.
 
 ## Runtime root

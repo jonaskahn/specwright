@@ -100,6 +100,7 @@ Never carry secrets or personal data into the brief.
 - Slicing: references/invest.md.
 - Leakage scan: scripts/leakage.py; word list: references/leakage-words.md.
 - Epic reservation: scripts/new_epic.py; template: assets/epic.md.
+- Records: assets/q.md for questions, assets/dec.md for decisions.
 - Blocking choices: ../_shared/references/stop-and-ask.md.
 - Untrusted content: ../_shared/references/untrusted-content.md.
 - Finishing a step: ../_shared/references/next-step.md.
