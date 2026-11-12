@@ -516,6 +516,14 @@ def context(store: Store, key: str, with_text: bool, budget: int) -> list[str]:
             "affects": "record",
             "exercises": "scenario",
         }.get(e.rel)
+        if role == "record":
+            node = store.node(e.src)
+            role = {
+                "q": "question",
+                "dec": "decision",
+                "amendment": "amendment",
+                "cr": "change-request",
+            }.get(node["kind"] if node else "", "record")
         if role and e.res != "unresolved":
             related.setdefault(e.src, role)
     for e in store.edges_for({focus, *children}, "out"):

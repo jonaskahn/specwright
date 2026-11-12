@@ -34,12 +34,12 @@ from kitlib import (  # noqa: E402
 )
 
 GATES = {"draft": 10, "review": 20, "publish": 30}
-REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {"L-017"}
+REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {"L-017", "L-062"}
 PUBLISH = {"L-018", "L-037", "L-045", "L-046"}
 SYNC = set()
-RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), 57)}
+RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), 57, 62)}
 # Artifacts a reader looks up by name; each needs a title and an alias list (possibly empty).
-NAMED_TYPES = {"feature", "idea", "epic", "q", "dec", "cr", "risk", "snapshot"}
+NAMED_TYPES = {"feature", "idea", "epic", "q", "dec", "cr", "risk", "snapshot", "amendment"}
 PLACEHOLDER_TITLES = {
     "reserved feature",
     "tbd",
@@ -440,6 +440,16 @@ def lint_document(doc, ctx):
         emit("L-016", "status is not valid for this type")
     if fm.get("scope", ctx.scope) != ctx.scope:
         emit("L-043", "front matter scope differs from the selected project")
+    if fm["type"] == "feature" and not doc.card:
+        pending = sorted(
+            d.spec_id
+            for d in ctx.docs
+            if d.fm.get("type") == "amendment"
+            and d.fm.get("status") == "proposed"
+            and doc.spec_id in {r.id for r in ids.find_refs(str(d.fm.get("affects", "")))}
+        )
+        if pending:
+            emit("L-062", f"pending amendment(s) {', '.join(pending)}: apply or reject first")
     if not doc.snapshot and fm["type"] not in {"snapshot", "src"}:
         for problem in cite.problems(ctx.sources, doc.raw):
             emit("L-057", problem.message, problem.line, sev=problem.severity)

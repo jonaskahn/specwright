@@ -18,6 +18,8 @@ writes nothing. Exit 0 done, 2 invalid, 3 a human must supply something (for exa
 | Reserve features with their legacy names | `reserve feat --item "Title\|LEG-100,alias"` |
 | Create an epic | `reserve epic --title ...` |
 | Reserve, fill an epic and record the split | `accept-split --item "Title\|alias" --new-epic "Title" ...evidence flags...` |
+| Track a wording change an answer implies | `q answer ... --amend "FEAT-001\|\|current wording\|\|proposed wording"` or `amend new --feat FEAT-001 --quote ... --proposed ...` |
+| Close it once the draft carries the change | `amend apply AMD-001` (refused while the old wording remains); `amend reject AMD-001 --reason ...` |
 | Set a registry cell you own | `register FEAT-001 --set "Title=..." --as sw-shape` |
 
 ## Rules
@@ -29,3 +31,6 @@ writes nothing. Exit 0 done, 2 invalid, 3 a human must supply something (for exa
   evidence reference. An accepted split needs url evidence.
 - A withdrawn ID is never reused. An alias that already names another item is refused.
 - Answers, decisions and approvals come from a named person. Never fill them from a default.
+- A proposed amendment blocks the review gate (L-062) until it is applied or rejected. Applying it changes
+  the draft, so the draft needs fresh approval. A published feature needs a change request first; the
+  amendment says so (`requires_cr`).

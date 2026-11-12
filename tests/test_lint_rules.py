@@ -422,6 +422,24 @@ class RuleTests(unittest.TestCase):
         found = self.findings(doc(GOOD + "\nSource: SRC-0001:L5\n"))
         self.assertEqual([f.sev for f in found if f.rule == "L-057"], ["warn"])
 
+    def test_l062(self):
+        amendment = doc(
+            "---\nid: AMD-001\ntype: amendment\nscope: REF\ntitle: Amend FEAT-001\naliases: []\n"
+            "status: proposed\naffects: [FEAT-001]\n---\n## Current wording\n\n> a\n",
+            "records/AMD-001.md",
+        )
+        feature = doc()
+        self.assertIn(
+            "L-062",
+            {f.rule for f in lint.lint_document(feature, self.context([feature, amendment]))},
+        )
+        done = doc(
+            amendment.raw.replace("status: proposed", "status: applied"), "records/AMD-001.md"
+        )
+        self.assertNotIn(
+            "L-062", {f.rule for f in lint.lint_document(feature, self.context([feature, done]))}
+        )
+
     def test_every_rule_has_a_named_test(self):
         covered = {"L-" + name.removeprefix("test_l") for name in dir(self) if re_rule(name)}
         self.assertEqual(lint.RULE_IDS, covered)

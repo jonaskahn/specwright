@@ -39,6 +39,7 @@ STATUSES = {
     "src": ["raw"],
     "q": ["proposed", "candidate", "open", "answered", "withdrawn"],
     "cr": ["proposed", "in-review", "approved", "applied", "withdrawn"],
+    "amendment": ["proposed", "applied", "rejected", "withdrawn"],
     "dec": ["accepted", "superseded"],
     "idea": ["draft", "accepted", "withdrawn"],
     "epic": ["draft", "approved", "superseded", "withdrawn"],

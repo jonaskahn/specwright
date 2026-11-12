@@ -65,10 +65,28 @@ def _parser():
     answer = _add(q, "answer", "answer a question and record the decision")
     answer.add_argument("id")
     answer.add_argument("--answer", required=True)
+    answer.add_argument(
+        "--amend", action="append", default=[], help="'FEAT-001||current wording||proposed wording'"
+    )
     _decider(answer)
     withdraw = _add(q, "withdraw", "withdraw a question; its ID stays")
     withdraw.add_argument("id")
     withdraw.add_argument("--reason", required=True)
+
+    amd = top.add_parser("amend", help="pending wording amendments").add_subparsers(
+        dest="verb", required=True
+    )
+    anew = _add(amd, "new", "track a wording change an answer implies")
+    anew.add_argument("--feat", required=True)
+    anew.add_argument("--quote", required=True, help="current wording, exactly as saved")
+    anew.add_argument("--proposed", required=True)
+    anew.add_argument("--decision", default="")
+    anew.add_argument("--source", default="", help="SRC-0001:L12-L14")
+    aapply = _add(amd, "apply", "mark applied once the draft carries the proposed wording")
+    aapply.add_argument("id")
+    areject = _add(amd, "reject", "reject an amendment")
+    areject.add_argument("id")
+    areject.add_argument("--reason", required=True)
 
     dec = top.add_parser("dec", help="decisions").add_subparsers(dest="verb", required=True)
     dnew = _add(dec, "new", "record a decision with its evidence")
@@ -129,11 +147,20 @@ def _build(ctx, args):
         )
         return plan, "q-new", ctx.scope + ":" + plan.made[0]
     if args.noun == "q" and args.verb == "answer":
-        plan = recordops.question_answer(ctx, args.id, args.answer, _who(ctx, args))
+        plan = recordops.question_answer(ctx, args.id, args.answer, _who(ctx, args), args.amend)
         return plan, "q-answer", f"{ctx.scope}:{args.id}"
     if args.noun == "q":
         plan = recordops.question_withdraw(ctx, args.id, args.reason)
         return plan, "q-withdraw", f"{ctx.scope}:{args.id}"
+    if args.noun == "amend" and args.verb == "new":
+        plan, identity = recordops.amendment_new(
+            ctx, args.feat, args.quote, args.proposed, args.decision, args.source
+        )
+        return plan, "amend-new", f"{ctx.scope}:{identity}"
+    if args.noun == "amend":
+        outcome = "applied" if args.verb == "apply" else "rejected"
+        plan = recordops.amendment_close(ctx, args.id, outcome, getattr(args, "reason", ""))
+        return plan, f"amend-{args.verb}", f"{ctx.scope}:{args.id}"
     if args.noun == "dec":
         plan, identity = recordops.decision_new(
             ctx,

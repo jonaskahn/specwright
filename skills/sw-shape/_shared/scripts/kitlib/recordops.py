@@ -13,7 +13,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from kitlib import cite, epics, frontmatter, fsio, ids, rtm, schema, workspace, writelog
+from kitlib import cite, epics, frontmatter, fsio, hashing, ids, rtm, schema, workspace, writelog
 
 
 class RecordError(ValueError):
@@ -340,7 +340,9 @@ def decision_new(
     return plan, identity
 
 
-def question_answer(ctx: Ctx, identity: str, answer: str, who: dict[str, Any]) -> Plan:
+def question_answer(
+    ctx: Ctx, identity: str, answer: str, who: dict[str, Any], amend: list[str] | None = None
+) -> Plan:
     path, fm, body = _record(ctx, identity)
     if fm.get("type") != "q" or fm.get("status") not in schema.OPEN_Q:
         raise RecordError(f"{identity} is not an open question")
@@ -359,6 +361,107 @@ def question_answer(ctx: Ctx, identity: str, answer: str, who: dict[str, Any]) -
     fm.update({"status": "answered", "decision": decision, "answered_on": ctx.today})
     plan.rewrites[path] = frontmatter.render(fm, body.rstrip("\n") + f"\n\n## Answer\n\n{answer}\n")
     plan.summary.append(f"answer {identity} with {decision}")
+    for raw in amend or []:
+        parts = [p.strip() for p in raw.split("||")]
+        if len(parts) != 3:
+            raise RecordError("--amend is 'FEAT-001||current wording||proposed wording'")
+        amendment_new(ctx, parts[0], parts[1], parts[2], decision=decision, plan=plan)
+    return plan
+
+
+# ---- pending amendments -----------------------------------------------------------------------
+
+
+def _quoted(block: str) -> str:
+    return "\n".join("> " + line for line in block.strip().splitlines())
+
+
+def _story(ctx: Ctx, feat: str) -> tuple[str, str]:
+    ref = ids.parse_ref(ids.story_alias(feat.strip()))
+    if ref is None or not ids.matches_type("feature", ref.id):
+        raise RecordError(f"'{feat}' is not a feature ID")
+    path = ctx.base / "02-drafts" / f"{ref.id}.story.md"
+    if not path.is_file():
+        raise RecordError(f"{ref.id} has no saved story text to amend")
+    return ref.id, path.read_text(encoding="utf-8")
+
+
+def amendment_new(
+    ctx: Ctx,
+    feat: str,
+    quote: str,
+    proposed: str,
+    decision: str = "",
+    source: str = "",
+    plan: Plan | None = None,
+) -> tuple[Plan, str]:
+    """Track a wording change that an answer implies, so it reaches the acceptance criteria."""
+    feat_id, text = _story(ctx, feat)
+    if not quote.strip() or not proposed.strip():
+        raise RecordError("an amendment needs the current wording and the proposed wording")
+    if cite.normalize(quote) not in cite.normalize(frontmatter.parse(text).body):
+        raise RecordError(f"the quoted wording is not in the saved story of {feat_id}")
+    if cite.normalize(quote) == cite.normalize(proposed):
+        raise RecordError("the proposed wording equals the current wording")
+    stamped, _ = citations(ctx, [source]) if source else ([], [])
+    published = rtm.read_table(ctx.registry, list(schema.REGISTRY_COLUMNS)).table
+    key = f"{ctx.scope}:{feat_id}"
+    live = published.value(key, "State") == "published" or bool(published.value(key, "Jira key"))
+    plan = plan or new_plan(ctx)
+    identity = plan.next_id("AMD")
+    title = f"Amend {feat_id}: {' '.join(quote.split()[:8])}"
+    fm: dict[str, Any] = {
+        "id": identity,
+        "type": "amendment",
+        "scope": ctx.scope,
+        "title": title,
+        "aliases": [],
+        "status": "proposed",
+        "affects": [feat_id],
+        "decision": decision,
+        "sources": sorted({cite.parse_one(s).source for s in stamped}),
+        "supersedes": [],
+        "requires_cr": live,
+        "created": ctx.today,
+    }
+    body = (
+        f"## Current wording\n\n{_quoted(quote)}\n\n## Proposed wording\n\n{_quoted(proposed)}\n\n"
+        f"## Why\n\n{('Decision ' + decision + '.') if decision else 'See the linked record.'}"
+        + (f" Evidence: {', '.join(stamped)}." if stamped else "")
+        + "\n"
+    )
+    if live:
+        body += "\nThis feature is already published: raise a change request before revising it.\n"
+    path = ctx.base / "records" / ids.record_filename(identity, title)
+    plan.creates[path] = frontmatter.render(fm, body)
+    plan.summary.append(f"create {path.relative_to(ctx.base).as_posix()} for {feat_id}")
+    return plan, identity
+
+
+def _wording(body: str, heading: str) -> str:
+    match = re.search(rf"## {heading}\n\n((?:>.*\n?)+)", body)
+    return "\n".join(line[2:] for line in match.group(1).splitlines()) if match else ""
+
+
+def amendment_close(ctx: Ctx, identity: str, outcome: str, reason: str = "") -> Plan:
+    path, fm, body = _record(ctx, identity)
+    if fm.get("type") != "amendment" or fm.get("status") != "proposed":
+        raise RecordError(f"{identity} is not a proposed amendment")
+    plan = new_plan(ctx)
+    if outcome == "applied":
+        feat_id, text = _story(ctx, str(fm["affects"][0]))
+        story_body = cite.normalize(frontmatter.parse(text).body)
+        if cite.normalize(_wording(body, "Current wording")) in story_body:
+            raise RecordError("the draft still carries the current wording; edit it first")
+        if cite.normalize(_wording(body, "Proposed wording")) not in story_body:
+            raise RecordError("the draft does not carry the proposed wording yet")
+        fm["applied_hash"] = hashing.draft_hash(text)
+        note = f"Applied to {feat_id}; a changed draft needs fresh approval."
+    else:
+        note = _line(reason, "reason", 300)
+    fm.update({"status": outcome, "closed_on": ctx.today})
+    plan.rewrites[path] = frontmatter.render(fm, body.rstrip("\n") + f"\n\n## Outcome\n\n{note}\n")
+    plan.summary.append(f"{outcome} {identity}")
     return plan
 
 

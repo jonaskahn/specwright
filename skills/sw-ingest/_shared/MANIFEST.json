@@ -1,7 +1,7 @@
 {
  "files": {
   "references/capabilities/citations.md": "d3c8ec81a8fb",
-  "references/capabilities/records.md": "3c38657c5bda",
+  "references/capabilities/records.md": "b79dded034ca",
   "references/next-step.md": "014dd8c606b1",
   "references/stop-and-ask.md": "8dcf14ae3f9f",
   "references/untrusted-content.md": "03ff18989296",
@@ -12,22 +12,22 @@
   "scripts/kitlib/frontmatter.py": "8f5e22fd72e7",
   "scripts/kitlib/fsio.py": "ab1846444c3c",
   "scripts/kitlib/graph.py": "2feedb873e9a",
-  "scripts/kitlib/graph_query.py": "060c37c3c585",
+  "scripts/kitlib/graph_query.py": "f3b7f7405f8f",
   "scripts/kitlib/hashing.py": "d4230ca068c6",
-  "scripts/kitlib/ids.py": "694e5ed05a4f",
+  "scripts/kitlib/ids.py": "4e7c5bf223db",
   "scripts/kitlib/index.py": "d1455540d597",
   "scripts/kitlib/ingest_impact.py": "d3e258c5c943",
   "scripts/kitlib/lifecycle.py": "fa5d945dc981",
   "scripts/kitlib/markdown.py": "e3b4f0bf14ab",
   "scripts/kitlib/miniyaml.py": "73a1bbe68a05",
-  "scripts/kitlib/recordops.py": "557a9a779fbd",
+  "scripts/kitlib/recordops.py": "4c3f7d1630a7",
   "scripts/kitlib/rtm.py": "dc57dda3403f",
-  "scripts/kitlib/schema.py": "9b9d2e8b88d0",
+  "scripts/kitlib/schema.py": "7f39f1014106",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "a72c8fe85965",
   "scripts/kitlib/workspace.py": "dbb1251f4d0e",
   "scripts/kitlib/writelog.py": "1a34e6e3c8c9",
-  "scripts/record.py": "6756819a6199"
+  "scripts/record.py": "ecce23ddfa0f"
  },
  "kit_version": "0.3.0"
 }
