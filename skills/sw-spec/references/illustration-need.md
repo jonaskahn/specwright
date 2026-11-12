@@ -1,39 +1,99 @@
 # When an illustration is needed
 
-Compare saved evidence with any existing picture. Do not use source hashes. Do not draw because
-a lifecycle stage says drawing is next. A direct request still passes this test.
+The chip is computed by `kitlib/illustration.py` from the story text and from diagram citations.
+It is **needs illustration**, **no illustration**, **illustrated** or **check illustration**.
+Nothing blocks submission. A skipped check and a considered "no illustration" are different:
+the second one is either a prose verdict or a recorded dismissal.
 
-## Fresh feature
+Run `scripts/illustration_check.py FEAT-NNN`. The same words below are the counter's lists, so
+this note and the script cannot drift.
 
-No linked diagram, SVG, HTML or Mermaid companion exists for the feature.
+## Signals
 
-Draw only when the picture clarifies at least two of these distinctions:
+Counted from the story only. The counter never invents an actor, a state or an ID. A role
+counts once, singular or with a trailing s (`customers` is `customer`). `support` is not a
+role, because the verb "supports" would invent one.
 
-- two or more actors
-- a branch, exception or decision
-- a state change
-- a dependency or hand-off
-- data moving between owners
+Actors are the distinct roles in Goal, Business rules, and Given or When lines:
 
-If fewer than five items and one actor carry the distinction, use a paragraph. Do not invent an actor, state or quantity
-to pass that gate.
+administrator, subscriber, supervisor, moderator, requester, approver, reviewer, merchant,
+operator, assignee, employee, customer, shopper, auditor, analyst, cashier, manager, visitor,
+seller, member, vendor, client, teller, staff, buyer, agent, guest, owner, payer, admin,
+clerk, actor, user.
+
+Branches are AC titles and business-rule lines that contain a branch word or a role, plus
+each enumerated error in Edge cases (a bullet, an `IF` line, or a quoted message; a line
+that says None is not an error):
+
+unless, otherwise, except, only, else, not, or, if.
+
+State changes are Then lines with a status in quotes or one of these verbs:
+
+unassigned, deactivated, transferred, registered, withdrawn, suspended, cancelled, activated,
+unblocked, published, completed, refunded, reversed, archived, rejected, approved, recorded,
+restored, assigned, canceled, expired, deleted, removed, created, revoked, blocked, changed,
+cleared, updated, unlocked, voided, issued, joined, failed, locked, opened, closed, added, left.
+
+Hand-offs are feature IDs other than this story, or another feature's alias, in Context and
+Dependencies and relations.
+
+Data moving between owners is a line in the behaviour sections with one of these words:
+
+notifications, notification, payloads, receives, received, notifies, notified, payload,
+receive, notify, sends, sent, send.
+
+An item is one counted actor, branch, state change, hand-off or data line.
+
+## Verdict
+
+- **DRAW** when three or more signals fire, or when two signals fire and the items are five
+  or more.
+- **PROSE** when one actor and fewer than five items carry the distinction, including when
+  two signals fired. Also when fewer than two signals fire and there is a single actor.
+- **UNSURE** in the borderline band: exactly two signals with fewer than five items and more
+  than one actor, or several actors and no other signal.
+
+## Chip
+
+| Chip | When |
+| --- | --- |
+| illustrated | A diagram cites this feature or its criteria, and every cited ID still exists |
+| needs illustration | Verdict DRAW, no picture, and no recorded dismissal |
+| no illustration | Verdict PROSE, or the author recorded a dismissal with a reason |
+| check illustration | Verdict UNSURE, or a picture cites a withdrawn or missing ID |
+
+A picture wins over a dismissal. A stale citation wins over a current one.
+
+## Dismissal
+
+Only the dismissal is stored, in front matter, which the draft hash excludes:
+
+```yaml
+illustration: none
+illustration_reason: single actor, linear flow, five lines
+```
+
+Record it with `scripts/illustration_check.py FEAT-NNN --dismiss "reason"`. The command
+writes those two keys and leaves the body, the criteria, the rules and the approval alone.
+A reason is required. An empty reason is not a dismissal.
 
 ## Existing illustration
 
-Compare the current story and its linked cards with the picture's visible labels, nodes, edges, source IDs, actors,
-branches, quantities and boundaries.
+Compare the current story and its linked cards with the picture's visible labels, nodes,
+edges, source IDs, actors, branches, quantities and boundaries.
 
-Update the picture when any depicted fact changed, or when `scripts/check_borders.py` or `scripts/check_offline.py`
-reports a finding. Leave it unchanged when only undeclared wording, approval status or an unrelated section changed.
+Update the picture when any depicted fact changed, or when `scripts/check_borders.py` or
+`scripts/check_offline.py` reports a finding. Leave it unchanged when only undeclared
+wording, approval status or an unrelated section changed.
 
 ## Current illustration
 
-When every depicted fact still matches and both checks pass, write nothing. Return the existing paths, the compared
-source IDs and the reason the picture is current.
+When every depicted fact still matches and both checks pass, the chip is illustrated.
+Return the existing paths, the compared source IDs and the reason the picture is current.
 
 ## Ownership
 
-Return paths and link text. The sw-spec run writes the links, recomputes the story hash and
-refreshes the card. The illustration step never edits the draft, rules, IDs or approval.
-After a new or updated picture, sw-spec reruns graph and lint before review; a no-op still
-leaves that gate to sw-spec.
+Return paths and link text. The sw-spec run writes the links. The illustration step never
+edits the draft, rules, IDs or approval; a dismissal edits front matter only. After a new
+or updated picture, sw-spec reruns graph and lint before review. Link text in Context or
+UI/UX is a body edit, so the hash and the card are refreshed in the later sw-spec steps.
