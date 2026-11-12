@@ -10,7 +10,15 @@
     selected = null,
     emphasis = new Set<string>(),
     onselect,
-  }: { model: TraceModel; selected?: string | null; emphasis?: Set<string>; onselect: (id: string | null) => void } = $props();
+    onview,
+  }: {
+    model: TraceModel;
+    selected?: string | null;
+    emphasis?: Set<string>;
+    onselect: (id: string | null) => void;
+    /** Open an item's file; the eye on a card calls it. Choosing a card only lights its chain. */
+    onview?: (key: string) => void;
+  } = $props();
 
   let manual = $state<number | null>(null);
   let room = $state(0);
@@ -52,6 +60,7 @@
       onselect(selected === n.id ? null : n.id);
     }
   }
+  const EYE = 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z';
   const GLYPH: Record<string, string> = {
     check: 'M6 1.2a4.8 4.8 0 1 1 0 9.6 4.8 4.8 0 0 1 0-9.6zM3.7 6.1l1.6 1.6 3-3.3',
     triangle: 'M6 1.2l5 9.2H1z',
@@ -93,14 +102,9 @@
         </path>
       {/each}
       {#each model.nodes as n (n.id)}
+        <g class="trace-node" class:gap={!!n.gap} class:foreign={n.foreign} class:picked={selected === n.id} class:dim={dimmed(n.id)} class:emph={emphasis.has(n.id)} transform={`translate(${n.x} ${n.y})`}>
         <g
-          class="trace-node"
-          class:gap={!!n.gap}
-          class:foreign={n.foreign}
-          class:picked={selected === n.id}
-          class:dim={dimmed(n.id)}
-          class:emph={emphasis.has(n.id)}
-          transform={`translate(${n.x} ${n.y})`}
+          class="card"
           role="button"
           tabindex="0"
           aria-pressed={selected === n.id}
@@ -112,7 +116,7 @@
           <rect class="card-bg" width={BOX.w} height={BOX.h} rx="10" />
           {#if !n.gap}<rect class="bar" width="5" height={BOX.h} clip-path="url(#trace-card-clip)" style:fill={`oklch(58% 0.15 ${hue(n.kind)})`} />{/if}
           <rect class="card-edge" width={BOX.w} height={BOX.h} rx="10" />
-          <text class="t-kind" x="14" y="16">{n.gap ? 'Missing link' : n.kind === 'code' ? kindWords(n.kind) : `${kindWords(n.kind)} · ${shortKey(n.key ?? '')}${where(n)}`}</text>
+          <text class="t-kind" x="14" y="16">{n.gap ? 'Missing link' : n.kind === 'code' ? kindWords(n.kind) : fit(`${kindWords(n.kind)} · ${shortKey(n.key ?? '')}${where(n)}`, 28)}</text>
           <text class="t-title" x="14" y="33">{fit(n.title)}</text>
           {#if n.gap}
             <text class="t-note" x="14" y="47">Next step: ask {n.next}</text>
@@ -124,6 +128,14 @@
               <text class="t-note" x="14" y="47">Jira {n.jira}</text>
             {/if}
           {/if}
+        </g>
+        {#if onview && n.key && n.kind !== 'code'}
+          <g class="eye" role="button" tabindex="0" aria-label={`View ${n.title}`} onclick={(e) => { e.stopPropagation(); onview(n.key!); }} onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); onview(n.key!); } }}>
+            <title>View</title>
+            <rect class="eye-hit" x={BOX.w - 28} y="4" width="24" height="22" rx="7" />
+            <path class="eye-icon" transform={`translate(${BOX.w - 25} 6.5) scale(0.75)`} d={EYE} />
+          </g>
+        {/if}
         </g>
       {/each}
     </svg>

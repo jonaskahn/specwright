@@ -81,7 +81,7 @@
     {#if chain && chain.nodes.length > 1}
       <section>
         <div class="sec-h"><h2>Where this feature sits</h2><span class="sub">Goal, epic, criteria and tasks it connects to. Missing links are shown too.</span></div>
-        <TraceMap model={chain} selected={picked} onselect={(k) => { picked = k; if (k && !k.startsWith('gap:')) preview.openKey(k); else preview.close(); }} />
+        <TraceMap model={chain} selected={picked} onselect={(k) => (picked = k)} onview={(k) => { picked = k; preview.openKey(k); }} />
       </section>
     {/if}
 

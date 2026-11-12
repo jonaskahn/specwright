@@ -12,6 +12,7 @@
     foreign = new Set<string>(),
     selected,
     onselect,
+    onview,
     needle = '',
     code = false,
     coverage = true,
@@ -22,6 +23,7 @@
     foreign?: Set<string>;
     selected: string | null;
     onselect: (id: string | null) => void;
+    onview?: (key: string) => void;
     needle?: string;
     code?: boolean;
     coverage?: boolean;
@@ -68,7 +70,7 @@
     </select>
   {/if}
   {#each model.notes as note (note)}<p class="sub">{note}</p>{/each}
-  <TraceMap {model} {selected} {emphasis} {onselect} />
+  <TraceMap {model} {selected} {emphasis} {onselect} {onview} />
   {#if model.broken.length}
     <section class="broken card pad">
       <div class="sec-h"><h2>Broken references</h2><span class="sub">{model.broken.length}</span></div>

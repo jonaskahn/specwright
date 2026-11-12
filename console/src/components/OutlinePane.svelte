@@ -2,7 +2,7 @@
   import { filterTree, pathTo, type TreeNode } from '../lib/data/selectors';
   import OutlineNode from './OutlineNode.svelte';
 
-  let { roots, selected, onpick }: { roots: TreeNode[]; selected: string | null; onpick: (key: string) => void } = $props();
+  let { roots, selected, onpick, onview }: { roots: TreeNode[]; selected: string | null; onpick: (key: string) => void; onview: (key: string) => void } = $props();
 
   let text = $state('');
   let expand = $state<'auto' | 'all' | 'none'>('auto');
@@ -34,6 +34,6 @@
     <button class="btn ghost" type="button" onclick={() => (expand = 'none')}>Collapse all</button>
   </div>
   <div class="o-tree">
-    {#each shown as root (root.key)}<OutlineNode node={root} {selected} {expand} {forced} {onpick} />{:else}<p class="muted">Nothing matches.</p>{/each}
+    {#each shown as root (root.key)}<OutlineNode node={root} {selected} {expand} {forced} {onpick} {onview} />{:else}<p class="muted">Nothing matches.</p>{/each}
   </div>
 </div>

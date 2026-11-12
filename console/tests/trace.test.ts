@@ -156,6 +156,16 @@ describe('an epic serves business objectives and its features inherit them', () 
   });
 });
 
+describe('reading an item is the eye, not the card', () => {
+  const source = readFileSync(new URL('../src/components/TraceMap.svelte', import.meta.url), 'utf8');
+  it('puts an eye on each card that calls onview, and makes choosing the card only select it', () => {
+    expect(source).toMatch(/class="eye"[^>]*aria-label=\{`View /);
+    expect(source).toContain('onview(n.key!)');
+    expect(source).toMatch(/class="card"[\s\S]*onclick=\{\(\) => onselect\(/);
+    expect(source).not.toMatch(/onclick=\{\(\) => onview/);
+  });
+});
+
 describe('the card stripe follows the card corners', () => {
   const source = readFileSync(new URL('../src/components/TraceMap.svelte', import.meta.url), 'utf8');
   it('clips the stripe to the rounded card and draws the border over it', () => {

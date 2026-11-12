@@ -3,6 +3,7 @@
   import { ago } from '../lib/format';
   import { href } from '../lib/router';
   import { illustrationLook, lintLook, stateLook } from '../lib/status';
+  import Icon from './Icon.svelte';
   import Pill from './Pill.svelte';
 
   let {
@@ -35,7 +36,7 @@
 </script>
 
 <article class="kcard {card.condition}" data-col={column} data-idx={index}>
-  <button class="kcard-main" type="button" data-card onclick={() => open(f.id)}>
+  <div class="kcard-main">
     <span class="k-top">
       <span class="mono name">{f.id.replace(/^[A-Z][A-Z0-9]*:/, '')}</span>
       {#if several}<span class="chip">{f.scope}</span>{/if}
@@ -61,12 +62,13 @@
       </span>
     {/if}
     {#if blocker}<span class="k-block">{blocker}{f.blockers.length > 1 ? ` (+${f.blockers.length - 1} more)` : ''}</span>{/if}
-  </button>
+  </div>
   <footer class="k-foot">
     <span class="sub">
       {#if f.next}<strong>{f.next}</strong>{#if f.turn}{` · ${f.turn}`}{/if}{:else}No next step{/if}
     </span>
     <span class="k-idle {idleTone(days)}" title="Time since the feature last changed">{days === null ? 'no date' : ago(days)}</span>
+    <button class="btn view-btn" type="button" data-card aria-label={`View ${f.id}`} onclick={() => open(f.id)}><Icon name="eye" size="sm" />View</button>
     {#if card.command}<button class="btn ghost" type="button" title={`Copy ${card.command}`} onclick={() => copy(card.command!)}>Copy command</button>{/if}
     <a class="btn ghost" href={href('features', f.id)}>Page</a>
     {#if shown && shown === card.command}<code class="k-cmd">{shown}</code>{/if}

@@ -12,7 +12,7 @@ images, fonts and fetches from its own address only.
 | Workspace | Overview | Totals, items that need a person, state bar, lint gate. |
 | | Projects | One card per project with counts and gate. |
 | | Metrics | State, station, lint and objective measures worked out from the data. |
-| Specs | Features | Every feature with its place on the lifecycle; choose a row to read the story. |
+| Specs | Features | Every feature with its place on the lifecycle; View reads the story. |
 | | Feature | Criteria, tasks, records, links, blockers, sign-off state and its own trace map. |
 | | Tasks | Tasks by feature, with what each traces to. |
 | | Board | A kanban board: one column per station, one card per feature with its epics, criteria and tasks by layer, open questions, blockers, who is next and how long it has been idle. Filters, swimlanes by project, epic or turn. Read-only: a card shows the command that moves it on. |
@@ -29,8 +29,8 @@ runs queries. Theme, accent and density are kept in the browser (`specwright-*` 
 
 ## Preview and tables
 
-Choosing an item (a row, a card, a criterion, a task, a record, a source) opens the preview on the
-right: the item's Markdown file with its own line marked, a PDF in the browser's viewer, an image,
+Pressing View on a table row or board card, or the eye on a graph card or outline row, opens the
+preview on the right (choosing a graph card only lights its chain): the item's Markdown file with its own line marked, a PDF in the browser's viewer, an image,
 or a link file's address as text. It has an outline of the document, a Connections tab with the
 graph's links, and a Details tab. The address keeps the choice (`?pk=REF:AC-001-2`), so a reload or
 a pasted link returns to it; Esc closes it and the dock button keeps it beside the page. Markdown

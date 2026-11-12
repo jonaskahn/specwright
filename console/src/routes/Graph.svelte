@@ -1,6 +1,7 @@
 <script lang="ts">
   import DataTable from '../components/DataTable.svelte';
   import GraphCanvas from '../components/GraphCanvas.svelte';
+  import Icon from '../components/Icon.svelte';
   import OutlinePane from '../components/OutlinePane.svelte';
   import OwnerEmpty from '../components/OwnerEmpty.svelte';
   import PageHead from '../components/PageHead.svelte';
@@ -44,12 +45,14 @@
   $effect(() => { if (app.route.param) selected = app.route.param; });
   $effect(() => { const key = preview.current?.key; if (key) selected = key; });
 
-  /** Choosing an item lights its chain and opens its file in the preview; choosing it again clears both. */
+  /** Choosing an item lights its chain; choosing it again clears it. Reading it is the eye, below. */
   function pick(id: string | null) {
     selected = id;
-    if (id && !id.startsWith('gap:')) preview.openKey(id);
-    else if (!id) preview.close();
   }
+  const view_ = (key: string) => {
+    selected = key;
+    preview.openKey(key);
+  };
   const setView = (v: View) => app.setQuery({ view: v === 'trace' ? null : v });
   const setProject = (p: string) => app.setQuery({ project: p });
 
@@ -83,7 +86,7 @@
   }
 </script>
 
-<PageHead title="Graph" lede="Outline and trace of goals, epics, features, acceptance criteria, tasks and code. Choose an item to see its whole chain and read it.">
+<PageHead title="Graph" lede="Outline and trace of goals, epics, features, acceptance criteria, tasks and code. Choose an item to light its whole chain; use the eye to read it.">
   {#snippet actions()}
     <div class="seg" role="group" aria-label="View">
       <button type="button" aria-pressed={view === 'trace'} onclick={() => setView('trace')}>Trace</button>
@@ -132,27 +135,34 @@
     {/if}
 
     <div class="graph-split" class:shut={!outlineOpen || view === 'outline'}>
-      {#if view !== 'outline'}<aside class="outline-side" aria-label="Outline"><OutlinePane {roots} {selected} onpick={pick} /></aside>{/if}
+      {#if view !== 'outline'}<aside class="outline-side" aria-label="Outline"><OutlinePane {roots} {selected} onpick={pick} onview={view_} /></aside>{/if}
       <div class="stack-sm">
         {#if view === 'outline'}
-          <OutlinePane {roots} {selected} onpick={pick} />
+          <OutlinePane {roots} {selected} onpick={pick} onview={view_} />
         {:else if view === 'trace'}
           {#if project === '*'}
             {#each sections as s (s.scope)}
               <details class="project-section" open>
                 <summary><h2>{s.name}</h2><span class="chip">{s.scope}</span></summary>
-                <TraceView nodes={s.graph.nodes} edges={s.graph.edges} foreign={s.graph.foreign} {selected} onselect={pick} needle={text} {code} />
+                <TraceView nodes={s.graph.nodes} edges={s.graph.edges} foreign={s.graph.foreign} {selected} onselect={pick} onview={view_} needle={text} {code} />
               </details>
             {/each}
           {:else if across}
-            <TraceView nodes={across.nodes} edges={across.edges} {selected} onselect={pick} needle={text} {code} coverage={false} gaps={false} />
+            <TraceView nodes={across.nodes} edges={across.edges} {selected} onselect={pick} onview={view_} needle={text} {code} coverage={false} gaps={false} />
           {:else if single}
-            <TraceView nodes={single.nodes} edges={single.edges} foreign={single.foreign} {selected} onselect={pick} needle={text} {code} />
+            <TraceView nodes={single.nodes} edges={single.edges} foreign={single.foreign} {selected} onselect={pick} onview={view_} needle={text} {code} />
           {/if}
         {:else if view === 'network'}
+          {#if selected && !ghost}
+            <div class="card pad row-flex wrap gap-2 picked-bar">
+              <span class="sub">Chosen:</span><strong>{app.loaded.data.graph?.nodes.find((n) => n.key === selected)?.title ?? selected}</strong><span class="mono sub">{selected}</span>
+              <span class="spacer"></span>
+              <button class="btn" type="button" onclick={() => view_(selected!)}><Icon name="eye" size="sm" />View</button>
+            </div>
+          {/if}
           <div class="graph-wrap"><GraphCanvas {nodes} {edges} {selected} onselect={pick} /></div>
         {:else}
-          <DataTable id="graph" rows={all} cols={tableCols} rowKey={(n) => n.key} title={(n) => n.key} template="minmax(0,1.4fr) 10rem 8rem minmax(0,2fr)" onrow={(n) => pick(n.key)}>
+          <DataTable id="graph" rows={all} cols={tableCols} rowKey={(n) => n.key} title={(n) => n.key} template="minmax(0,1.4fr) 10rem 8rem minmax(0,2fr)" onrow={(n) => view_(n.key)}>
             {#snippet cells(n)}
               <span data-label="Kind" class="chip">{kindWords(n.kind)}</span>
               <span data-label="Status"><Pill look={wordLook(n.status)} /></span>

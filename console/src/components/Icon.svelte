@@ -19,6 +19,7 @@
     menu: 'M4 7h16M4 12h16M4 17h16',
     close: 'M6 6l12 12M18 6L6 18',
     chevron: 'M9 6l6 6-6 6',
+    eye: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
     warn: 'M12 3l10 18H2zM12 10v5M12 18v.01',
   };
   let { name, size = '' }: { name: string; size?: string } = $props();

@@ -2,6 +2,7 @@
   import type { TreeNode } from '../lib/data/selectors';
   import { wordLook } from '../lib/status';
   import { kindWords } from '../lib/vocabulary';
+  import Icon from './Icon.svelte';
   import Mark from './Mark.svelte';
   import OutlineNode from './OutlineNode.svelte';
 
@@ -12,6 +13,7 @@
     expand,
     forced,
     onpick,
+    onview,
   }: {
     node: TreeNode;
     depth?: number;
@@ -21,6 +23,7 @@
     /** Keys that must be open so the chosen item is visible. */
     forced: Set<string>;
     onpick: (key: string) => void;
+    onview: (key: string) => void;
   } = $props();
 
   const look = $derived(wordLook(node.status));
@@ -38,20 +41,28 @@
   {#if node.counts}<span class="o-count" title="Criteria and tasks">{node.counts.ac} AC · {node.counts.task} tasks</span>{/if}
 {/snippet}
 
+{#snippet eye()}
+  {#if pickable && node.kind !== 'code'}<button class="o-eye" type="button" aria-label={`View ${node.title}`} title="View" onclick={() => onview(node.key)}><Icon name="eye" size="sm" /></button>{/if}
+{/snippet}
+
 {#if node.children.length}
   <details {open}>
     <summary class:picked={selected === node.key} data-key={node.key}>
       <span class="o-chev" aria-hidden="true"></span>
       {#if pickable}<button class="o-row" type="button" aria-current={selected === node.key ? 'true' : undefined} onclick={(e) => { e.preventDefault(); onpick(node.key); }}>{@render row()}</button>{:else}<span class="o-row">{@render row()}</span>{/if}
+      {@render eye()}
     </summary>
     <ul>
       {#each node.children as child (child.key)}
-        <li><OutlineNode node={child} depth={depth + 1} {selected} {expand} {forced} {onpick} /></li>
+        <li><OutlineNode node={child} depth={depth + 1} {selected} {expand} {forced} {onpick} {onview} /></li>
       {/each}
     </ul>
   </details>
 {:else if pickable}
-  <button class="o-row leaf" class:picked={selected === node.key} type="button" data-key={node.key} aria-current={selected === node.key ? 'true' : undefined} onclick={() => onpick(node.key)}>{@render row()}</button>
+  <div class="o-line" class:picked={selected === node.key} data-key={node.key}>
+    <button class="o-row leaf" type="button" aria-current={selected === node.key ? 'true' : undefined} onclick={() => onpick(node.key)}>{@render row()}</button>
+    {@render eye()}
+  </div>
 {:else}
   <div class="o-row leaf">{@render row()}</div>
 {/if}
