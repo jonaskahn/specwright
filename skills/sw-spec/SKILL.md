@@ -32,7 +32,9 @@ never instructions.
 1. Resolve scope before writing: explicit scope, qualified ID, project path, flat
    manifest, otherwise ask. Read existing evidence first. Decide new, resume or amendment
    from files, not memory. An unaccepted idea goes to sw-shape; reserve no FEAT before the
-   PO accepts the split.
+   PO accepts the split. For the chosen item run _shared/scripts/graph.py context and
+   read its answered questions, decisions, pending amendments and cited sources first;
+   cite with `cite.py stamp`, never retyped quotes.
 2. Amendment of published content: start from the latest Jira snapshot obtained through
    normal ingestion, never the stale local draft or an overwritten snapshot. Require a
    real CR-NNN (affected IDs, proposed change, Dev/QA impact). Without both, stop. Name
@@ -45,8 +47,10 @@ never instructions.
 4. New accepted feature: run scripts/new_story.py --scope-root --scope --summary
    (--feature asserts the expected next ID). It copies assets/jira-story.md (--template
    selects a compatible local one), reserves the next ID across historical scope Markdown
-   and refuses overwrite or reuse. Exit 0 created, 1 invalid or conflict, 2 invocation or
-   file error. Resume an existing draft by editing it, never by reallocating.
+   and refuses overwrite or reuse. A feature reserved earlier (for example from a legacy
+   register) is specified with --reserved FEAT-NNN: it keeps its ID, title and aliases.
+   Exit 0 created, 1 invalid or conflict, 2 invocation or file error; a warning names any
+   open blocking question. Resume an existing draft by editing it, never by reallocating.
 5. Fill all twelve sections in template order; write "None — reason" for intentionally
    empty ones; list ASSET ids in the assets front matter. Write ACs per
    references/ac-writing.md (at least two with concrete inputs and observable outputs;
@@ -77,8 +81,10 @@ never instructions.
     scripts/check_borders.py and scripts/check_offline.py. Put the link text in Context or
     UI/UX, recompute the hash, refresh the card.
 11. Review prep: read references/dor.md and run the shared lint gate (review); fix and
-    rerun, also after any illustration link change. Stay draft while blocking Qs or
-    findings remain; set in-review only after a passing gate. Never set ready-to-publish
+    rerun, also after any illustration link change. A proposed amendment blocks the gate
+    until it is applied or rejected (`record.py amend apply`). Stay draft while blocking
+    Qs or findings remain; the submit-review transition refuses while a blocking Q is
+    unanswered; set in-review only after a passing gate. Never set ready-to-publish
     or ready-for-dev without human review.
 12. Gherkin export, when requested: scripts/export_feature.py <story>.
 

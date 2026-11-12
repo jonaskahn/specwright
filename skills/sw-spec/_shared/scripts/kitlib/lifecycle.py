@@ -10,7 +10,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from kitlib import frontmatter, fsio, hashing, ids, tables, workspace, writelog
+from kitlib import blockers, frontmatter, fsio, hashing, ids, tables, workspace, writelog
 
 VERSION = 1
 ACTIONS = {
@@ -218,6 +218,11 @@ def transition(
         raise ValueError("transition does not target an earlier station")
     if action == "submit-review" and current["station"] != "spec":
         raise ValueError("only a draft in spec can be submitted")
+    if action == "submit-review":
+        open_blocking = blockers.blocking_questions(base, scope, key.split(":")[-1])
+        if open_blocking:
+            names = ", ".join(q for q, _ in open_blocking)
+            raise ValueError(f"blocking questions are unanswered: {names}; answer them first")
     if action == "accept-slice" and current["station"] != "shape":
         raise ValueError("feature slice is not reopened")
     if action == "return-review" and current["station"] != "plan":

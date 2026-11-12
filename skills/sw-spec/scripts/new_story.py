@@ -23,7 +23,15 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import frontmatter, hashing, ids, markdown, schema  # noqa: E402
+from kitlib import (  # noqa: E402
+    blockers,
+    frontmatter,
+    hashing,
+    ids,
+    markdown,
+    rtm,
+    schema,
+)
 
 
 def default_template() -> Path | None:
@@ -40,14 +48,29 @@ def create(
     parent: str = "None",
     epic: list[str] | None = None,
     idea: list[str] | None = None,
+    reserved: str | None = None,
 ) -> Path:
     if not root.is_dir() or (root / "workspace.yaml").exists():
         raise ValueError("scope-root must be an existing, resolved project directory")
+    aliases: list[str] = []
+    if reserved:
+        # A feature reserved earlier (for example from a legacy register) keeps its ID, its
+        # title and its aliases; no new number is allocated.
+        if not ids.matches_type("feature", reserved):
+            raise ValueError("--reserved takes a feature ID such as FEAT-002")
+        row = rtm.read_table(root / "_meta/id-registry.md", list(schema.REGISTRY_COLUMNS)).table
+        key = f"{scope}:{reserved}"
+        if row.find(key) is None or row.value(key, "State") in ("withdrawn", "superseded"):
+            raise ValueError(f"{reserved} is not a reserved feature of {scope}")
+        if (root / "02-drafts" / f"{reserved}.story.md").exists():
+            raise ValueError(f"{reserved} already has a story")
+        summary = summary or row.value(key, "Title")
+        aliases = [a for a in row.value(key, "Aliases").split("|") if a]
     if not ids.is_scope(scope) or not summary.strip() or len(summary) > 100 or "\n" in summary:
         raise ValueError(
             "provide an uppercase scope and a single-line summary of 1..100 characters"
         )
-    candidate = ids.next_id("FEAT", ids.taken_ids(root))
+    candidate = reserved or ids.next_id("FEAT", ids.taken_ids(root))
     ids.feat_number(candidate)
     if feature and feature != candidate:
         raise ValueError(f"next allocatable feature is {candidate}; existing IDs cannot be reused")
@@ -69,7 +92,7 @@ def create(
             "type": "feature",
             "scope": scope,
             "title": summary,
-            "aliases": [],
+            "aliases": aliases,
             "status": "draft",
             "jira_summary": summary,
             "jira_issuetype": "Story",
@@ -95,7 +118,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--scope-root", required=True, type=Path)
     parser.add_argument("--scope", required=True)
-    parser.add_argument("--summary", required=True)
+    parser.add_argument("--summary", help="required unless --reserved supplies the title")
+    parser.add_argument("--reserved", help="specify an already reserved feature, e.g. FEAT-002")
     parser.add_argument("--template", type=Path)
     parser.add_argument("--feature", help="assert the next FEAT id; never selects a used id")
     parser.add_argument("--parent", default="None")
@@ -105,18 +129,25 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--idea", action="append", help="idea this feature was shaped from")
     args = parser.parse_args(argv)
     try:
-        print(
-            create(
-                args.scope_root,
-                args.scope,
-                args.summary,
-                args.template,
-                args.feature,
-                args.parent,
-                args.epic,
-                args.idea,
-            )
+        if not args.summary and not args.reserved:
+            raise ValueError("give --summary, or --reserved to take the title from the registry")
+        target = create(
+            args.scope_root,
+            args.scope,
+            args.summary or "",
+            args.template,
+            args.feature,
+            args.parent,
+            args.epic,
+            args.idea,
+            args.reserved,
         )
+        print(target)
+        waiting = blockers.blocking_questions(
+            args.scope_root, args.scope, target.name.split(".")[0]
+        )
+        for question, title in waiting:
+            print(f"warning: blocking question {question} is open: {title}", file=sys.stderr)
         return 0
     except (ValueError, FileExistsError) as exc:
         print(f"error: {exc}", file=sys.stderr)
