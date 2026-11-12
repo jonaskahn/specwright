@@ -28,6 +28,26 @@
         "records the first question: keep each legacy item as one feature or re-split by INVEST",
         "records the split decision only with the decider's role, name and evidence"
       ]
+    },
+    {
+      "id": "leakage-loop",
+      "prompt": "shape an idea whose Problem section names a dropdown",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "leakage.py exits 1 and names file:line",
+        "The passage is rewritten; the word list is not changed",
+        "The scan is rerun and exits 0 before hand-off"
+      ]
+    },
+    {
+      "id": "split-needs-signoff",
+      "prompt": "accept the split while signoff is required and no approver is configured",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "record.py accept-split exits 3",
+        "No feature ID is reserved",
+        "The user is asked to set up approvers"
+      ]
     }
   ]
 }

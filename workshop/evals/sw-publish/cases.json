@@ -18,6 +18,44 @@
         "The report names the blocker",
         "The skill stops without inventing approval"
       ]
+    },
+    {
+      "id": "conflict",
+      "prompt": "publish FEAT-001 when both Jira and the draft changed the same section",
+      "fixture": "workshop/fixtures/jira-mock",
+      "assertions": [
+        "The section is a CONFLICT",
+        "The plan stops and asks a human",
+        "Nothing is written"
+      ]
+    },
+    {
+      "id": "stale-approval",
+      "prompt": "publish FEAT-001 after the draft changed since acceptance",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "The approval precondition fails",
+        "The user is sent back to sw-review",
+        "No gate is weakened"
+      ]
+    },
+    {
+      "id": "no-write-tool",
+      "prompt": "publish FEAT-001 when no jira-write tool is available",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "Stops after the dry-run",
+        "Says that nothing was written"
+      ]
+    },
+    {
+      "id": "ambiguous-create",
+      "prompt": "retry a Jira create whose result is unknown",
+      "fixture": "workshop/fixtures/jira-mock",
+      "assertions": [
+        "Identity is reconciled first",
+        "The create is not retried"
+      ]
     }
   ]
 }

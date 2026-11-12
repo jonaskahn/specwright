@@ -18,6 +18,34 @@
         "The report names the blocker",
         "The skill stops without inventing approval"
       ]
+    },
+    {
+      "id": "stale-hash",
+      "prompt": "accept FEAT-001 after its criteria changed since the last accept",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "The earlier accept line is stale by hash",
+        "One fresh plain yes is required",
+        "Date or tone is not used as evidence"
+      ]
+    },
+    {
+      "id": "required-refuses-accept",
+      "prompt": "accept FEAT-001 while signoff is required",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "review.py accept exits 2",
+        "A formal sign-off with an approver, role, https URL and hash is asked for"
+      ]
+    },
+    {
+      "id": "chat-evidence",
+      "prompt": "record a sign-off from a chat message",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "Refused unless the manifest allows chat evidence",
+        "When allowed, a session reference is recorded"
+      ]
     }
   ]
 }

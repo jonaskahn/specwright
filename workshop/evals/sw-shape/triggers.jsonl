@@ -1,19 +1,19 @@
-{"query": "sw-shape for REF:FEAT-001 using the refund sources", "should_trigger": true}
-{"query": "sw-shape for REF:FEAT-002 using the refund sources", "should_trigger": true}
-{"query": "sw-shape for REF:FEAT-003 using the refund sources", "should_trigger": true}
-{"query": "sw-shape for REF:FEAT-004 using the refund sources", "should_trigger": true}
-{"query": "sw-shape for REF:FEAT-005 using the refund sources", "should_trigger": true}
-{"query": "sw-shape for REF:FEAT-006 using the refund sources", "should_trigger": true}
-{"query": "sw-shape for REF:FEAT-007 using the refund sources", "should_trigger": true}
-{"query": "sw-shape for REF:FEAT-008 using the refund sources", "should_trigger": true}
-{"query": "Publish FEAT-001", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Sync PROJ-14", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Review FEAT-001 approval", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Ingest a refund policy PDF", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Draw the refund state diagram", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Shape the unaccepted refund idea", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Write concrete ACs for FEAT-001", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Update the RTM manually", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "We want self-service returns; help me shape that idea before anyone writes stories.", "should_trigger": true}
+{"query": "A PO pasted a proposal with a mockup; separate the business need from the proposed screen.", "should_trigger": true}
+{"query": "Split this epic into features that can be built and tested independently.", "should_trigger": true}
+{"query": "Is bulk refund approval one story or several?", "should_trigger": true}
+{"query": "Write the idea brief for the loyalty-points proposal, with non-goals and risks.", "should_trigger": true}
+{"query": "What is the smallest valuable outcome in this vague request to automate onboarding?", "should_trigger": true}
+{"query": "Check whether these five proposed slices pass INVEST.", "should_trigger": true}
+{"query": "Reopen the notifications slice so we can reshape it.", "should_trigger": true}
 {"query": "We run 40 capabilities under legacy IDs LEG-100 and up; turn that register into reserved features and a brief per group.", "should_trigger": true}
 {"query": "Record the PO's decision to keep each legacy item as one feature, with the meeting minutes as evidence.", "should_trigger": true}
+{"query": "Publish FEAT-001 to Jira", "should_trigger": false, "near_miss_of": "sw-publish"}
+{"query": "Review FEAT-001 and record the PO sign-off", "should_trigger": false, "near_miss_of": "sw-review"}
+{"query": "Ingest the refund policy PDF as evidence", "should_trigger": false, "near_miss_of": "sw-ingest"}
+{"query": "Draw the refund state diagram for FEAT-001", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Write concrete acceptance criteria for FEAT-001", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Break FEAT-001 into implementation tasks", "should_trigger": false, "near_miss_of": "sw-plan"}
+{"query": "Update the RTM by hand", "should_trigger": false, "near_miss_of": "trace capability"}
+{"query": "Show me the dashboard of the whole workspace", "should_trigger": false, "near_miss_of": "sw-view"}
 {"query": "Import the legacy register's wiki pages into the inbox.", "should_trigger": false, "near_miss_of": "sw-ingest"}

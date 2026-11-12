@@ -32,6 +32,44 @@
         "does not import the page with sample personal data without a named, evidenced example decision",
         "flags the empty parent page as index-only"
       ]
+    },
+    {
+      "id": "secret-redaction",
+      "prompt": "import a note that contains an API key",
+      "fixture": "workshop/fixtures/ingest/",
+      "assertions": [
+        "secrets_scan.py exits 1 and blocks hand-off",
+        "A redacted copy is ingested with --redacted-from",
+        "The original stays restricted and untracked"
+      ]
+    },
+    {
+      "id": "degraded-snapshot",
+      "prompt": "import a scanned PDF while pdfinfo is missing",
+      "fixture": "workshop/fixtures/ingest/",
+      "assertions": [
+        "to_md.py exits 4",
+        "The snapshot is marked degraded and is not cited as evidence",
+        "No prose is fabricated"
+      ]
+    },
+    {
+      "id": "zip-listing",
+      "prompt": "import a ZIP archive",
+      "fixture": "workshop/fixtures/ingest/",
+      "assertions": [
+        "Only the member listing is recorded",
+        "Nothing is extracted or opened"
+      ]
+    },
+    {
+      "id": "provenance-amend",
+      "prompt": "correct the wrong source URL of SRC-0001 without re-importing",
+      "fixture": "workshop/fixtures/ingest/",
+      "assertions": [
+        "provenance.py amend runs with who and why",
+        "The snapshot text is untouched"
+      ]
     }
   ]
 }

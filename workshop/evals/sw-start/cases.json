@@ -43,6 +43,34 @@
         "routes to sw-spec",
         "one yes covers the batch under guided flow"
       ]
+    },
+    {
+      "id": "mixed-install",
+      "prompt": "start when the skill files come from two different releases",
+      "assertions": [
+        "start.py exits 2 with incomplete or mixed install",
+        "prints the reinstall command and stops",
+        "routes nothing"
+      ]
+    },
+    {
+      "id": "step-back",
+      "prompt": "go back to spec for FEAT-001",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "previews the target with transition.py",
+        "applies it only with the fresh TRANSITION token after the user's yes",
+        "never calls Jira and refuses to rewind published text"
+      ]
+    },
+    {
+      "id": "python-missing",
+      "prompt": "start on a machine where Python is not installed",
+      "assertions": [
+        "runtime.sh check reports Python missing before any Python runs",
+        "shows runtime.sh plan python and asks once",
+        "installs nothing without approval of that exact command"
+      ]
     }
   ]
 }

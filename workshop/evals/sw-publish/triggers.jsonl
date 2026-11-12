@@ -1,16 +1,16 @@
-{"query": "sw-publish: sw-publish for REF:FEAT-001 with the current project manifest", "should_trigger": true}
-{"query": "run sw-publish on the refund workspace and show the exact result", "should_trigger": true}
-{"query": "I need sw-publish before handing REF:FEAT-002 to the PO", "should_trigger": true}
-{"query": "check sw-publish in projects/ORD and report UNKNOWN fields", "should_trigger": true}
-{"query": "Use sw-publish after the refund source changes", "should_trigger": true}
-{"query": "Please sw-publish for FEAT-003 without guessing the scope", "should_trigger": true}
-{"query": "sw-publish with --scope REF and keep the evidence links", "should_trigger": true}
-{"query": "Give me sw-publish and name the owning sibling skill for each finding", "should_trigger": true}
+{"query": "Publish FEAT-001 to Jira.", "should_trigger": true}
+{"query": "Push the accepted refund story to PROJ.", "should_trigger": true}
+{"query": "Show me the dry-run for publishing FEAT-002 before anything is written.", "should_trigger": true}
+{"query": "Push CR-001 to Jira.", "should_trigger": true}
+{"query": "Publish REF:FEAT-003 and record the Jira key in the registry afterwards.", "should_trigger": true}
+{"query": "Create the Jira story for the accepted FEAT-004.", "should_trigger": true}
+{"query": "I confirm: publish FEAT-001 exactly as the dry-run shows.", "should_trigger": true}
+{"query": "Check whether FEAT-001 would conflict with the issue in Jira before publishing.", "should_trigger": true}
 {"query": "Write the refund story for FEAT-001", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Publish FEAT-001 to PROJ now", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Pull the latest PROJ-14 text into a snapshot", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Ingest this refund policy PDF as SRC evidence", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Record the PO approval for FEAT-001", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Record the PO approval for FEAT-001", "should_trigger": false, "near_miss_of": "sw-review"}
+{"query": "Pull the latest PROJ-14 text into a snapshot", "should_trigger": false, "near_miss_of": "sw-ingest"}
+{"query": "Ingest this refund policy PDF as SRC evidence", "should_trigger": false, "near_miss_of": "sw-ingest"}
 {"query": "Draw a refund state diagram", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Shape the refund idea before anyone writes ACs", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Update the RTM Jira column manually", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "Shape the refund idea before anyone writes ACs", "should_trigger": false, "near_miss_of": "sw-shape"}
+{"query": "Create Jira sub-tasks from the tasks of FEAT-001", "should_trigger": false, "near_miss_of": "sw-plan"}
+{"query": "Bulk-edit the labels of 40 Jira issues", "should_trigger": false, "near_miss_of": "none (bulk edits are out of scope)"}

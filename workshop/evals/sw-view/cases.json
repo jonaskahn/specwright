@@ -29,6 +29,25 @@
         "Names sw-plan as the owner of tasks.json",
         "Does not write the data file itself"
       ]
+    },
+    {
+      "id": "local-changes",
+      "prompt": "open the console after someone edited console/",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "prepare refuses and names the local changes",
+        "The user is asked whether to keep or replace them",
+        "Replacement uses --force only after a yes"
+      ]
+    },
+    {
+      "id": "busy-port",
+      "prompt": "open the console while port 4173 is busy",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "The server takes the next free port",
+        "The address given to the user is the one the server printed"
+      ]
     }
   ]
 }

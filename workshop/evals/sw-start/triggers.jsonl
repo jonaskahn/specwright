@@ -2,9 +2,9 @@
 {"query": "turn this idea into requirements", "should_trigger": true}
 {"query": "continue the spec from where we stopped", "should_trigger": true}
 {"query": "shape the refund idea into features", "should_trigger": true}
-{"query": "break FEAT-001 into tasks", "should_trigger": true}
+{"query": "what is the next step for FEAT-001", "should_trigger": true}
 {"query": "is FEAT-001 ready to publish", "should_trigger": true}
-{"query": "publish FEAT-001 to Jira", "should_trigger": true}
+{"query": "publish FEAT-001 to Jira", "should_trigger": false, "near_miss_of": "sw-publish"}
 {"query": "what changed in PROJ-14", "should_trigger": true}
 {"query": "open jira.com and create an issue", "should_trigger": false}
 {"query": "what is the weather in Hanoi", "should_trigger": false}

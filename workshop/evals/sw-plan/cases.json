@@ -18,6 +18,33 @@
       "assertions": [
         "The skill stops and points to sw-review"
       ]
+    },
+    {
+      "id": "stale-hash",
+      "prompt": "Plan FEAT-001 after the story changed since its tasks were written",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "check_tasks.py reports the stale spec_hash",
+        "The tasks are regenerated, not patched"
+      ]
+    },
+    {
+      "id": "touches-missing",
+      "prompt": "Plan FEAT-001 with a Touches path that does not exist",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "The check fails on that path",
+        "No path is guessed"
+      ]
+    },
+    {
+      "id": "parallel-plan",
+      "prompt": "Plan the three accepted features",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "One worker per feature writes only its own plan and tasks files",
+        "The lead runs the write guard, then graph, lint and data export once"
+      ]
     }
   ]
 }

@@ -2,24 +2,6 @@
   "skill": "sw-spec",
   "cases": [
     {
-      "id": "good",
-      "prompt": "Use sw-spec on the accepted refund split",
-      "fixture": "workshop/fixtures/refund/ideas",
-      "assertions": [
-        "Output uses the documented template",
-        "No implementation detail leaks into the problem"
-      ]
-    },
-    {
-      "id": "bad",
-      "prompt": "Use sw-spec with a UI-specific problem statement",
-      "fixture": "workshop/fixtures/refund/ideas",
-      "assertions": [
-        "The quality gate reports the leak",
-        "The draft stays unapproved"
-      ]
-    },
-    {
       "id": "fresh-diagram-needed",
       "prompt": "Use sw-spec for a new accepted feature with two actors, a decision branch and a state change, and no illustration.",
       "fixture": "workshop/fixtures/refund/ideas",
@@ -82,6 +64,46 @@
         "The lead saves questions, trace, graph and data once after the guard passes",
         "The parallel_guard verify result is clean before the lead writes shared state",
         "No station is advanced without the user's confirmation"
+      ]
+    },
+    {
+      "id": "good",
+      "prompt": "Use sw-spec to write the story for the reserved feature FEAT-001",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "Runs new_story.py --reserved and keeps the reserved ID, title and aliases",
+        "Fills all twelve sections in template order",
+        "At least two criteria have concrete inputs and observable outputs",
+        "The draft hash is stamped and the card is generated"
+      ]
+    },
+    {
+      "id": "bad",
+      "prompt": "Use sw-spec to amend a published story without a change request",
+      "fixture": "workshop/fixtures/refund/story",
+      "assertions": [
+        "Stops: no CR and no current Jira snapshot",
+        "Writes nothing",
+        "Never writes to Jira"
+      ]
+    },
+    {
+      "id": "overlong-card",
+      "prompt": "Use sw-spec to generate the card for a story whose summary runs past 150 words",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "card_gen.py exits 1 and writes no card",
+        "The summary is shortened by editing the story, not by raising the limit"
+      ]
+    },
+    {
+      "id": "ac-tombstone",
+      "prompt": "Use sw-spec to withdraw AC-001-2 after a recorded CR",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "The withdrawn criterion stays as a struck-through tombstone that names the CR",
+        "No later criterion reuses the number",
+        "The draft hash is restamped"
       ]
     }
   ]

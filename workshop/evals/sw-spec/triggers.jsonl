@@ -1,17 +1,16 @@
-{"query": "sw-spec for REF:FEAT-001 using the refund sources", "should_trigger": true}
-{"query": "sw-spec for REF:FEAT-002 using the refund sources", "should_trigger": true}
-{"query": "sw-spec for REF:FEAT-003 using the refund sources", "should_trigger": true}
-{"query": "sw-spec for REF:FEAT-004 using the refund sources", "should_trigger": true}
-{"query": "sw-spec for REF:FEAT-005 using the refund sources", "should_trigger": true}
-{"query": "sw-spec for REF:FEAT-006 using the refund sources", "should_trigger": true}
-{"query": "sw-spec for REF:FEAT-007 using the refund sources", "should_trigger": true}
-{"query": "sw-spec for REF:FEAT-008 using the refund sources", "should_trigger": true}
-{"query": "Publish FEAT-001", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Sync PROJ-14", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Review FEAT-001 approval", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Ingest a refund policy PDF", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Draw the refund state diagram", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Shape the unaccepted refund idea", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Write concrete ACs for FEAT-001", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "Update the RTM manually", "should_trigger": false, "near_miss_of": "sw-spec"}
-{"query": "spec all the reserved refund features in parallel", "should_trigger": true}
+{"query": "Write the story and acceptance criteria for FEAT-003.", "should_trigger": true}
+{"query": "Add a boundary criterion for the 30-day limit to FEAT-001.", "should_trigger": true}
+{"query": "Revise FEAT-002 after the PO changed the refund tiers.", "should_trigger": true}
+{"query": "Apply the recorded CR-001 to the published story.", "should_trigger": true}
+{"query": "Add a worked example to the refund business rule.", "should_trigger": true}
+{"query": "Draw a state diagram for the approval flow in FEAT-004.", "should_trigger": true}
+{"query": "Spec all the reserved refund features in parallel.", "should_trigger": true}
+{"query": "Regenerate the summary card for FEAT-001.", "should_trigger": true}
+{"query": "Publish FEAT-001 to Jira", "should_trigger": false, "near_miss_of": "sw-publish"}
+{"query": "Pull PROJ-14 into a snapshot", "should_trigger": false, "near_miss_of": "sw-ingest"}
+{"query": "Record the PO approval for FEAT-001", "should_trigger": false, "near_miss_of": "sw-review"}
+{"query": "Ingest a refund policy PDF", "should_trigger": false, "near_miss_of": "sw-ingest"}
+{"query": "Shape the unaccepted refund idea into features", "should_trigger": false, "near_miss_of": "sw-shape"}
+{"query": "Break FEAT-001 into implementation tasks", "should_trigger": false, "near_miss_of": "sw-plan"}
+{"query": "Open the console and show the board", "should_trigger": false, "near_miss_of": "sw-view"}
+{"query": "Update the RTM by hand", "should_trigger": false, "near_miss_of": "trace capability"}
