@@ -4,7 +4,7 @@
   import Pill from '../components/Pill.svelte';
   import { app } from '../lib/data/store.svelte';
   import { href } from '../lib/router';
-  import { stateLook } from '../lib/status';
+  import { illustrationLook, stateLook } from '../lib/status';
   import { stationWords } from '../lib/vocabulary';
 
   const order = ['shape', 'spec', 'review', 'plan', 'publish', 'dev', 'inactive'];
@@ -26,6 +26,7 @@
             <span class="name">{f.id}</span>
             <span class="sub">{f.title}</span>
             <span><Pill look={stateLook(f.state, f.condition)} /></span>
+            <span><Pill look={illustrationLook(f.illustration)} /></span>
             {#each f.blockers as b (b)}<span class="sub">{b}</span>{/each}
           </a>
         {/each}

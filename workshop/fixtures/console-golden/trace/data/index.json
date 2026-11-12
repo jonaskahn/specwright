@@ -10,8 +10,8 @@
  "files": {
   "features.json": {
    "owner": "sw-start",
-   "sha256": "sha256:3ba7a358609d39df9df53d9665790fa497402dd42556d16615a4c76ba6d5bb32",
-   "bytes": 1901,
+   "sha256": "sha256:c446987a8fe192aafb810aa047b3efbee3a34a5ac5c04016f371daf7fb1aa3fc",
+   "bytes": 2018,
    "rows": 3,
    "inputsDigest": "sha256:aee16c18ef1d33e67aad0f47496b67b494448888da887565cf4fa16da3e48885"
   },
@@ -78,5 +78,5 @@
  "scopes": [
   "REF"
  ],
- "digest": "sha256:77106da558ae2d5575cef201776fb8a9c04d2e80837fc8872762f94c3d6bac4a"
+ "digest": "sha256:d67df0bc700bb7cf62b6f16ba330a666a5f1413151d4bb1a0aee64b53cb033bd"
 }

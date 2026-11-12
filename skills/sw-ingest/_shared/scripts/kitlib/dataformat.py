@@ -113,6 +113,7 @@ KINDS: dict[str, Kind] = {
                     "condition": "str?",
                     "blockers": "[str]",
                     "lint": "str?",
+                    "illustration": "str?",
                     "jira": "str?",
                     "drift": "str?",
                     "openQuestions": "[str]",

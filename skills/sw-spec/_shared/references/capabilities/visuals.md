@@ -12,11 +12,13 @@ actors to bypass the gate. No diagram creates policy or approval.
 ## Workflow triggers
 
 - Shape: render only when a process or context picture resolves a concrete ambiguity.
-- Specify: render for complex behavior, state transitions, meaningful UI
-  relationships or stale referenced pictures.
+- Specify: run illustration_check.py and act on the chip. Render when the chip says a
+  picture is needed: complex behavior, state transitions, meaningful UI relationships
+  or a stale picture.
 - Plan: render dependencies or architecture only when supported by evidence and useful.
-- Review: detect missing, stale or invalid visuals and report findings; repair within
-  scope before final hash and approval.
+  Read a diagram when one exists; note no illustration when the chip says so.
+- Review: report the illustration chip. A warning does not block approval. Repair a
+  stale picture within scope before the final hash.
 - Publish: validate referenced assets and visuals before the final dry-run.
 
 ## Rendering

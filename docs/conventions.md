@@ -115,6 +115,14 @@ Run the full gate before every commit and push:
 
 ## Diagram production
 
+Every feature shows an illustration chip: needs illustration, no illustration, illustrated,
+or check illustration. `scripts/illustration_check.py` prints it, and the status board and
+the console show the same value. The chip is computed from the story and from diagram
+citations. It does not block submission. A dismissal is the front-matter pair
+`illustration: none` and `illustration_reason`. Those keys sit outside the draft hash, so
+recording one leaves approval as it is. A picture explains the story; changing the picture
+does not by itself require a fresh approval.
+
 the visuals capability names 45 primary types in a closed roster, in three tiers: 10 core types
 ship in every build, 10 extended types ship only in a full install, and the other 25 are parked
 under `extras/sw-spec` and ship nowhere. `make package` builds the core profile for upload;

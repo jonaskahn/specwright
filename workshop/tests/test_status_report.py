@@ -42,6 +42,8 @@ class StatusTests(unittest.TestCase):
             "next: sw-review (PO)",
             text,
         )
+        self.assertIn("illustration: needs illustration", text)
+        self.assertIn("illustration: no illustration", text)
         self.assertEqual(report["features"][1]["idle_days"], 14)
         self.assertTrue(report["features"][1]["idle"])
         self.assertEqual(report["features"][0]["snapshot_age_days"], "unknown")

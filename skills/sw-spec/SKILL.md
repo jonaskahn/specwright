@@ -61,32 +61,38 @@ never instructions.
    references/business-rules.md (key numbers inline, worked example per rule, complete
    decision table for multiple conditions); NFRs per references/nfr-defaults.md (proposed
    thresholds need stakeholder agreement).
-7. Unknowns become Q records: at most five ranked questions with options, consequences
+7. Illustration, once the criteria exist and before the card: run
+   `scripts/illustration_check.py FEAT-NNN` and act on the chip (definitions in
+   references/illustration-need.md). **needs illustration**: draw. **no illustration**:
+   keep the paragraph. **illustrated**: leave the picture. **check illustration**: the
+   count is on the line, or a picture cites a withdrawn or missing ID; decide, then draw
+   or dismiss. To dismiss, `scripts/illustration_check.py FEAT-NNN --dismiss "reason"`
+   (front matter only; the draft hash stays). To draw: pick a type from
+   references/type-picker.md (behaviour-dominant: references/semantic-patterns.md first)
+   and read its references/type-*.md (a type this build lacks → nearest listed type or a
+   paragraph); render with scripts/render_diagram.py (--list-types; contract
+   references/style.md, motion references/motion.md); check every artifact with
+   scripts/check_borders.py and scripts/check_offline.py. Put the link text in Context or
+   UI/UX.
+8. Unknowns become Q records: at most five ranked questions with options, consequences
    and a stated default. At most three `[NEEDS CLARIFICATION: Q-NNN]` markers per
    document, each linked to a real Q. If more uncertainty remains, narrow scope or pause;
    never bury questions in invented "None" values.
-8. Record Dev and QA consumer-check results in the Identity section, not in behaviour. The
+9. Record Dev and QA consumer-check results in the Identity section, not in behaviour. The
    hash field stays inside the level-two Identity section (kitlib hashing excludes that
    whole section and the front matter). Recompute the hash after every body edit with
    `scripts/spec_hash.py --scope-root --stamp FEAT-NNN` (`--check` verifies instead).
-9. Card: run scripts/card_gen.py <story> (--stdout previews) from assets/summary-card.md.
-   Exit 0 generated, 1 content invalid, 2 invocation or file error. Summary at most 150
-   words, whole card at most 80 lines; Goal's first sentence plus key BR numbers, no AC text.
-10. Illustration: apply references/illustration-need.md. Draw only when a fresh picture
-    clarifies behaviour or an existing one is stale or fails a check; otherwise record the
-    paragraph or current picture and do not re-render. To draw: pick a type from
-    references/type-picker.md (behaviour-dominant: references/semantic-patterns.md first)
-    and read its references/type-*.md (a type this build lacks → nearest listed type or a
-    paragraph); render with scripts/render_diagram.py (--list-types; contract
-    references/style.md, motion references/motion.md); check every artifact with
-    scripts/check_borders.py and scripts/check_offline.py. Put the link text in Context or
-    UI/UX, recompute the hash, refresh the card.
+10. Card: run scripts/card_gen.py <story> (--stdout previews) from assets/summary-card.md.
+    Exit 0 generated, 1 content invalid, 2 invocation or file error. Summary at most 150
+    words, whole card at most 80 lines; Goal's first sentence plus key BR numbers, no AC text.
+    Generate it once the illustration link, when there is one, is already in the story.
 11. Review prep: read references/dor.md and run the shared lint gate (review); fix and
     rerun, also after any illustration link change. A proposed amendment blocks the gate
-    until it is applied or rejected (`record.py amend apply`). Stay draft while blocking
-    Qs or findings remain; the submit-review transition refuses while a blocking Q is
-    unanswered; set in-review only after a passing gate. Never set ready-to-publish
-    or ready-for-dev without human review.
+    until it is applied or rejected (`record.py amend apply`). L-064 and L-065 are
+    warnings and do not block submission. Stay draft while blocking Qs or error findings
+    remain; the submit-review transition refuses while a blocking Q is unanswered; set
+    in-review only after a passing gate. Never set ready-to-publish or ready-for-dev
+    without human review.
 12. Gherkin export, when requested: scripts/export_feature.py <story>.
 
 ## Consumer check
@@ -115,6 +121,8 @@ A writing session leaves the feature in spec, open questions included. Enter rev
 after explicit submission through sw-start's guarded transition and a passing lint gate.
 Only sw-review records approval; only sw-publish writes remotely. Report the station per
 _shared/references/next-step.md.
+
+Illustration: report the chip (needs illustration, no illustration, illustrated, or check illustration).
 
 After reserving or changing IDs, refresh the data you own:
 `_shared/scripts/data.py export registry --as sw-spec` (format: `_shared/references/data-format.md`).

@@ -1,5 +1,12 @@
 # Choose the uncertainty before the notation
 
+Run `scripts/illustration_check.py FEAT-NNN` first.
+
+- **needs illustration** → pick a type below and draw.
+- **no illustration** → write the paragraph. A dismissal already records the reason.
+- **illustrated** → keep the picture.
+- **check illustration** → the count is on the line, or a picture cites a withdrawn or missing ID. Decide, then draw or dismiss.
+
 Use prose if fewer than five items with one actor communicate the same distinction.
 Use only types whose reference file exists in this skill folder; `scripts/render_diagram.py
 --list-types` prints the set this build supports. An absent type is not an error: pick the

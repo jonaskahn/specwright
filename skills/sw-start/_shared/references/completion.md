@@ -24,7 +24,7 @@ Never auto-advance a stage or recurse into another handoff.
 | Plan saved or revised; other content changed; graph stale | Build or update the graph and query it after asset and visual work. Verify freshness on a no-op. |
 | Spec, plan, source, record or registry content changed | Refresh only the data files your skill owns, with `data.py export <kind> --as <skill>`. Never write another skill's file. |
 | Before any hand-off | Lint the applicable scope. Report a failure; never waive it silently. |
-| Drawing requested, missing or stale | Evaluate illustration need; render only when justified. No picture per spec by default. |
+| Drawing requested, missing or stale | Run illustration_check.py and report the chip. Render only when the chip says a picture is needed. |
 | Accepted draft ready for review | Prepare findings. Never record approval or promote. |
 | Published requirement amendment | Validate the user-supplied current baseline and require a CR; if unverifiable, stop. No sync, guessed baseline, overwritten snapshot or Jira edit. |
 | Review passes | The feature is eligible for plan on request, not publication. A passing plan is Markdown delivery; publication stays a separate explicit decision. |
