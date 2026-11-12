@@ -39,7 +39,7 @@
 </script>
 
 <a class="skip" href="#main">Skip to content</a>
-<div class="frame" class:folded={app.prefs.folded} class:docked={app.prefs.previewPinned && !!preview.current} style:--preview-w={`${app.prefs.previewWidth}px`}>
+<div class="frame" class:folded={app.prefs.folded} class:docked={app.prefs.previewPinned && !!preview.current} style:--preview-w={app.prefs.previewWidth ? `${app.prefs.previewWidth}px` : '50vw'}>
   <Sidebar />
   <div class="stage">
     <Topbar />

@@ -88,7 +88,7 @@
     const step = e.key === 'ArrowLeft' ? 40 : e.key === 'ArrowRight' ? -40 : 0;
     if (!step) return;
     e.preventDefault();
-    app.setPref('previewWidth', clampWidth(app.prefs.previewWidth + step));
+    app.setPref('previewWidth', clampWidth((app.prefs.previewWidth || innerWidth / 2) + step));
   }
 
   const reasons: Record<string, string> = { missing: 'This file is not on disk any more.', failed: 'The file could not be read.', off: 'File contents need the console server.' };

@@ -11,13 +11,14 @@ export interface Prefs {
   folded: boolean;
   /** Keep the preview docked beside the page instead of floating over it. */
   previewPinned: boolean;
-  /** Width of the preview panel in pixels. */
+  /** Width of the preview panel in pixels; 0 means half the screen. */
   previewWidth: number;
 }
 
 const KEY = 'specwright-';
-export const DEFAULTS: Prefs = { theme: 'system', accent: 'red', density: 'comfortable', folded: false, previewPinned: false, previewWidth: 640 };
-export const PREVIEW_WIDTH = { min: 380, max: 1100 };
+export const DEFAULTS: Prefs = { theme: 'system', accent: 'red', density: 'comfortable', folded: false, previewPinned: false, previewWidth: 0 };
+/** The preview is half the screen until the user drags it; 0 stands for that. */
+export const PREVIEW_WIDTH = { min: 380, share: 0.85 };
 
 function read(name: string): string | null {
   try {
@@ -32,7 +33,8 @@ function pick<T extends string>(list: readonly T[], value: string | null, fallba
 }
 
 export function clampWidth(value: number): number {
-  return Number.isFinite(value) && value > 0 ? Math.min(PREVIEW_WIDTH.max, Math.max(PREVIEW_WIDTH.min, Math.round(value))) : DEFAULTS.previewWidth;
+  const room = Math.floor((globalThis.innerWidth ?? 1400) * PREVIEW_WIDTH.share);
+  return Number.isFinite(value) && value > 0 ? Math.min(Math.max(PREVIEW_WIDTH.min, room), Math.max(PREVIEW_WIDTH.min, Math.round(value))) : DEFAULTS.previewWidth;
 }
 
 export function loadPrefs(): Prefs {

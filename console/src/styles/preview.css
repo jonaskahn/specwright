@@ -2,7 +2,7 @@
 .preview {
   position: fixed; inset-block: var(--frame-gap); inset-inline-end: var(--frame-gap); z-index: var(--z-modal);
   display: flex; flex-direction: column; overflow: hidden;
-  inline-size: min(var(--preview-w, 640px), calc(100vw - 2 * var(--frame-gap)));
+  inline-size: min(var(--preview-w, 50vw), calc(100vw - 2 * var(--frame-gap)));
   border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-pop);
 }
 .preview-grip { padding: 0; border: 0; background: transparent; position: absolute; inset-block: 0; inset-inline-start: 0; inline-size: 8px; cursor: ew-resize; z-index: 1; }
@@ -26,7 +26,7 @@
 .preview-facts dt { color: var(--muted); font-size: var(--text-sm); }
 .preview-facts dd { margin: 0; overflow-wrap: anywhere; }
 @media (min-width: 1100px) {
-  .frame.docked { padding-inline-end: calc(var(--preview-w, 640px) + 2 * var(--frame-gap)); }
+  .frame.docked { padding-inline-end: calc(var(--preview-w, 50vw) + 2 * var(--frame-gap)); }
 }
 @media (max-width: 900px) {
   .preview { inset: 0; inline-size: 100%; border-radius: 0; }

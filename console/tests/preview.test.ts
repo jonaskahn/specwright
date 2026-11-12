@@ -3,6 +3,15 @@ import { loadAll } from '../src/lib/data/loader';
 import { decode, encode, forFile, forKey } from '../src/lib/preview-target';
 import { serve } from './golden';
 
+describe('a program names files from the workspace root, the server from the project', async () => {
+  const program = await loadAll('./data/', serve('program'));
+  it('opens a project item at its path inside that project', () => {
+    expect(forKey(program, 'ORD:AC-001-2')).toMatchObject({ scope: 'ORD', path: '02-drafts/FEAT-001.story.md' });
+    expect(forKey(program, 'REF:EPIC-001')).toMatchObject({ scope: 'REF', path: '01-analysis/epics/EPIC-001.md' });
+    expect(forKey(program, 'ORD:FEAT-001')?.path).toBe('02-drafts/FEAT-001.story.md');
+  });
+});
+
 describe('what the preview opens for an item or a file', async () => {
   const trace = await loadAll('./data/', serve('trace'));
 

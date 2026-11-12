@@ -16,6 +16,16 @@ export interface PreviewTarget {
 
 const base = (path: string) => path.slice(path.lastIndexOf('/') + 1);
 
+/**
+ * The graph names files from the workspace root, so in a program a file is `projects/ORD/...`; the
+ * document server and the other rows count from the project folder.
+ */
+export function inProject(scope: string | null, path: string | null): string | null {
+  if (!path || !scope) return path;
+  const prefix = `projects/${scope}/`;
+  return path.startsWith(prefix) ? path.slice(prefix.length) : path;
+}
+
 export function forFile(scope: string, path: string, line = 1, title = base(path)): PreviewTarget {
   return { key: null, kind: null, scope, path, line, title };
 }
@@ -28,7 +38,7 @@ export function forKey(d: Loaded, key: string): PreviewTarget | null {
     const hits = nodes.filter((n) => n.key.endsWith(`:${key}`));
     if (hits.length === 1) node = hits[0];
   }
-  if (node) return { key: node.key, kind: node.kind, scope: node.scope, path: node.path, line: node.line || 1, title: node.title || node.key };
+  if (node) return { key: node.key, kind: node.kind, scope: node.scope, path: inProject(node.scope, node.path), line: node.line || 1, title: node.title || node.key };
   const rows: { id: string; kind: string | null; scope: string; title: string; path: string | null; line?: number }[] = [
     ...(d.data.features?.rows ?? []).map((r) => ({ ...r, kind: 'feat' })),
     ...(d.data.tasks?.rows ?? []).map((r) => ({ ...r, kind: 'task' })),
