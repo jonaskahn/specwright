@@ -28,3 +28,17 @@ describe('the network answers the pointer', () => {
     expect(canvas).toContain('node.fx');
   });
 });
+
+describe('the outline folds criteria and tasks under their feature', () => {
+  const node = read('components/OutlineNode.svelte');
+  const pane = read('components/OutlinePane.svelte');
+  it('opens only the project and its epics by default', () => {
+    expect(node).toContain("expand === 'auto' && depth < 2");
+  });
+  it('draws nothing below a closed branch', () => {
+    expect(node).toMatch(/\{#if open \|\| byHand\}/);
+  });
+  it('opens the chosen feature, so its own criteria and tasks appear', () => {
+    expect(pane).toContain('[...trail, selected]');
+  });
+});

@@ -18,7 +18,7 @@
     node: TreeNode;
     depth?: number;
     selected?: string | null;
-    /** 'auto' opens the first levels; 'all' and 'none' are the buttons above the tree. */
+    /** 'auto' opens project and epic and leaves each feature closed; 'all' and 'none' are the buttons above the tree. */
     expand: 'auto' | 'all' | 'none';
     /** Keys that must be open so the chosen item is visible. */
     forced: Set<string>;
@@ -27,7 +27,9 @@
   } = $props();
 
   const look = $derived(wordLook(node.status));
-  const open = $derived(expand === 'all' || forced.has(node.key) || (expand === 'auto' && depth < 3));
+  /** A branch the person opened by hand with its arrow. */
+  let byHand = $state(false);
+  const open = $derived(expand === 'all' || forced.has(node.key) || (expand === 'auto' && depth < 2));
   const pickable = $derived(node.kind !== 'gap' && node.kind !== 'project');
   const SHORT: Record<string, string> = { bo: 'Objective', epic: 'Epic', feat: 'Feature', ac: 'Criterion', task: 'Task', project: 'Project' };
   const label = $derived(node.kind === 'gap' ? node.title : (SHORT[node.kind] ?? kindWords(node.kind)));
@@ -38,7 +40,7 @@
   {#if node.status}<Mark shape={look.shape} />{/if}
   <span class="o-name">{node.kind === 'gap' ? '' : node.title}</span>
   {#if node.foreign}<span class="chip">{node.foreign}</span>{/if}
-  {#if node.counts}<span class="o-count" title="Criteria and tasks">{node.counts.ac} AC · {node.counts.task} tasks</span>{/if}
+  {#if node.counts}<span class="o-count" title="Criteria and tasks">{node.counts.ac} {node.counts.ac === 1 ? 'criterion' : 'criteria'} · {node.counts.task} {node.counts.task === 1 ? 'task' : 'tasks'}</span>{/if}
 {/snippet}
 
 {#snippet eye()}
@@ -46,17 +48,20 @@
 {/snippet}
 
 {#if node.children.length}
-  <details {open}>
+  <details {open} ontoggle={(e) => (byHand = e.currentTarget.open)}>
     <summary class:picked={selected === node.key} data-key={node.key}>
       <span class="o-chev" aria-hidden="true"></span>
       {#if pickable}<button class="o-row" type="button" aria-current={selected === node.key ? 'true' : undefined} onclick={(e) => { e.preventDefault(); onpick(node.key); }}>{@render row()}</button>{:else}<span class="o-row">{@render row()}</span>{/if}
       {@render eye()}
     </summary>
-    <ul>
-      {#each node.children as child (child.key)}
-        <li><OutlineNode node={child} depth={depth + 1} {selected} {expand} {forced} {onpick} {onview} /></li>
-      {/each}
-    </ul>
+    <!-- A closed branch draws nothing below it, so a thousand criteria cost nothing until a feature is opened. -->
+    {#if open || byHand}
+      <ul>
+        {#each node.children as child (child.key)}
+          <li><OutlineNode node={child} depth={depth + 1} {selected} {expand} {forced} {onpick} {onview} /></li>
+        {/each}
+      </ul>
+    {/if}
   </details>
 {:else if pickable}
   <div class="o-line" class:picked={selected === node.key} data-key={node.key}>

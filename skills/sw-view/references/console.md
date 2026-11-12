@@ -41,6 +41,10 @@ shows the chain around one chosen item instead.
 
 ## Graph page views
 
+The outline lists projects and epics open and each feature closed, with its criterion and task
+counts on the row; a closed branch draws nothing below it. Choosing a feature (here or on the
+trace map) opens its own criteria and tasks.
+
 The outline stays beside all four views (Trace, Network, Table, Outline); on a narrow screen it
 gives way to the Outline view. In the Outline view the chosen item's status, file and links are
 shown beside the outline. In the Network view the item under the pointer grows, its neighbours and

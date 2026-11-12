@@ -9,11 +9,16 @@
   let pane = $state<HTMLElement | null>(null);
 
   const shown = $derived(roots.map((r) => filterTree(r, text)).filter((r): r is TreeNode => !!r));
-  /** Everything above the chosen item, so it is never hidden inside a closed branch. */
+  /** Everything above the chosen item, and the item itself, so a chosen feature shows its own criteria and tasks. */
   const forced = $derived.by(() => {
     const out = new Set<string>();
     if (text.trim()) for (const r of shown) for (const k of keys(r)) out.add(k);
-    if (selected) for (const r of roots) for (const k of pathTo(r, selected) ?? []) out.add(k);
+    if (selected) {
+      for (const r of roots) {
+        const trail = pathTo(r, selected);
+        if (trail) for (const k of [...trail, selected]) out.add(k);
+      }
+    }
     return out;
   });
   function keys(node: TreeNode): string[] {

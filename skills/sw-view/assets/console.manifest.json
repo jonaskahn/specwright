@@ -1,5 +1,5 @@
 {
- "bytes": 543105,
+ "bytes": 544203,
  "console": "0.5.0",
  "files": {
   ".nvmrc": "sha256:68ca3fba3b7e864770cb61aeb306d4bd4354b68ab4dd38450860c5d823e42a53",
@@ -27,8 +27,8 @@
   "src/components/MdInline.svelte": "sha256:5a77fd2b23fd08a69923d654e16e976494f8762910c2899ca6874ccb4ba971bc",
   "src/components/NodeLinks.svelte": "sha256:6d9218e902a417284d834fb86d2c96b773261286558e55dfd8907568eeeef7a0",
   "src/components/OutlineDetail.svelte": "sha256:59535d5a99debb988242f03f1c9224253337b45c53ad9048f279153a468a6112",
-  "src/components/OutlineNode.svelte": "sha256:b56eedc70e64805da05758d6c89c7cef2f297024f9ed3a66da3909cea594ccc8",
-  "src/components/OutlinePane.svelte": "sha256:85017f9b7fbe16db44ad9049157603055654e727eab0f5a8b807014519831f49",
+  "src/components/OutlineNode.svelte": "sha256:6f9188c69963eab4afbae67d8074727ac0c259641de1c3db3821c004c9e92b0c",
+  "src/components/OutlinePane.svelte": "sha256:2bd44c3471e2f13a295eccad42167b9329d397e426d98e4fcaa8d2992a6ff6d0",
   "src/components/OwnerEmpty.svelte": "sha256:54bc5bd50a6d407745ffa5e4327575cc1a81acf008fff56280a3ea818d773bb8",
   "src/components/PageHead.svelte": "sha256:d92beee5e3abd49f87effb0fa978a8bc2d40bcf87495e56d0fb4e8f5dddadbf7",
   "src/components/Palette.svelte": "sha256:35e8dfc3145c3d5998fdc28480002ef56ab07b513d5a549716477d9b8484a5a9",
@@ -83,7 +83,7 @@
   "svelte.config.js": "sha256:38f4ed7a7ec5e5c793b4f3809b8f85876ce2ee232392e56c25c2d076e30370a4",
   "tests/board.test.ts": "sha256:ad4f564c483eca58cf25a862527a4eb562645853df85bf2380399c1b2c7b70ae",
   "tests/golden.ts": "sha256:eb368df231154c10dde8b05e5e75d83aea17d47b548dc6488c6810656bca4939",
-  "tests/graph.view.test.ts": "sha256:a224fe0d561f6a1ed6f4423733a49936942800f0e8603e9bb59339f5242063a6",
+  "tests/graph.view.test.ts": "sha256:a39df277080c4705878d379dbfb0667c523e1540a55ff9053925d92cd75ec058",
   "tests/loader.test.ts": "sha256:4f117aa90df9240ff1fe4d83a4030a63f1fca6d441e7b81af28816ddbb2fdf46",
   "tests/markdown.test.ts": "sha256:f2679c1184c012c2533f3eff74d076a9b0fbfa57c32595bb9fa58cf8f3cbf2a9",
   "tests/metrics.test.ts": "sha256:80e4a9d3207bcccb7f41a60de2a64b1dadc63b514787a19bbc9c839ea2c668b5",
@@ -100,6 +100,6 @@
   "vite.config.ts": "sha256:9e5a5fa2907e4884db59d61b8d15ea40b8fdf088fc5173d590d8c8b070caf716"
  },
  "formatVersion": 1,
- "tree": "sha256:0b4ee9c836af8f0faf701e0328a455f4ad85e3296310ffc2b258292178d9affd",
- "zip": "sha256:85d8535fe6c380fa9a02fecbde70a6bc09f1d7c71a70b65176def33b860e0d66"
+ "tree": "sha256:4202a91c7e77fd127b2f690dad440d335717512d5186867201307af50d1ee4bf",
+ "zip": "sha256:1f434ba458ba031c6f91de621194a02500084019f637cfa04a46a95791b1bd12"
 }
