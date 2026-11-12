@@ -164,6 +164,17 @@
         "sw-spec renders an SVG from the same JSON spec and embeds it in the story",
         "The HTML file may stay as a companion but is not the only picture"
       ]
+    },
+    {
+      "id": "criteria-bullet-layout",
+      "prompt": "Use sw-spec to write the acceptance criteria of a new accepted feature.",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "Each criterion is a bulleted list with one step per line and the keywords in bold: - **Given**, - **When**, - **Then**",
+        "A continuation step is its own bullet with a bold And or But",
+        "The three steps are never run together in one paragraph",
+        "Shared lint reports no L-007 finding for the bulleted criteria"
+      ]
     }
   ]
 }

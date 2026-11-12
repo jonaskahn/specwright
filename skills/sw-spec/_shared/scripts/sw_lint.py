@@ -804,7 +804,7 @@ def lint_document(doc, ctx):
                     number,
                 )
         if re.match(
-            r"^\s*(?:[-*]\s+)?(?:Given |When |Then )?(?:it|they|this|that)\s+"
+            r"^\s*(?:[-*]\s+)?(?:(?:\*\*)?(?:Given|When|Then)(?:\*\*)?\s+)?(?:it|they|this|that)\s+"
             r"(?:shall|must|will|is|are|can)\b",
             prose,
             re.I,

@@ -226,7 +226,7 @@ def _section_text(sections: dict[str, markdown.Section], names: tuple[str, ...])
 
 
 def _clause(line: str, word: str) -> bool:
-    return bool(re.match(rf"(?i)^\s*{word}\b", line))
+    return bool(re.match(rf"(?i)^\s*(?:[-*+]\s+)?(?:\*\*|__)?{word}\b", line))
 
 
 def _branchy(text: str) -> bool:

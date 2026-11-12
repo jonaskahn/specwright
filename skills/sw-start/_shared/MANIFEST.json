@@ -41,7 +41,7 @@
   "scripts/kitlib/guard.py": "4cecf2eb3041",
   "scripts/kitlib/hashing.py": "8236e6704e63",
   "scripts/kitlib/ids.py": "88a0e53a1198",
-  "scripts/kitlib/illustration.py": "891a00da1582",
+  "scripts/kitlib/illustration.py": "0bde0bf11809",
   "scripts/kitlib/index.py": "d1455540d597",
   "scripts/kitlib/ingest_impact.py": "d3e258c5c943",
   "scripts/kitlib/invest.py": "952e723ae1fa",
@@ -65,7 +65,7 @@
   "scripts/runtime.sh": "0728558e61b1",
   "scripts/status.py": "bddf9d4960f7",
   "scripts/store.py": "71798bc4689c",
-  "scripts/sw_lint.py": "037d83c2fd8b",
+  "scripts/sw_lint.py": "12f24e4e5a16",
   "scripts/trace.py": "74bfe2e50aea"
  },
  "kit_version": "0.5.0"

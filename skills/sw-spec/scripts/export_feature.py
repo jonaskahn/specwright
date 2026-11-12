@@ -26,7 +26,7 @@ import re
 
 from kitlib import frontmatter, hashing, ids, markdown  # noqa: E402
 
-STEP = re.compile(r"^\s*(Given|When|Then|And|But)\b\s*(.*)$")
+STEP = re.compile(r"^\s*(?:[-*+]\s+)?(?:\*\*|__)?(Given|When|Then|And|But)\b(?:\*\*|__)?\s*(.*)$")
 
 
 def render(text, name):

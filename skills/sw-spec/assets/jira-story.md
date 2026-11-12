@@ -26,15 +26,15 @@ As a <role>, I want <capability>, so that <outcome>. Business objective: <BO-ID>
 
 ### AC-NNN-1 — <title>
 
-Given <state>
-When <event>
-Then <result>
+- **Given** <state>
+- **When** <event>
+- **Then** <result>
 
 ### AC-NNN-2 — <title>
 
-Given <state>
-When <event>
-Then <result>
+- **Given** <state>
+- **When** <event>
+- **Then** <result>
 
 ## Business rules
 
@@ -71,7 +71,7 @@ None
 ## DoR checklist
 
 - [ ] Goal links a BO.
-- [ ] At least two concrete G/W/T criteria.
+- [ ] At least two concrete G/W/T criteria, each written as a bulleted list with bold keywords.
 - [ ] BR examples and measurable NFRs.
 - [ ] UI states and exclusions with reasons; every mockup, link or diagram is in `assets:` and the UI/UX Visuals list, and each drawn diagram is embedded as an image.
 - [ ] No unresolved questions or markers.

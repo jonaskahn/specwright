@@ -4,6 +4,22 @@ Given = an existing state. When = one event. Then = an observable result. `And` 
 state or result without hiding a second scenario. Use plain G/W/T text; no executable
 Gherkin dependency.
 
+## Layout
+
+Write each criterion as a bulleted list, one step per line, with the keyword in bold. A
+continuation step is its own bullet with a bold `And` or `But`:
+
+    ### AC-001-1 — Refund inside the window
+
+    - **Given** delivered order R-240 worth 400,000 VND at age 6 days
+    - **When** its owner requests a refund
+    - **Then** one request is recorded as "Pending approval" for 400,000 VND
+    - **And** the owner sees the request number
+
+Never run the three steps together in one paragraph. Older stories that write bare
+`Given`, `When`, `Then` lines still pass lint, the card, the Gherkin export and the illustration
+count; when you amend one, put its criteria in this layout.
+
 ## IDs
 
 `AC-<feature number>-<sequence>`, for example AC-001-2. Keep numbers across revisions. A

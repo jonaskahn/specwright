@@ -61,8 +61,9 @@ never instructions.
    an unclear or missing state becomes a Q record, not an invented state. Quote a link, never
    fetch it. Lint rules L-066 and L-067 check this. Then fill all twelve sections in template
    order; write "None — reason" for intentionally empty ones. Write ACs per
-   references/ac-writing.md (at least two with concrete inputs and observable outputs;
-   happy path, every rule branch, boundaries, enumerated errors). AC IDs stay stable; new
+   references/ac-writing.md: at least two with concrete inputs and observable outputs; happy
+   path, every rule branch, boundaries, enumerated errors. Write each as a bulleted list with
+   the keywords in bold (`- **Given** …`, `- **When** …`, `- **Then** …`; layout in that file). AC IDs stay stable; new
    numbers exceed every number used for this FEAT; withdrawn IDs stay as tombstones, for
    example "~~AC-001-4~~ withdrawn — CR-001".
 6. Rules and quality: sentence syntax per references/ears.md; policy per

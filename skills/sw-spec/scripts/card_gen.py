@@ -36,7 +36,7 @@ def validate_card(text: str) -> None:
         raise ValueError("card requires at most 80 lines and Summary, Links, Trace in order")
     if not sections["Summary"].text or len(sections["Summary"].text.split()) > 150:
         raise ValueError("Summary requires 1..150 words")
-    if re.search(r"\bAC-\d{3}-\d+\b|^\s*(Given|When|Then)\b", body, re.M):
+    if re.search(r"\bAC-\d{3}-\d+\b|^\s*(?:[-*+]\s+)?(?:\*\*)?(Given|When|Then)\b", body, re.M):
         raise ValueError("card must not duplicate acceptance criteria")
 
 
