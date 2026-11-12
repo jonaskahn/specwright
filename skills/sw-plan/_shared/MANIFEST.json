@@ -26,12 +26,12 @@
   "scripts/kitlib/miniyaml.py": "73a1bbe68a05",
   "scripts/kitlib/provenance.py": "7657b964c364",
   "scripts/kitlib/rtm.py": "dc57dda3403f",
-  "scripts/kitlib/schema.py": "1b26b5e99c4f",
+  "scripts/kitlib/schema.py": "cab07ec2182f",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "a182b597a8b2",
   "scripts/kitlib/workspace.py": "034886a2acb8",
   "scripts/kitlib/writelog.py": "c75ee83de4ff",
   "scripts/sw_lint.py": "11177eec3235"
  },
- "kit_version": "0.3.0"
+ "kit_version": "0.4.0"
 }
