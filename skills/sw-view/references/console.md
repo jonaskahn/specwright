@@ -45,9 +45,11 @@ The outline lists projects and epics open and each feature closed, with its crit
 counts on the row; a closed branch draws nothing below it. Choosing a feature (here or on the
 trace map) opens its own criteria and tasks.
 
-The outline stays beside all four views (Trace, Network, Table, Outline); on a narrow screen it
-gives way to the Outline view. In the Outline view the chosen item's status, file and links are
-shown beside the outline. In the Network view the item under the pointer grows, its neighbours and
+The outline sits beside the Trace and the Network views; the Table and the Outline view are whole
+pages, and on a narrow screen the outline gives way to the Outline view. Choosing a feature opens
+its own criteria and tasks and closes the ones opened before, in the outline and on the trace map
+alike. Items slide, fade and fly out of their feature as they open and fold, and the frame of the
+trace map grows and shrinks with them; with reduced motion set, they change with no movement. In the Network view the item under the pointer grows, its neighbours and
 links stay lit while the rest fade, and a tip names it. Items close to the pointer step aside a
 little, and an item can be dragged; a click still chooses it. With reduced motion set, items do
 not move on their own.

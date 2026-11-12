@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { fade, fly } from 'svelte/transition';
   import { hue } from '../lib/graph/layout';
+  import { glide, ms } from '../lib/motion';
   import { BOX, chainOf, LEVEL_NAMES, type TraceLink, type TraceModel, type TraceNode } from '../lib/graph/trace';
   import { shortKey } from '../lib/format';
   import { wordLook, type MarkShape } from '../lib/status';
@@ -69,6 +71,15 @@
     found?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   });
 
+  /** A criterion, task or placeholder comes out of its feature and goes back into it; the rest fade and slide in. */
+  const order = $derived(new Map(model.nodes.map((n, i) => [n.id, i])));
+  function enter(n: TraceNode, way: 'in' | 'out') {
+    const owner = n.owner ? byId.get(n.owner) : undefined;
+    const x = owner ? owner.x - n.x : -24;
+    const y = owner ? owner.y - n.y : 0;
+    return { x, y, duration: ms(way === 'in' ? 280 : 200), delay: way === 'in' ? ms(((order.get(n.id) ?? 0) % 10) * 18) : 0 };
+  }
+
   function key(e: KeyboardEvent, n: TraceNode) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -99,9 +110,8 @@
       class="trace-svg"
       role="group"
       aria-label={`Trace map with ${model.nodes.length} items in ${model.levels.length} levels. Choose an item to light up everything it connects to.`}
-      width={model.width * zoom}
-      height={model.height * zoom}
-      viewBox={`0 0 ${model.width} ${model.height}`}
+      style:width={`${model.width * zoom}px`}
+      style:height={`${model.height * zoom}px`}
     >
       <defs>
         <clipPath id="trace-card-clip"><rect width={BOX.w} height={BOX.h} rx="10" /></clipPath>
@@ -109,16 +119,21 @@
           <path d="M0 0L8 4L0 8z" class="trace-arrowhead" />
         </marker>
       </defs>
+      <!-- The drawing is scaled by an inner group, so the frame can grow and shrink on its own as items open and fold. -->
+      <g transform={`scale(${zoom})`}>
       {#each columns as c (c.lv)}
-        <text class="trace-col" x={c.x} y={20}>{c.words}</text>
+        <text class="trace-col" x={c.x} y={20} in:fade={{ duration: ms(200) }} out:fade={{ duration: ms(120) }}>{c.words}</text>
       {/each}
       {#each model.links.filter((x) => !x.implied) as l (l.id)}
-        <path class="trace-link {l.cls}" class:lit={lit(l)} class:dim={linkDim(l)} d={path(l)} marker-end="url(#trace-arrow)">
+        <path class="trace-link {l.cls}" class:lit={lit(l)} class:dim={linkDim(l)} d={path(l)} style:d={`path("${path(l)}")`} marker-end="url(#trace-arrow)" in:fade={{ duration: ms(220), delay: ms(120) }} out:fade={{ duration: ms(110) }}>
           <title>{l.sentence}</title>
         </path>
       {/each}
       {#each model.nodes as n (n.id)}
-        <g class="trace-node" data-id={n.id} class:gap={!!n.gap} class:foreign={n.foreign} class:picked={selected === n.id} class:dim={dimmed(n.id)} class:emph={emphasis.has(n.id)} transform={`translate(${n.x} ${n.y})`}>
+        <!-- Three layers keep three kinds of motion apart: the slot is moved by animate, the next one holds the position, the inner one enters and leaves. -->
+        <g class="trace-slot" animate:glide={{ zoom, duration: 260 }}>
+        <g transform={`translate(${n.x} ${n.y})`}>
+        <g class="trace-node" data-id={n.id} in:fly={enter(n, 'in')} out:fly={enter(n, 'out')} class:gap={!!n.gap} class:foreign={n.foreign} class:picked={selected === n.id} class:dim={dimmed(n.id)} class:emph={emphasis.has(n.id)}>
         <g
           class="card"
           role="button"
@@ -163,7 +178,10 @@
           </g>
         {/if}
         </g>
+        </g>
+        </g>
       {/each}
+      </g>
     </svg>
   </div>
 </div>

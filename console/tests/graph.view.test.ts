@@ -3,15 +3,15 @@ import { describe, expect, it } from 'vitest';
 
 const read = (name: string) => readFileSync(new URL(`../src/${name}`, import.meta.url), 'utf8');
 
-describe('the outline is beside every view of the graph page', () => {
+describe('the outline sits beside the trace and the network only', () => {
   const page = read('routes/Graph.svelte');
-  it('draws the outline pane whatever the view is', () => {
-    expect(page).toMatch(/<aside class="outline-side"[^>]*><OutlinePane/);
-    expect(page).not.toMatch(/\{#if view !== 'outline'\}<aside/);
+  it('draws the outline pane for those two views', () => {
+    expect(page).toContain("const withOutline = $derived(view === 'trace' || view === 'network')");
+    expect(page).toMatch(/\{#if withOutline\}<aside class="outline-side"[^>]*><OutlinePane/);
   });
-  it('shows what was chosen in the outline view, and the full tree on a narrow screen', () => {
-    expect(page).toContain('<OutlineDetail');
-    expect(page).toContain('class="outline-narrow"');
+  it('leaves the table and the outline view as whole pages', () => {
+    expect(page).not.toContain('OutlineDetail');
+    expect(page).not.toContain('outline-narrow');
   });
 });
 
@@ -35,10 +35,27 @@ describe('the outline folds criteria and tasks under their feature', () => {
   it('opens only the project and its epics by default', () => {
     expect(node).toContain("expand === 'auto' && depth < 2");
   });
-  it('draws nothing below a closed branch', () => {
-    expect(node).toMatch(/\{#if open \|\| byHand\}/);
+  it('draws nothing below a closed branch, and slides the rest in and out', () => {
+    expect(node).toMatch(/\{#if open\}\s*<ul transition:slide/);
+    expect(node).toContain('animate:flip');
   });
-  it('opens the chosen feature, so its own criteria and tasks appear', () => {
+  it('opens the chosen feature and closes what was opened by hand before', () => {
     expect(pane).toContain('[...trail, selected]');
+    expect(pane).toMatch(/void selected;\s*marks = new Map\(\)/);
+  });
+});
+
+describe('the trace map moves with its model', () => {
+  const map = read('components/TraceMap.svelte');
+  it('uses svelte transitions and an animate function, each on its own layer', () => {
+    expect(map).toContain("from 'svelte/transition'");
+    expect(map).toContain('animate:glide');
+    expect(map).toMatch(/class="trace-node"[^>]*in:fly=\{enter\(n, 'in'\)\} out:fly=\{enter\(n, 'out'\)\}/);
+    expect(map).not.toMatch(/class="trace-node"[^>]*transform=/);
+  });
+  it('honours reduced motion through one helper', () => {
+    const motion = read('lib/motion.ts');
+    expect(motion).toContain('prefers-reduced-motion: reduce');
+    expect(map).not.toMatch(/duration: \d+[,}]/);
   });
 });

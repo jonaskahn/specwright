@@ -1,5 +1,8 @@
 <script lang="ts">
+  import { flip } from 'svelte/animate';
+  import { fade, slide } from 'svelte/transition';
   import type { TreeNode } from '../lib/data/selectors';
+  import { ms } from '../lib/motion';
   import { wordLook } from '../lib/status';
   import { kindWords } from '../lib/vocabulary';
   import Icon from './Icon.svelte';
@@ -12,6 +15,8 @@
     selected = null,
     expand,
     forced,
+    marks,
+    onmark,
     onpick,
     onview,
   }: {
@@ -22,14 +27,15 @@
     expand: 'auto' | 'all' | 'none';
     /** Keys that must be open so the chosen item is visible. */
     forced: Set<string>;
+    /** Branches the person opened or closed by hand since the last choice. */
+    marks: Map<string, boolean>;
+    onmark: (key: string, open: boolean) => void;
     onpick: (key: string) => void;
     onview: (key: string) => void;
   } = $props();
 
   const look = $derived(wordLook(node.status));
-  /** A branch the person opened by hand with its arrow. */
-  let byHand = $state(false);
-  const open = $derived(expand === 'all' || forced.has(node.key) || (expand === 'auto' && depth < 2));
+  const open = $derived(marks.get(node.key) ?? (expand === 'all' || forced.has(node.key) || (expand === 'auto' && depth < 2)));
   const pickable = $derived(node.kind !== 'gap' && node.kind !== 'project');
   const SHORT: Record<string, string> = { bo: 'Objective', epic: 'Epic', feat: 'Feature', ac: 'Criterion', task: 'Task', project: 'Project' };
   const label = $derived(node.kind === 'gap' ? node.title : (SHORT[node.kind] ?? kindWords(node.kind)));
@@ -48,21 +54,21 @@
 {/snippet}
 
 {#if node.children.length}
-  <details {open} ontoggle={(e) => (byHand = e.currentTarget.open)}>
-    <summary class:picked={selected === node.key} data-key={node.key}>
-      <span class="o-chev" aria-hidden="true"></span>
-      {#if pickable}<button class="o-row" type="button" aria-current={selected === node.key ? 'true' : undefined} onclick={(e) => { e.preventDefault(); onpick(node.key); }}>{@render row()}</button>{:else}<span class="o-row">{@render row()}</span>{/if}
+  <div class="o-branch">
+    <div class="o-summary" class:picked={selected === node.key} data-key={node.key}>
+      <button class="o-chev" type="button" aria-expanded={open} aria-label={`${open ? 'Close' : 'Open'} ${node.title}`} onclick={() => onmark(node.key, !open)}></button>
+      {#if pickable}<button class="o-row" type="button" aria-current={selected === node.key ? 'true' : undefined} onclick={() => onpick(node.key)}>{@render row()}</button>{:else}<button class="o-row" type="button" onclick={() => onmark(node.key, !open)}>{@render row()}</button>{/if}
       {@render eye()}
-    </summary>
+    </div>
     <!-- A closed branch draws nothing below it, so a thousand criteria cost nothing until a feature is opened. -->
-    {#if open || byHand}
-      <ul>
+    {#if open}
+      <ul transition:slide={{ duration: ms(200) }}>
         {#each node.children as child (child.key)}
-          <li><OutlineNode node={child} depth={depth + 1} {selected} {expand} {forced} {onpick} {onview} /></li>
+          <li animate:flip={{ duration: ms(200) }} in:fade={{ duration: ms(160) }}><OutlineNode node={child} depth={depth + 1} {selected} {expand} {forced} {marks} {onmark} {onpick} {onview} /></li>
         {/each}
       </ul>
     {/if}
-  </details>
+  </div>
 {:else if pickable}
   <div class="o-line" class:picked={selected === node.key} data-key={node.key}>
     <button class="o-row leaf" type="button" aria-current={selected === node.key ? 'true' : undefined} onclick={() => onpick(node.key)}>{@render row()}</button>

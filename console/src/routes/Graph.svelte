@@ -2,7 +2,6 @@
   import DataTable from '../components/DataTable.svelte';
   import GraphCanvas from '../components/GraphCanvas.svelte';
   import Icon from '../components/Icon.svelte';
-  import OutlineDetail from '../components/OutlineDetail.svelte';
   import OutlinePane from '../components/OutlinePane.svelte';
   import OwnerEmpty from '../components/OwnerEmpty.svelte';
   import PageHead from '../components/PageHead.svelte';
@@ -31,6 +30,8 @@
   let outlineOpen = $state(true);
 
   const view = $derived<View>((VIEWS as readonly string[]).includes(app.route.query.get('view') ?? '') ? (app.route.query.get('view') as View) : 'trace');
+  /** The outline sits beside the trace and the network; the table and the outline view are whole pages. */
+  const withOutline = $derived(view === 'trace' || view === 'network');
   const scopes = $derived(app.scopes);
   const cross = $derived(crossLinks(app.loaded));
   /** One project, every project in turn ("*"), or only the links between projects ("~"). */
@@ -121,7 +122,7 @@
       {#if view === 'trace'}
         <label class="row-flex"><input type="checkbox" bind:checked={code} /> Show code files that tasks change</label>
       {/if}
-      {#if view === 'trace' || view === 'network' || view === 'table'}
+      {#if withOutline}
         <button class="btn ghost hide-narrow" type="button" aria-pressed={outlineOpen} onclick={() => (outlineOpen = !outlineOpen)}>{outlineOpen ? 'Hide outline' : 'Show outline'}</button>
       {/if}
     </div>
@@ -135,12 +136,11 @@
       </div>
     {/if}
 
-    <div class="graph-split" class:shut={!outlineOpen && view !== 'outline'}>
-      <aside class="outline-side" aria-label="Outline"><OutlinePane {roots} {selected} onpick={pick} onview={view_} /></aside>
+    <div class="graph-split" class:shut={!withOutline || !outlineOpen}>
+      {#if withOutline}<aside class="outline-side" aria-label="Outline"><OutlinePane {roots} {selected} onpick={pick} onview={view_} /></aside>{/if}
       <div class="stack-sm">
         {#if view === 'outline'}
-          <OutlineDetail {selected} onpick={pick} onview={view_} />
-          <div class="outline-narrow"><OutlinePane {roots} {selected} onpick={pick} onview={view_} /></div>
+          <OutlinePane {roots} {selected} onpick={pick} onview={view_} />
         {:else if view === 'trace'}
           {#if project === '*'}
             {#each sections as s (s.scope)}

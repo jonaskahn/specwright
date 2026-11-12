@@ -203,10 +203,11 @@ dialog.palette-dialog::backdrop { background: var(--color-scrim); }
 .trace { position: relative; display: flex; flex-direction: column; gap: var(--space-xs); }
 .trace-tools { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
 .trace-scroll { overflow: auto; max-block-size: min(72vh, 46rem); border-radius: var(--radius-lg); background: var(--sunken); box-shadow: var(--shadow-soft); padding: var(--space-xs); }
-.trace-svg { display: block; font-family: var(--font-body); }
+.trace-svg { display: block; font-family: var(--font-body); transition: width 0.26s ease, height 0.26s ease; }
 .trace-col { fill: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
-.trace-link { fill: none; stroke: var(--rule-strong); stroke-width: 1.4; transition: opacity 0.15s; }
+.trace-link { fill: none; stroke: var(--rule-strong); stroke-width: 1.4; transition: d 0.26s ease, opacity 0.15s; }
 .trace-link.gap { stroke-dasharray: 5 4; }
+@media (prefers-reduced-motion: reduce) { .trace-svg, .trace-link { transition: none; } }
 .trace-link.lit { stroke: var(--accent); stroke-width: 2.4; }
 .trace-link.dim { opacity: 0.12; }
 .trace-arrowhead { fill: var(--rule-strong); }
@@ -262,8 +263,6 @@ dialog.palette-dialog::backdrop { background: var(--color-scrim); }
 .outline .input { flex: 1; min-inline-size: 10rem; }
 .o-tree { max-block-size: min(72vh, 46rem); overflow: auto; padding: var(--space-xs); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-soft); }
 .o-tree ul { padding-inline-start: var(--space-md); }
-.o-tree details > summary { list-style: none; cursor: pointer; }
-.o-tree details > summary::-webkit-details-marker { display: none; }
 .o-row { all: unset; box-sizing: border-box; display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 var(--space-xs); inline-size: 100%; min-inline-size: 0; padding: var(--space-3xs) var(--space-xs); border-radius: var(--radius-sm); cursor: pointer; }
 div.o-row, span.o-row { cursor: default; }
 button.o-row:hover { background: var(--fill); }
@@ -275,13 +274,12 @@ button.o-row:focus-visible { outline: 2px solid var(--color-focus); outline-offs
 .graph-split { display: grid; grid-template-columns: minmax(15rem, var(--outline-w, 22rem)) minmax(0, 1fr); gap: var(--grid-gap); align-items: start; }
 .graph-split.shut { grid-template-columns: minmax(0, 1fr); }
 .graph-split.shut > .outline-side { display: none; }
-.outline-narrow { display: none; }
-.outline-detail h2 { margin: 0; }
-@media (max-width: 900px) { .graph-split { grid-template-columns: minmax(0, 1fr); } .graph-split > .outline-side { display: none; } .outline-narrow { display: block; } .outline-detail { display: none; } }
-.o-tree summary { display: flex; align-items: center; }
-.o-chev { flex: none; inline-size: 1rem; text-align: center; color: var(--muted); }
+@media (max-width: 900px) { .graph-split { grid-template-columns: minmax(0, 1fr); } .graph-split > .outline-side { display: none; } }
+.o-summary { display: flex; align-items: center; }
+.o-chev { all: unset; cursor: pointer; flex: none; inline-size: 1rem; text-align: center; color: var(--muted); }
 .o-chev::before { content: "▸"; }
-details[open] > summary > .o-chev::before { content: "▾"; }
+.o-chev[aria-expanded="true"]::before { content: "▾"; }
+.o-chev:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; border-radius: 4px; }
 .o-tree .leaf { padding-inline-start: 1rem; }
 .project-section { display: flex; flex-direction: column; gap: var(--space-sm); padding: var(--space-sm); border-radius: var(--radius-lg); background: var(--fill); }
 .project-section > summary { display: flex; align-items: center; gap: var(--space-sm); cursor: pointer; padding-block-end: var(--space-xs); list-style: none; }
@@ -329,7 +327,7 @@ details[open] > summary > .o-chev::before { content: "▾"; }
   .kanban { grid-auto-flow: row; grid-auto-columns: auto; overflow: visible; }
   .kcol:not(.on) { display: none; }
 }
-.o-tree summary { gap: var(--space-2xs); }
+.o-summary { gap: var(--space-2xs); }
 .o-line { display: flex; align-items: center; gap: var(--space-2xs); }
 .o-line.picked > .o-row { background: color-mix(in oklab, var(--accent) 12%, transparent); }
 .o-eye { all: unset; box-sizing: border-box; flex: none; display: grid; place-items: center; inline-size: 1.75rem; block-size: 1.75rem; border-radius: var(--radius-sm); color: var(--muted); cursor: pointer; }
