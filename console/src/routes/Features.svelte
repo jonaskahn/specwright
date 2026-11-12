@@ -37,7 +37,7 @@
   <div class="row-flex wrap gap-2">
     <div class="search" style:flex="1" style:min-inline-size="14rem">
       <svg class="icon sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4" /></svg>
-      <input class="input" type="search" placeholder="Filter by ID or title" aria-label="Filter features" bind:value={text} />
+      <input class="input" type="search" placeholder="Filter by identifier or title" aria-label="Filter features" bind:value={text} />
     </div>
     <select class="select" style:inline-size="12rem" aria-label="State" bind:value={stateFilter}>
       <option value="">All states</option>

@@ -3,7 +3,8 @@
   import PageHead from '../components/PageHead.svelte';
   import StaleBanner from '../components/StaleBanner.svelte';
   import { app } from '../lib/data/store.svelte';
-  import { label, stateLook } from '../lib/status';
+  import { stateLook } from '../lib/status';
+  import { stationWords } from '../lib/vocabulary';
 
   const m = $derived(app.metrics);
 </script>
@@ -24,7 +25,7 @@
     </section>
     <section class="span-6 card pad stack-sm">
       <div class="sec-h"><h2>Features by station</h2></div>
-      <Bars items={m.byStation.map((s) => ({ label: label(s.station), value: s.count }))} />
+      <Bars items={m.byStation.map((s) => ({ label: stationWords(s.station), value: s.count }))} />
     </section>
     <section class="span-6 card pad stack-sm">
       <div class="sec-h"><h2>Lint</h2></div>

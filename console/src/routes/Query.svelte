@@ -4,6 +4,7 @@
   import { app } from '../lib/data/store.svelte';
   import { HELP, keysOf, runQuery, type QueryResult } from '../lib/query/parse';
   import { href } from '../lib/router';
+  import { classWords, kindWords, relationWords, resolutionWords } from '../lib/vocabulary';
 
   let text = $state(app.route.query.get('q') ?? '');
   const result = $derived<QueryResult | null>(
@@ -16,10 +17,11 @@
     e.preventDefault();
     location.hash = href('query', null, text.trim() ? { q: text.trim() } : {});
   }
+  const IMPACT_NAMES: Record<string, string> = { features: 'Features', criteria: 'Acceptance criteria', tasks: 'Tasks', jira: 'Jira issues' };
   const go = (key: string) => (location.hash = href('graph', key));
 </script>
 
-<PageHead title="Query" lede="Ask the graph: find, show, neighbors, up, down, path, impact." />
+<PageHead title="Query" lede="Ask the knowledge graph: find, show, neighbors, up, down, path and impact. Each command is explained below." />
 <div class="stack">
   <form class="queryline" onsubmit={submit}>
     <input class="input" aria-label="Query" placeholder="path REF:FEAT-001 REF:FEAT-002" bind:value={text} />
@@ -37,34 +39,34 @@
           <div class="ledger" style:--cols="minmax(0,1.3fr) 5rem 7rem minmax(0,2fr)">
             <div class="lhead"><span>Key</span><span>Kind</span><span>Status</span><span>Title</span></div>
             {#each result.nodes.slice(0, 200) as n (n.key)}
-              <button class="lrow" type="button" onclick={() => go(n.key)}><span class="name mono">{n.key}</span><span class="chip">{n.kind}</span><span>{n.status ?? 'none'}</span><span>{n.title}</span></button>
+              <button class="lrow" type="button" onclick={() => go(n.key)}><span class="name mono">{n.key}</span><span class="chip">{kindWords(n.kind)}</span><span>{n.status ?? 'none'}</span><span>{n.title}</span></button>
             {:else}<div class="lrow"><span class="muted">Nothing found.</span></div>{/each}
           </div>
         {:else if result.type === 'edges'}
           <div class="ledger" style:--cols="3rem minmax(0,1fr) minmax(0,1.2fr) 9rem">
-            <div class="lhead"><span>Way</span><span>Relation</span><span>Item</span><span>Where</span></div>
+            <div class="lhead"><span>Way</span><span>Relation</span><span>Item</span><span>How it is known</span></div>
             {#each result.rows as r, i (i)}
-              <button class="lrow" type="button" onclick={() => go(r.other)}><span>{r.side === 'out' ? '→' : '←'}</span><span class="chip">{r.rel}</span><span class="mono">{r.other}</span><span class="sub">{r.cls}/{r.res ?? '-'}</span></button>
+              <button class="lrow" type="button" onclick={() => go(r.other)}><span>{r.side === 'out' ? '→' : '←'}</span><span class="chip">{relationWords(r.rel, r.side)}</span><span><span class="name">{app.graph.node(r.other)?.title ?? r.other}</span> <span class="mono sub">{r.other}</span></span><span class="sub">{classWords(r.cls)}. {resolutionWords(r.res)}.</span></button>
             {:else}<div class="lrow"><span class="muted">No links.</span></div>{/each}
           </div>
         {:else if result.type === 'levels'}
           <div class="ledger keep" style:--cols="minmax(0,1fr) 9rem">
             {#each result.rows as r (r.key)}
-              <button class="lrow" type="button" onclick={() => go(r.key)}><span class="mono" style:padding-inline-start={`${(r.level - 1) * 16}px`}>{r.key}</span><span class="chip">{r.rel}</span></button>
+              <button class="lrow" type="button" onclick={() => go(r.key)}><span style:padding-inline-start={`${(r.level - 1) * 16}px`}><span class="name">{app.graph.node(r.key)?.title ?? r.key}</span> <span class="mono sub">{r.key}</span></span><span class="chip">{kindWords(app.graph.node(r.key)?.kind ?? 'unknown')}</span></button>
             {:else}<div class="lrow"><span class="muted">Nothing reached.</span></div>{/each}
           </div>
         {:else if result.type === 'path'}
           {#if result.found}
             <div class="path-hops">
               {#each result.hops as h, i (i)}
-                <div class="hop"><span class="mono">{h.from}</span><span class="muted">{h.side === 'out' ? '—' : '←'} {h.rel} {h.side === 'out' ? '→' : '—'}</span><span class="mono">{h.to}</span><span class="sub">{h.cls}/{h.res ?? '-'} · {h.file}:{h.line}</span></div>
+                <div class="hop"><span class="mono">{h.from}</span><span class="muted">{h.side === 'out' ? '—' : '←'} {relationWords(h.rel, h.side)} {h.side === 'out' ? '→' : '—'}</span><span class="mono">{h.to}</span><span class="sub">{classWords(h.cls)} · {h.file}:{h.line}</span></div>
               {:else}<div class="hop">Same item.</div>{/each}
             </div>
           {:else}<div class="empty"><h3>No connection</h3><p class="muted">These items are not linked within 6 hops.</p></div>{/if}
         {:else}
           <div class="card pad stack-sm">
             {#each Object.entries(result.impact) as [name, list] (name)}
-              <div><strong>{name}</strong> <span class="muted">{list.length}</span><div class="row-flex wrap">{#each list as k (k)}<button class="chip" type="button" onclick={() => go(name === 'jira' ? `jira:${k}` : k)}>{k}</button>{:else}<span class="muted">none</span>{/each}</div></div>
+              <div><strong>{IMPACT_NAMES[name] ?? name}</strong> <span class="muted">{list.length}</span><div class="row-flex wrap">{#each list as k (k)}<button class="chip" type="button" onclick={() => go(name === 'jira' ? `jira:${k}` : k)}>{k}</button>{:else}<span class="muted">none</span>{/each}</div></div>
             {/each}
           </div>
         {/if}

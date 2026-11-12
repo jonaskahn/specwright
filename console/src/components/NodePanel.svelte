@@ -3,6 +3,7 @@
   import { href } from '../lib/router';
   import Pill from './Pill.svelte';
   import { wordLook } from '../lib/status';
+  import { classWords, kindWords, relationWords, resolutionWords } from '../lib/vocabulary';
 
   let { nodeKey, onpick }: { nodeKey: string; onpick: (key: string) => void } = $props();
   const node = $derived(app.graph.node(nodeKey));
@@ -17,7 +18,7 @@
       <p class="sub mono">{node.key}</p>
     </div>
     <dl>
-      <dt>Kind</dt><dd>{node.kind}</dd>
+      <dt>Kind</dt><dd>{kindWords(node.kind)}</dd>
       <dt>Status</dt><dd><Pill look={wordLook(node.status)} /></dd>
       {#if node.station}<dt>Station</dt><dd>{node.station}{node.condition ? ` · ${node.condition}` : ''}</dd>{/if}
       {#if node.jira}<dt>Jira</dt><dd>{node.jira}</dd>{/if}
@@ -29,7 +30,11 @@
       <p class="sub">{links.length} link{links.length === 1 ? '' : 's'}</p>
       <div class="linklist">
         {#each links.slice(0, 30) as l, i (i)}
-          <button type="button" onclick={() => onpick(l.other)}>{l.side === 'out' ? '→' : '←'} {l.rel} {l.other}</button>
+          <button type="button" title={`${classWords(l.cls)}. ${resolutionWords(l.res)}.`} onclick={() => onpick(l.other)}>
+            <span>{relationWords(l.rel, l.side)}</span>
+            <strong>{app.graph.node(l.other)?.title ?? l.other}</strong>
+            <span class="mono">{l.other}</span>
+          </button>
         {/each}
       </div>
     </div>

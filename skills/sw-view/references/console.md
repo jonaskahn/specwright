@@ -22,7 +22,7 @@ images, fonts and fetches from its own address only.
 | Governance | Records | Questions, decisions, change requests, amendments. |
 | | Sources | Imported material and its age. |
 | | Quality | Lint gate, results, findings and drift. |
-| | Registry | Issued IDs; withdrawn IDs stay listed. |
+| | Registry | Issued identifiers; withdrawn identifiers stay listed. |
 
 Status is shown by a shape (circle with check, diamond, triangle, square, hollow circle) and
 a word, never by colour alone. `Ctrl/Cmd+K` opens a palette that jumps to a screen or item and

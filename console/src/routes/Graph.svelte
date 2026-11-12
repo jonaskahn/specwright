@@ -8,6 +8,7 @@
   import { hue } from '../lib/graph/layout';
   import { href } from '../lib/router';
   import { wordLook } from '../lib/status';
+  import { kindWords } from '../lib/vocabulary';
 
   const LIMIT = 2500;
   let mode = $state<'graph' | 'table'>('graph');
@@ -49,10 +50,10 @@
       <input class="input" style:max-inline-size="18rem" type="search" placeholder="Find an item" aria-label="Find an item" bind:value={text} />
       {#each kinds as kind (kind)}
         <button class="pill" type="button" aria-pressed={!hidden.has(kind)} style:opacity={hidden.has(kind) ? 0.45 : 1} onclick={() => toggle(kind)}>
-          <svg class="mk" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill={`oklch(58% 0.15 ${hue(kind)})`} /></svg>{kind}
+          <svg class="mk" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill={`oklch(58% 0.15 ${hue(kind)})`} /></svg>{kindWords(kind, true)}
         </button>
       {/each}
-      <label class="row-flex"><input type="checkbox" bind:checked={mentions} /> Mentions</label>
+      <label class="row-flex"><input type="checkbox" bind:checked={mentions} /> Links that only mention an item</label>
     </div>
     {#if all.length > LIMIT}<div class="banner warn">Showing the first {LIMIT} of {all.length} items. Narrow it with a filter.</div>{/if}
     <div class="grid">
@@ -64,7 +65,7 @@
             <div class="lhead"><span>Key</span><span>Kind</span><span>Status</span><span>Title</span></div>
             {#each nodes.slice(0, 300) as n (n.key)}
               <button class="lrow" type="button" onclick={() => (selected = n.key)}>
-                <span class="name mono">{n.key}</span><span data-label="Kind" class="chip">{n.kind}</span>
+                <span class="name mono">{n.key}</span><span data-label="Kind" class="chip">{kindWords(n.kind)}</span>
                 <span data-label="Status"><Pill look={wordLook(n.status)} /></span><span data-label="Title">{n.title}</span>
               </button>
             {/each}

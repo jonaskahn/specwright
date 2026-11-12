@@ -16,7 +16,7 @@ const LABELS: Record<string, string> = {
   'in-review': 'In review',
   'ready-to-publish': 'Ready to publish',
   published: 'Published',
-  'ready-for-dev': 'Ready for dev',
+  'ready-for-dev': 'Ready for development',
   superseded: 'Superseded',
   withdrawn: 'Withdrawn',
 };

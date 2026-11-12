@@ -9,7 +9,7 @@ description: Opens a local, read-only web console over the workspace data: proje
 
 Let a person see the whole workspace in one place without opening spec files: a local web
 console with an overview, projects, metrics, features, tasks, a board, a tree, the knowledge
-graph with a query bar, records, sources, quality and the ID registry.
+graph with a query bar, records, sources, quality and the identifier registry.
 
 ## Reads and writes
 
@@ -69,7 +69,7 @@ with options, consequences and a default.
 - The page does not work when opened from disk (`file://`); the server is required.
 - The server listens on 127.0.0.1 only and answers GET and HEAD for the console and the
   data files, nothing else.
-- The data files hold metadata only: IDs, titles, statuses, paths and links. Body text and
+- The data files hold metadata only: identifiers, titles, statuses, paths and links. Body text and
   names of approvers are not in them.
 - `docs/console/` sits inside a docs folder. A docs-site generator that scans the folder
   should exclude `console/`.

@@ -11,11 +11,13 @@ export type QueryResult =
 
 export const COMMANDS = ['find', 'show', 'neighbors', 'up', 'down', 'path', 'impact'] as const;
 export const HELP = [
-  'find <text> [kind:feat] [status:open] [jira:KEY] [epic:EPIC-1]',
-  'show <id or name>',
-  'neighbors <id> [in|out|both] [rel:has_ac] [declared]',
-  'up <id>    down <id> [depth:3]',
-  'path <id> <id>    impact <id>',
+  'find <text> [kind:feat] [status:open] [jira:KEY] [epic:EPIC-1]: items by name, kind, status, Jira issue or epic',
+  'show <identifier or name>: one item',
+  'neighbors <identifier> [in|out|both] [rel:has_ac] [declared]: what it links to and what links to it',
+  'up <identifier>    down <identifier> [depth:3]: the chain above or below an item',
+  'path <identifier> <identifier>: how two items connect',
+  'impact <identifier>: features, acceptance criteria, tasks and Jira issues it reaches',
+  'kind: feat (feature), ac (acceptance criterion), task, epic, bo (business objective), q (question), dec (decision), cr (change request), src (source)',
 ];
 
 function split(text: string): { words: string[]; flags: Record<string, string> } {

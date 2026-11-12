@@ -162,7 +162,8 @@ dialog.palette-dialog::backdrop { background: var(--color-scrim); }
 .panel dt { color: var(--muted); }
 .panel dd { margin: 0; overflow-wrap: anywhere; }
 .linklist { display: flex; flex-direction: column; gap: 2px; font-size: var(--text-sm); }
-.linklist button { all: unset; cursor: pointer; padding: 2px var(--space-xs); border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: var(--text-xs); }
+.linklist button { all: unset; cursor: pointer; display: flex; flex-wrap: wrap; gap: 0 var(--space-xs); padding: var(--space-2xs) var(--space-xs); border-radius: var(--radius-sm); font-size: var(--text-xs); }
+.linklist button .mono { color: var(--muted); }
 .linklist button:hover { background: var(--fill); }
 .queryline { display: flex; gap: var(--space-xs); }
 .queryline .input { font-family: var(--font-mono); }

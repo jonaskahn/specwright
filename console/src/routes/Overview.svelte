@@ -31,7 +31,7 @@
     </div>
   {/if}
   <div class="kpis" style:--n="4">
-    <div class="kpi answer"><div class="l">Features</div><div class="v">{m.features}</div><div class="s">{m.ready}% ready for dev</div></div>
+    <div class="kpi answer"><div class="l">Features</div><div class="v">{m.features}</div><div class="s">{m.ready}% ready for development</div></div>
     <div class="kpi"><div class="l">Acceptance criteria</div><div class="v">{m.acs}</div><div class="s">{m.acsPerFeature} per feature</div></div>
     <div class="kpi"><div class="l">Tasks</div><div class="v">{m.tasks}</div><div class="s">{m.noTasks} features without tasks</div></div>
     <div class="kpi"><div class="l">Open questions</div><div class="v">{m.openQuestions}</div><div class="s">{m.openChanges} change requests open</div></div>

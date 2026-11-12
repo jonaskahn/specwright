@@ -6,6 +6,7 @@
   import { ago, daysSince } from '../lib/format';
   import { href } from '../lib/router';
   import { lintLook, stateLook, wordLook } from '../lib/status';
+  import { relationWords, stationWords } from '../lib/vocabulary';
 
   let { id }: { id: string } = $props();
   const feature = $derived(app.features.find((f) => f.id === id) ?? app.loaded.data.features?.rows.find((f) => f.id === id));
@@ -28,8 +29,8 @@
       <div class="row-flex wrap">
         <Pill look={stateLook(feature.state, feature.condition)} />
         <Pill look={lintLook(feature.lint)} />
-        {#if feature.station}<span class="chip">station {feature.station}</span>{/if}
-        {#if feature.next}<span class="chip">next {feature.next}{feature.turn ? ` · ${feature.turn}` : ''}</span>{/if}
+        {#if feature.station}<span class="chip">Station: {stationWords(feature.station)}</span>{/if}
+        {#if feature.next}<span class="chip">Next: {feature.next}{feature.turn ? ` · ${feature.turn}` : ''}</span>{/if}
       </div>
       <dl class="facts">
         <div><dt>Updated</dt><dd>{ago(daysSince(feature.updated, app.today))}</dd></div>
@@ -81,7 +82,7 @@
         {/each}
         {#each links as l, i (i)}
           <a class="lrow" style:--cols="minmax(0,1fr)" href={href('graph', l.other)}>
-            <span class="mono sub">{l.side === 'out' ? '→' : '←'} {l.rel} {l.other}</span>
+            <span class="sub">{relationWords(l.rel, l.side)} {app.graph.node(l.other)?.title ?? l.other} <span class="mono">{l.other}</span></span>
           </a>
         {/each}
         {#if !records.length && !links.length}<div class="lrow" style:--cols="minmax(0,1fr)"><span class="muted">No related records.</span></div>{/if}

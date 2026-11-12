@@ -92,11 +92,11 @@ export class GraphIndex {
       throw new QueryError(`${t} names several items; pick one`, options);
     }
     t = t.trim();
-    throw new QueryError(/^[A-Z]+-\d+/.test(t) ? `unknown ID: ${t}` : `no item is known as: ${t}`);
+    throw new QueryError(/^[A-Z]+-\d+/.test(t) ? `unknown identifier: ${t}` : `no item is known as: ${t}`);
   }
 
   private known(key: string): void {
-    if (!this.nodes.has(key)) throw new QueryError(`unknown ID: ${key}`);
+    if (!this.nodes.has(key)) throw new QueryError(`unknown identifier: ${key}`);
   }
 
   find(opts: { text?: string; kind?: string; status?: string; jira?: string; epic?: string }): GraphNode[] {
@@ -119,7 +119,7 @@ export class GraphIndex {
   }
 
   neighbors(key: string, dir: Side | 'both' = 'both', rel?: string, declaredOnly = false): EdgeRow[] {
-    if (!this.nodes.has(key) && !key.startsWith('jira:') && !key.startsWith('code:')) throw new QueryError(`unknown ID: ${key}`);
+    if (!this.nodes.has(key) && !key.startsWith('jira:') && !key.startsWith('code:')) throw new QueryError(`unknown identifier: ${key}`);
     const sides: Side[] = dir === 'both' ? ['out', 'in'] : [dir];
     const rows: EdgeRow[] = [];
     for (const side of sides) {
@@ -201,7 +201,7 @@ export class GraphIndex {
     let seeds: Set<string>;
     if (target.startsWith('jira:')) {
       seeds = new Set(this.edgesFor(new Set([target]), 'in').filter((e) => e.rel === 'published_as').map((e) => e.from));
-      if (!seeds.size) throw new QueryError(`unknown Jira key: ${target.slice(5)}`);
+      if (!seeds.size) throw new QueryError(`unknown Jira issue key: ${target.slice(5)}`);
     } else {
       this.known(target);
       seeds = new Set([target]);

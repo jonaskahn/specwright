@@ -14,9 +14,9 @@ export function ago(days: number | null): string {
   if (days === null) return 'not set';
   if (days === 0) return 'today';
   if (days === 1) return 'yesterday';
-  if (days < 14) return `${days} d ago`;
-  if (days < 70) return `${Math.round(days / 7)} w ago`;
-  return `${Math.round(days / 30)} mo ago`;
+  if (days < 14) return `${days} days ago`;
+  if (days < 70) return `${Math.round(days / 7)} weeks ago`;
+  return `${Math.round(days / 30)} months ago`;
 }
 
 export function plural(count: number, one: string, many = one + 's'): string {
