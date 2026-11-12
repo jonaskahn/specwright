@@ -44,7 +44,7 @@ def _parser():
     brd = add("board", "per-feature lifecycle board")
     brd.add_argument("--item")
     brd.add_argument("--station")
-    add("show", "one node with link counts", ident=True)
+    add("show", "one node by ID, alias or title, with its crosswalk row", ident=True)
     nb = add("neighbors", "paged links with file and line", ident=True)
     nb.add_argument("--dir", choices=["in", "out", "both"], default="both")
     nb.add_argument("--rel")
@@ -58,7 +58,7 @@ def _parser():
     ctx = add("context", "files to read for an item", ident=True)
     ctx.add_argument("--with-text", action="store_true")
     ctx.add_argument("--budget", type=int, default=4000)
-    fnd = add("find", "filter the index")
+    fnd = add("find", "filter the index by ID, title or any alias")
     fnd.add_argument("text", nargs="?")
     fnd.add_argument("--kind")
     fnd.add_argument("--status")
@@ -146,7 +146,7 @@ def main(argv=None):
                 args.limit,
             )
             return _emit(args, store, lines)
-        key = store.resolve(args.id)
+        key = store.resolve(args.id, fuzzy=args.command == "show")
         if args.command == "show":
             return _emit(args, store, graph_query.show(store, key))
         if args.command == "neighbors":

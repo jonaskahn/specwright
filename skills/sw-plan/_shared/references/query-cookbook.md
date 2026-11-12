@@ -7,6 +7,8 @@ and --offset.
 |-------------------------------------------|--------------------------------------------------------------|
 | Where do I start?                         | map, then map --epic EPIC-001                                |
 | What is FEAT-001 and what links to it?    | show FEAT-001                                                |
+| What is the item the business calls LEG-100? | show LEG-100 (any alias, remote ID, URL or title fragment) |
+| Which items mention "refund window"?      | find "refund window" (searches ID, title and aliases)        |
 | What does BR-001 govern?                  | neighbors BR-001 --dir in --rel governed_by                  |
 | Which epic does AC-001-2 belong to?       | up AC-001-2                                                  |
 | What sits under EPIC-001?                 | down EPIC-001 --depth 3                                      |
@@ -28,4 +30,5 @@ Output reading:
 - First line: graph: fresh, stale or missing.
 - Each link shows [class/resolution] and file:line.
 - A +N more line gives the next --offset.
-- Exit 3 lists candidates when an ID is ambiguous or unknown; qualify it, for example REF:FEAT-001.
+- Exit 3 lists candidates when a name is ambiguous or unknown; it never picks one. Qualify an ID, for example
+  REF:FEAT-001, or use a more specific name. `show` also reads the crosswalk row, parent and links from _meta/.

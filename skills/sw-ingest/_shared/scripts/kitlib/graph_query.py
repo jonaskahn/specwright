@@ -91,22 +91,61 @@ class Store:
             return {}
         return json.loads((self.dir / node["shard"]).read_text(encoding="utf-8"))
 
-    def resolve(self, text: str) -> str:
-        """Qualified key for an ID; STORY aliases map to FEAT; ambiguity is never guessed."""
+    def lookup(self, text: str, fuzzy: bool = False) -> list[dict[str, str]]:
+        """Nodes that go by this name: key, then alias, then (fuzzy) a title fragment.
+
+        The first tier with a hit wins, so an exact ID never competes with a loose title match.
+        """
+        needle = text.strip()
+        low = needle.casefold()
+        everything = list(self.nodes())
+        keyed = [n for n in everything if n["key"] == needle or n["key"].endswith(":" + needle)]
+        if keyed:
+            return keyed
+        named = [n for n in everything if low in _alias_list(n)]
+        if named or not fuzzy or not low:
+            return named
+        return [
+            n
+            for n in everything
+            if low in n["title"].casefold() or any(low in a for a in _alias_list(n))
+        ]
+
+    def resolve(self, text: str, fuzzy: bool = False) -> str:
+        """Qualified key for an ID or any other name; STORY aliases map to FEAT.
+
+        Ambiguity is never guessed: several matches raise an ask error that lists them.
+        """
         text = ids.story_alias(text.strip())
-        if text.startswith(("jira:", "code:")) or "/" in text:
+        if text.startswith(("jira:", "code:")):
             return text
         ref = ids.parse_ref(text)
-        if ref is None:
-            raise QueryError(f"not a spec ID: {text}", 2)
-        if ref.scope:
+        if ref is not None and ref.scope:
             return ref.qualified
-        hits = sorted(n["key"] for n in self.nodes() if n["key"].split(":", 1)[-1] == ref.id)
-        if not hits:
-            raise QueryError(f"unknown ID: {text}", 3)
-        if len(hits) > 1:
-            raise QueryError(f"{text} exists in several scopes; qualify it", 3, hits)
-        return hits[0]
+        hits = self.lookup(text, fuzzy)
+        if "/" in text and not hits:
+            return text
+        if len(hits) == 1:
+            return hits[0]["key"]
+        if hits:
+            options = [f"{n['key']}  {n['title']}".rstrip() for n in sorted_by_key(hits)]
+            scopes = {n["key"].split(":", 1)[0] for n in hits}
+            by_id = ref is not None and len(scopes) == len(hits) and len(hits) > 1
+            hint = (
+                "exists in several scopes; qualify it" if by_id else "names several items; pick one"
+            )
+            raise QueryError(f"{text} {hint}", 3, options)
+        if ref is None:
+            raise QueryError(f"no item is known as: {text}", 3)
+        raise QueryError(f"unknown ID: {text}", 3)
+
+
+def _alias_list(node: dict[str, str]) -> list[str]:
+    return [a.casefold() for a in node.get("aliases", "").split("|") if a]
+
+
+def sorted_by_key(nodes: list[dict[str, str]]) -> list[dict[str, str]]:
+    return sorted(nodes, key=lambda n: n["key"])
 
 
 def page(rows: Iterator[str], offset: int, limit: int) -> list[str]:
@@ -145,6 +184,9 @@ def show(store: Store, key: str) -> list[str]:
         f"title: {node['title']}",
         f"at: {node['loc']}",
     ]
+    if node.get("aliases"):
+        lines.append("aliases: " + ", ".join(node["aliases"].split("|")))
+    lines += _index_lines(store, key)
     if shard:
         lines.append(f"hash: {shard.get('hash', '-')}  jira: {shard.get('jira', 'UNKNOWN')}")
         lines.append(
@@ -165,6 +207,41 @@ def show(store: Store, key: str) -> list[str]:
     chain = _chain(store, key)
     if chain:
         lines.append("up: " + " > ".join(chain))
+    return lines
+
+
+def _meta_rows(store: Store, name: str) -> list[dict[str, str]]:
+    """Rows of a generated tab-separated file in `_meta/`; empty when it is not there yet."""
+    path = store.dir.parent / name
+    if not path.is_file():
+        return []
+    lines = path.read_text(encoding="utf-8").splitlines()
+    head = next((ln[2:].split("\t") for ln in lines if ln.startswith("# ") and "\t" in ln), [])
+    return [
+        dict(zip(head, ln.split("\t"), strict=False))
+        for ln in lines
+        if ln and not ln.startswith("#")
+    ]
+
+
+def _index_lines(store: Store, key: str) -> list[str]:
+    """Parent, links and crosswalk row from the generated master index."""
+    lines: list[str] = []
+    row = next((r for r in _meta_rows(store, "index.tsv") if r.get("key") == key), None)
+    if row and row.get("parent"):
+        lines.append(f"parent: {row['parent']}")
+    if row and row.get("links"):
+        lines.append("links: " + ", ".join(row["links"].split(",")))
+    for r in _meta_rows(store, "CROSSWALK.tsv"):
+        if key in r.get("internal_key", "").split(",") or key in r.get("source_ids", "").split(","):
+            parts = [
+                f"{r['legacy_id'] or '-'} -> {r['internal_key'] or '-'}",
+                f"match={r['match']}",
+            ]
+            for field in ("parent_group", "source_ids", "remote_id", "tracker_keys", "open_q"):
+                if r.get(field):
+                    parts.append(f"{field}={r[field]}")
+            lines.append("crosswalk: " + " · ".join(parts))
     return lines
 
 
@@ -389,9 +466,13 @@ def find(
                 continue
             if allowed is not None and n["key"] not in allowed:
                 continue
-            if needle and needle not in (n["key"] + " " + n["title"]).lower():
+            if (
+                needle
+                and needle not in " ".join((n["key"], n["title"], n.get("aliases", ""))).lower()
+            ):
                 continue
-            yield f"{n['key']} [{n['kind']}] {n['status']} {n['title']} @ {n['loc']}"
+            aka = f"  aka: {n['aliases']}" if n.get("aliases") else ""
+            yield f"{n['key']} [{n['kind']}] {n['status']} {n['title']} @ {n['loc']}{aka}"
 
     return page(rows(), offset, limit)
 
