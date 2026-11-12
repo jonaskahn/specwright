@@ -190,6 +190,7 @@ def input_files(root: Path, scopes: list[str]) -> list[Path]:
             ("records", "*.md"),
             ("snapshots", "*.md"),
             ("diagrams", "*.json"),
+            ("diagrams", "*.svg"),
             ("01-analysis/baseline", "*.tsv"),
             ("01-analysis/candidates", "*.tsv"),
         ):
@@ -413,15 +414,18 @@ def _scope_artifacts(graph: Graph, root: Path, scope: str, entities: dict[str, A
         except (OSError, ValueError):
             graph.findings.append(f"{rel}: diagram is not valid JSON")
             continue
+        # The node opens the picture when one is drawn; the citations stay in the JSON spec.
+        picture = path.with_suffix(".svg")
+        shown = picture.is_file() and not picture.is_symlink()
         graph.nodes[key] = Node(
             key,
             "diagram",
             "-",
             clean(data.get("title", path.stem)) if isinstance(data, dict) else "",
-            rel,
+            _rel(picture, root) if shown else rel,
             1,
             0,
-            hashing.bytes_hash(path.read_bytes()),
+            hashing.bytes_hash(path.read_bytes() + (picture.read_bytes() if shown else b"")),
             key,
         )
         lines = path.read_text(encoding="utf-8").splitlines()

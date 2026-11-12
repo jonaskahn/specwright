@@ -606,6 +606,24 @@ class RuleTests(unittest.TestCase):
             "0 blocking error(s)", lint.report_text(self.context([doc(withdrawn)]), found)
         )
 
+    def test_l070(self):
+        (self.base / "diagrams").mkdir()
+        (self.base / "diagrams/flow.json").write_text(
+            '{"title": "Return", "spec_ids": ["AC-001-1"]}\n'
+        )
+        (self.base / "diagrams/flow.svg").write_text("<svg/>\n")
+        shown = GOOD.replace(
+            "## UI/UX\n", "## UI/UX\n\n![Return flow (AC-001-1)](../diagrams/flow.svg)\n", 1
+        )
+        self.assertNotEqual(shown, GOOD)
+        self.check_rule("L-070", doc(), doc(shown))
+        found = [f for f in self.findings(doc()) if f.rule == "L-070"]
+        self.assertEqual([f.sev for f in found], ["warn"])
+        gone = shown.replace("../diagrams/flow.svg", "../diagrams/gone.svg")
+        self.assertIn("L-070", {f.rule for f in self.findings(doc(gone))})
+        (self.base / "diagrams/flow.svg").unlink()
+        self.assertNotIn("L-070", {f.rule for f in self.findings(doc())})
+
     def registry(self, *rows):
         table = tables.Table(list(schema.ASSET_REGISTRY_COLUMNS))
         table.rows = [list(r) for r in rows]

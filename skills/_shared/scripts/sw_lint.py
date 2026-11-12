@@ -47,11 +47,23 @@ REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {
     "L-067",
     "L-068",
     "L-069",
+    "L-070",
 }
-WARN_ONLY = {"L-009", "L-015", "L-041", "L-044", "L-064", "L-065", "L-067", "L-068", "L-069"}
+WARN_ONLY = {
+    "L-009",
+    "L-015",
+    "L-041",
+    "L-044",
+    "L-064",
+    "L-065",
+    "L-067",
+    "L-068",
+    "L-069",
+    "L-070",
+}
 PUBLISH = {"L-018", "L-037", "L-045", "L-046"}
 SYNC = set()
-RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), *range(56, 70))}
+RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), *range(56, 71))}
 RULE_HELP = {
     "L-001": "Front matter needs a mapping with non-empty id, type, status (scope in a program).",
     "L-002": "The id must use the grammar for its type, e.g. FEAT-003, BO-001, NFR-REF-001.",
@@ -99,12 +111,13 @@ RULE_HELP = {
     "L-061": "The decider must be a manifest approver (a warning when sign-off is optional).",
     "L-062": "A proposed amendment must be applied before review continues.",
     "L-063": "The INVEST split table needs pass/fail marks, not free text.",
-    "L-064": "A feature needs an illustration and has no picture and no recorded dismissal.",
+    "L-064": "A feature needs an illustration: draw it, embed it, or record a dismissal.",
     "L-065": "A diagram cites an ID that is withdrawn or missing.",
     "L-066": "Each ASSET in `assets:` must be registered and cited in Context or UI/UX.",
     "L-067": "A mockup, link or image registered for this feature is missing from `assets:`.",
     "L-068": "An active epic must name at least one business objective in `bo:`.",
     "L-069": "A feature and its epic share no business objective.",
+    "L-070": "A picture of this feature is not embedded in its story, or an image is missing.",
 }
 # Artifacts a reader looks up by name; each needs a title and an alias list (possibly empty).
 NAMED_TYPES = {
@@ -939,6 +952,22 @@ def lint_document(doc, ctx):
                 "feature needs an illustration and has no recorded dismissal",
                 sev="warn",
             )
+        if picture:
+            loose = [p["svg"] for p in picture["pictures"] if not p["embedded"]]
+            if loose:
+                emit(
+                    "L-070",
+                    "embed the picture in UI/UX with embed_diagram.py: " + ", ".join(loose),
+                    doc.line("UI/UX"),
+                    sev="warn",
+                )
+            if picture["broken"]:
+                emit(
+                    "L-070",
+                    "an embedded image is not on disk: " + ", ".join(picture["broken"]),
+                    doc.line("UI/UX"),
+                    sev="warn",
+                )
         if picture and picture["stale"]:
             emit(
                 "L-065",

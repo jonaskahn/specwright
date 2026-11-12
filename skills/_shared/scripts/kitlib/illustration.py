@@ -482,6 +482,63 @@ def _citations(
     return _json_citations(base, scope, live, withdrawn)
 
 
+_IMAGE = re.compile(r"!\[[^\]]*\]\(\s*([^)\s]+)")
+_EMBED_SECTIONS = ("Context", "UI/UX")
+
+
+def embeds(story: str, base: Path) -> list[tuple[str, Path | None]]:
+    """Local images the story shows in Context or UI/UX, as (written path, file or None).
+
+    A path is read from the story's own folder, so `../diagrams/x.svg` is the picture
+    `diagrams/x.svg` of the project. Remote and absolute targets are not local pictures.
+    """
+    parsed = frontmatter.parse(story)
+    sections = markdown.sections(parsed.body)
+    found: list[tuple[str, Path | None]] = []
+    root = base.resolve()
+    for name in _EMBED_SECTIONS:
+        for line in _section_lines(sections, name):
+            for match in _IMAGE.finditer(line):
+                ref = match.group(1)
+                if re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:|^[/\\]", ref):
+                    continue
+                path = (base / "02-drafts" / ref.split("#", 1)[0]).resolve()
+                found.append((ref, path if path.is_relative_to(root) and path.is_file() else None))
+    return found
+
+
+def pictures(
+    story: str, base: Path | None, scope: str, feat: str, number: int
+) -> tuple[list[dict[str, Any]], list[str]]:
+    """The rendered pictures of this feature, and the embedded images that point nowhere.
+
+    A picture is a `diagrams/*.svg` whose JSON sidecar cites the feature or one of its criteria.
+    """
+    if base is None or not (base / "diagrams").is_dir():
+        return [], []
+    shown = {path for _, path in embeds(story, base) if path is not None}
+    rows: list[dict[str, Any]] = []
+    for path in sorted((base / "diagrams").glob("*.json")):
+        svg = path.with_suffix(".svg")
+        if path.is_symlink() or svg.is_symlink() or not svg.is_file():
+            continue
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, ValueError):
+            continue
+        if not any(_belongs(t, scope, feat, number) for t in graph._spec_ids(data, scope)):  # noqa: SLF001
+            continue
+        rows.append(
+            {
+                "svg": f"diagrams/{svg.name}",
+                "json": f"diagrams/{path.name}",
+                "embedded": svg.resolve() in shown,
+            }
+        )
+    broken = [ref for ref, path in embeds(story, base) if path is None]
+    return rows, broken
+
+
 def _dismissed(fm: dict[str, Any]) -> bool:
     reason = str(fm.get("illustration_reason") or "").strip()
     return fm.get("illustration") == "none" and bool(reason)
@@ -534,6 +591,7 @@ def assess(
     rows = _citations(base, chosen, live, withdrawn)
     covering, stale = _covering(rows, chosen, feat, number)
     dismissed = _dismissed(fm)
+    shown, broken = pictures(story, base, chosen, feat, number)
     return {
         "id": feat,
         "scope": chosen,
@@ -542,6 +600,8 @@ def assess(
         "signals": signals.as_dict(),
         "dismissed": dismissed,
         "stale": stale,
+        "pictures": shown,
+        "broken": broken,
     }
 
 
@@ -580,4 +640,9 @@ def render_text(result: dict[str, Any]) -> str:
         lines.append("stale: " + ", ".join(result["stale"]))
     if result["dismissed"]:
         lines.append("dismissed: yes")
+    loose = [p["svg"] for p in result.get("pictures", []) if not p["embedded"]]
+    if loose:
+        lines.append("not embedded: " + ", ".join(loose))
+    if result.get("broken"):
+        lines.append("image not found: " + ", ".join(result["broken"]))
     return "\n".join(lines) + "\n"

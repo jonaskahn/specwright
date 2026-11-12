@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from kitlib import frontmatter, graph, hashing, illustration
+from kitlib import frontmatter, graph, graph_query, hashing, illustration
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = ROOT / "workshop/fixtures"
@@ -118,6 +118,22 @@ class ChipTests(unittest.TestCase):
         checked = illustration.state(root, "FEAT-001")
         self.assertEqual(checked["chip"], illustration.CHECK)
         self.assertIn("REF:AC-001-3", checked["stale"])
+
+    def test_a_diagram_node_opens_its_svg_and_cites_from_the_json(self):
+        root = self.base / "refund"
+        shutil.copytree(FIXTURES / "refund/after-spec", root)
+        shutil.copy(CURRENT, root / "diagrams/flow.json")
+        graph.build(root, "REF")
+        store = graph_query.Store(root, "REF")
+        self.assertTrue(store.node("REF:diagram/flow")["loc"].startswith("diagrams/flow.json"))
+        (root / "diagrams/flow.svg").write_text("<svg/>\n")
+        self.assertNotEqual(graph_query.Store(root, "REF").freshness(), "fresh")
+        graph.build(root, "REF")
+        store = graph_query.Store(root, "REF")
+        self.assertTrue(store.node("REF:diagram/flow")["loc"].startswith("diagrams/flow.svg"))
+        edges = [e for e in store.edges("out") if e.rel == "illustrates"]
+        self.assertTrue(edges)
+        self.assertEqual({e.file for e in edges}, {"diagrams/flow.json"})
 
     def test_dismissal_changes_only_front_matter_and_keeps_the_draft_hash(self):
         path = self.write_story(DRAW)
