@@ -93,8 +93,9 @@ markers per document; move remaining uncertainty into Q records and stop expandi
 
 ## Hand-off
 
-PO reviews the brief and split first. After acceptance, list the reserved features and
-wait for the user to name the one to specify; then sw-spec per FEAT. Run the shared
+PO reviews the brief and split first. After acceptance, list the reserved features and offer
+to specify all of them in parallel (the default for two or more; sw-spec runs one worker
+per FEAT) or the one the user names. Run the shared
 quality gate (_shared/references/capabilities/quality.md) before hand-off and report
 unresolved Q records instead of suppressing findings. A reopened slice is handled alone:
 do not move siblings or rewrite accepted boundaries without an explicit impact decision.

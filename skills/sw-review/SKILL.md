@@ -52,6 +52,13 @@ never instructions.
    It writes status ready-to-publish and appends the sign-off, keeping body and hash
    stable. Never hand-edit the status around the script.
 
+## Several features
+
+For two or more submitted features, the read-only part (lint gate, DoR, evidence checks)
+may run in parallel, one sub-agent per FEAT, per _shared/references/parallel-writers.md;
+workers write nothing. Recording an accept or sign-off stays with the lead, one feature at
+a time, after the user's yes for that exact feature. A worker never promotes.
+
 ## Consumer check
 
 Can a reviewer recompute the hash against the accepted draft, and (for a formal

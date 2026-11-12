@@ -1,6 +1,8 @@
 # Parallel extraction
 
 Use this when the sources are larger than one reading session, for example a wiki of dozens of pages.
+The general rules for fan-out (one writer per file, lead-owned shared state, guard check) are in
+`_shared/references/parallel-writers.md`; this page adds the ingest specifics.
 
 1. **Partition.** Import first (`bulk_import.py`), then run `candidates.py assign`. It groups snapshots by the
    top page they hang under (else the first label, else their own area) and packs each group into workers of
