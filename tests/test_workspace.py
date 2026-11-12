@@ -65,6 +65,78 @@ class FlatTests(WorkspaceTestCase):
         self.assertEqual(table.header, schema.REGISTRY_COLUMNS)
         self.assertEqual(table.get("REF:FEAT-001", "Kind"), "story")
 
+    def test_new_manifest_has_sources_evidence_and_ignore_folders(self):
+        self.init_flat()
+        data = miniyaml.loads((self.root / "project.yaml").read_text())
+        self.assertEqual(data["sources"], [])
+        self.assertEqual(
+            data["evidence"]["allowed_kinds"], ["url", "ticket", "document", "meeting"]
+        )
+        self.assertEqual(
+            workspace.evidence_kinds(self.root, "REF"), data["evidence"]["allowed_kinds"]
+        )
+
+    def test_approvers_are_added_once_and_blank_values_are_refused(self):
+        self.init_flat()
+        workspace.add_approver(self.root, "REF", "BA", "An Tran", "712020:bb22")
+        self.assertEqual(
+            [a["name"] for a in workspace.approver_list(self.root, "REF")],
+            ["Lan Nguyen", "An Tran"],
+        )
+        for bad in (
+            ("BA", "", "x:1"),
+            ("", "N", "x:1"),
+            ("BA", "TBD", "x:1"),
+            ("BA", "N", "unknown"),
+        ):
+            with self.assertRaises(workspace.WorkspaceError):
+                workspace.add_approver(self.root, "REF", *bad)
+        with self.assertRaises(workspace.WorkspaceError):
+            workspace.add_approver(self.root, "REF", "PO", "Lan", "712020:aa11")
+
+    def test_source_registry_validates_and_round_trips(self):
+        self.init_flat()
+        pattern = r"^LEG-\d{3}$"
+        workspace.add_source(
+            self.root, "REF", "wiki-1", "confluence", "SPACE/Home", "2026-11-01", 104, pattern
+        )
+        found = workspace.source_list(self.root, "REF")
+        self.assertEqual(
+            found,
+            [
+                {
+                    "id": "wiki-1",
+                    "system": "confluence",
+                    "root": "SPACE/Home",
+                    "snapshot_date": "2026-11-01",
+                    "expected_count": 104,
+                    "legacy_id_pattern": pattern,
+                }
+            ],
+        )
+        cases = [
+            ("Wiki 1", "c", "r", "2026-11-01", 1, ""),
+            ("wiki-2", "", "r", "2026-11-01", 1, ""),
+            ("wiki-2", "c", "r", "01/11/2026", 1, ""),
+            ("wiki-2", "c", "r", "2026-11-01", -1, ""),
+            ("wiki-2", "c", "r", "2026-11-01", 1, "("),
+            ("wiki-1", "c", "r", "2026-11-01", 1, ""),
+        ]
+        for case in cases:
+            with self.assertRaises(workspace.WorkspaceError, msg=case):
+                workspace.add_source(self.root, "REF", *case)
+
+    def test_upgrade_adds_the_new_manifest_sections(self):
+        self.init_flat()
+        path = self.root / "project.yaml"
+        data = miniyaml.loads(path.read_text())
+        for field in ("sources", "evidence", "ignore_folders"):
+            del data[field]
+        path.write_text(miniyaml.dumps(data))
+        plan = workspace.upgrade(self.root, "REF", apply=True)
+        self.assertEqual(sum("project.yaml: add" in line for line in plan), 3)
+        self.assertEqual(miniyaml.loads(path.read_text())["sources"], [])
+
     def test_init_refuses_to_overwrite(self):
         self.init_flat()
         with self.assertRaises(workspace.WorkspaceError):
@@ -198,6 +270,35 @@ class CommandLineTests(WorkspaceTestCase):
         )
         self.assertEqual(code, workspace.EXIT_ERROR)
         self.assertIn("approver", err)
+
+    def test_cli_adds_and_lists_approvers_and_sources(self):
+        workspace.init(self.root, "flat", "REF", "Refunds")
+        where = ["--cwd", str(self.root)]
+        code, out, _ = self.run_cli(
+            "approvers", "add", "--role", "BA", "--name", "An", "--account-id", "9:z", *where
+        )
+        self.assertEqual(code, 0)
+        self.assertIn("An", out)
+        code, _, err = self.run_cli("approvers", "add", "--role", "BA", *where)
+        self.assertEqual(code, workspace.EXIT_ERROR)
+        self.assertIn("needs a real", err)
+        code, out, _ = self.run_cli(
+            "source",
+            "add",
+            "--id",
+            "wiki",
+            "--system",
+            "confluence",
+            "--root",
+            "S/H",
+            "--snapshot-date",
+            "2026-11-01",
+            "--expected-count",
+            "3",
+            *where,
+        )
+        self.assertEqual(code, 0)
+        self.assertIn('"expected_count": 3', out)
 
 
 if __name__ == "__main__":

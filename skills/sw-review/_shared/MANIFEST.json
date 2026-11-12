@@ -18,10 +18,10 @@
   "scripts/kitlib/miniyaml.py": "73a1bbe68a05",
   "scripts/kitlib/review.py": "f97ba6ac3124",
   "scripts/kitlib/rtm.py": "dc57dda3403f",
-  "scripts/kitlib/schema.py": "2cb55d071f30",
+  "scripts/kitlib/schema.py": "9b9d2e8b88d0",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "a72c8fe85965",
-  "scripts/kitlib/workspace.py": "7d09233b2a22",
+  "scripts/kitlib/workspace.py": "dbb1251f4d0e",
   "scripts/kitlib/writelog.py": "1a34e6e3c8c9"
  },
  "kit_version": "0.3.0"

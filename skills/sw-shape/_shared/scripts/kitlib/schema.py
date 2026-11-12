@@ -51,6 +51,10 @@ STATUSES = {
     "risk": [*_CARD_STATUSES, "open", "mitigated"],
 }
 
+# Evidence kinds a decision may cite. Chat is opt-in per project because it is the weakest.
+DEFAULT_EVIDENCE_KINDS = ("url", "ticket", "document", "meeting")
+EVIDENCE_KINDS = (*DEFAULT_EVIDENCE_KINDS, "chat")
+
 # Question states that still wait for an answer; every board and report counts the same set.
 OPEN_Q = frozenset({"proposed", "candidate", "open"})
 

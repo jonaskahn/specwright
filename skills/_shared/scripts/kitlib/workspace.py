@@ -8,9 +8,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -244,6 +246,9 @@ def project_manifest(
             "output": {"default": output},
             "confluence": {"spaces": []},
             "limits": {"child_depth": 2, "max_pages": 50},
+            "sources": [],
+            "evidence": {"allowed_kinds": list(schema.DEFAULT_EVIDENCE_KINDS)},
+            "ignore_folders": [],
         }
     )
     return manifest
@@ -413,6 +418,15 @@ def upgrade(root: Path, scope: str, apply: bool = False, code: str | None = None
         plan.append("project.yaml: add output.default = ask")
         data["output"] = {"default": "ask"}
         changed = True
+    for field_name, default in (
+        ("sources", []),
+        ("evidence", {"allowed_kinds": list(schema.DEFAULT_EVIDENCE_KINDS)}),
+        ("ignore_folders", []),
+    ):
+        if field_name not in data:
+            plan.append(f"project.yaml: add {field_name}")
+            data[field_name] = default
+            changed = True
     if code and not data.get("code"):
         repo = code_repo_root(root)
         if repo is None:
@@ -445,6 +459,79 @@ def upgrade(root: Path, scope: str, apply: bool = False, code: str | None = None
     rtm.migrate_registry(registry_path)
     _seed_graph(root, mode_of(root), scope, [])
     return plan
+
+
+def approver_list(root: Path, scope: str) -> list[dict[str, str]]:
+    return [dict(a) for a in load(scope_dir(root, scope) / FLAT_MANIFEST).get("approvers") or []]
+
+
+def add_approver(root: Path, scope: str, role: str, name: str, account_id: str) -> None:
+    """Record who may approve. Blank or duplicate entries are refused, never guessed."""
+    values = {"role": role.strip(), "name": name.strip(), "account_id": account_id.strip()}
+    blank = [k for k, v in values.items() if not v or v.lower() in ("tbd", "unknown", "none")]
+    if blank:
+        raise WorkspaceError(f"approver needs a real {', '.join(blank)}")
+    path = scope_dir(root, scope) / FLAT_MANIFEST
+    data = load(path)
+    current = [dict(a) for a in data.get("approvers") or []]
+    if any(a.get("account_id") == values["account_id"] for a in current):
+        raise WorkspaceError(f"approver {values['account_id']} is already recorded")
+    data["approvers"] = [*current, values]
+    fsio.atomic_write(path, miniyaml.dumps(data))
+
+
+def evidence_kinds(root: Path, scope: str) -> list[str]:
+    data = load(scope_dir(root, scope) / FLAT_MANIFEST)
+    kinds = (data.get("evidence") or {}).get("allowed_kinds")
+    return [str(k) for k in kinds] if kinds else list(schema.DEFAULT_EVIDENCE_KINDS)
+
+
+def source_list(root: Path, scope: str) -> list[dict[str, Any]]:
+    return [dict(s) for s in load(scope_dir(root, scope) / FLAT_MANIFEST).get("sources") or []]
+
+
+def add_source(
+    root: Path,
+    scope: str,
+    source_id: str,
+    system: str,
+    location: str,
+    snapshot_date: str,
+    expected_count: int,
+    legacy_id_pattern: str = "",
+) -> None:
+    """Register where imported material comes from, so counts and legacy IDs can be checked."""
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,30}", source_id):
+        raise WorkspaceError("source id is 1-31 lowercase letters, digits or hyphens")
+    if not system.strip() or not location.strip():
+        raise WorkspaceError("a source needs a system and a root")
+    try:
+        datetime.strptime(snapshot_date, "%Y-%m-%d")
+    except ValueError:
+        raise WorkspaceError("snapshot date must be YYYY-MM-DD") from None
+    if expected_count < 0:
+        raise WorkspaceError("expected count cannot be negative")
+    if legacy_id_pattern:
+        try:
+            re.compile(legacy_id_pattern)
+        except re.error as exc:
+            raise WorkspaceError(f"legacy ID pattern is not a valid regex: {exc}") from None
+    path = scope_dir(root, scope) / FLAT_MANIFEST
+    data = load(path)
+    current = [dict(s) for s in data.get("sources") or []]
+    if any(s.get("id") == source_id for s in current):
+        raise WorkspaceError(f"source {source_id} is already registered")
+    entry: dict[str, Any] = {
+        "id": source_id,
+        "system": system.strip(),
+        "root": location.strip(),
+        "snapshot_date": snapshot_date,
+        "expected_count": expected_count,
+    }
+    if legacy_id_pattern:
+        entry["legacy_id_pattern"] = legacy_id_pattern
+    data["sources"] = [*current, entry]
+    fsio.atomic_write(path, miniyaml.dumps(data))
 
 
 def _parse_approver(raw: str) -> dict[str, str]:
@@ -489,6 +576,23 @@ def _build_parser() -> argparse.ArgumentParser:
     out_cmd.add_argument("value", nargs="?")
     out_cmd.add_argument("--cwd", default=".")
     out_cmd.add_argument("--scope")
+    appr = sub.add_parser("approvers", help="list or add the people who may approve")
+    appr.add_argument("action", choices=["add", "list"])
+    appr.add_argument("--role")
+    appr.add_argument("--name")
+    appr.add_argument("--account-id")
+    appr.add_argument("--cwd", default=".")
+    appr.add_argument("--scope")
+    src = sub.add_parser("source", help="list or register an import source")
+    src.add_argument("action", choices=["add", "list"])
+    src.add_argument("--id")
+    src.add_argument("--system")
+    src.add_argument("--root", dest="location")
+    src.add_argument("--snapshot-date")
+    src.add_argument("--expected-count", type=int)
+    src.add_argument("--legacy-id-pattern", default="")
+    src.add_argument("--cwd", default=".")
+    src.add_argument("--scope")
     up_cmd = sub.add_parser("upgrade", help="add newer workspace parts; dry run unless --apply")
     up_cmd.add_argument("--cwd", default=".")
     up_cmd.add_argument("--scope")
@@ -526,6 +630,32 @@ def main(argv: list[str] | None = None) -> int:
             raise WorkspaceError("no workspace.yaml or project.yaml found; run init first")
         if args.command == "list":
             print(json.dumps(list_scopes(root)))
+            return 0
+        if args.command in ("approvers", "source"):
+            scope = resolve(root, args.scope, None, start, args.action == "add")
+            if args.command == "approvers":
+                if args.action == "add":
+                    add_approver(
+                        root, scope, args.role or "", args.name or "", args.account_id or ""
+                    )
+                print(json.dumps(approver_list(root, scope), indent=2))
+            else:
+                if args.action == "add":
+                    if not (args.id and args.snapshot_date and args.expected_count is not None):
+                        raise WorkspaceError(
+                            "source add needs --id, --snapshot-date, --expected-count"
+                        )
+                    add_source(
+                        root,
+                        scope,
+                        args.id,
+                        args.system or "",
+                        args.location or "",
+                        args.snapshot_date,
+                        args.expected_count,
+                        args.legacy_id_pattern,
+                    )
+                print(json.dumps(source_list(root, scope), indent=2))
             return 0
         if args.command in ("output", "upgrade"):
             writes = args.command == "upgrade" or args.action == "set"
