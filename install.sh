@@ -12,7 +12,7 @@ set -eu
 
 REPO="${SPECWRIGHT_REPO:-jonaskahn/specwright}"
 REF="${SPECWRIGHT_REF:-main}"
-SKILLS="sw-start sw-shape sw-ingest sw-spec sw-plan sw-review sw-publish"
+SKILLS="sw-start sw-shape sw-ingest sw-spec sw-plan sw-review sw-publish sw-view"
 INNER=76
 TERMINAL=0
 [ ! -t 1 ] || TERMINAL=1

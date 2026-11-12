@@ -1,0 +1,34 @@
+{
+  "skill": "sw-view",
+  "cases": [
+    {
+      "id": "open",
+      "prompt": "Open the console for the refund workspace",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "Runs doctor before prepare",
+        "Prints a 127.0.0.1 address and how to stop the server",
+        "Writes nothing outside console/"
+      ]
+    },
+    {
+      "id": "no-node",
+      "prompt": "Open the console when Node is not installed",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "Shows the install plan and asks once",
+        "Installs nothing before the user approves",
+        "Says everything except sw-view still works if the user declines"
+      ]
+    },
+    {
+      "id": "missing-data",
+      "prompt": "Open the console when tasks.json is missing",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "Names sw-plan as the owner of tasks.json",
+        "Does not write the data file itself"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{"query": "show me a dashboard of the whole workspace", "should_trigger": true}
+{"query": "open the console", "should_trigger": true}
+{"query": "sw-view for the refund workspace", "should_trigger": true}
+{"query": "I want to see the knowledge graph in a browser", "should_trigger": true}
+{"query": "browse all features and their status in one place", "should_trigger": true}
+{"query": "show the metrics for every project", "should_trigger": true}
+{"query": "open the web view of the tasks and the board", "should_trigger": true}
+{"query": "let me query the graph for how FEAT-001 connects to FEAT-002", "should_trigger": true}
+{"query": "give me a visual overview of the specs and open questions", "should_trigger": true}
+{"query": "start the specwright dashboard", "should_trigger": true}
+{"query": "write the acceptance criteria for FEAT-001", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "record PO sign-off for REF:FEAT-001", "should_trigger": false, "near_miss_of": "sw-review"}
+{"query": "publish FEAT-002 to Jira", "should_trigger": false, "near_miss_of": "sw-publish"}
+{"query": "break FEAT-001 into implementation tasks", "should_trigger": false, "near_miss_of": "sw-plan"}
+{"query": "import this email as a source", "should_trigger": false, "near_miss_of": "sw-ingest"}
+{"query": "shape this idea into features", "should_trigger": false, "near_miss_of": "sw-shape"}
+{"query": "print the graph map as text", "should_trigger": false, "near_miss_of": "sw-start"}
+{"query": "run the lint gate on the draft", "should_trigger": false, "near_miss_of": "sw-review"}
+{"query": "what is the status of REF:FEAT-001 in one line", "should_trigger": false, "near_miss_of": "sw-start"}
+{"query": "draw a sequence diagram for the refund flow", "should_trigger": false, "near_miss_of": "sw-spec"}

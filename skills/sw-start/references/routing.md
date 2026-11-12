@@ -19,6 +19,7 @@ own prerequisites.
 | Passing plan, no publication request | Markdown delivery complete; stay in plan. |
 | Explicit publication request, gates passing | Offer sw-publish; exact PUBLISH token still required. |
 | Published feature, no tasks or task-only changes | sw-plan; never poll Jira. |
+| Dashboard, overview, console, graph in a browser, metrics for the whole workspace | sw-view; it only reads and never advances a stage. |
 | Published-text amendment | Stop until a current supplied baseline and a CR exist. |
 
 Stored destination preferences never authorize writes or force publication. Ordinary

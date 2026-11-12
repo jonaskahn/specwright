@@ -502,6 +502,54 @@
         "scripts/sw_lint.py",
         "scripts/trace.py"
       ]
+    },
+    "sw-view": {
+      "capabilities": [
+        "core",
+        "knowledge",
+        "data",
+        "runtime"
+      ],
+      "shared": [
+        "references/capabilities/knowledge.md",
+        "references/data-format.md",
+        "references/graph-model.md",
+        "references/next-step.md",
+        "references/query-cookbook.md",
+        "references/runtime.md",
+        "references/stop-and-ask.md",
+        "references/untrusted-content.md",
+        "scripts/data.py",
+        "scripts/graph.py",
+        "scripts/kitlib/__init__.py",
+        "scripts/kitlib/blockers.py",
+        "scripts/kitlib/data_export.py",
+        "scripts/kitlib/dataformat.py",
+        "scripts/kitlib/frontmatter.py",
+        "scripts/kitlib/fsio.py",
+        "scripts/kitlib/gitignore.py",
+        "scripts/kitlib/graph.py",
+        "scripts/kitlib/graph_query.py",
+        "scripts/kitlib/hashing.py",
+        "scripts/kitlib/ids.py",
+        "scripts/kitlib/index.py",
+        "scripts/kitlib/lifecycle.py",
+        "scripts/kitlib/markdown.py",
+        "scripts/kitlib/miniyaml.py",
+        "scripts/kitlib/provenance.py",
+        "scripts/kitlib/rtm.py",
+        "scripts/kitlib/runtime.py",
+        "scripts/kitlib/runtime_pins.py",
+        "scripts/kitlib/schema.py",
+        "scripts/kitlib/tables.py",
+        "scripts/kitlib/task_validation.py",
+        "scripts/kitlib/view_build.py",
+        "scripts/kitlib/view_extract.py",
+        "scripts/kitlib/view_server.py",
+        "scripts/kitlib/workspace.py",
+        "scripts/kitlib/writelog.py",
+        "scripts/runtime.py"
+      ]
     }
   }
 }

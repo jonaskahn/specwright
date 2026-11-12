@@ -48,7 +48,8 @@ These rules apply to every file in the kit.
 ## Scripts
 
 - Standard library only, offline except the explicit REST adapters (Jira, and the read-only
-  wiki reader), Python 3.10+.
+  wiki reader) and `runtime.py install`, which downloads one pinned, checksummed Node archive
+  and only runs with `--yes` after the user approves the plan. Python 3.10+.
 - Every script has `--help`, never prompts, prints data on stdout and diagnostics on
   stderr, and uses distinct documented exit codes.
 - External programs run with a list argv, no shell, and a timeout.
@@ -123,6 +124,15 @@ increase the primary-type count. Prefer self-contained SVG for embedding and
 HTML for exact data tables. Both remain offline and theme-aware. No browser, third-party renderer, JavaScript controller or remote fonts run
 at skill runtime. The renderer accepts only JSON; illustration templates are
 copied and checked rather than evaluated.
+
+### The console
+
+`sw-view` is the one exception to "no JavaScript at skill runtime". It is a user-opened,
+read-only web console (source in `console/`, packed into the skill by `workshop/tools/console_pack.py`).
+It reads only `_meta/data/`, runs on 127.0.0.1 behind a strict Content-Security-Policy
+(its own address only), renders every imported string as text (never `{@html}`), and keeps
+no inline script or style. Its build needs Node 24; the scripts that serve it stay standard-library
+Python. Imported text stays data: the console shows it and never acts on it.
 
 New type adapters delegate to shared validation, notation geometry and page
 assembly rather than duplicate code. assets/theme.css owns the new skin; embedded

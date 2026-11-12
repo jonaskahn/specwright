@@ -35,6 +35,7 @@ A rough idea goes in. A story, a plan, and a task list come out. Product, engine
 | Review | `sw-review` | Approval tied to a person, an item, a link, and a content hash |
 | Plan | `sw-plan` | An approach and tasks checked against the current story |
 | Publish | `sw-publish` | A delivery you asked for, including a guarded Jira write |
+| View | `sw-view` | A local, read-only web console: overview, metrics, features, tasks, board, tree, and the knowledge graph with queries |
 
 Every artifact has a stable ID, a title and aliases, and `graph.py show <any name>` finds it by a legacy ID, a remote page ID or a title fragment. The build also writes `_meta/INDEX.md`, `CROSSWALK.tsv` and `READ-FIRST.md`, so a new session can start from one short list instead of crawling folders. A project that already runs many capabilities starts from its legacy register (`sw-start` routes it), imports a page tree in one logged batch, and checks every citation by script.
 
@@ -44,6 +45,7 @@ Four ways in. Pick the one that matches the machine in front of you.
 
 - **To install the skills:** `curl` or `irm`. No Node, no Python.
 - **To run the skills:** Python 3.10+ and Git. The standard library is enough.
+- **To open the console (`sw-view`):** Node 24+. `sw-start` offers to install it, and only after you say yes.
 - **Richer documents** can use local tools such as pandoc. A missing tool says so. It never invents the document.
 
 A new docs workspace starts a Git repo only when it is not already inside one. An embedded workspace reuses the code repo, including worktrees. Setup does not change Git config, stage files, or commit. New workspaces default to Markdown.
@@ -51,7 +53,7 @@ A new docs workspace starts a Git repo only when it is not already inside one. A
 ### Command-line installer
 
 > [!TIP]
-> The easy door. All seven skills, for the agents you pick. All projects is the default.
+> The easy door. All eight skills, for the agents you pick. All projects is the default.
 
 All projects:
 
@@ -98,7 +100,7 @@ Windows, named agents, no questions:
 ### Skills CLI
 
 > [!NOTE]
-> Same seven skills, through `npx`. Node comes along for the ride.
+> Same eight skills, through `npx`. Node comes along for the ride.
 
 All projects:
 

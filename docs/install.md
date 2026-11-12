@@ -2,8 +2,8 @@
 
 ## Universal installation
 
-Specwright ships seven public `skills/<name>/SKILL.md` folders: `sw-start`, `sw-shape`,
-`sw-ingest`, `sw-spec`, `sw-plan`, `sw-review` and `sw-publish`. Shared runtime and
+Specwright ships eight public `skills/<name>/SKILL.md` folders: `sw-start`, `sw-shape`,
+`sw-ingest`, `sw-spec`, `sw-plan`, `sw-review`, `sw-publish` and `sw-view`. Shared runtime and
 references live once in `skills/_shared/`. Packaging embeds a local `_shared/` copy in
 each shipped folder, so an uploaded ZIP is self-contained and never depends on a sibling.
 
@@ -57,7 +57,7 @@ generated `_shared/` copy, so installing a skill on its own works. They always c
 `extended` set of 20 diagram types (`skills/sw-spec` holds core and extended; only
 `extras/` is left out). Only `workshop/tools/package.py` defaults to the 10-type core profile.
 
-The plugin manifests declare all seven public skills and seven command wrappers. Commands
+The plugin manifests declare all eight public skills and eight command wrappers. Commands
 carry Claude-specific `${CLAUDE_PLUGIN_ROOT}` paths; skill folders themselves remain
 host-neutral. Installation writes only skill files and client metadata. It never writes
 to Jira, Confluence or a Specwright workspace.
@@ -67,8 +67,13 @@ repository (embedded), for one project or a program of several. See the Layouts 
 the README and `docs/conventions.md`. Opening a skill in a client and checking
 discovery remains a manual compatibility check because client support varies by version.
 
-Python 3.10 or newer is required to run the skill scripts. `install.sh` and `install.ps1` do not need it. Runtime code uses only the
-standard library; no JavaScript runtime or dependency lockfile is used.
+Python 3.10 or newer is required to run the skill scripts. `install.sh` and `install.ps1` do not need it. Skill scripts use only the
+standard library.
+
+`sw-view` also needs Node 24 or newer, to build its console once per project. `sw-start` checks for it and, only after you approve the exact
+plan, installs a pinned, checksum-verified Node into `~/.specwright/runtime/` (no administrator rights, no PATH change). Declining leaves
+every other skill working. The console is generated into `<spec root>/console/` and, like `_meta/data/`, git-ignores itself. A docs-site
+generator that scans `docs/` should exclude `console/`.
 
 ## Offline fallback
 

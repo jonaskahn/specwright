@@ -20,9 +20,11 @@ completion maintenance, stop at the next human decision.
 | sw-review | Verify evidence and record human approval. |
 | sw-plan | Implementation plan and traceable tasks for a reviewed feature. |
 | sw-publish | Dry-run and confirmed Jira write for one feature. |
+| sw-view | Read-only local web console over the workspace data. |
 
 Lifecycle: shape → spec → review → plan → optional publish. Ingest supports any station.
-Knowledge, trace, lint, status, assets and visuals are shared capabilities, not stations.
+Knowledge, trace, lint, status, assets, visuals and data are shared capabilities, not stations.
+sw-view is a viewer, not a station: it never advances an item.
 
 ## Reads and writes
 

@@ -27,7 +27,7 @@ $ProgressPreference = 'SilentlyContinue'
 
 $Repo = if ($env:SPECWRIGHT_REPO) { $env:SPECWRIGHT_REPO } else { 'jonaskahn/specwright' }
 $Ref = if ($env:SPECWRIGHT_REF) { $env:SPECWRIGHT_REF } else { 'main' }
-$Skills = @('sw-start', 'sw-shape', 'sw-ingest', 'sw-spec', 'sw-plan', 'sw-review', 'sw-publish')
+$Skills = @('sw-start', 'sw-shape', 'sw-ingest', 'sw-spec', 'sw-plan', 'sw-review', 'sw-publish', 'sw-view')
 if ($env:SPECWRIGHT_INSTALL_YES -eq '1') { $Yes = $true }
 
 $script:Inner = 76

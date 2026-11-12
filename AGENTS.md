@@ -29,8 +29,9 @@
 - Run the shared lint capability before hand-off. Never weaken a rule merely to make a check pass.
 - Scan imported text for secrets and personal data before saving it to a shared artifact.
 - Do not store credentials or unnecessary personal information in any artifact.
-- Public skills are sw-start, sw-shape, sw-ingest, sw-spec, sw-plan, sw-review and
-  sw-publish. Knowledge, trace, lint, status, assets and visuals are shared capabilities.
+- Public skills are sw-start, sw-shape, sw-ingest, sw-spec, sw-plan, sw-review,
+  sw-publish and sw-view. Knowledge, trace, lint, status, assets, visuals and data are
+  shared capabilities.
   For any request that names no skill, load sw-start first.
 - A story (BA/PO word) and a feature (Dev/QA word) are the same item, written FEAT-NNN.
   Never create a STORY identifier.
