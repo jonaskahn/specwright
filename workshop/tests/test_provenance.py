@@ -7,7 +7,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from kitlib import graph, graph_query, ids, provenance, writelog
+from kitlib import frontmatter, graph, graph_query, ids, provenance, writelog
 from tests.test_workflow import WorkflowTestCase
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -95,7 +95,8 @@ class ProvenanceTests(WorkflowTestCase):
             provenance.plan(self.base, "FEAT-001", {"source": "x"}, "BA | An", "fix")
 
     def test_changed_original_bytes_block_an_amendment(self):
-        raw = next((self.base / "00-inbox/raw").iterdir())
+        digest = frontmatter.parse(self.snapshot.read_text(encoding="utf-8")).fm["sha256"]
+        raw = next((self.base / "00-inbox/raw").glob(str(digest)[:12] + "-*"))
         raw.write_bytes(b"tampered")
         with self.assertRaisesRegex(provenance.ProvenanceError, "original bytes"):
             provenance.plan(self.base, "SRC-0001", {"source": "x"}, "BA | An", "fix")
