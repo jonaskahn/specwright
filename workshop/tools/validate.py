@@ -124,6 +124,25 @@ def _check_front_matter(skill: Path, parsed: frontmatter.Parsed, report: Report)
         report.add(md, 1, "V013", "write the description in third person", False)
 
 
+IMPORT_LINE = re.compile(
+    r"^\s*(?:from|import)\s+([A-Za-z_]\w*)|import_module\(\s*[\"']([A-Za-z_]\w*)[\"']", re.M
+)
+
+
+def _imported_modules(scripts: Path) -> dict[str, set[str]]:
+    """Map each script stem to the stems of the other scripts that import it."""
+    importers: dict[str, set[str]] = {}
+    if not scripts.is_dir():
+        return importers
+    for path in scripts.rglob("*.py"):
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for static, dynamic in IMPORT_LINE.findall(text):
+            name = static or dynamic
+            if name != path.stem:
+                importers.setdefault(name, set()).add(path.stem)
+    return importers
+
+
 def _check_body(skill: Path, parsed: frontmatter.Parsed, report: Report) -> None:
     md = skill / "SKILL.md"
     lines = parsed.body.count("\n") + 1
@@ -161,6 +180,12 @@ def _check_body(skill: Path, parsed: frontmatter.Parsed, report: Report) -> None
     for ref in sorted(set(shared_ref.findall(parsed.body))):
         if not (skill / ref).exists():
             report.add(md, 1, "V026", f"referenced shared file '{ref}' does not exist")
+    cited_text = "\n".join(
+        (skill / ref).read_text(encoding="utf-8", errors="replace")
+        for ref in sorted(referenced)
+        if ref.endswith(".md") and (skill / ref).is_file()
+    )
+    imported = _imported_modules(skill / "scripts")
     for sub in ("references", "scripts"):
         folder = skill / sub
         if not folder.is_dir():
@@ -172,10 +197,14 @@ def _check_body(skill: Path, parsed: frontmatter.Parsed, report: Report) -> None
                 or item.is_dir()
             ):
                 continue
-            if f"{sub}/{item.name}" not in referenced:
-                report.add(
-                    item, 1, "V027", f"'{sub}/{item.name}' is never mentioned in SKILL.md", False
-                )
+            path = f"{sub}/{item.name}"
+            # Reachable means an agent following SKILL.md arrives at the file: it is named there,
+            # named by a reference that SKILL.md cites, or it is a module another script imports.
+            if path in referenced or (sub == "references" and path in cited_text):
+                continue
+            if sub == "scripts" and item.suffix == ".py" and imported.get(item.stem):
+                continue
+            report.add(item, 1, "V027", f"'{path}' is unreachable from SKILL.md", False)
     for forbidden in ("README.md", "CHANGELOG.md", "INSTALL.md"):
         if (skill / forbidden).exists():
             report.add(

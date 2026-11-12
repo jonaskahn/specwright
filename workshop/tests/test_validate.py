@@ -69,6 +69,18 @@ class ValidateTests(unittest.TestCase):
     def test_clean_skill_passes(self):
         self.assertEqual(self.run_validate().errors, [])
 
+    def unreachable(self, report):
+        return {Path(f.path).name for f in report.items if f.code == "V027"}
+
+    def test_v027_follows_a_cited_reference_and_an_imported_module(self):
+        (self.skill / "references" / "deep.md").write_text("# deep\n")
+        (self.skill / "references" / "guide.md").write_text("See references/deep.md.\n")
+        (self.skill / "scripts" / "helper.py").write_text("VALUE = 1\n")
+        (self.skill / "scripts" / "run.py").write_text("import helper\n")
+        (self.skill / "references" / "orphan.md").write_text("# orphan\n")
+        (self.skill / "scripts" / "lonely.py").write_text("VALUE = 2\n")
+        self.assertEqual(self.unreachable(self.run_validate()), {"orphan.md", "lonely.py"})
+
     def test_unknown_front_matter_key(self):
         (self.skill / "SKILL.md").write_text(
             GOOD.replace("---\n# sw-demo", "license: MIT\n---\n# sw-demo")
