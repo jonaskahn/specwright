@@ -20,6 +20,7 @@
   let width = 0;
   let height = 0;
   let frame = 0;
+  let touched = false;
 
   const css = (name: string) => (canvas ? getComputedStyle(canvas).getPropertyValue(name).trim() : '#888');
 
@@ -27,8 +28,22 @@
     sim?.stop();
     const previous = new Map(vertices.map((v) => [v.key, v]));
     ({ vertices, links } = build(nodes, edges, previous));
+    touched = false;
     sim = simulate(vertices, links, schedule);
+    sim.on('end', fit);
     sim.alpha(0.9).restart();
+    schedule();
+  }
+
+  /** Frame the settled layout, unless the person has already panned or zoomed. */
+  function fit() {
+    if (touched || !vertices.length || !width || !height) return;
+    const xs = vertices.map((v) => v.x ?? 0);
+    const ys = vertices.map((v) => v.y ?? 0);
+    const dx = Math.max(...xs) - Math.min(...xs) + 80;
+    const dy = Math.max(...ys) - Math.min(...ys) + 80;
+    const k = Math.min(2.2, Math.max(0.2, 0.9 * Math.min(width / dx, height / dy)));
+    view = { k, x: -k * (Math.max(...xs) + Math.min(...xs)) / 2, y: -k * (Math.max(...ys) + Math.min(...ys)) / 2 };
     schedule();
   }
 
@@ -74,6 +89,31 @@
       ctx.stroke();
     }
     ctx.setLineDash([]);
+    if (links.length < 700) {
+      // Arrowheads: each link points the way the data states it (a feature serves an objective).
+      for (const l of links) {
+        const s = l.source as Vertex;
+        const t = l.target as Vertex;
+        const dx = (t.x ?? 0) - (s.x ?? 0);
+        const dy = (t.y ?? 0) - (s.y ?? 0);
+        const len = Math.hypot(dx, dy);
+        if (len < t.r * 2.5) continue;
+        const lit = dim && highlight.has(s.key) && highlight.has(t.key);
+        const ux = dx / len;
+        const uy = dy / len;
+        const tipX = (t.x ?? 0) - ux * (t.r + 1);
+        const tipY = (t.y ?? 0) - uy * (t.r + 1);
+        const size = 5 / Math.min(Math.max(view.k, 0.6), 2);
+        ctx.globalAlpha = dim && !lit ? 0.12 : l.cls === 'mentioned' ? 0.4 : 0.85;
+        ctx.fillStyle = lit ? css('--accent') : rule;
+        ctx.beginPath();
+        ctx.moveTo(tipX, tipY);
+        ctx.lineTo(tipX - ux * size - uy * size * 0.5, tipY - uy * size + ux * size * 0.5);
+        ctx.lineTo(tipX - ux * size + uy * size * 0.5, tipY - uy * size - ux * size * 0.5);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
     const ink = css('--ink');
     ctx.font = `${11 / Math.min(view.k, 1.4)}px ${css('--font-body') || 'sans-serif'}`;
     ctx.textAlign = 'center';
@@ -125,6 +165,7 @@
 
   let drag: { x: number; y: number; moved: boolean } | null = null;
   function down(e: PointerEvent) {
+    touched = true;
     canvas!.setPointerCapture(e.pointerId);
     drag = { x: e.clientX, y: e.clientY, moved: false };
   }
@@ -143,6 +184,7 @@
   }
   function wheel(e: WheelEvent) {
     e.preventDefault();
+    touched = true;
     const before = world(e);
     view.k = Math.min(6, Math.max(0.2, view.k * Math.exp(-e.deltaY * 0.0015)));
     const box = canvas!.getBoundingClientRect();
@@ -150,7 +192,7 @@
     view.y = e.clientY - box.top - height / 2 - before.y * view.k;
     schedule();
   }
-  function reset() { view = { x: 0, y: 0, k: 1 }; schedule(); }
+  function reset() { touched = false; fit(); }
 
   $effect(() => {
     void nodes; void edges;
@@ -170,7 +212,7 @@
 <!-- svelte-ignore a11y_no_interactive_element_to_noninteractive_role -->
 <canvas
   bind:this={canvas}
-  aria-label={`Knowledge graph with ${nodes.length} items and ${edges.length} links. A table of the same items is available.`}
+  aria-label={`Network of ${nodes.length} items and ${edges.length} links. A table and a trace map of the same items are available.`}
   role="img"
   onpointerdown={down}
   onpointermove={move}

@@ -1,5 +1,5 @@
 {
- "bytes": 375216,
+ "bytes": 377916,
  "console": "0.4.1",
  "files": {
   ".nvmrc": "sha256:68ca3fba3b7e864770cb61aeb306d4bd4354b68ab4dd38450860c5d823e42a53",
@@ -17,7 +17,7 @@
   "src/components/Appearance.svelte": "sha256:1071e73fe31a56d9f22bca631cc0e893d21d7b02f2a64ada0251ac40be6d54e3",
   "src/components/Bars.svelte": "sha256:5222cb2f8b55d5c5d17d906828e74782d3a69c0d62817d7585de1f5782f659e1",
   "src/components/CoverageStrip.svelte": "sha256:90892d7991b1474326c1347f97c28586a0cd6e655365e9453ad2f86d756d566a",
-  "src/components/GraphCanvas.svelte": "sha256:64aeaa7895e46727e10e58b6af0ff3d7cdc6c971e017a6ab0cc42397250439e6",
+  "src/components/GraphCanvas.svelte": "sha256:2e739112b121a1199b7b15676e5d910cfa4308c0f5ea208c1a9f4f6b661a8488",
   "src/components/Icon.svelte": "sha256:fa7981c3cf50e2d454ce03daf891534afa634649ee3a17863f8cedaeda9108a2",
   "src/components/Mark.svelte": "sha256:3a6f6c6d432ba91aa8c6c3bad354409479ff18c0d82193e1fc2a5ca92ac88a8e",
   "src/components/NodePanel.svelte": "sha256:a9faa60ecb91bb75316f06ff27b5a7f26acb025678787a2f5dc88ae202c3b522",
@@ -38,7 +38,7 @@
   "src/lib/data/selectors.ts": "sha256:e148a285ba80f9c2fa54ec3790ef32c00d910df7fc9b42f9ac7441dd0ec6120b",
   "src/lib/data/store.svelte.ts": "sha256:d68af0f4a3e647488084de430270cc9f5ffdcda5e4f99d1b9326bf4485c61adf",
   "src/lib/format.ts": "sha256:6856504ea3fe78c8ec09f193469ab2316c725e74ed191ba217efb625217c277f",
-  "src/lib/graph/layout.ts": "sha256:0448e52375a6a899f059a06c511843f903b5208ec4f28e5f8b0d1f40d27cc320",
+  "src/lib/graph/layout.ts": "sha256:3303a26a57b32ceab4f8dfc556c23e120f2d7c2d2c22eb30374a44b44668a393",
   "src/lib/graph/trace.ts": "sha256:f06d2b886b7fe03115ec125688fb781808df0b69bbbeeb8fdf1bc6cfbdfafa95",
   "src/lib/prefs.ts": "sha256:ded504c01a658dcd2c6721e0515b85c4b969a489c09f6829c9966a6c8aaff66f",
   "src/lib/query/engine.ts": "sha256:16d445929ec30e65d3dd61d9817dfcec0ea4f8743e3d07b92a3d3d1665c618d2",
@@ -77,6 +77,6 @@
   "vite.config.ts": "sha256:500a2492b90c3a9add4255e31f68a0934a9d56013011a401d3cfd70612c76d23"
  },
  "formatVersion": 1,
- "tree": "sha256:ac4308ba385322d4a4489d2411de1b20de27926d2f242ebfd9cae4eed24279fd",
- "zip": "sha256:90fcb4ea23e8236d2e413e3d56833dad799a17f4f68b336d91e2cb3fe1ad5687"
+ "tree": "sha256:6d4467fe4f091de3ca9a2cf3518490bcdff8a6ed5932c169312efcddb35e35cd",
+ "zip": "sha256:28cbae361356645f05a99ca951fef4575c0f07127a5cf66459d31af7ff9a8647"
 }
