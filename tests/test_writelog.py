@@ -57,5 +57,78 @@ class WriteLogTests(unittest.TestCase):
         self.assertRegex(writelog.new_run_id(), r"^[0-9a-f]{4}$")
 
 
+class OperationTests(unittest.TestCase):
+    def setUp(self):
+        self.dir = tempfile.TemporaryDirectory()
+        self.addCleanup(self.dir.cleanup)
+        self.base = Path(self.dir.name)
+        (self.base / "_meta").mkdir()
+        (self.base / "records").mkdir()
+        self.log = self.base / "_meta/write-log.md"
+
+    def test_an_operation_logs_intent_then_ok_with_file_hashes(self):
+        note = self.base / "records/Q-001.md"
+        with writelog.operation(self.log, "sw-shape", "q-new", "REF:Q-001") as op:
+            note.write_text("question\n")
+            op.wrote(note)
+        entries = writelog.read(self.log)
+        self.assertEqual([e.kind for e in entries], ["INTENT", "RESULT"])
+        self.assertEqual(entries[0].fields[:3], ["sw-shape", "q-new", "REF:Q-001"])
+        self.assertEqual(entries[1].fields[0], "ok")
+        self.assertEqual(entries[1].fields[1], f"file=records/Q-001.md@{writelog.file_hash(note)}")
+        self.assertEqual(writelog.unfinished(self.log), [])
+
+    def test_a_failure_is_logged_as_an_error_and_reraised(self):
+        with (
+            self.assertRaises(RuntimeError),
+            writelog.operation(self.log, "sw-shape", "q-new", "X"),
+        ):
+            raise RuntimeError("disk full")
+        entries = writelog.read(self.log)
+        self.assertEqual(entries[-1].fields[:2], ["error", "RuntimeError"])
+        self.assertEqual(writelog.unfinished(self.log), [])
+
+    def test_only_remote_uncertainty_needs_recovery(self):
+        with (
+            self.assertRaises(RuntimeError),
+            writelog.operation(self.log, "sw-shape", "q-new", "X"),
+        ):
+            raise RuntimeError("local failure")
+        self.assertEqual(writelog.uncertain(self.log), [])
+        writelog.intent(self.log, "ab12", 1, "sw-publish", "create", "REF:FEAT-001")
+        self.assertEqual(len(writelog.uncertain(self.log)), 1)
+        writelog.result(self.log, "ab12", 1, "error", "timeout")
+        self.assertEqual(len(writelog.uncertain(self.log)), 1)
+
+    def test_drift_names_files_edited_after_their_last_logged_write(self):
+        note = self.base / "records/Q-001.md"
+        other = self.base / "records/Q-002.md"
+        other.write_text("never logged\n")
+        with writelog.operation(self.log, "sw-shape", "q-new", "REF:Q-001") as op:
+            note.write_text("v1\n")
+            op.wrote(note)
+        self.assertEqual(writelog.drift(self.log), [])
+        note.write_text("edited by hand\n")
+        other.write_text("also edited\n")
+        self.assertEqual(
+            writelog.drift(self.log), ["records/Q-001.md changed outside a logged write"]
+        )
+        with writelog.operation(self.log, "sw-shape", "q-answer", "REF:Q-001") as op:
+            op.wrote(note)
+        self.assertEqual(writelog.drift(self.log), [])
+        note.unlink()
+        self.assertEqual(
+            writelog.drift(self.log), ["records/Q-001.md is gone since its last logged write"]
+        )
+
+    def test_line_ending_conversion_is_not_drift(self):
+        note = self.base / "records/Q-001.md"
+        with writelog.operation(self.log, "sw-shape", "q-new", "X") as op:
+            note.write_bytes(b"a\nb\n")
+            op.wrote(note)
+        note.write_bytes(b"a\r\nb\r\n")
+        self.assertEqual(writelog.drift(self.log), [])
+
+
 if __name__ == "__main__":
     unittest.main()

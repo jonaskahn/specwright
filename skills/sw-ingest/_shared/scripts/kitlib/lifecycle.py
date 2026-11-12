@@ -196,13 +196,12 @@ def transition(
     if destination is not None and destination not in ("markdown", "jira", "both"):
         raise ValueError("invalid destination")
     log = base / "_meta/write-log.md"
-    unfinished = writelog.unfinished(log)
-    failed = [
-        e for e in writelog.read(log) if e.kind == "RESULT" and e.fields and e.fields[0] == "error"
-    ]
-    if action in ("defer-publish", "return-spec", "return-review", "reopen-shape") and (
-        unfinished or failed
-    ):
+    if action in (
+        "defer-publish",
+        "return-spec",
+        "return-review",
+        "reopen-shape",
+    ) and writelog.uncertain(log):
         raise ValueError("remote write uncertainty requires recovery before local rollback")
     current = feature(base, key)
     if current["condition"] == "unknown" or current["station"] == "inactive":

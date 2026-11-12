@@ -117,6 +117,8 @@ def main(argv=None):
             )
             changed = graph.build(root, scope)
             print(f"graph built: {len(changed)} file(s) changed")
+            for line in graph.drift_warnings(root, scope):
+                print(f"warning: {line}", file=sys.stderr)
             return 0
         root, scope, store = _store(args, False)
         if args.command == "check":

@@ -895,6 +895,19 @@ def build(root: Path, scope: str | None = None) -> list[Path]:
     return changed
 
 
+def drift_warnings(root: Path, scope: str | None = None) -> list[str]:
+    """Files changed outside a logged write since the last one, per scope."""
+    from kitlib import writelog
+
+    root = root.resolve()
+    scopes = [scope] if scope else workspace.list_scopes(root)
+    out = []
+    for item in scopes:
+        log = workspace.scope_dir(root, item) / "_meta/write-log.md"
+        out += [f"{item}: {line}" for line in writelog.drift(log)]
+    return out
+
+
 def check(root: Path, scope: str | None = None) -> list[str]:
     """Drift and link problems; mentioned-only links are notes, not failures."""
     root = root.resolve()
