@@ -276,7 +276,9 @@ def export_tasks(root: Path, scopes: list[str]) -> dict[str, Any]:
                 "title": dataformat.clean_text(entity.fm.get("title") or entity.key),
                 "status": "withdrawn" if entity.withdrawn else "active",
                 "traces": sorted(entity.refs - {entity.parent or ""}),
+                "layer": norm(entity.fm.get("layer")),
                 "touches": norm(entity.fm.get("touches")),
+                "visuals": norm(entity.fm.get("visuals")),
                 "path": _rel(entity.path, base),
                 "line": int(entity.fm.get("line") or 0),
             }

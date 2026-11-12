@@ -33,14 +33,22 @@ from kitlib import (  # noqa: E402
     review,
     schema,
     tables,
+    task_validation,
     workspace,
 )
 
 GATES = {"draft": 10, "review": 20, "publish": 30}
-REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {"L-017", "L-062", "L-064", "L-065"}
+REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {
+    "L-017",
+    "L-062",
+    "L-064",
+    "L-065",
+    "L-066",
+    "L-067",
+}
 PUBLISH = {"L-018", "L-037", "L-045", "L-046"}
 SYNC = set()
-RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), *range(56, 66))}
+RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), *range(56, 68))}
 RULE_HELP = {
     "L-001": "Front matter needs a mapping with non-empty id, type, status (scope in a program).",
     "L-002": "The id must use the grammar for its type, e.g. FEAT-003, BO-001, NFR-REF-001.",
@@ -90,6 +98,8 @@ RULE_HELP = {
     "L-063": "The INVEST split table needs pass/fail marks, not free text.",
     "L-064": "A feature needs an illustration and has no picture and no recorded dismissal.",
     "L-065": "A diagram cites an ID that is withdrawn or missing.",
+    "L-066": "Each ASSET in `assets:` must be registered and cited in Context or UI/UX.",
+    "L-067": "A mockup, link or image registered for this feature is missing from `assets:`.",
 }
 # Artifacts a reader looks up by name; each needs a title and an alias list (possibly empty).
 NAMED_TYPES = {
@@ -472,7 +482,7 @@ def lint_document(doc, ctx):
     def emit(rule, message, line=1, subject="", sev="error"):
         gate = rule_gate(rule)
         if list(GATES).index(gate) <= list(GATES).index(ctx.gate):
-            if rule in {"L-009", "L-015", "L-041", "L-044", "L-064", "L-065"}:
+            if rule in {"L-009", "L-015", "L-041", "L-044", "L-064", "L-065", "L-067"}:
                 sev = "warn"
             if rule == "L-012" and ctx.gate == "review":
                 sev = "warn"
@@ -708,6 +718,20 @@ def lint_document(doc, ctx):
             re.search(rf"\b{s}\b", ui, re.I) for s in ("default", "empty", "loading", "error")
         ):
             emit("L-012", "list four UI states or None with a reason", doc.line("UI/UX"))
+        registry = task_validation.asset_rows(ctx.base)
+        listed = [r.id for v in sequence(fm.get("assets")) for r in ids.find_refs(str(v))]
+        shown = doc.text("Context") + "\n" + doc.text("UI/UX")
+        for asset in dict.fromkeys(listed):
+            if asset not in registry:
+                emit("L-066", f"{asset} is not in the asset registry", doc.line("UI/UX"), asset)
+            elif asset not in shown:
+                emit("L-066", f"cite {asset} in UI/UX so readers see it", doc.line("UI/UX"), asset)
+        for asset, (kind, refs) in registry.items():
+            named = {r.id for r in ids.find_refs(refs)}
+            if feat in named and kind in schema.VISUAL_ASSET_KINDS and asset not in listed:
+                emit(
+                    "L-067", f"add {asset} ({kind}) to assets: and UI/UX", doc.line("UI/UX"), asset
+                )
         items = [
             line for line in doc.text("Out of scope").splitlines() if re.match(r"\s*[-*] ", line)
         ]

@@ -575,6 +575,56 @@ class RuleTests(unittest.TestCase):
             "0 blocking error(s)", lint.report_text(self.context([doc(withdrawn)]), found)
         )
 
+    def registry(self, *rows):
+        table = tables.Table(list(schema.ASSET_REGISTRY_COLUMNS))
+        table.rows = [list(r) for r in rows]
+        path = self.base / "_meta/asset-registry.md"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("# asset-registry\n\n" + table.render())
+
+    def test_l066(self):
+        row = (
+            "ASSET-001",
+            "assets/ASSET-001.png",
+            "mockup",
+            "sha",
+            "now",
+            "user",
+            "FEAT-001",
+            "captured",
+        )
+        self.registry(row)
+        listed = update(assets=["ASSET-001"])
+        cited = doc(
+            listed.replace(
+                "## UI/UX\n", "## UI/UX\n\n- ASSET-001 (mockup) — default and error states\n", 1
+            )
+        )
+        self.check_rule("L-066", doc(listed), cited)
+        self.registry()
+        self.assertIn("L-066", {f.rule for f in self.findings(cited)})
+
+    def test_l067(self):
+        row = (
+            "ASSET-001",
+            "assets/ASSET-001.url",
+            "figma",
+            "sha",
+            "now",
+            "https://x",
+            "FEAT-001",
+            "captured",
+        )
+        self.registry(row)
+        self.assertIn("L-067", {f.rule for f in self.findings(doc())})
+        self.assertEqual({f.sev for f in self.findings(doc()) if f.rule == "L-067"}, {"warn"})
+        other = row[:6] + ("FEAT-002",) + row[7:]
+        self.registry(other)
+        self.assertNotIn("L-067", {f.rule for f in self.findings(doc())})
+        doc_kind = row[:2] + ("document",) + row[3:]
+        self.registry(doc_kind)
+        self.assertNotIn("L-067", {f.rule for f in self.findings(doc())})
+
     def test_l062(self):
         amendment = doc(
             "---\nid: AMD-001\ntype: amendment\nscope: REF\ntitle: Amend FEAT-001\naliases: []\n"

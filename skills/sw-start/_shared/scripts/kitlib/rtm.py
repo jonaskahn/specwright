@@ -134,6 +134,8 @@ def _scan_tasks(path: Path, scope: str, entities: dict[str, Entity], findings: l
             details["title"] = block.title
             details["traces"] = block.field_line("Traces to")
             details["touches"] = block.field_line("Touches")
+            details["visuals"] = block.field_line("Visuals")
+            details["layer"] = markdown.task_layer(block.title) or ""
             refs |= {qualify(str(r), scope) for r in ids.find_refs(details["traces"])}
         refs.discard(key)
         entities[key] = Entity(key, "task", path, details, "", refs, task in removed, parent)

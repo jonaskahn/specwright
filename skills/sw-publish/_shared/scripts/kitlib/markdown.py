@@ -12,7 +12,7 @@ _AC_TOMBSTONE = re.compile(r"~~(AC-\d{3}-\d+)~~")
 _TASK_HEADING = re.compile(r"^### +(TASK-\d{3}-\d+)\b\s*(?:[—–-]+\s*(.*))?$")
 _TASK_TOMBSTONE = re.compile(r"~~(TASK-\d{3}-\d+)~~")
 _TASK_FIELD = re.compile(
-    r"^\s*(?:[-*]\s+)?(Traces to|Touches|Depends on|Done when|Stop and ask if)\s*:\s*(.*)$"
+    r"^\s*(?:[-*]\s+)?(Traces to|Touches|Depends on|Done when|Stop and ask if|Visuals)\s*:\s*(.*)$"
 )
 
 
@@ -133,6 +133,15 @@ def task_blocks(body: str, first_line: int = 1) -> dict[str, TaskBlock]:
             if field_match:
                 current.fields.setdefault(field_match.group(1), field_match.group(2).strip())
     return blocks
+
+
+_LAYER_PREFIX = re.compile(r"^\[([A-Za-z-]+)\]\s*\S")
+
+
+def task_layer(title: str) -> str | None:
+    """The lower-case word in a leading '[layer]' title prefix, or None when there is none."""
+    match = _LAYER_PREFIX.match(title.strip())
+    return match.group(1).lower() if match else None
 
 
 def task_tombstones(body: str) -> list[str]:

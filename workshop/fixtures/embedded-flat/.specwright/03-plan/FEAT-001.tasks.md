@@ -5,7 +5,7 @@ status: draft
 ---
 ## Tasks
 
-### TASK-001-1 — Record an eligible request
+### TASK-001-1 — [backend] Record an eligible request
 Traces to: AC-001-1
 Touches: src/refund.py
 Done when: a pending request exists.

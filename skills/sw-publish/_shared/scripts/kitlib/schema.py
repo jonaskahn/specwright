@@ -87,6 +87,14 @@ RTM_COLUMNS = [
     ("Test ref", "qa"),
 ]
 
+# Delivery layers a task may carry as a title prefix: `### TASK-001-1 — [backend] Title`.
+# One layer per task; work that spans layers is split into one task per layer.
+TASK_LAYERS = ("backend", "frontend", "mobile", "devops", "data", "qa", "design", "docs")
+# Layers that build what a user sees; they cite the visual reference they implement.
+UI_TASK_LAYERS = ("frontend", "mobile", "design")
+# Asset kinds (asset-kind.md) that show a design: a story or task links them, never fetches them.
+VISUAL_ASSET_KINDS = ("figma", "mockup", "image", "diagram")
+
 ASSET_REGISTRY_COLUMNS = [
     "Asset ID",
     "File",

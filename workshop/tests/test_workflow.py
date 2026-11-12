@@ -288,7 +288,7 @@ class PublishTests(WorkflowTestCase):
             frontmatter.render(
                 {"feat": "FEAT-001", "status": "ready", "spec_hash": hashing.draft_hash(text)},
                 "\n".join(
-                    f"### TASK-001-{n} — Implement criterion\nTraces to: AC-001-{n}\n"
+                    f"### TASK-001-{n} — [backend] Implement criterion\nTraces to: AC-001-{n}\n"
                     "Done when: criterion is verified\n"
                     for n in (1, 2)
                 ),

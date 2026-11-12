@@ -173,7 +173,9 @@ KINDS: dict[str, Kind] = {
                     "title": "str",
                     "status": _enum(("active", "withdrawn")),
                     "traces": "[str]",
+                    "layer": "str?",
                     "touches": "str?",
+                    "visuals": "str?",
                     "path": "str?",
                     "line": "int",
                 }

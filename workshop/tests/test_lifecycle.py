@@ -35,7 +35,7 @@ class LifecycleTests(WorkflowTestCase):
         text = self.draft.read_text()
         (self.base / "03-plan/FEAT-001.plan.md").write_text("# Plan\nImplement criteria.\n")
         tasks = "\n".join(
-            f"### TASK-001-{n} — Criterion\nTraces to: AC-001-{n}\n"
+            f"### TASK-001-{n} — [backend] Criterion\nTraces to: AC-001-{n}\n"
             "Done when: observable criterion verified\n"
             for n in (1, 2)
         )

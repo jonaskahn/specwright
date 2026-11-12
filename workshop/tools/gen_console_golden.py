@@ -106,7 +106,7 @@ def tasks_file(feature: str, blocks: list[str]) -> str:
 
 
 def task(number: str, title: str, traces: str, touches: str = "") -> str:
-    lines = [f"### TASK-{number} — {title}", f"Traces to: {traces}"]
+    lines = [f"### TASK-{number} — [backend] {title}", f"Traces to: {traces}"]
     if touches:
         lines.append(f"Touches: {touches}")
     lines += [
