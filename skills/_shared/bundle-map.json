@@ -382,6 +382,7 @@
         "references/untrusted-content.md",
         "scripts/graph.py",
         "scripts/kitlib/__init__.py",
+        "scripts/kitlib/baseline.py",
         "scripts/kitlib/borders.py",
         "scripts/kitlib/cite.py",
         "scripts/kitlib/frontmatter.py",

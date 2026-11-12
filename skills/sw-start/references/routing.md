@@ -9,7 +9,8 @@ own prerequisites.
 | No workspace | Confirm layout and setup, then the requested ingest or shape action. |
 | Missing or incompatible graph schema | Show the upgrade dry-run; migrate only after agreement. |
 | Stale graph | Rebuild as bounded maintenance; this is not a workspace upgrade. |
-| Several active candidates | Show the board and ask which item, even at the same station. |
+| Sources registered or imported, nothing shaped | Existing-baseline flow (references/brownfield.md); `action` names the step. |
+| Several active candidates | Show the board and the ranked top three with reasons (advice only), then ask which item. |
 | Draft epic or reopened slice | sw-shape. |
 | One reserved accepted feature | sw-spec, not started. |
 | Named draft, including open questions | sw-spec. |

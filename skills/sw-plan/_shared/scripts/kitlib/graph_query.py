@@ -210,7 +210,7 @@ def show(store: Store, key: str) -> list[str]:
     return lines
 
 
-def _meta_rows(store: Store, name: str) -> list[dict[str, str]]:
+def meta_rows(store: Store, name: str) -> list[dict[str, str]]:
     """Rows of a generated tab-separated file in `_meta/`; empty when it is not there yet."""
     path = store.dir.parent / name
     if not path.is_file():
@@ -227,12 +227,12 @@ def _meta_rows(store: Store, name: str) -> list[dict[str, str]]:
 def _index_lines(store: Store, key: str) -> list[str]:
     """Parent, links and crosswalk row from the generated master index."""
     lines: list[str] = []
-    row = next((r for r in _meta_rows(store, "index.tsv") if r.get("key") == key), None)
+    row = next((r for r in meta_rows(store, "index.tsv") if r.get("key") == key), None)
     if row and row.get("parent"):
         lines.append(f"parent: {row['parent']}")
     if row and row.get("links"):
         lines.append("links: " + ", ".join(row["links"].split(",")))
-    for r in _meta_rows(store, "CROSSWALK.tsv"):
+    for r in meta_rows(store, "CROSSWALK.tsv"):
         if key in r.get("internal_key", "").split(",") or key in r.get("source_ids", "").split(","):
             parts = [
                 f"{r['legacy_id'] or '-'} -> {r['internal_key'] or '-'}",
