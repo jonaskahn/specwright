@@ -1,5 +1,5 @@
 {
- "bytes": 382362,
+ "bytes": 380966,
  "console": "0.4.1",
  "files": {
   ".nvmrc": "sha256:68ca3fba3b7e864770cb61aeb306d4bd4354b68ab4dd38450860c5d823e42a53",
@@ -44,11 +44,11 @@
   "src/lib/query/engine.ts": "sha256:16d445929ec30e65d3dd61d9817dfcec0ea4f8743e3d07b92a3d3d1665c618d2",
   "src/lib/query/parse.ts": "sha256:2916cf78388d701d8a50e82072ca65ff53fbf25b60a7022f43773d0c528d681e",
   "src/lib/router.ts": "sha256:61f13161f9c9bbfe1648eafef6aca966279a929893f5d0fc22bac8f240d18d16",
-  "src/lib/status.ts": "sha256:1dd2384a39e977f28cb0e829d24c032115c1b2a1a51263cac237ba2627205fd3",
+  "src/lib/status.ts": "sha256:61a1548844e15c6cd64a5ad78801d2225ec58953ee6b407dbcd37f69090cbdc8",
   "src/lib/vocabulary.ts": "sha256:8680795458d48dbf33cc34ed2654844ba5e32104e686eb3a722378150eca6de0",
   "src/main.ts": "sha256:ba9034888e6002c667c5efa20dfdc6fa567d857357d15ced68182fbb8eb9cb59",
-  "src/routes/Board.svelte": "sha256:a53cbc103a85c087671c99282f49938f7f64c3350c0daac5d861550212431032",
-  "src/routes/FeatureDetail.svelte": "sha256:cc4ef973b132480c9388bb77716eeb93e912601feb8cb1b1e5097bacfb82ac11",
+  "src/routes/Board.svelte": "sha256:2563ab20aa58edc4d9926def8e914079e27f7cce5a6e90e7f6e2830d64c62260",
+  "src/routes/FeatureDetail.svelte": "sha256:fdb66520a635cf53f1fd63317be887e6ae26cf29017adc6f901d34ff2a681a2f",
   "src/routes/Features.svelte": "sha256:b6f2b7de7ef66cf6d12c654b8acb2b6bf05b133f89b4cc207389f80dd0d5a6a3",
   "src/routes/Graph.svelte": "sha256:9cdf340564abe5ec260460937a9137f43c196445a4a083ed99358f10fa664203",
   "src/routes/Metrics.svelte": "sha256:68fc9a8a000f2f110c571b90365c59d49b5c4ff2a1a56fc13080d13a5860d0f7",
@@ -70,7 +70,7 @@
   "tests/metrics.test.ts": "sha256:d5f2d1f436711e414732e97065fd57c5a6ea6a2fe64f14de653d260dcb030304",
   "tests/query.parity.test.ts": "sha256:ff84a49d5ca8e4a421ba95ccdadb62de8d49ae1f4dcab67a00cbbde5fefa52ec",
   "tests/safety.test.ts": "sha256:408450054b6d70ae975e2d2b976fe7cff70f2859fe8fc70c60a16014515ca3f2",
-  "tests/status.test.ts": "sha256:8d325a29b3a077ae74189a08ddbadca400022aabc85199031bfb87a237a8109c",
+  "tests/status.test.ts": "sha256:f47956fd1789b5a3e90548c09395a66b60e14d1e55d3f6444b34a3c49b578d78",
   "tests/trace.test.ts": "sha256:2d5124a397ba6534ebc9ea62c36858559148483b17e5b52661916acc92164221",
   "tests/tree.test.ts": "sha256:3214094257803b8073622856019521607aaba51fea50cf54a9a901716fcf8326",
   "tests/vocabulary.test.ts": "sha256:64853fc338fe138b5dae441dad762e7e62d83d74a79fc31f201cc0752a873b81",
@@ -78,6 +78,6 @@
   "vite.config.ts": "sha256:500a2492b90c3a9add4255e31f68a0934a9d56013011a401d3cfd70612c76d23"
  },
  "formatVersion": 1,
- "tree": "sha256:80c9c6fc5095aa0bcfe3a5cda1552e9117cdfcee88cb551aadac5e71587412fe",
- "zip": "sha256:fdb3a353fd83cefca3609f3a94b20ee97164529b85e5030bd8f23f26327bcc59"
+ "tree": "sha256:4eacb3eeb86952d2296514a7cb3b2403a407b56ec567fb8bb2dbbb246a271a00",
+ "zip": "sha256:4b33c8f5e3e85e7cc1d1928360f22000e8771454c8d2ded48780f52eecfd8cb8"
 }

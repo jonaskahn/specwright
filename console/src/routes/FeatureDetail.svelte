@@ -8,7 +8,7 @@
   import { app } from '../lib/data/store.svelte';
   import { ago, daysSince } from '../lib/format';
   import { href } from '../lib/router';
-  import { illustrationLook, lintLook, stateLook, wordLook } from '../lib/status';
+  import { lintLook, stateLook, wordLook } from '../lib/status';
   import { relationWords, stationWords } from '../lib/vocabulary';
 
   let { id }: { id: string } = $props();
@@ -39,7 +39,6 @@
       <div class="row-flex wrap">
         <Pill look={stateLook(feature.state, feature.condition)} />
         <Pill look={lintLook(feature.lint)} />
-        <Pill look={illustrationLook(feature.illustration)} />
         {#if feature.station}<span class="chip">Station: {stationWords(feature.station)}</span>{/if}
         {#if feature.next}<span class="chip">Next: {feature.next}{feature.turn ? ` · ${feature.turn}` : ''}</span>{/if}
       </div>

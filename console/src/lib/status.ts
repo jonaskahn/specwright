@@ -101,22 +101,6 @@ export function tidyLint(result: string): string {
   return found[1] + codes.join(', ');
 }
 
-/** The illustration chip. Check is neutral: it asks for a look, and it does not block. */
-export function illustrationLook(value: string | null): Look {
-  switch (value) {
-    case 'illustrated':
-      return { shape: 'check', tone: 'ok', label: 'Illustrated' };
-    case 'needs illustration':
-      return { shape: 'triangle', tone: 'warn', label: 'Needs illustration' };
-    case 'no illustration':
-      return { shape: 'square', tone: 'neutral', label: 'No illustration' };
-    case 'check illustration':
-      return { shape: 'diamond', tone: 'neutral', label: 'Check illustration' };
-    default:
-      return { shape: 'hollow', tone: 'neutral', label: value ? label(value) : 'Illustration not set' };
-  }
-}
-
 export function lintLook(result: string | null): Look {
   if (result) result = tidyLint(result);
   if (!result) return { shape: 'hollow', tone: 'neutral', label: 'Not run' };
