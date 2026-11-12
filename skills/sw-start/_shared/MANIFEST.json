@@ -47,7 +47,7 @@
   "scripts/kitlib/review.py": "6dc3afe32427",
   "scripts/kitlib/rtm.py": "dc57dda3403f",
   "scripts/kitlib/runtime.py": "e835e3c99318",
-  "scripts/kitlib/schema.py": "85fb6d9d88e8",
+  "scripts/kitlib/schema.py": "f832e091ebb3",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "a182b597a8b2",
   "scripts/kitlib/workspace.py": "8f837193d951",
