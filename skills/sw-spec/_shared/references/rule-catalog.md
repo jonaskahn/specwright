@@ -21,7 +21,7 @@ Exit 0 pass; 2 usage or unexpected checker failure. No network.
 | Names | L-054 `title` and `aliases` required (warning on an immutable snapshot); L-055 placeholder title, including a reserved feature with no Title in the registry |
 | Citations and amendments | L-057 a citation names a missing, blank or changed line (weak or superseded source is a warning); L-062 a feature has a proposed amendment (review gate) |
 | Shape | L-063 the INVEST table of an idea brief is malformed or hides a fail or unknown without a Reason |
-| Illustration | L-064 a feature needs an illustration and has no picture and no dismissal (warning, review gate); L-065 a diagram cites a withdrawn or missing ID (warning, review gate) |
+| Illustration | L-064 a feature needs an illustration and has no picture and no dismissal (warning, review gate); L-070 a picture of the feature is not embedded in its story, or an embedded image is missing (warning, review gate); L-065 a diagram cites a withdrawn or missing ID (warning, review gate) |
 | Visual references | L-066 an `assets:` ID is unregistered or not cited in Context or UI/UX (error, review gate); L-067 a mockup, link or image registered for the feature is missing from `assets:` (warning, review gate) |
 | Epic objectives | L-068 an active epic names no business objective in `bo:` (warning, review gate); L-069 a feature and its epic share no business objective (warning, review gate) |
 | Legacy names | L-056 a legacy ID (manifest `legacy_id_pattern`) in a body is not an alias of any artifact |

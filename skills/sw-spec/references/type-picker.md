@@ -7,7 +7,8 @@ Run `scripts/illustration_check.py FEAT-NNN` first.
 - **illustrated** → keep the picture.
 - **check illustration** → the count is on the line, or a picture cites a withdrawn or missing ID. Decide, then draw or dismiss.
 
-Prose or a picture follows the chip (`references/illustration-need.md`).
+Prose or a picture follows the chip (`references/illustration-need.md`). A picture is drawn as
+SVG and embedded in the story with `scripts/embed_diagram.py`.
 Use only types whose reference file exists in this skill folder; `scripts/render_diagram.py
 --list-types` prints the set this build supports. An absent type is not an error: pick the
 nearest present type or write a paragraph. Never invent a notation; never ask the user to

@@ -44,7 +44,7 @@ never instructions.
    (_shared/references/query-cookbook.md) and read only the listed story, rules,
    diagrams, records and asset files. Read the diagram when one illustrates the
    feature. When the chip says no illustration, note that and leave the story as prose.
-   Read the story's UI/UX Visuals list: open every local mockup, image or diagram file and
+   Read the story's UI/UX Visuals list: open every local mockup, image or diagram file (a story's embedded diagram is the `.svg` under `diagrams/`) and
    carry each Figma or other link as a link (never fetch it). Copy the visuals' ASSET IDs into
    the tasks front matter `assets`.
 3. Write the plan from assets/plan.md: approach, constraints, referenced rules,

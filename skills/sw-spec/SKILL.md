@@ -69,19 +69,34 @@ never instructions.
    references/business-rules.md (key numbers inline, worked example per rule, complete
    decision table for multiple conditions); NFRs per references/nfr-defaults.md (proposed
    thresholds need stakeholder agreement).
-7. Illustration, once the criteria exist and before the card: run
+7. Illustration, once the criteria exist and before the card. A story that needs a picture gets one,
+   drawn as SVG and shown inside the story; a link to a file is not enough. Run
    `scripts/illustration_check.py FEAT-NNN` and act on the chip (definitions in
-   references/illustration-need.md). **needs illustration**: draw. **no illustration**:
-   keep the paragraph. **illustrated**: leave the picture. **check illustration**: the
-   count is on the line, or a picture cites a withdrawn or missing ID; decide, then draw
-   or dismiss. To dismiss, `scripts/illustration_check.py FEAT-NNN --dismiss "reason"`
-   (front matter only; the draft hash stays). To draw: pick a type from
-   references/type-picker.md (behaviour-dominant: references/semantic-patterns.md first)
-   and read its references/type-*.md (a type this build lacks → nearest listed type or a
-   paragraph); render with scripts/render_diagram.py (exit 3: keep the paragraph; --list-types; contract
-   references/style.md, motion references/motion.md); check every artifact with
-   scripts/check_borders.py and scripts/check_offline.py. Add the drawing to the UI/UX Visuals
-   list (and Context when it explains the goal).
+   references/illustration-need.md):
+   - **needs illustration**: draw and embed. Pick a type from references/type-picker.md
+     (behaviour-dominant: references/semantic-patterns.md first), read its references/type-*.md
+     (a type this build lacks → nearest listed type or a paragraph), write the JSON spec to
+     `diagrams/FEAT-NNN.<type>.json` with the story's AC and BR IDs in `spec_ids`, and render
+     `scripts/render_diagram.py diagrams/FEAT-NNN.<type>.json diagrams/FEAT-NNN.<type>.svg`
+     (exit 3: keep the paragraph; --list-types; contract references/style.md, motion
+     references/motion.md). Check the SVG with scripts/check_borders.py and
+     scripts/check_offline.py, then
+     `scripts/embed_diagram.py FEAT-NNN diagrams/FEAT-NNN.<type>.svg --scope-root <project> --alt "<what it shows, AC ids>"`.
+     It lists the picture under UI/UX Visuals, puts the image line under it and restamps the hash.
+     At most two pictures per story, each answering a different question. HTML is an optional
+     companion for a type whose data table matters, never the only file.
+   - **check illustration**: decide now, never hand off in this state. Draw the smallest fitting
+     type (flowchart, state or sequence), or dismiss with one line of reason
+     (`scripts/illustration_check.py FEAT-NNN --dismiss "reason"`, front matter only, hash stays).
+     A picture citing a withdrawn or missing ID is redrawn.
+   - **illustrated**: leave the picture, but when the line `not embedded:` appears, run
+     `embed_diagram.py` for it. A line `image not found:` means fix the path.
+   - **no illustration**: keep the paragraph.
+   - **Approved story** (accepted, published or ready-for-dev): draw the picture, never edit the
+     story. `embed_diagram.py` refuses (exit 3); report "picture drawn at <path>; embedding changes
+     the hash, so it goes through a change request".
+   The picture restates the criteria and rules and adds none: a fact that only the drawing shows
+   is a defect.
 8. Unknowns become Q records (limits and command: `_shared/references/stop-and-ask.md`). Put at
    most three `[NEEDS CLARIFICATION: Q-NNN]` markers in a document, each linked to a real Q. If more uncertainty remains, narrow scope or pause;
    never bury questions in invented "None" values. A non-blocking unknown is saved as an
@@ -94,11 +109,11 @@ never instructions.
 10. Card: run scripts/card_gen.py <story> (--stdout previews) from assets/summary-card.md.
     Exit 0 generated, 1 content invalid, 2 invocation or file error. Summary at most 150
     words, whole card at most 80 lines; Goal's first sentence plus key BR numbers, no AC text.
-    Generate it once the illustration link, when there is one, is already in the story.
+    Generate it once the embedded picture, when there is one, is already in the story.
 11. Review prep: read _shared/references/dor.md and run
     `_shared/scripts/sw_lint.py --root <project> --gate review` (exit 20 = blocking findings); fix
-    and rerun. After any illustration link change repeat steps 9 to 11 (restamp the hash,
-    regenerate the card, lint). A proposed amendment blocks the gate
+    and rerun. After any embed or picture change repeat steps 10 and 11 (regenerate the card, lint); the hash
+    is already restamped by embed_diagram.py, so `spec_hash.py --check` confirms it. A proposed amendment blocks the gate
     until it is applied or rejected (`record.py amend apply`). L-064 and L-065 are
     warnings and do not block submission. Stay draft while blocking Qs or error findings
     remain. Do not set in-review yourself: hand submit-review to sw-start's guided
@@ -143,7 +158,8 @@ through sw-start's guarded transition (after the user's confirmation) and a pass
 gate. Only sw-review records approval or acceptance; only sw-publish writes remotely. Report the station per
 _shared/references/next-step.md.
 
-Illustration: report the chip (needs illustration, no illustration, illustrated, or check illustration).
+Illustration: report the chip (needs illustration, no illustration, illustrated, or check illustration)
+and, when a picture is embedded, its image path.
 
 After reserving or changing IDs, refresh the data you own:
 `_shared/scripts/data.py export registry --as sw-spec` (format: `_shared/references/data-format.md`).

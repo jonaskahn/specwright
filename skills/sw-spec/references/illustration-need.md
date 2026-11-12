@@ -94,7 +94,25 @@ Return the existing paths, the compared source IDs and the reason the picture is
 
 ## Ownership
 
-Return paths and link text. The sw-spec run writes the links. The illustration step never
-edits the draft, rules, IDs or approval; a dismissal edits front matter only. After a new
-or updated picture, sw-spec reruns graph and lint before review. Link text in Context or
-UI/UX is a body edit, so the hash and the card are refreshed in the later sw-spec steps.
+Return paths and link text. The sw-spec run writes them with `scripts/embed_diagram.py`. The
+illustration check itself never edits the draft, rules, IDs or approval; a dismissal edits
+front matter only. After a new or updated picture, sw-spec reruns graph and lint before
+review. The embed is a body edit: the script restamps the hash, and the card is regenerated
+in the later sw-spec steps. An approved story is not edited; the picture is drawn and the
+embed goes through a change request.
+
+## Embedding
+
+A picture is two files and two lines.
+
+- Files: `diagrams/FEAT-NNN.<type>.json` (the spec; its `spec_ids` make the graph edge) and
+  `diagrams/FEAT-NNN.<type>.svg` (the picture, SVG by default). HTML is only a companion.
+- In the story's UI/UX, under the Visuals list: a list line with the project-relative path, and
+  an image line relative to the story file:
+
+      - diagram — Invite to activation, AC-001-1 to AC-001-5 — diagrams/FEAT-001.flow.svg
+      ![Invite flow: member invites, system creates the account (AC-001-1 to AC-001-5)](../diagrams/FEAT-001.flow.svg)
+
+- The alt text names the criteria it shows. It is the text for readers who cannot see the picture.
+- `scripts/illustration_check.py` prints `not embedded:` for a picture the story does not show
+  and `image not found:` for an image line with no file. Lint L-070 warns on both.

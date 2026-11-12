@@ -20,7 +20,7 @@
   "scripts/kitlib/frontmatter.py": "8f5e22fd72e7",
   "scripts/kitlib/fsio.py": "ab1846444c3c",
   "scripts/kitlib/gitignore.py": "fae07f5626eb",
-  "scripts/kitlib/graph.py": "ce6f852e3e2d",
+  "scripts/kitlib/graph.py": "95c714a28119",
   "scripts/kitlib/graph_query.py": "eea56a960afd",
   "scripts/kitlib/hashing.py": "8236e6704e63",
   "scripts/kitlib/ids.py": "88a0e53a1198",

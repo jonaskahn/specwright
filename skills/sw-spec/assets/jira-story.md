@@ -54,6 +54,7 @@ Then <result>
 
 Visuals: <one line per mockup, Figma link, screenshot or diagram, or None — no visual supplied>
 - <ASSET-NNN> (<kind>) — <screen or state it shows, AC-NNN-n> — <assets/ASSET-NNN.png | URL | diagrams/FEAT-NNN.flow.svg>
+![<what the picture shows, AC-NNN-n>](../diagrams/FEAT-NNN.flow.svg)
 
 ## Out of scope
 
@@ -72,7 +73,7 @@ None
 - [ ] Goal links a BO.
 - [ ] At least two concrete G/W/T criteria.
 - [ ] BR examples and measurable NFRs.
-- [ ] UI states and exclusions with reasons; every mockup, link or diagram is in `assets:` and the UI/UX Visuals list.
+- [ ] UI states and exclusions with reasons; every mockup, link or diagram is in `assets:` and the UI/UX Visuals list, and each drawn diagram is embedded as an image.
 - [ ] No unresolved questions or markers.
 - [ ] Dev and QA checks pass for each AC.
 - [ ] Approval recorded through sw-review (accept, or sign-off under `required`).
