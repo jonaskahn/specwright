@@ -35,7 +35,7 @@ STATUSES = {
     "snapshot": ["raw"],
     "asset": ["captured", "superseded", "withdrawn"],
     "src": ["raw"],
-    "q": ["candidate", "open", "answered", "withdrawn"],
+    "q": ["proposed", "candidate", "open", "answered", "withdrawn"],
     "cr": ["proposed", "in-review", "approved", "applied", "withdrawn"],
     "dec": ["accepted", "superseded"],
     "idea": ["draft", "accepted", "withdrawn"],
@@ -48,6 +48,9 @@ STATUSES = {
     "stk": _CARD_STATUSES,
     "risk": [*_CARD_STATUSES, "open", "mitigated"],
 }
+
+# Question states that still wait for an answer; every board and report counts the same set.
+OPEN_Q = frozenset({"proposed", "candidate", "open"})
 
 DEFAULT_STATUS_MAP = {
     "published": "To Do",

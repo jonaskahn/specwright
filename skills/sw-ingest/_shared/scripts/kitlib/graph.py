@@ -104,6 +104,32 @@ def _qualified_refs(value: Any, scope: str) -> list[str]:
     return list(seen)
 
 
+def is_blocking(fm: dict) -> bool:
+    """A question blocks its features unless it says otherwise."""
+    return str(fm.get("blocking", True)).strip().lower() not in ("false", "no", "0")
+
+
+def declared_affects(fm: dict, scope: str) -> set[str]:
+    """Qualified IDs named in `affects` (or older `affected`); body mentions do not count."""
+    out: set[str] = set()
+    for name in ("affects", "affected"):
+        out.update(_qualified_refs(fm.get(name, ""), scope))
+    return out
+
+
+def open_questions(graph: Graph) -> dict[str, list[tuple[str, bool]]]:
+    """Open questions per feature from declared `affects` edges only: (question, blocking)."""
+    found: dict[str, list[tuple[str, bool]]] = {}
+    for e in graph.edges:
+        src = graph.nodes.get(e.src)
+        dst = graph.nodes.get(e.dst)
+        if e.rel != "affects" or e.cls != "declared" or not src or not dst:
+            continue
+        if src.kind == "q" and src.status in schema.OPEN_Q and dst.kind == "feat":
+            found.setdefault(e.dst, []).append((e.src, bool(src.extra.get("blocking", True))))
+    return {k: sorted(set(v)) for k, v in found.items()}
+
+
 def input_files(root: Path, scopes: list[str]) -> list[Path]:
     """Every file the graph reads, sorted; raw sources and the graph itself are excluded."""
     out: list[Path] = []
@@ -188,9 +214,13 @@ def collect(root: Path, scopes: list[str], known: list[str]) -> Graph:
         )
         if kind == "epic":
             node.extra["scopes"] = [str(s) for s in entity.fm.get("scopes") or [scope]]
+        if kind == "q":
+            node.extra["blocking"] = is_blocking(entity.fm)
         graph.nodes[key] = node
         declared: set[str] = set()
         for fm_key, rel_name in FM_RELATIONS.items():
+            if kind == "dec" and fm_key == "epic":
+                continue  # a decision records membership; it is not itself a member
             for target in _qualified_refs(entity.fm.get(fm_key, ""), scope):
                 if target != key:
                     declared.add(target)
@@ -513,24 +543,29 @@ def _lifecycle_nodes(graph: Graph, root: Path, scopes: list[str]) -> None:
             record = frontmatter.parse(record_path.read_text(encoding="utf-8")).fm or {}
             if record.get("subtype") != "accepted-split" or record.get("status") != "accepted":
                 continue
-            epic = str(record.get("epic", ""))
-            if (
-                epic not in graph.nodes
-                or graph.nodes[epic].kind != "epic"
-                or not record.get("evidence_url")
+            listed = record.get("epics") or [record.get("epic", "")]
+            epics = [str(e) for e in listed if str(e)] or [""]
+            if not record.get("evidence_url") or any(
+                e not in graph.nodes or graph.nodes[e].kind != "epic" for e in epics
             ):
                 graph.findings.append(f"{record_path.name}: invalid accepted split membership")
                 continue
-            for key in record.get("features") or []:
-                if key in graph.nodes and graph.nodes[key].kind == "feat":
-                    graph.edges.append(
-                        Edge(key, "member_of", epic, "declared", _rel(record_path, root), 1)
-                    )
+            for epic in epics:
+                for key in record.get("features") or []:
+                    if key in graph.nodes and graph.nodes[key].kind == "feat":
+                        graph.edges.append(
+                            Edge(key, "member_of", epic, "declared", _rel(record_path, root), 1)
+                        )
+        pending = open_questions(graph)
         for node in list(graph.nodes.values()):
             if not node.key.startswith(scope + ":"):
                 continue
             if node.kind == "feat":
-                node.extra["lifecycle"] = lifecycle.feature(base, node.key, node.status)
+                item = lifecycle.feature(base, node.key, node.status)
+                asked = pending.get(node.key, [])
+                item["open_q"] = [q for q, _ in asked]
+                item["blocked_by_q"] = [q for q, blocking in asked if blocking]
+                node.extra["lifecycle"] = item
             elif node.kind == "epic":
                 node.extra["station"] = "accepted" if node.status == "approved" else "shape"
 
@@ -648,21 +683,23 @@ def _render_map(graph: Graph, root: Path, label: str) -> tuple[str, dict[str, st
     epics = sorted(k for k, n in nodes.items() if n.kind == "epic")
     member: dict[str, list[str]] = {}
     for e in graph.edges:
-        if e.rel == "member_of" and e.dst in nodes and e.src in nodes:
+        if (
+            e.rel == "member_of"
+            and e.dst in nodes
+            and e.src in nodes
+            and nodes[e.src].kind == "feat"
+        ):
             member.setdefault(e.dst, []).append(e.src)
     parented = {f for kids in member.values() for f in kids}
     n_ac: dict[str, int] = {}
     n_task: dict[str, int] = {}
     jira = {e.src: e.dst[5:] for e in graph.edges if e.rel == "published_as"}
-    open_q: dict[str, int] = {}
+    open_q = {feat: len(qs) for feat, qs in open_questions(graph).items()}
     for e in graph.edges:
         if e.rel == "has_ac" and nodes.get(e.dst) and nodes[e.dst].status != "withdrawn":
             n_ac[e.src] = n_ac.get(e.src, 0) + 1
         if e.rel == "has_task" and nodes.get(e.dst) and nodes[e.dst].status != "withdrawn":
             n_task[e.src] = n_task.get(e.src, 0) + 1
-        src = nodes.get(e.src)
-        if src and src.kind == "q" and src.status in ("candidate", "open") and e.dst in nodes:
-            open_q[e.dst] = open_q.get(e.dst, 0) + 1
 
     def feat_line(f: str) -> str:
         n = nodes[f]

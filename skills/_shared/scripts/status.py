@@ -16,7 +16,7 @@ import json
 import re
 from datetime import date, datetime, timezone
 
-from kitlib import fsio, hashing, ids, rtm, schema, tables, workspace  # noqa: E402
+from kitlib import fsio, graph, hashing, ids, rtm, schema, tables, workspace  # noqa: E402
 
 UNKNOWN = "unknown"
 
@@ -135,8 +135,10 @@ def build_report(root: Path, scopes=None, today=None):
             linked = [e for e in entities.values() if related & e.refs]
             questions = sorted(
                 e.key
-                for e in linked
-                if e.kind == "q" and e.fm.get("status") in ("candidate", "open")
+                for e in entities.values()
+                if e.kind == "q"
+                and e.fm.get("status") in schema.OPEN_Q
+                and related & graph.declared_affects(e.fm, scope)
             )
             changes = sorted(
                 e.key

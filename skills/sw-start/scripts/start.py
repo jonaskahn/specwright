@@ -24,7 +24,7 @@ if str(_shared) not in sys.path:
 import argparse
 import json
 
-from kitlib import frontmatter, graph_query, workspace  # noqa: E402
+from kitlib import frontmatter, graph_query, schema, workspace  # noqa: E402
 
 CODE_MARKERS = (
     "package.json",
@@ -65,9 +65,7 @@ def scope_state(root, scope):
     feats = _status_counts(base / "02-drafts", "*.story.md")
     drafts = sorted(p.name.split(".")[0] for p in (base / "02-drafts").glob("*.story.md"))
     open_q = sum(
-        n
-        for s, n in _status_counts(base / "records", "Q-*.md").items()
-        if s in ("candidate", "open")
+        n for s, n in _status_counts(base / "records", "Q-*.md").items() if s in schema.OPEN_Q
     )
     freshness = graph_query.Store(root, scope).freshness()
     return {
