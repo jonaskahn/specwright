@@ -66,7 +66,8 @@ class Store:
     def nodes(self) -> Iterator[dict[str, str]]:
         for r in self._rows("index.tsv"):
             if len(r) >= 6:
-                yield dict(zip(("key", "kind", "status", "title", "shard", "loc"), r, strict=False))
+                names = ("key", "kind", "status", "title", "shard", "loc", "aliases")
+                yield dict(zip(names, r, strict=False))
 
     def node(self, key: str) -> dict[str, str] | None:
         for n in self.nodes():

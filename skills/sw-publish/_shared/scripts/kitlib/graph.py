@@ -104,6 +104,37 @@ def _qualified_refs(value: Any, scope: str) -> list[str]:
     return list(seen)
 
 
+def _names(value: Any) -> list[str]:
+    """Alias list from a list or a `|` separated string; blanks dropped, order kept."""
+    items = value if isinstance(value, list) else str(value or "").split("|")
+    seen: dict[str, None] = {}
+    for item in items:
+        text = clean(item, 200)
+        if text and text != "None":
+            seen.setdefault(text, None)
+    return list(seen)
+
+
+def _identity_extra(fm: dict[str, Any]) -> dict[str, Any]:
+    """Names and provenance the master index shows; only fields that are set."""
+    extra: dict[str, Any] = {}
+    aliases = _names(fm.get("aliases"))
+    if aliases:
+        extra["aliases"] = aliases
+    origin = fm.get("origin") or fm.get("source") or ", ".join(_names(fm.get("sources")))
+    if origin:
+        extra["origin"] = clean(origin, 300)
+    for field_name, target in (
+        ("remote_id", "remote_id"),
+        ("remote_url", "remote_url"),
+        ("tracker_key", "tracker_key"),
+        ("content_class", "content_class"),
+    ):
+        if fm.get(field_name):
+            extra[target] = clean(fm[field_name], 300)
+    return extra
+
+
 def is_blocking(fm: dict) -> bool:
     """A question blocks its features unless it says otherwise."""
     return str(fm.get("blocking", True)).strip().lower() not in ("false", "no", "0")
@@ -147,6 +178,7 @@ def input_files(root: Path, scopes: list[str]) -> list[Path]:
             ("records", "*.md"),
             ("snapshots", "*.md"),
             ("diagrams", "*.json"),
+            ("01-analysis/baseline", "*.tsv"),
         ):
             for path in sorted((base / folder).rglob(pattern)):
                 if path.is_file() and not path.is_symlink():
@@ -216,6 +248,7 @@ def collect(root: Path, scopes: list[str], known: list[str]) -> Graph:
             node.extra["scopes"] = [str(s) for s in entity.fm.get("scopes") or [scope]]
         if kind == "q":
             node.extra["blocking"] = is_blocking(entity.fm)
+        node.extra.update(_identity_extra(entity.fm))
         graph.nodes[key] = node
         declared: set[str] = set()
         for fm_key, rel_name in FM_RELATIONS.items():
@@ -539,6 +572,11 @@ def _lifecycle_nodes(graph: Graph, root: Path, scopes: list[str]) -> None:
                         "-",
                         key,
                     )
+                    aliases = _names(registry.value(key, "Aliases"))
+                    if aliases:
+                        graph.nodes[key].extra["aliases"] = aliases
+                    if registry.value(key, "Source ref"):
+                        graph.nodes[key].extra["origin"] = registry.value(key, "Source ref")
         for record_path in sorted((base / "records").glob("DEC-*.md")):
             record = frontmatter.parse(record_path.read_text(encoding="utf-8")).fm or {}
             if record.get("subtype") != "accepted-split" or record.get("status") != "accepted":
@@ -600,13 +638,15 @@ def _render_files(graph: Graph, root: Path, label: str, scopes: list[str]) -> di
     out_edges = sorted(graph.edges)
     in_edges = sorted(graph.edges, key=lambda e: (e.dst, e.rel, e.src, e.cls, e.line))
     head = f"# {BANNER}\n"
-    index = [head + "# key\tkind\tstatus\ttitle\tshard\tpath:line"]
+    index = [head + "# key\tkind\tstatus\ttitle\tshard\tpath:line\taliases"]
     for key in sorted(nodes):
         n = nodes[key]
         owner = n.owner or (key if n.kind not in ("jira", "code", "snapshot-file") else "")
         shard = f"shards/{_shard_kind(nodes, owner)}/{_safe(owner)}.json" if owner else "-"
         loc = f"{n.path}:{n.line}" if n.path != "-" else "-"
-        index.append(_tsv(key, n.kind, n.status, n.title, shard, loc))
+        index.append(
+            _tsv(key, n.kind, n.status, n.title, shard, loc, "|".join(n.extra.get("aliases", [])))
+        )
     files["index.tsv"] = "\n".join(index) + "\n"
     cols = "# from\trel\tto\tclass\tfile\tline\tresolution"
     for name, rows in (("edges-out.tsv", out_edges), ("edges-in.tsv", in_edges)):
@@ -822,8 +862,23 @@ def _emit(root: Path, scopes: list[str], known: list[str], outdir: Path, label: 
         },
         "counts": {"nodes": len(graph.nodes), "edges": len(graph.edges)},
     }
+    from kitlib import index  # imported here because the index reads graph types
+
+    meta = index.render(graph, root, scopes, label)
+    manifest["meta_files"] = {name: hashing.text_hash(text) for name, text in sorted(meta.items())}
     files["manifest.json"] = json.dumps(manifest, indent=1, sort_keys=True) + "\n"
-    return _write_tree(outdir, files)
+    return _write_tree(outdir, files) + _write_meta(outdir.parent, meta)
+
+
+def _write_meta(folder: Path, files: dict[str, str]) -> list[Path]:
+    """Write the generated index files next to the graph, only when their text changed."""
+    changed = []
+    for name, text in sorted(files.items()):
+        path = folder / name
+        if not path.is_file() or path.read_text(encoding="utf-8") != text:
+            fsio.atomic_write(path, text)
+            changed.append(path)
+    return changed
 
 
 def build(root: Path, scope: str | None = None) -> list[Path]:
@@ -851,9 +906,15 @@ def check(root: Path, scope: str | None = None) -> list[str]:
         if not manifest.is_file():
             findings.append(f"{item}: graph missing; run build")
             continue
-        recorded = json.loads(manifest.read_text(encoding="utf-8")).get("inputs_digest")
-        if recorded != digest(root, input_files(root, [item])):
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        if data.get("inputs_digest") != digest(root, input_files(root, [item])):
             findings.append(f"{item}: graph is stale; run build")
+        for name, recorded in sorted((data.get("meta_files") or {}).items()):
+            path = outdir.parent / name
+            if not path.is_file():
+                findings.append(f"{item}: _meta/{name} is missing; run build")
+            elif hashing.text_hash(path.read_text(encoding="utf-8")) != recorded:
+                findings.append(f"{item}: _meta/{name} was edited by hand; run build")
         graph = build_graph(root, [item])
         for e in graph.edges:
             if e.res in ("unresolved", "missing", "unsafe-path") and e.cls != "mentioned":
