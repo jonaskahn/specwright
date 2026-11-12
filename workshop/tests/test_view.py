@@ -301,8 +301,8 @@ class CommandTests(unittest.TestCase):
     def test_without_node_it_shows_the_plan_and_changes_nothing(self):
         done = self.view("prepare", path="/usr/bin:/bin")
         self.assertEqual(done.returncode, 3, done.stderr)
-        self.assertIn("sha256", done.stderr)
-        self.assertIn("--yes", done.stderr)
+        self.assertIn("runtime.sh plan node", done.stderr)
+        self.assertIn("install node --yes", done.stderr)
         self.assertFalse((self.docs / "console").exists())
         self.assertFalse(self.home.exists())
 

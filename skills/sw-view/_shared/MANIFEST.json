@@ -5,7 +5,7 @@
   "references/graph-model.md": "5613266ed2ac",
   "references/next-step.md": "a0aa69e4a0ab",
   "references/query-cookbook.md": "6f8a7beedc70",
-  "references/runtime.md": "13b5211bdd3e",
+  "references/runtime.md": "fcfea52ecfc2",
   "references/stop-and-ask.md": "8dcf14ae3f9f",
   "references/untrusted-content.md": "03ff18989296",
   "scripts/data.py": "040fc73e347b",
@@ -27,17 +27,18 @@
   "scripts/kitlib/miniyaml.py": "73a1bbe68a05",
   "scripts/kitlib/provenance.py": "7657b964c364",
   "scripts/kitlib/rtm.py": "dc57dda3403f",
-  "scripts/kitlib/runtime.py": "ed5c95948f13",
-  "scripts/kitlib/runtime_pins.py": "b8e5031b8fef",
+  "scripts/kitlib/runtime.py": "e835e3c99318",
   "scripts/kitlib/schema.py": "639c27392390",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "a182b597a8b2",
-  "scripts/kitlib/view_build.py": "06e892d0891c",
+  "scripts/kitlib/view_build.py": "9062bd7d5c82",
   "scripts/kitlib/view_extract.py": "9fdcbd8a26dc",
   "scripts/kitlib/view_server.py": "20a82cd5033d",
   "scripts/kitlib/workspace.py": "8356351721af",
   "scripts/kitlib/writelog.py": "c75ee83de4ff",
-  "scripts/runtime.py": "76feebc294f6"
+  "scripts/runtime-pins.tsv": "ce9b02898b76",
+  "scripts/runtime.ps1": "771f91a98c4b",
+  "scripts/runtime.sh": "0728558e61b1"
  },
  "kit_version": "0.4.1"
 }

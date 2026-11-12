@@ -31,7 +31,7 @@ def npm_command() -> str:
     env = runtime.env_with_node()
     found = shutil.which("npm", path=env["PATH"])
     if not found:
-        raise BuildError("npm was not found; Node 24 is required (runtime.py check)")
+        raise BuildError("npm was not found; Node 24 is required (sh runtime.sh check)")
     return found
 
 

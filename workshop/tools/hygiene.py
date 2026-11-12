@@ -27,7 +27,21 @@ MESSAGE_PATTERNS = [
     (re.compile(r"generated (?:with|by)", re.I), "tool attribution"),
     (re.compile(r"^signed-off-by:", re.I | re.M), "sign-off trailer"),
 ]
-TEXT_SUFFIXES = {".md", ".py", ".json", ".jsonl", ".yaml", ".yml", ".toml", ".html", ".txt", ""}
+TEXT_SUFFIXES = {
+    ".md",
+    ".py",
+    ".json",
+    ".jsonl",
+    ".yaml",
+    ".yml",
+    ".toml",
+    ".html",
+    ".txt",
+    ".sh",
+    ".ps1",
+    ".tsv",
+    "",
+}
 
 
 def scan(text: str, patterns: list[tuple[re.Pattern[str], str]], label: str) -> list[str]:

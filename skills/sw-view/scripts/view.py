@@ -142,11 +142,12 @@ def doctor(args) -> int:
 def prepare(args) -> int:
     root = _root(args)
     if not runtime.check()["node"]["ok"]:
-        print("\n".join(runtime.plan_node()), file=sys.stderr)
-        script = Path(runtime.__file__).resolve().parent.parent / "runtime.py"
+        script = Path(runtime.__file__).resolve().parent.parent / "runtime.sh"
         print(
-            "\nNode 24 is needed to build the console. Ask the user to approve this plan, "
-            f"then run:\n  python3 {script} install node --yes",
+            "Node 24 is needed to build the console. Show the user the plan, and only after "
+            f"they approve it run the install:\n  sh {script} plan node"
+            f"\n  sh {script} install node --yes"
+            "\nOn Windows run runtime.ps1 with `plan node`, then `install node -Yes`.",
             file=sys.stderr,
         )
         return EXIT_DECISION

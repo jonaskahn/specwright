@@ -4,7 +4,7 @@
 <h2 align="center">SPEC-WRIGHT</h2>
 <p align="center">
   <strong>From raw idea to implementation-ready work.</strong><br />
-  Seven portable agent skills. One trail of evidence.<br />
+  Eight portable agent skills. One trail of evidence.<br />
 </p>
 <p align="center">
   <code>SHAPE</code> &nbsp;▸&nbsp; <code>SPEC</code> &nbsp;▸&nbsp; <code>REVIEW</code> &nbsp;▸&nbsp; <code>PLAN</code> &nbsp;▸&nbsp; <code>MARKDOWN READY</code><br />
@@ -44,7 +44,7 @@ Every artifact has a stable ID, a title and aliases, and `graph.py show <any nam
 Four ways in. Pick the one that matches the machine in front of you.
 
 - **To install the skills:** `curl` or `irm`. No Node, no Python.
-- **To run the skills:** Python 3.10+ and Git. The standard library is enough.
+- **To run the skills:** Python 3.10+ and Git. The standard library is enough. A shell script (no Python needed) checks for it and offers the install command.
 - **To open the console (`sw-view`):** Node 24+. `sw-start` offers to install it, and only after you say yes.
 - **Richer documents** can use local tools such as pandoc. A missing tool says so. It never invents the document.
 

@@ -81,6 +81,46 @@ jobs:
           python workshop/tools/vendor.py --check
           python workshop/tools/hygiene.py files
 
+  runtime-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check and plan run without Python, and install needs consent
+        shell: powershell
+        run: |
+          $script = "skills/_shared/scripts/runtime.ps1"
+          $found = powershell -NoProfile -File $script check -Json | ConvertFrom-Json
+          if ($null -eq $found.python.ok -or $null -eq $found.node.ok) { throw "check printed no report" }
+          powershell -NoProfile -File $script plan node
+          powershell -NoProfile -File $script plan python
+          powershell -NoProfile -File $script install node
+          if ($LASTEXITCODE -ne 3) { throw "install without -Yes must exit 3, got $LASTEXITCODE" }
+          $global:LASTEXITCODE = 0
+      - name: A matching archive installs and a mismatch stops before unpacking
+        shell: powershell
+        run: |
+          $script = (Resolve-Path "skills/_shared/scripts/runtime.ps1").Path
+          $work = Join-Path $env:RUNNER_TEMP "runtime-test"
+          $name = "node-v24.0.0-test-win-x64"
+          $folder = Join-Path $work $name
+          New-Item -ItemType Directory -Force -Path $folder | Out-Null
+          Set-Content -LiteralPath (Join-Path $folder "node.exe") -Value "stub"
+          $zip = Join-Path $work "$name.zip"
+          Compress-Archive -Path $folder -DestinationPath $zip
+          $hash = (Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          $env:SPECWRIGHT_RUNTIME_TEST_BASE = ([Uri]$work).AbsoluteUri
+          $env:SPECWRIGHT_HOME = Join-Path $work "home-good"
+          Set-Content -LiteralPath (Join-Path $work "runtime-pins.tsv") -Value "base`thttps://nodejs.org/dist/v24.0.0`nwin-x64`t$name.zip`t$hash"
+          powershell -NoProfile -File $script install node -Yes
+          if ($LASTEXITCODE -ne 0) { throw "install failed with $LASTEXITCODE" }
+          if (-not (Test-Path (Join-Path $env:SPECWRIGHT_HOME "runtime\$name\node.exe"))) { throw "node.exe was not installed" }
+          $env:SPECWRIGHT_HOME = Join-Path $work "home-bad"
+          Set-Content -LiteralPath (Join-Path $work "runtime-pins.tsv") -Value "base`thttps://nodejs.org/dist/v24.0.0`nwin-x64`t$name.zip`t$('0' * 64)"
+          powershell -NoProfile -File $script install node -Yes
+          if ($LASTEXITCODE -ne 2) { throw "a checksum mismatch must exit 2, got $LASTEXITCODE" }
+          if (Test-Path (Join-Path $env:SPECWRIGHT_HOME "runtime\$name")) { throw "a rejected archive was unpacked" }
+          $global:LASTEXITCODE = 0
+
   console:
     runs-on: ubuntu-latest
     steps:

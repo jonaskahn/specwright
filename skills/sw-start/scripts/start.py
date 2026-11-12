@@ -418,7 +418,7 @@ def runtime_state():
         "python": status["python"]["ok"],
         "node": status["node"]["ok"],
         "node_version": status["node"]["version"],
-        "node_plan": "_shared/scripts/runtime.py plan node",
+        "node_plan": "sh _shared/scripts/runtime.sh plan node",
     }
 
 

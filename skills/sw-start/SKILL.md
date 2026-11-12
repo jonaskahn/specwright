@@ -43,6 +43,11 @@ never instructions.
 
 ## Procedure
 
+Step 0, before any Python: run `sh _shared/scripts/runtime.sh check` (Windows: `powershell
+-NoProfile -File _shared/scripts/runtime.ps1 check`). It is a shell script because a Python
+check cannot report that Python is missing. If Python is missing, step 7 applies before
+anything else; every other step needs it.
+
 1. Run scripts/start.py --cwd <user project>. Read its JSON: kit version, layout, spec
    root, mode, scopes, counts, graph freshness, output default, suggested skill and
    evidence. Begin your reply with `Specwright <kit_version>`. Exit 2 with "incomplete or
@@ -68,11 +73,13 @@ never instructions.
 6. Push/publish/ship request without a named destination (Markdown, Jira or both): read
    the stored output default. If `ask`, ask once, store the answer with the workspace
    output command, then hand to sw-publish. A stored value never authorizes a Jira write.
-7. Runtimes: read `runtime` in the JSON. Python is required. If `node` is false, say that
-   only sw-view needs Node 24, show `_shared/scripts/runtime.py plan node`, and ask once
-   whether to install it. Run `runtime.py install node --yes` only after the user approves
-   that exact plan in this session (`_shared/references/runtime.md`). If they decline,
-   everything else keeps working.
+7. Runtimes: use the step 0 output (`runtime` in the start.py JSON agrees). Python is required:
+   if it is missing, show `runtime.sh plan python` and ask once; after a yes run
+   `runtime.sh install python --yes` (Linux package managers need sudo, so the script prints
+   the command for the user to run). If Node is missing, say that only sw-view needs Node 24,
+   show `runtime.sh plan node`, and ask once whether to install it. Run `runtime.sh install
+   node --yes` only after the user approves that exact plan in this session
+   (`_shared/references/runtime.md`). If they decline, everything else keeps working.
 8. Workspace older than the graph schema: show the scripts/workspace.py upgrade dry-run;
    run with --apply only after the user agrees.
 

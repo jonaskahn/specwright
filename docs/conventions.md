@@ -48,8 +48,10 @@ These rules apply to every file in the kit.
 ## Scripts
 
 - Standard library only, offline except the explicit REST adapters (Jira, and the read-only
-  wiki reader) and `runtime.py install`, which downloads one pinned, checksummed Node archive
-  and only runs with `--yes` after the user approves the plan. Python 3.10+.
+  wiki reader) and `runtime.sh install` (`runtime.ps1` on Windows), which downloads one pinned,
+  checksummed Node archive and only runs with `--yes` after the user approves the plan.
+  Python 3.10+. The runtime check and install are the two shell scripts, because a check
+  written in Python cannot report that Python is missing.
 - Every script has `--help`, never prompts, prints data on stdout and diagnostics on
   stderr, and uses distinct documented exit codes.
 - External programs run with a list argv, no shell, and a timeout.

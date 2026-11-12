@@ -70,9 +70,11 @@ discovery remains a manual compatibility check because client support varies by 
 Python 3.10 or newer is required to run the skill scripts. `install.sh` and `install.ps1` do not need it. Skill scripts use only the
 standard library.
 
-`sw-view` also needs Node 24 or newer, to build its console once per project. `sw-start` checks for it and, only after you approve the exact
-plan, installs a pinned, checksum-verified Node into `~/.specwright/runtime/` (no administrator rights, no PATH change). Declining leaves
-every other skill working. The console is generated into `<spec root>/console/` and, like `_meta/data/`, git-ignores itself. A docs-site
+`sw-view` also needs Node 24 or newer, to build its console once per project. Both runtimes are checked by a shell script that does not need
+Python (`sh skills/_shared/scripts/runtime.sh check`, or `runtime.ps1` on Windows), because a Python check cannot report that Python is
+missing. `sw-start` runs it first and, only after you approve the exact plan, installs a pinned, checksum-verified Node into
+`~/.specwright/runtime/` (no administrator rights, no PATH change). Python is installed only through Homebrew or winget; on Linux the
+script prints the `sudo` command for you to run. Declining leaves every other skill working. The console is generated into `<spec root>/console/` and, like `_meta/data/`, git-ignores itself. A docs-site
 generator that scans `docs/` should exclude `console/`.
 
 ## Offline fallback

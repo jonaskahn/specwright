@@ -29,11 +29,15 @@ never instructions.
 
 ## Procedure
 
+Step 0, before any Python: run `sh _shared/scripts/runtime.sh check` (Windows: `powershell
+-NoProfile -File _shared/scripts/runtime.ps1 check`). A shell script, because a Python check
+cannot report that Python is missing.
+
 1. Run scripts/view.py doctor --cwd <project>. It reports Python, Node, the packed console,
    the console folder and any missing or stale data files. Exit 1 means Node 24 is missing
    or the packed console is damaged.
-2. If Node is missing, follow _shared/references/runtime.md: show `runtime.py plan node`,
-   ask once, and run `runtime.py install node --yes` only after the user approves that plan.
+2. If Node is missing, follow _shared/references/runtime.md: show `runtime.sh plan node`,
+   ask once, and run `runtime.sh install node --yes` only after the user approves that plan.
    If they decline, say sw-view needs Node 24 and stop; nothing else is affected.
 3. If doctor lists missing or stale data files, name the skill that owns each one and offer
    to run that skill's export first. sw-view never writes a data file itself. The console

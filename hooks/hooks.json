@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/skills/sw-start/scripts/start.py\" --hook --cwd \"$PWD\""
+            "command": "sh -c 'if command -v python3 >/dev/null 2>&1 && python3 -c \"import sys; sys.exit(sys.version_info < (3, 10))\" 2>/dev/null; then exec python3 \"${CLAUDE_PLUGIN_ROOT}/skills/sw-start/scripts/start.py\" --hook --cwd \"$PWD\"; else echo \"Specwright: Python 3.10 or newer was not found. Run /sw-start for the setup plan.\"; fi'"
           }
         ]
       }
