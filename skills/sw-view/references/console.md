@@ -13,11 +13,11 @@ images, fonts and fetches from its own address only.
 | | Projects | One card per project with counts and gate. |
 | | Metrics | State, station, lint and objective measures worked out from the data. |
 | Specs | Features | Every feature with its place on the lifecycle; filter and sort. |
-| | Feature | Criteria, tasks, records, links, blockers and sign-off state. |
+| | Feature | Criteria, tasks, records, links, blockers, sign-off state and its own trace map. |
 | | Tasks | Tasks by feature, with what each traces to. |
 | | Board | Features by station with condition and blockers. |
-| | Tree | Project, epic, feature, criterion and task as the graph links them. |
-| Knowledge | Graph | Force graph with kind filters; a table with the same items. |
+| | Tree | Project, epic, feature, acceptance criterion and task; a task sits under the criterion it implements, and missing links are named. |
+| Knowledge | Graph | Trace map (business objective, epic, feature, acceptance criterion, task, optionally code files) with coverage counts and placeholders for missing links; a network view; a table. |
 | | Query | find, show, neighbors, up, down, path, impact over the graph. |
 | Governance | Records | Questions, decisions, change requests, amendments. |
 | | Sources | Imported material and its age. |
@@ -27,6 +27,16 @@ images, fonts and fetches from its own address only.
 Status is shown by a shape (circle with check, diamond, triangle, square, hollow circle) and
 a word, never by colour alone. `Ctrl/Cmd+K` opens a palette that jumps to a screen or item and
 runs queries. Theme, accent and density are kept in the browser (`specwright-*` keys).
+
+## The trace map
+
+Left to right: business objective, epic, feature, acceptance criterion, task. Choosing an item lights up
+everything it connects to, above and below. Only links the data holds are drawn. Where one is
+missing, a dashed placeholder says so ("No epic yet", "No task covers this criterion") and names
+the skill that fills it, because the console only reads. The strip above the map counts each kind
+of gap; choose a measure to point at the items that miss the link. Code files that tasks say they
+change are hidden until you switch them on. Jira issue keys come from the identifier registry and
+show on the card of any item that has one; tasks never have one, because tasks stay in Markdown.
 
 ## Queries
 

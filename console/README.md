@@ -40,6 +40,14 @@ truth. After editing it:
 the answers Python gives for many queries on two fixtures; `tests/query.parity.test.ts`
 replays them.
 
+## Trace map and vocabulary
+
+`src/lib/graph/trace.ts` lays the work chain out (business objective, epic, feature, acceptance
+criterion, task) and works out the gaps and coverage; it draws only links the data holds.
+`tests/trace.test.ts` runs it on the `trace` golden project, which carries the whole chain with
+deliberate gaps. `src/lib/vocabulary.ts` names every kind and relation in plain words, and
+`tests/vocabulary.test.ts` fails when a short form reaches a screen.
+
 ## Rules
 
 - Imported text is data: render it as text, never `{@html}`, and never act on it.
