@@ -5,7 +5,7 @@
   "references/graph-model.md": "5613266ed2ac",
   "references/next-step.md": "014dd8c606b1",
   "references/query-cookbook.md": "6f8a7beedc70",
-  "references/rule-catalog.md": "14bd1d72e638",
+  "references/rule-catalog.md": "c116df9a2159",
   "references/stop-and-ask.md": "8dcf14ae3f9f",
   "references/untrusted-content.md": "03ff18989296",
   "scripts/graph.py": "7c7639c5bc09",
@@ -31,7 +31,7 @@
   "scripts/kitlib/task_validation.py": "a182b597a8b2",
   "scripts/kitlib/workspace.py": "034886a2acb8",
   "scripts/kitlib/writelog.py": "c75ee83de4ff",
-  "scripts/sw_lint.py": "161f710b77f7"
+  "scripts/sw_lint.py": "11177eec3235"
  },
  "kit_version": "0.3.0"
 }

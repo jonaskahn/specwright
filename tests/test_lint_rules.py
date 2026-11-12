@@ -396,6 +396,24 @@ class RuleTests(unittest.TestCase):
         named = lint.registry_findings(self.context([doc()], registry=reg))
         self.assertNotIn("L-055", {f.rule for f in named})
 
+    def test_l056(self):
+        manifest = {"sources": [{"id": "legacy", "legacy_id_pattern": r"^LEG-\d{3}$"}]}
+        text = GOOD + "\nThis replaces LEG-100 and LEG-200.\n"
+        listed = update(text, aliases=["LEG-100"])
+        ctx = self.context([doc(listed)], manifest=manifest)
+        found = [f for f in lint.legacy_findings(ctx)]
+        self.assertEqual([f.rule for f in found], ["L-056"])
+        self.assertIn("LEG-200", found[0].msg)
+        both = self.context([doc(update(text, aliases=["LEG-100", "leg-200"]))], manifest=manifest)
+        self.assertEqual(lint.legacy_findings(both), [])
+        self.assertEqual(lint.legacy_findings(self.context([doc(listed)])), [])  # no pattern set
+        reg = tables.Table(list(schema.REGISTRY_COLUMNS))
+        reg.upsert("REF:FEAT-009", {"Aliases": "LEG-200"})
+        mapped = self.context([doc(listed)], manifest=manifest, registry=reg)
+        self.assertEqual(lint.legacy_findings(mapped), [])
+        snap = doc(snapshot(text), "00-inbox/SRC-0001.md")
+        self.assertEqual(lint.legacy_findings(self.context([snap], manifest=manifest)), [])
+
     def test_l057(self):
         from kitlib import cite
 

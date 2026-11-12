@@ -38,7 +38,7 @@ GATES = {"draft": 10, "review": 20, "publish": 30}
 REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {"L-017", "L-062"}
 PUBLISH = {"L-018", "L-037", "L-045", "L-046"}
 SYNC = set()
-RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), *range(57, 64))}
+RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), *range(56, 64))}
 # Artifacts a reader looks up by name; each needs a title and an alias list (possibly empty).
 NAMED_TYPES = {
     "feature",
@@ -1129,8 +1129,50 @@ def _graph_state(ctx, root, add):
     return []
 
 
+def legacy_findings(ctx):
+    """A legacy ID written in a body must be an alias of some artifact, or the item is unmapped."""
+    patterns = [
+        str(s.get("legacy_id_pattern", "")).strip().removeprefix("^").removesuffix("$")
+        for s in sequence(ctx.manifest.get("sources"))
+        if isinstance(s, dict) and s.get("legacy_id_pattern")
+    ]
+    if not patterns:
+        return []
+    try:
+        regex = re.compile(r"(?<![\w-])(?:" + "|".join(patterns) + r")(?![\w-])")
+    except re.error:
+        return []
+    known = {
+        str(a).casefold()
+        for doc in ctx.docs
+        for a in (doc.fm.get("aliases") if isinstance(doc.fm.get("aliases"), list) else [])
+    }
+    for row in ctx.registry.rows:
+        known |= {a.casefold() for a in ctx.registry.value(row[0], "Aliases").split("|") if a}
+    out = []
+    for doc in ctx.docs:
+        if doc.snapshot or doc.fm.get("type") in {"snapshot", "src", "candidates"}:
+            continue
+        for number, line in enumerate(doc.body.splitlines(), doc.parsed.body_line):
+            for match in regex.finditer(line):
+                if match.group(0).casefold() not in known:
+                    out.append(
+                        Finding(
+                            "L-056",
+                            "draft",
+                            "error",
+                            doc.path,
+                            number,
+                            f"legacy ID {match.group(0)} is not an alias of any artifact",
+                            doc.spec_id,
+                        )
+                    )
+    return out
+
+
 def collect(ctx):
     findings = [f for doc in ctx.docs for f in lint_document(doc, ctx)]
+    findings.extend(legacy_findings(ctx))
     findings.extend(registry_findings(ctx))
     findings.extend(graph_findings(ctx))
     # A card and its draft describe the same identity, but independent drafts cannot own an AC.
