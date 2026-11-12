@@ -6,7 +6,8 @@ scope and the host can run sub-agents. It gives speed without shared-write races
 ## When
 
 - Fan out for 2+ items: reserved features to specify, accepted features to plan, submitted
-  features to prepare for review.
+  features to prepare for review. For review the workers only check; accepts stay with the lead
+  (sw-review "Several features").
 - Stay serial for one item, an amendment of published text (CR and snapshot gate), a scope
   that is ambiguous, or a host without sub-agents. Say which, in one line.
 - One worker per item. Run up to 8 at a time; the rest follow in the next wave.

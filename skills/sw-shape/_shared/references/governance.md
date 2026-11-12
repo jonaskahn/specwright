@@ -52,6 +52,9 @@ only on an explicit request (`lifecycle.md`), never as a next step.
   passes the TRANSITION token itself after that yes; the user never types a token.
 - Stop only on a blocker: a blocking question, a lint error, an ambiguous scope, a missing
   input or a publish step. Ask, and let the user decide.
+- A batch accept (sw-review) is valid only as the answer to the table just shown: each named
+  feature is bound to the hash shown, and a draft that changed since is excluded. A plain yes
+  to "continue to the next station for N features" covers the batch, never an approval.
 - Save a non-blocking unknown as a question with its default applied (the command is in
   `stop-and-ask.md`), list it in the summary and keep going. An assumed question can still be
   answered later.

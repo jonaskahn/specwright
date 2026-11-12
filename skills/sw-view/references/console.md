@@ -12,12 +12,11 @@ images, fonts and fetches from its own address only.
 | Workspace | Overview | Totals, items that need a person, state bar, lint gate. |
 | | Projects | One card per project with counts and gate. |
 | | Metrics | State, station, lint and objective measures worked out from the data. |
-| Specs | Features | Every feature with its place on the lifecycle; filter and sort. |
+| Specs | Features | Every feature with its place on the lifecycle; choose a row to read the story. |
 | | Feature | Criteria, tasks, records, links, blockers, sign-off state and its own trace map. |
 | | Tasks | Tasks by feature, with what each traces to. |
-| | Board | Features by station with condition and blockers. |
-| | Tree | Project, epic, feature, acceptance criterion and task; a task sits under the criterion it implements, and missing links are named. |
-| Knowledge | Graph | Trace map (business objective, epic, feature, acceptance criterion, task, optionally code files) with coverage counts and placeholders for missing links; a network view; a table. |
+| | Board | A kanban board: one column per station, one card per feature with its epics, criteria and tasks by layer, open questions, blockers, who is next and how long it has been idle. Filters, swimlanes by project, epic or turn. Read-only: a card shows the command that moves it on. |
+| Knowledge | Graph | One page: an outline beside the trace map (business objective, epic, feature, acceptance criterion, task, optionally code files), with coverage counts and placeholders for missing links; a network view; a table; the outline full width. A project select shows one project at a time, each project in turn, or only the links across projects. |
 | | Query | find, show, neighbors, up, down, path, impact over the graph. |
 | Governance | Records | Questions, decisions, change requests, amendments. |
 | | Sources | Imported material and its age. |
@@ -27,6 +26,28 @@ images, fonts and fetches from its own address only.
 Status is shown by a shape (circle with check, diamond, triangle, square, hollow circle) and
 a word, never by colour alone. `Ctrl/Cmd+K` opens a palette that jumps to a screen or item and
 runs queries. Theme, accent and density are kept in the browser (`specwright-*` keys).
+
+## Preview and tables
+
+Choosing an item (a row, a card, a criterion, a task, a record, a source) opens the preview on the
+right: the item's Markdown file with its own line marked, a PDF in the browser's viewer, an image,
+or a link file's address as text. It has an outline of the document, a Connections tab with the
+graph's links, and a Details tab. The address keeps the choice (`?pk=REF:AC-001-2`), so a reload or
+a pasted link returns to it; Esc closes it and the dock button keeps it beside the page. Markdown
+is drawn from a small reader that never produces HTML: raw HTML in a document stays text, and only
+`http`, `https` and `mailto` links are followed. Documents come from the server's `/doc/` route, so
+file contents need `view.py serve`.
+
+Every table has a filter, facet selects, sortable headers and pages of 25, 50 or 100 rows, and its
+state is kept in the address (`t.<table>.q`, `.f.<column>`, `.s`, `.p`, `.n`).
+
+## The graph page
+
+The select at the top of the page chooses one project, each project in turn, or the links across
+projects. A project's graph also shows the epics and objectives of other projects that its features
+belong to, dashed and labelled with their project, so a link across projects is drawn instead of
+reported as missing. The outline on the left (also the Outline view, and where the old `#/tree`
+address goes) selects the same item as the map.
 
 ## The trace map
 

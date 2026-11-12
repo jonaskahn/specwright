@@ -62,6 +62,7 @@ conflicting membership must be resolved, never inferred from loose mentions.
 
 ## Completion
 
-After each action follow `completion.md` (maintenance, then report). More than one eligible item
-requires selection, even when all share a station. No oldest-draft fallback and no sibling
-auto-advancement. Local TRANSITION tokens never substitute for the PUBLISH confirmation.
+After each action follow `completion.md` (maintenance, then report). Eligible items at
+different stations require selection. Items that share a station are taken together by that
+station's skill, or the user names one. No oldest-draft fallback and no sibling
+auto-advancement to another station. Local TRANSITION tokens never substitute for the PUBLISH confirmation.

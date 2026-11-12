@@ -66,8 +66,8 @@ anything else; every other step needs it.
    `action` as the one next step. For a named item run start.py --item <key> --pack and
    read the listed files in order, with the blocking questions first. When several items
    are active, show `ranking` (top three with reasons) as advice and let the user choose.
-   When the route is sw-spec or sw-plan and two or more items of the scope qualify, name the
-   batch and offer all of them in parallel (default) or one pick; the routed skill then fans
+   When the route is `batch sw-spec`, `batch sw-review` or `batch sw-plan` (two or more items of the scope, all
+   in that station), name the batch and offer all of them in parallel (default) or one pick; the routed skill then fans
    out per _shared/references/parallel-writers.md. Then read and follow
    ../<skill>/SKILL.md. If that file is absent (single-skill install), name the skill and
    ask for it to be invoked; do not search for it.

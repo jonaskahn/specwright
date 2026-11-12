@@ -1,6 +1,6 @@
 ---
 name: sw-view
-description: Opens a local, read-only web console over the workspace data: projects, metrics, features, tasks, the board, the tree, the knowledge graph with queries, records, sources and quality. Use when asked to show a dashboard, open the console, see the graph, browse features or tasks, or view metrics for the whole workspace. Do NOT use to write or change requirements (use sw-spec), record approval (use sw-review) or publish (use sw-publish).
+description: Opens a local, read-only web console over the workspace data: projects, metrics, features, tasks, a kanban board, the knowledge graph with its outline and queries, records, sources and quality. Use when asked to show a dashboard, open the console, see the graph, browse features or tasks, or view metrics for the whole workspace. Do NOT use to write or change requirements (use sw-spec), record approval (use sw-review) or publish (use sw-publish).
 ---
 
 # sw-view
@@ -8,8 +8,9 @@ description: Opens a local, read-only web console over the workspace data: proje
 ## Purpose
 
 Let a person see the whole workspace in one place without opening spec files: a local web
-console with an overview, projects, metrics, features, tasks, a board, a tree, the knowledge
-graph with a query bar, records, sources, quality and the identifier registry.
+console with an overview, projects, metrics, features, tasks, a kanban board, the knowledge
+graph (with its outline, one graph per project) with a query bar, a preview panel that reads any
+item's Markdown or PDF source, records, sources, quality and the identifier registry.
 
 ## Reads and writes
 
@@ -76,8 +77,11 @@ packed console fails its checksum (reinstall the skill). Questions follow
 ## Gotchas
 
 - The page does not work when opened from disk (`file://`); the server is required.
-- The server listens on 127.0.0.1 only and answers GET and HEAD for the console and the
-  data files, nothing else.
+- The server listens on 127.0.0.1 only and answers GET and HEAD for the console, the data files
+  and, under `/doc/<project>/`, a project's Markdown, PDF, image and link files for the preview
+  panel; it refuses dot-files, machine files and anything outside the project. A static
+  server started after `prepare --copy-data` shows the data but not file contents; use
+  `view.py serve` to read documents.
 - The data files hold metadata only: identifiers, titles, statuses, paths and links. Body text and
   names of approvers are not in them.
 - The stored status `ready-to-publish` is shown as **accepted**; say accepted to readers.

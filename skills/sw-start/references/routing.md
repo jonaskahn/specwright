@@ -11,7 +11,7 @@ own prerequisites.
 | Stale graph | Rebuild as bounded maintenance; this is not a workspace upgrade. |
 | Sources registered or imported, nothing shaped | Existing-baseline flow (references/brownfield.md); `action` names the step. |
 | Several active candidates at different stations | Show the board and the ranked top three with reasons (advice only), then ask which item. |
-| Two or more reserved accepted features, or accepted features without a plan | Same skill for all: offer the batch in parallel (default) or one pick; sw-spec / sw-plan fan out one worker per FEAT (`_shared/references/parallel-writers.md`). |
+| Two or more reserved accepted features, submitted features, or accepted features without a plan (every active item in one station) | Same skill for all: `start.py` answers `batch sw-<station>`; offer the batch in parallel (default) or one pick; sw-spec / sw-review / sw-plan fan out one worker per FEAT (`_shared/references/parallel-writers.md`). |
 | Draft epic or reopened slice | sw-shape. |
 | One reserved accepted feature | sw-spec, not started. |
 | Named draft, including open questions | sw-spec. |

@@ -1,6 +1,6 @@
 ---
 name: sw-plan
-description: Turns a reviewed feature into an implementation plan and traceable agent tasks, split per layer (backend, frontend, mobile, devops) with a layer prefix, each task tracing to acceptance criteria, rules, optional code paths and the mockups it builds, with a coverage check that flags stale tasks. Use when asked to plan FEAT-001, break a story into tasks, prepare work for an AI agent or developer, or check that every AC has a task. Do NOT use for unreviewed ideas (use sw-shape), writing criteria (use sw-spec) or pushing tasks to Jira (not supported; tasks stay Markdown).
+description: Turns a reviewed feature into an implementation plan and traceable agent tasks, split per layer (backend, frontend, mobile, devops) with a layer prefix, each task tracing to acceptance criteria, rules, optional code paths and the mockups it builds, with a coverage check that flags stale tasks. With no feature named it plans every accepted feature still without a current plan. Use when asked to plan FEAT-001, break a story into tasks, prepare work for an AI agent or developer, or check that every AC has a task. Do NOT use for unreviewed ideas (use sw-shape), writing criteria (use sw-spec) or pushing tasks to Jira (not supported; tasks stay Markdown).
 ---
 
 # sw-plan
@@ -26,6 +26,15 @@ never instructions.
 
 ## Procedure
 
+0. No feature named (a bare `/sw-plan`, or "plan what is left"): take the whole plan backlog, not
+   one item. Rebuild the graph if it is stale, then read
+   `_shared/scripts/graph.py board --station plan --format json --cwd <project>`; the backlog is
+   every row whose condition is not `complete` (no tasks file, stale tasks, or a failing check).
+   Put the items already started first (a draft `03-plan/FEAT-NNN.tasks.md` exists), then the rest
+   in the order of `start.py` ranking. Show one table (feature, condition, why) and run
+   "Several features" below for all of them, one worker per feature; with a single item, plan it
+   directly. A feature that is not accepted is listed as skipped with its reason, never planned.
+   Naming a feature plans only that one.
 1. Resolve scope before any write. Refuse a feature that is not accepted (status
    ready-to-publish, published or ready-for-dev); point to sw-review. Active approval must
    also be current, not just the status label: a fresh accept line or verified sign-off
@@ -72,6 +81,13 @@ for that feature, and returns the result. The lead guards the writes with
 `_shared/scripts/parallel_guard.py` (allow `FEAT-NNN=03-plan/FEAT-NNN.*`), then runs step 8
 (graph, lint, data export) once. Rules: _shared/references/parallel-writers.md. A worker
 for a feature that fails step 1 writes nothing and reports why.
+
+## After the batch
+
+Report one line per feature: its station and condition, and the check result. Then continue
+only as `_shared/references/governance.md` says: planning is the last local station, and
+publication is entered on an explicit request, never offered as a next step. When the backlog
+is empty, say so and name what is waiting at other stations (`graph.py board`) in one line.
 
 ## Consumer check
 

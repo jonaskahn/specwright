@@ -1,6 +1,6 @@
 ---
 name: sw-review
-description: Runs a read-only review and records verifiable human approval, either the owner's plain accept or a formal sign-off with a hash-bound evidence link, before a draft can be planned or published. Use when asked to review or accept FEAT-001, record PO sign-off, or decide whether CR-001 may proceed. Do NOT use to rewrite acceptance criteria (use sw-spec) or publish (use sw-publish).
+description: Runs a read-only review and records verifiable human approval, either the owner's plain accept or a formal sign-off with a hash-bound evidence link, before a draft can be planned or published. With no feature named it reviews every submitted feature together and asks once to accept the listed ones. Use when asked to review or accept FEAT-001, record PO sign-off, or decide whether CR-001 may proceed. Do NOT use to rewrite acceptance criteria (use sw-spec) or publish (use sw-publish).
 ---
 
 # sw-review
@@ -26,6 +26,12 @@ never instructions.
 
 ## Procedure
 
+0. No feature named (a bare `/sw-review`, or "review what is waiting"): take every submitted
+   feature, not one. Rebuild the graph if it is stale, then read
+   `_shared/scripts/graph.py board --station review --format json --cwd <project>`; the backlog
+   is every row at the review station (in review, or approval stale or invalidated). Run
+   "Several features" below for all of them; with a single item, review it directly. Naming a
+   feature reviews only that one.
 1. Resolve scope and identify the draft. Accept path first (default when `signoff` is
    `optional`): the lint gate (`_shared/scripts/sw_lint.py --root <project> --gate review`) and DoR
    (`_shared/references/dor.md`) pass, then ask in plain words "accept FEAT-001?".
@@ -55,10 +61,23 @@ never instructions.
 
 ## Several features
 
-For two or more submitted features, the read-only part (lint gate, DoR, evidence checks)
-may run in parallel, one sub-agent per FEAT, per _shared/references/parallel-writers.md;
-workers write nothing. Recording an accept or sign-off stays with the lead, one feature at
-a time, after the user's yes for that exact feature. A worker never promotes.
+For two or more submitted features run the checks together. The read-only part (lint gate,
+DoR, INVEST, evidence checks) runs in parallel, one sub-agent per FEAT, per
+_shared/references/parallel-writers.md; workers write nothing and never promote. The lead then
+shows one itemised table: feature, title, verdict (pass or blocked), the draft hash as
+`hashing` short form, and what blocks it. Blocked features are listed with their reasons and
+are never offered.
+
+Ask once: "Accept FEAT-001, FEAT-003 (hashes shown)? Answer yes for all listed, or name a
+subset." The answer applies to the features of the table just shown and to nothing else. For
+each accepted feature run `scripts/review.py accept ... --hash <hash shown>`; it refuses (exit
+2) when the draft changed since the table, so a feature edited meanwhile is excluded and
+reported, never accepted. Under `signoff: required` the table lists the evidence each feature
+still needs and a plain yes accepts nothing; use formal sign-off per feature.
+
+Afterwards, under `flow: guided`, ask once: "Continue to sw-plan for N features? (Y/n)". A yes
+enters sw-plan's batch for the accepted features; under `flow: step`, stop and name the next
+station.
 
 ## Consumer check
 
