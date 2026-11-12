@@ -274,7 +274,16 @@ class AcceptTests(SoloTestCase):
             "--manifest",
             str(self.manifest),
         ]
-        done = run("accept", *common)
+        shown = hashing.short(hashing.draft_hash(self.draft.read_text()))
+        before = self.draft.read_text()
+        status = frontmatter.split(before)[0]["status"]
+        self.draft.write_text(before.replace("traceable", "auditable"))
+        stale = run("accept", *common, "--hash", shown)
+        self.assertEqual(stale.returncode, 2)
+        self.assertIn("changed since it was shown", stale.stderr)
+        self.assertEqual(frontmatter.split(self.draft.read_text())[0]["status"], status)
+        self.draft.write_text(before)
+        done = run("accept", *common, "--hash", shown)
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertTrue(json.loads(done.stdout)["accepted"])
         self.assertEqual(frontmatter.split(self.draft.read_text())[0]["status"], "ready-to-publish")

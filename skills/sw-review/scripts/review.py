@@ -43,6 +43,10 @@ def main(argv=None):
     parser.add_argument(
         "--kind", choices=sorted(review.KINDS), help="evidence kind (verify, promote)"
     )
+    parser.add_argument(
+        "--hash",
+        help="accept only if the draft still has this hash, as shown in the batch table (accept)",
+    )
     parser.add_argument("--body", default="")
     parser.add_argument(
         "--session-ref", default="", help="chat or meeting evidence: session or minutes reference"
@@ -50,6 +54,13 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         if args.command == "accept":
+            if args.hash:
+                now = hashing.draft_hash(args.draft.read_text(encoding="utf-8"))
+                if not now.removeprefix("sha256:").startswith(args.hash.removeprefix("sha256:")):
+                    raise review.ApprovalError(
+                        f"the draft changed since it was shown (now {hashing.short(now)}); "
+                        "review it again before accepting"
+                    )
             updated = review.accept(args.draft, args.scope_id, args.manifest)
             fsio.atomic_write(args.draft, updated)
             digest = hashing.short(hashing.draft_hash(updated))

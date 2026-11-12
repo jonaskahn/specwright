@@ -172,12 +172,35 @@ class RankingAndPackTests(WorkflowTestCase):
         )
         self.assertEqual(by_id["REF:FEAT-001"]["reasons"], ["1 blocking question(s)"])
 
-    def test_several_items_route_to_choose_with_the_ranking_as_advice(self):
+    def test_several_items_in_one_station_route_to_a_batch_with_the_ranking_as_advice(self):
         item = self.item()
-        self.assertEqual(item["next"][0], "choose item")
+        self.assertEqual(item["next"][0], "batch sw-spec")
         self.assertIn("most ready: REF:FEAT-002", item["next"][1])
-        self.assertIn("advice", item["action"])
+        for feature in ("REF:FEAT-001", "REF:FEAT-002", "REF:FEAT-003"):
+            self.assertIn(feature, item["next"][1])
+        self.assertIn("together", item["action"])
+        self.assertIn("or name one", item["action"])
         self.assertLessEqual(len(item["ranking"]), 3)
+
+    def test_several_items_in_different_stations_still_ask_which_one(self):
+        board = [
+            {"id": "REF:FEAT-001", "station": "review", "condition": "in-progress"},
+            {"id": "REF:FEAT-002", "station": "plan", "condition": "in-progress"},
+        ]
+        self.assertIsNone(start.batch_station(board))
+        same = [{**r, "station": "review"} for r in board]
+        self.assertEqual(start.batch_station(same), "review")
+        planned = [{**r, "station": "plan"} for r in board]
+        self.assertEqual(start.batch_station(planned), "plan")
+
+    def test_a_station_with_no_batch_skill_never_batches(self):
+        board = [
+            {"id": "REF:FEAT-001", "station": "publish", "condition": "in-progress"},
+            {"id": "REF:FEAT-002", "station": "publish", "condition": "in-progress"},
+        ]
+        self.assertIsNone(start.batch_station(board))
+        unknown = [{"id": "REF:FEAT-001", "station": "spec", "condition": "unknown"}] * 2
+        self.assertIsNone(start.batch_station(unknown))
 
     def test_a_context_pack_lists_files_in_reading_order_with_hashes_and_blockers(self):
         self.write(

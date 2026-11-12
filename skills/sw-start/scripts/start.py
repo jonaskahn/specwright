@@ -236,6 +236,18 @@ def graph_command(root, scope):
     return f"python3 {script} build --cwd {root} --scope {scope}"
 
 
+BATCH_STATIONS = ("spec", "review", "plan")
+
+
+def batch_station(board):
+    """The one station every active item is in, when that station's skill can take them together."""
+    stations = {r["station"] for r in board}
+    only = next(iter(stations)) if len(stations) == 1 else None
+    return (
+        only if only in BATCH_STATIONS and all(r["condition"] != "unknown" for r in board) else None
+    )
+
+
 def route(state):
     """Deterministic next action for one scope; each answer carries the evidence behind it."""
     if state["graph"] in ("missing", "incompatible"):
@@ -254,6 +266,13 @@ def route(state):
     if len(board) > 1:
         top = state.get("ranking") or []
         hint = f"; most ready: {top[0]['id']} ({'; '.join(top[0]['reasons'])})" if top else ""
+        station = batch_station(board)
+        if station:
+            names = ", ".join(r["id"] for r in board)
+            return (
+                f"batch sw-{station}",
+                f"{len(board)} features are all in {station}: {names}; take them together{hint}",
+            )
         return ("choose item", "several active features; select a qualified item" + hint)
     if len(board) == 1:
         item = board[0]
@@ -366,6 +385,9 @@ def action_for(item):
     if reason.startswith("existing baseline"):
         return baseline_step(item)[2]
     active = [r for r in item.get("board", []) if r.get("kind") != "epic"]
+    if skill.startswith("batch "):
+        names = ", ".join(r["id"] for r in active)
+        return f"run {skill.removeprefix('batch ')} for {names} together (the default), or name one"
     if skill == "choose item":
         top = (item.get("ranking") or [{"id": "REF:FEAT-001"}])[0]["id"]
         return f"name the item to work on, for example {top}; the ranking is advice"
