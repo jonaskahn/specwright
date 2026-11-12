@@ -1,0 +1,14 @@
+#!/bin/sh
+# Keep the sw-view skill's packed console in step with console/ on every commit.
+# Enable with: make hooks setup   (git config core.hooksPath .githooks)
+set -e
+root="$(git rev-parse --show-toplevel)"
+cd "$root"
+
+if ! git diff --quiet -- console; then
+	echo "pre-commit: console/ has unstaged changes; stage or stash them so the pack matches the commit." >&2
+	exit 1
+fi
+
+python3 workshop/tools/console_pack.py
+git add skills/sw-view/assets/console.zip skills/sw-view/assets/console.manifest.json

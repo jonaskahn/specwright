@@ -21,11 +21,11 @@ RUFF ?= uvx ruff
 RUFF_CONFIG := --config workshop/pyproject.toml
 DIST_DIR := dist
 
-GROUPS := lint format test build package clean
-RUNNABLE := lint format test build package clean
+GROUPS := lint format test console build package hooks clean
+RUNNABLE := lint format test console build package hooks clean
 
 # Group colour, as "group=SGR" pairs; help adds the bold attribute.
-GROUP_COLORS := lint=33 format=32 test=35 build=34 package=96 clean=37
+GROUP_COLORS := lint=33 format=32 test=35 console=36 build=34 package=96 hooks=31 clean=37
 
 # ---------------------------------------------------------------------------
 # Subcommand dispatch: `make lint validate` runs lint.validate. The words after
@@ -53,7 +53,7 @@ $(GROUPS):
 
 ##@ lint: → format check, Ruff, source validation, vendor, bundle-map and hygiene checks
 
-lint.default: lint.format lint.ruff lint.validate lint.vendor lint.bundle lint.hygiene
+lint.default: lint.format lint.ruff lint.validate lint.vendor lint.bundle lint.console-pack lint.hygiene
 
 ## lint.format: check formatting without writing
 lint.format:
@@ -74,6 +74,10 @@ lint.vendor:
 ## lint.bundle: fail when bundle-map.json drifts from real imports, links or the file cap
 lint.bundle:
 	$(PYTHON) workshop/tools/bundle.py --check
+
+## lint.console-pack: fail when the packed console no longer matches console/ (needs no Node)
+lint.console-pack:
+	$(PYTHON) workshop/tools/console_pack.py --check
 
 ## lint.hygiene: scan text for work-tracking labels and attribution
 lint.hygiene:
@@ -114,6 +118,34 @@ test.docker:
 		        apt-get install -y -qq --no-install-recommends git && \
 		        PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s workshop/tests -t workshop'
 
+##@ console: → check, test, build and pack the Svelte console (Node 24)
+
+console.default: console.check console.test
+
+## console.install: install the console's dependencies from its lockfile
+console.install:
+	cd console && npm ci --ignore-scripts
+
+## console.check: type-check the console
+console.check:
+	cd console && npm run check
+
+## console.test: run the console tests in Node 24 inside Docker, on a copy, so the host gets no node_modules
+console.test:
+	docker run --rm -v "$(CURDIR):/repo:ro" node:24-slim \
+		sh -ec 'mkdir -p /w/console /w/workshop/fixtures && cp -R /repo/console/. /w/console && \
+		        rm -rf /w/console/node_modules /w/console/dist && \
+		        cp -R /repo/workshop/fixtures/console-golden /w/workshop/fixtures/ && \
+		        cd /w/console && npm ci --ignore-scripts >/dev/null 2>&1 && npm test'
+
+## console.build: build the console into console/dist
+console.build:
+	cd console && npm run build
+
+## console.pack: pack console/ into the sw-view skill (the pre-commit hook runs this)
+console.pack:
+	$(PYTHON) workshop/tools/console_pack.py
+
 ##@ build: → lint and test the repository
 
 build.default: lint.default test.default
@@ -134,6 +166,14 @@ package.verify:
 ## package.report: show each skill's file count, size and shared capabilities
 package.report:
 	$(PYTHON) workshop/tools/bundle.py --report
+
+##@ hooks: → turn on the repository's git hooks
+
+hooks.default: hooks.setup
+
+## hooks.setup: use .githooks, so every commit packs the console into sw-view
+hooks.setup:
+	git config core.hooksPath .githooks
 
 ##@ clean: → remove distribution output, caches and Python bytecode
 

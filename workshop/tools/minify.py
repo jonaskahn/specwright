@@ -94,6 +94,8 @@ def _minify_markup(text: str) -> str:
 
 
 def minify_file(path: Path) -> None:
+    if path.suffix not in (".css", ".html"):
+        return  # binary assets such as the packed console stay as they are
     text = path.read_text(encoding="utf-8")
     if path.suffix == ".css":
         result = minify_css(text) + "\n"

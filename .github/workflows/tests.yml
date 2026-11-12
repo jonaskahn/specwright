@@ -80,3 +80,26 @@ jobs:
           python workshop/tools/validate.py
           python workshop/tools/vendor.py --check
           python workshop/tools/hygiene.py files
+
+  console:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Packed console matches the source
+        run: python workshop/tools/console_pack.py --check
+      - name: Install, check, test and build
+        working-directory: console
+        run: |
+          python ../workshop/tools/gen_console_contract.py
+          npm ci --ignore-scripts
+          npm run check
+          npm test
+          npm run build
+      - name: Pins are current
+        run: python workshop/tools/pin_node.py --check

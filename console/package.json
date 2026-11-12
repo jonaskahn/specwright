@@ -7,7 +7,7 @@
   "engines": { "node": ">=24" },
   "scripts": {
     "gen:contract": "python3 ../workshop/tools/gen_console_contract.py",
-    "predev": "npm run gen:contract",
+    "predev": "node -e \"const fs=require('fs'),cp=require('child_process');if(fs.existsSync('../workshop/tools/gen_console_contract.py'))cp.execSync('python3 ../workshop/tools/gen_console_contract.py',{stdio:'inherit'})\"",
     "dev": "vite",
     "dev:golden": "DATA_DIR=../workshop/fixtures/console-golden/program/data vite",
     "build": "vite build",
