@@ -36,6 +36,7 @@ const KINDS: Record<string, Words> = {
   asset: { one: 'Asset', many: 'Assets' },
   jira: { one: 'Jira issue', many: 'Jira issues' },
   code: { one: 'Code file', many: 'Code files' },
+  gap: { one: 'Missing link', many: 'Missing links' },
 };
 
 /** `ac` becomes "Acceptance criterion" (or "Acceptance criteria" with `many`). */

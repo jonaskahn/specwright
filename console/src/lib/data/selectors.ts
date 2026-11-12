@@ -39,41 +39,55 @@ export function inScope<T extends { scope?: string | null }>(items: T[], scope: 
   return scope === '*' ? items : items.filter((i) => i.scope === scope);
 }
 
-/** Program → project → epic → feature → AC and task, built from the graph's own links. */
+/**
+ * Project, epic, feature, acceptance criterion, task, built from the graph's own links. A task sits
+ * under the criterion it implements; one that implements none sits under a "not tied" group, and a
+ * feature in no epic sits under "No epic yet" (only when the project has epics at all).
+ */
 export function buildTree(d: Loaded, scope: string): TreeNode[] {
   const nodes = d.data.graph?.nodes ?? [];
   const edges = d.data.graph?.edges ?? [];
   const byKey = new Map(nodes.map((n) => [n.key, n]));
-  const kids = new Map<string, string[]>();
-  const hasParent = new Set<string>();
-  const link = (parent: string, child: string) => {
-    if (!byKey.has(parent) || !byKey.has(child)) return;
-    kids.set(parent, [...(kids.get(parent) ?? []), child]);
-    hasParent.add(child);
+  const live = (key: string) => byKey.has(key);
+  const children = new Map<string, string[]>();
+  const add = (parent: string, child: string) => {
+    if (live(parent) && live(child) && !(children.get(parent) ?? []).includes(child)) children.set(parent, [...(children.get(parent) ?? []), child]);
   };
+  const epicOf = new Set<string>();
+  const tied = new Set<string>();
+  const taskOwner = new Map<string, string>();
   for (const e of edges) {
-    if (e.rel === 'has_ac' || e.rel === 'has_task') link(e.from, e.to);
-    else if (e.rel === 'member_of' && e.resolution === 'resolved') link(e.to, e.from);
+    if (e.rel === 'has_ac') add(e.from, e.to);
+    else if (e.rel === 'member_of' && e.resolution === 'resolved' && byKey.get(e.to)?.kind === 'epic') {
+      add(e.to, e.from);
+      epicOf.add(e.from);
+    } else if (e.rel === 'implements' && byKey.get(e.to)?.kind === 'ac' && byKey.get(e.from)?.kind === 'task') {
+      add(e.to, e.from);
+      tied.add(e.from);
+    } else if (e.rel === 'has_task') taskOwner.set(e.to, e.from);
   }
-  const make = (key: string, seen: Set<string>): TreeNode => {
+  const leaf = (key: string, kids: TreeNode[] = []): TreeNode => {
     const n = byKey.get(key)!;
-    const next = new Set(seen).add(key);
-    const children = (kids.get(key) ?? [])
-      .filter((k) => !next.has(k))
-      .sort()
-      .map((k) => make(k, next));
-    return { key, kind: n.kind, title: n.title, status: n.status, children };
+    return { key, kind: n.kind, title: n.title, status: n.status, children: kids };
   };
-  const roots = nodes
-    .filter((n) => !hasParent.has(n.key) && ['epic', 'feat'].includes(n.kind) && (scope === '*' || n.scope === scope))
-    .map((n) => n.key)
-    .sort();
+  const group = (id: string, title: string, kids: TreeNode[]): TreeNode => ({ key: id, kind: 'gap', title, status: null, children: kids });
+  const sorted = (keys: string[]) => [...keys].sort();
+  const criterion = (key: string) => leaf(key, sorted(children.get(key) ?? []).map((t) => leaf(t)));
+  const feature = (key: string): TreeNode => {
+    const untied = [...taskOwner].filter(([task, owner]) => owner === key && !tied.has(task)).map(([task]) => task);
+    const kids = sorted(children.get(key) ?? []).map(criterion);
+    if (untied.length) kids.push(group(`gap:task:${key}`, 'Tasks not tied to an acceptance criterion', sorted(untied).map((t) => leaf(t))));
+    return leaf(key, kids);
+  };
+  const inScope = (n: GraphNode, project: string) => n.scope === project;
   const projects = scope === '*' ? rows.scopes(d).map((s) => s.scope) : [scope];
-  return projects.map((p) => ({
-    key: p,
-    kind: 'project',
-    title: rows.scopes(d).find((s) => s.scope === p)?.name ?? p,
-    status: null,
-    children: roots.filter((k) => byKey.get(k)?.scope === p).map((k) => make(k, new Set())),
-  }));
+  return projects.map((p) => {
+    const epics = sorted(nodes.filter((n) => n.kind === 'epic' && inScope(n, p)).map((n) => n.key));
+    const features = sorted(nodes.filter((n) => n.kind === 'feat' && inScope(n, p)).map((n) => n.key));
+    const loose = features.filter((k) => !epicOf.has(k));
+    const kids = epics.map((e) => leaf(e, sorted(children.get(e) ?? []).map(feature)));
+    if (epics.length && loose.length) kids.push(group(`gap:epic:${p}`, 'Features in no epic yet', loose.map(feature)));
+    else if (!epics.length) kids.push(...loose.map(feature));
+    return { key: p, kind: 'project', title: rows.scopes(d).find((s) => s.scope === p)?.name ?? p, status: null, children: kids };
+  });
 }
