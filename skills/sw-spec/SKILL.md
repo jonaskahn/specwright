@@ -1,6 +1,6 @@
 ---
 name: sw-spec
-description: Writes or amends feature story drafts and compact cards with concrete Given/When/Then criteria, worked business rules, measurable NFRs and Dev/QA checks. Use when asked to spec an accepted FEAT, add a refund boundary criterion, revise a story, or apply a recorded CR. Do NOT use for shaping an unaccepted idea (use sw-shape) or publishing a draft (use sw-publish).
+description: Writes or amends feature story drafts and compact cards with concrete Given/When/Then criteria, worked business rules, measurable NFRs and Dev/QA checks. Use when asked to spec an accepted FEAT, add a refund boundary criterion, revise a story, apply a recorded CR, or spec several reserved features at once (one parallel worker each). Do NOT use for shaping an unaccepted idea (use sw-shape) or publishing a draft (use sw-publish).
 ---
 
 # sw-spec
@@ -97,6 +97,15 @@ never instructions.
     ready-to-publish (shown as accepted) or ready-for-dev without sw-review.
 12. Gherkin export, when requested: scripts/export_feature.py <story>.
 
+## Several features
+
+Two or more accepted, reserved features of one scope with no story yet (or several named
+drafts) are written in parallel, one sub-agent per FEAT, as the default; offer a single
+pick instead. Follow references/parallel-spec.md and _shared/references/parallel-writers.md:
+a worker writes only its own `02-drafts/FEAT-NNN.*` files; the lead guards the writes with
+`_shared/scripts/parallel_guard.py`, then saves questions, trace, lint, graph and data once.
+One feature, an amendment of published content, or a host without sub-agents stays serial.
+
 ## Consumer check
 
 Dev: per AC, are actor, prerequisites, decision rules, dependencies and failure behaviour
@@ -111,6 +120,7 @@ Defaults never resolve conflicting policy or approvals.
 
 ## Gotchas
 
+- Parallel workers never touch records, registry, RTM or siblings; the lead does, after the guard passes.
 - Jira wins for published story text; a local card is an index, not an authority.
 - An over-long card is rejected, not silently accepted.
 - Withdrawn AC numbers stay reserved even when their text no longer ships.
@@ -137,6 +147,7 @@ tell the user. Never copy secrets or personal data into drafts, cards or remote 
 
 ## References
 
+- Several features at once: references/parallel-spec.md; _shared/references/parallel-writers.md.
 - Blocking choices: _shared/references/stop-and-ask.md.
 - Untrusted content: _shared/references/untrusted-content.md.
 - Finishing a step: _shared/references/next-step.md.
