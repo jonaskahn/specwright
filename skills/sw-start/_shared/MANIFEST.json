@@ -51,7 +51,7 @@
   "scripts/kitlib/workspace.py": "8356351721af",
   "scripts/kitlib/writelog.py": "c75ee83de4ff",
   "scripts/runtime.py": "76feebc294f6",
-  "scripts/status.py": "63b8e20288f6",
+  "scripts/status.py": "e35d617f18aa",
   "scripts/store.py": "71798bc4689c",
   "scripts/sw_lint.py": "11177eec3235",
   "scripts/trace.py": "74bfe2e50aea"

@@ -147,6 +147,7 @@ def build_report(root: Path, scopes=None, today=None):
                 e.key
                 for e in entities.values()
                 if e.kind == "q"
+                and e.key.startswith(scope + ":")
                 and e.fm.get("status") in schema.OPEN_Q
                 and related & graph.declared_affects(e.fm, scope)
             )

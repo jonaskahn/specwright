@@ -136,3 +136,23 @@ class StatusTests(unittest.TestCase):
         self.assertFalse((self.root / "_meta/status.md").exists())
         (self.root / "_meta/id-registry.md").write_text("bad table\n")
         self.assertEqual(self.run_cli("--cwd", str(self.root)).returncode, 2)
+
+
+class ProgramScopeTests(unittest.TestCase):
+    def test_a_question_in_another_project_is_not_counted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / ".specwright"
+            for scope in ("REF", "ORD"):
+                target = root / "projects" / scope
+                shutil.copytree(ROOT / "workshop/fixtures/refund/after-spec", target)
+                if scope == "ORD":
+                    for path in target.rglob("*"):
+                        if path.is_file() and path.suffix in {".md", ".yaml", ".tsv"}:
+                            path.write_text(path.read_text().replace("REF", "ORD"))
+            (root / "workspace.yaml").write_text(
+                "mode: program\nprojects:\n- ORD\n- REF\ndefault_scope: ORD\n"
+            )
+            report = status.build_report(root, today=date(2026, 11, 10))
+            counts = {f["id"]: f["open_questions"] for f in report["features"]}
+            self.assertEqual(counts["REF:FEAT-001"], ["REF:Q-001"])
+            self.assertEqual(counts["ORD:FEAT-001"], ["ORD:Q-001"])
