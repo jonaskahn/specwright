@@ -1,9 +1,12 @@
 <script lang="ts">
+  import DataTable from '../components/DataTable.svelte';
   import GraphCanvas from '../components/GraphCanvas.svelte';
   import PageHead from '../components/PageHead.svelte';
   import { app } from '../lib/data/store.svelte';
+  import { preview } from '../lib/preview.svelte';
   import { HELP, keysOf, runQuery, type QueryResult } from '../lib/query/parse';
   import { href } from '../lib/router';
+  import type { Col } from '../lib/table';
   import { classWords, kindWords, relationWords, resolutionWords } from '../lib/vocabulary';
 
   let text = $state(app.route.query.get('q') ?? '');
@@ -19,6 +22,25 @@
   }
   const IMPACT_NAMES: Record<string, string> = { features: 'Features', criteria: 'Acceptance criteria', tasks: 'Tasks', jira: 'Jira issues' };
   const go = (key: string) => (location.hash = href('graph', key));
+  type NodeRow = Extract<QueryResult, { type: 'nodes' }>['nodes'][number];
+  type EdgeRow = Extract<QueryResult, { type: 'edges' }>['rows'][number];
+  type LevelRow = Extract<QueryResult, { type: 'levels' }>['rows'][number];
+  const nodeCols: Col<NodeRow>[] = [
+    { id: 'key', label: 'Key', value: (n) => n.key, sortable: true },
+    { id: 'kind', label: 'Kind', value: (n) => n.kind, sortable: true, facet: true, facetLabel: (v) => kindWords(v) },
+    { id: 'status', label: 'Status', value: (n) => n.status, sortable: true, facet: true },
+    { id: 'title', label: 'Title', value: (n) => n.title, sortable: true },
+  ];
+  const edgeCols: Col<EdgeRow>[] = [
+    { id: 'way', label: 'Way', value: (r) => r.side },
+    { id: 'rel', label: 'Relation', value: (r) => r.rel, sortable: true, facet: true, facetLabel: (v) => relationWords(v, 'out') },
+    { id: 'item', label: 'Item', value: (r) => r.other, sortable: true },
+    { id: 'how', label: 'How it is known', value: (r) => r.cls, facet: true, facetLabel: classWords },
+  ];
+  const levelCols: Col<LevelRow>[] = [
+    { id: 'item', label: 'Item', value: (r) => r.key, sortable: true },
+    { id: 'kind', label: 'Kind', value: (r) => app.graph.node(r.key)?.kind ?? 'unknown', sortable: true, facet: true, facetLabel: (v) => kindWords(v) },
+  ];
 </script>
 
 <PageHead title="Query" lede="Ask the knowledge graph: find, show, neighbors, up, down, path and impact. Each command is explained below." />
@@ -36,25 +58,21 @@
         {#if result.type === 'error'}
           <div class="banner danger"><div><p>{result.message}</p>{#each result.options as o (o)}<p class="mono sub">{o}</p>{/each}</div></div>
         {:else if result.type === 'nodes'}
-          <div class="ledger" style:--cols="minmax(0,1.3fr) 5rem 7rem minmax(0,2fr)">
-            <div class="lhead"><span>Key</span><span>Kind</span><span>Status</span><span>Title</span></div>
-            {#each result.nodes.slice(0, 200) as n (n.key)}
-              <button class="lrow" type="button" onclick={() => go(n.key)}><span class="name mono">{n.key}</span><span class="chip">{kindWords(n.kind)}</span><span>{n.status ?? 'none'}</span><span>{n.title}</span></button>
-            {:else}<div class="lrow"><span class="muted">Nothing found.</span></div>{/each}
-          </div>
+          <DataTable id="qnodes" rows={result.nodes} cols={nodeCols} rowKey={(n) => n.key} title={(n) => n.key} template="minmax(0,1.3fr) 6rem 7rem minmax(0,2fr)" empty="Nothing found." onrow={(n) => preview.openKey(n.key)}>
+            {#snippet cells(n)}<span class="chip" data-label="Kind">{kindWords(n.kind)}</span><span data-label="Status">{n.status ?? 'none'}</span><span data-label="Title">{n.title}</span>{/snippet}
+          </DataTable>
         {:else if result.type === 'edges'}
-          <div class="ledger" style:--cols="3rem minmax(0,1fr) minmax(0,1.2fr) 9rem">
-            <div class="lhead"><span>Way</span><span>Relation</span><span>Item</span><span>How it is known</span></div>
-            {#each result.rows as r, i (i)}
-              <button class="lrow" type="button" onclick={() => go(r.other)}><span>{r.side === 'out' ? '→' : '←'}</span><span class="chip">{relationWords(r.rel, r.side)}</span><span><span class="name">{app.graph.node(r.other)?.title ?? r.other}</span> <span class="mono sub">{r.other}</span></span><span class="sub">{classWords(r.cls)}. {resolutionWords(r.res)}.</span></button>
-            {:else}<div class="lrow"><span class="muted">No links.</span></div>{/each}
-          </div>
+          <DataTable id="qedges" rows={result.rows} cols={edgeCols} rowKey={(r) => `${r.side}|${r.rel}|${r.other}`} title={(r) => (r.side === 'out' ? '→' : '←')} template="3rem minmax(0,1fr) minmax(0,1.2fr) 9rem" empty="No links." search={(r) => app.graph.node(r.other)?.title ?? ''} onrow={(r) => preview.openKey(r.other)}>
+            {#snippet cells(r)}
+              <span class="chip" data-label="Relation">{relationWords(r.rel, r.side)}</span>
+              <span data-label="Item"><span class="name">{app.graph.node(r.other)?.title ?? r.other}</span> <span class="mono sub">{r.other}</span></span>
+              <span class="sub" data-label="How it is known">{classWords(r.cls)}. {resolutionWords(r.res)}.</span>
+            {/snippet}
+          </DataTable>
         {:else if result.type === 'levels'}
-          <div class="ledger keep" style:--cols="minmax(0,1fr) 9rem">
-            {#each result.rows as r (r.key)}
-              <button class="lrow" type="button" onclick={() => go(r.key)}><span style:padding-inline-start={`${(r.level - 1) * 16}px`}><span class="name">{app.graph.node(r.key)?.title ?? r.key}</span> <span class="mono sub">{r.key}</span></span><span class="chip">{kindWords(app.graph.node(r.key)?.kind ?? 'unknown')}</span></button>
-            {:else}<div class="lrow"><span class="muted">Nothing reached.</span></div>{/each}
-          </div>
+          <DataTable id="qlevels" rows={result.rows} cols={levelCols} rowKey={(r) => r.key} title={(r) => app.graph.node(r.key)?.title ?? r.key} sub={(r) => `level ${r.level} · ${r.key}`} template="minmax(0,1fr) 9rem" keep empty="Nothing reached." onrow={(r) => preview.openKey(r.key)}>
+            {#snippet cells(r)}<span class="chip">{kindWords(app.graph.node(r.key)?.kind ?? 'unknown')}</span>{/snippet}
+          </DataTable>
         {:else if result.type === 'path'}
           {#if result.found}
             <div class="path-hops">

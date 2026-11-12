@@ -227,3 +227,15 @@ dialog.palette-dialog::backdrop { background: var(--color-scrim); }
 .group-h::first-letter { text-transform: uppercase; }
 .broken p { min-inline-size: 0; }
 .broken .btn { max-inline-size: 100%; overflow-wrap: anywhere; white-space: normal; text-align: start; block-size: auto; min-block-size: var(--control-h); padding-block: var(--space-xs); }
+
+/* tables: a row that opens the preview, and the pager */
+.rowlink { all: unset; display: block; min-inline-size: 0; cursor: pointer; overflow-wrap: anywhere; }
+.rowlink:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; border-radius: 4px; }
+.lrow.clickable { cursor: pointer; }
+.lrow.clickable:hover { background: var(--fill); }
+.table-tools .input { inline-size: 16rem; max-inline-size: 100%; }
+.table-tools .select { inline-size: auto; min-inline-size: 9rem; max-inline-size: 100%; }
+.rowlink .sub { display: block; }
+.pager { padding-block-start: var(--space-2xs); }
+.pager .select { inline-size: auto; }
+.spaced { margin-block-start: var(--space-sm); }
