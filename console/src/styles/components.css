@@ -229,6 +229,9 @@ dialog.palette-dialog::backdrop { background: var(--color-scrim); }
 .trace-node .t-kind { fill: var(--muted); font-size: 10.5px; }
 .trace-node .t-title { fill: var(--ink); font-size: 13px; font-weight: 600; }
 .trace-node .t-note { fill: var(--muted); font-size: 10.5px; }
+.trace-node .t-open { fill: var(--color-warn); font-weight: 700; }
+.trace-fold { align-items: center; gap: var(--space-xs); }
+.trace-fold .sub { margin: 0; flex: 1 1 14rem; }
 .trace-node .glyph { fill: var(--muted); stroke: none; }
 .trace-node.gap .t-title { font-weight: 500; font-style: italic; }
 .trace-outline { display: none; }

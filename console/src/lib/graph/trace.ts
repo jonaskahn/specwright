@@ -43,6 +43,20 @@ export interface TraceNode {
   level: number;
   x: number;
   y: number;
+  /** The feature an acceptance criterion, task or placeholder below a feature belongs to. */
+  owner: string | null;
+  /** On a feature: what it holds below it, whether drawn or folded away. */
+  below: Below | null;
+  /** On a feature: its criteria and tasks are drawn. */
+  open: boolean;
+}
+
+/** What sits under one feature, counted from the whole chain so a folded card still tells the truth. */
+export interface Below {
+  ac: number;
+  task: number;
+  /** Criteria no task covers, tasks no criterion owns, and a feature with no criterion at all. */
+  open: number;
 }
 
 export interface TraceLink {
@@ -75,9 +89,13 @@ export interface TraceModel {
   width: number;
   height: number;
   notes: string[];
+  /** Criteria and tasks left out because their feature is folded. */
+  hidden: number;
+  /** Criteria and tasks are drawn beside their own feature, not packed from the top of the column. */
+  anchored: boolean;
 }
 
-export const BOX = { w: 200, h: 54, gapX: 78, gapY: 14, top: 34, pad: 16 };
+export const BOX = { w: 200, h: 64, gapX: 78, gapY: 14, top: 34, pad: 16 };
 
 const byId = (a: { id: string }, b: { id: string }) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 const retired = (n: GraphNode | undefined) => !!n && RETIRED.has(n.status ?? '');
@@ -96,6 +114,12 @@ export interface TraceOptions {
   jira?: Map<string, string>;
   /** Items that belong to other projects than the one drawn; they are shown but never asked for missing links. */
   foreign?: Set<string>;
+  /**
+   * Which features show their criteria and tasks. A set of feature keys folds every other feature to
+   * one card with counts, which keeps a map of thousands of criteria readable; the default, 'all',
+   * draws everything.
+   */
+  expand?: Set<string> | 'all';
 }
 
 function parts(nodes: GraphNode[], edges: GraphEdge[], code = false): Parts {
@@ -110,12 +134,24 @@ function level(kind: string): number {
 }
 
 function node(n: GraphNode, jira: string | null, foreign: boolean): TraceNode {
-  return { id: n.key, key: n.key, gap: null, kind: n.kind, title: n.title || n.key, status: n.status, jira, scope: n.scope, foreign, next: null, level: level(n.kind), x: 0, y: 0 };
+  return { id: n.key, key: n.key, gap: null, kind: n.kind, title: n.title || n.key, status: n.status, jira, scope: n.scope, foreign, next: null, level: level(n.kind), x: 0, y: 0, owner: null, below: null, open: false };
 }
 
 function gapNode(kind: GapKind, owner: string): TraceNode {
   const words = GAP_WORDS[kind];
-  return { id: `gap:${kind}:${owner}`, key: null, gap: kind, kind: words.kind, title: words.title, status: null, jira: null, scope: null, foreign: false, next: words.next, level: words.level, x: 0, y: 0 };
+  return { id: `gap:${kind}:${owner}`, key: null, gap: kind, kind: words.kind, title: words.title, status: null, jira: null, scope: null, foreign: false, next: words.next, level: words.level, x: 0, y: 0, owner: null, below: null, open: false };
+}
+
+/** The feature each criterion and task belongs to, and each feature to itself. */
+export function featureOwners(nodes: GraphNode[], edges: GraphEdge[]): Map<string, string> {
+  const kind = new Map(nodes.map((n) => [n.key, n.kind]));
+  const owner = new Map<string, string>();
+  for (const n of nodes) if (n.kind === 'feat') owner.set(n.key, n.key);
+  for (const e of edges) if (e.rel === 'has_ac' && kind.get(e.from) === 'feat') owner.set(e.to, e.from);
+  for (const e of edges) if (e.rel === 'has_task' && kind.get(e.from) === 'feat') owner.set(e.to, e.from);
+  for (const e of edges) if (e.rel === 'implements' && !owner.has(e.from) && owner.has(e.to)) owner.set(e.from, owner.get(e.to)!);
+  for (const e of edges) if (e.rel === 'touches' && !owner.has(e.to) && owner.has(e.from)) owner.set(e.to, owner.get(e.from)!);
+  return owner;
 }
 
 export interface Coverage {
@@ -155,7 +191,7 @@ export function traceCoverage(nodes: GraphNode[], edges: GraphEdge[], foreign: S
 
 export function buildTrace(nodes: GraphNode[], edges: GraphEdge[], opts: TraceOptions = {}): TraceModel {
   const { chain, edges: chainEdges } = parts(nodes, edges, opts.code);
-  const model: TraceModel = { nodes: [], links: [], broken: [], levels: [], width: 0, height: 0, notes: [] };
+  const model: TraceModel = { nodes: [], links: [], broken: [], levels: [], width: 0, height: 0, notes: [], hidden: 0, anchored: false };
   const present = new Map<string, TraceNode>();
   for (const n of [...chain.values()].sort((a, b) => (a.key < b.key ? -1 : 1))) present.set(n.key, node(n, opts.jira?.get(n.key) ?? null, opts.foreign?.has(n.key) ?? false));
 
@@ -250,9 +286,57 @@ export function buildTrace(nodes: GraphNode[], edges: GraphEdge[], opts: TraceOp
   }
   model.broken.sort((a, b) => (a.from + a.target < b.from + b.target ? -1 : 1));
 
+  fold(model, present, chain, edges, opts.expand ?? 'all');
   model.nodes = [...present.values()].sort(byId);
   place(model);
   return model;
+}
+
+/**
+ * Count what sits under each feature, then drop the criteria, tasks and placeholders of every
+ * feature that is not open. Items that belong to no feature stay, so nothing becomes unreachable.
+ */
+function fold(model: TraceModel, present: Map<string, TraceNode>, chain: Map<string, GraphNode>, edges: GraphEdge[], expand: Set<string> | 'all'): void {
+  const owners = featureOwners([...chain.values()], edges);
+  const originOf = (l: TraceLink) => (l.reversed ? l.right : l.left);
+  const targetOf = (l: TraceLink) => (l.reversed ? l.left : l.right);
+  const covered = new Set(model.links.filter((l) => !l.gap && l.rel === 'implements').map(targetOf));
+  const tied = new Set(model.links.filter((l) => !l.gap && l.rel === 'implements').map(originOf));
+  const hasTasks = [...chain.values()].some((g) => g.kind === 'task');
+  const below = new Map<string, Below>();
+  const of = (feature: string) => below.get(feature) ?? below.set(feature, { ac: 0, task: 0, open: 0 }).get(feature)!;
+  for (const g of chain.values()) {
+    if (retired(g) || (g.kind !== 'ac' && g.kind !== 'task')) continue;
+    const feature = owners.get(g.key);
+    if (!feature) continue;
+    const row = of(feature);
+    if (g.kind === 'ac') {
+      row.ac++;
+      if (hasTasks && !covered.has(g.key)) row.open++;
+    } else {
+      row.task++;
+      if (!tied.has(g.key)) row.open++;
+    }
+  }
+  for (const n of present.values()) {
+    if (n.gap) n.owner = owners.get(n.id.split(':').slice(2).join(':')) ?? null;
+    else if (n.key && n.kind !== 'feat') n.owner = n.level >= 3 ? (owners.get(n.key) ?? null) : null;
+    if (n.kind === 'feat' && n.key && !n.gap) {
+      const row = of(n.key);
+      if (!row.ac && !retired(chain.get(n.key))) row.open++;
+      n.below = row;
+      n.open = expand === 'all' || expand.has(n.key);
+    }
+  }
+  if (expand === 'all') return;
+  const folded = (n: TraceNode) => n.level >= 3 && n.owner !== null && !expand.has(n.owner);
+  for (const n of [...present.values()]) {
+    if (!folded(n)) continue;
+    if (!n.gap) model.hidden++;
+    present.delete(n.id);
+  }
+  model.links = model.links.filter((l) => present.has(l.left) && present.has(l.right));
+  model.anchored = true;
 }
 
 /** A feature's direct link to an objective is implied when one of its epics already serves it. */
@@ -304,8 +388,43 @@ function place(model: TraceModel): void {
       n.y = BOX.top + i * (BOX.h + BOX.gapY);
     });
   });
+  if (model.anchored) {
+    rows = anchor(model, columns, levels);
+    model.height = rows + BOX.pad;
+  } else model.height = BOX.top + rows * (BOX.h + BOX.gapY) + BOX.pad;
   model.width = BOX.pad * 2 + Math.max(1, levels.length) * BOX.w + Math.max(0, levels.length - 1) * BOX.gapX;
-  model.height = BOX.top + rows * (BOX.h + BOX.gapY) + BOX.pad;
+}
+
+/**
+ * Put each open feature's criteria and tasks level with it, so a feature far down a long column
+ * does not send its lines across the whole map. Groups keep the order of their features and
+ * never overlap. Returns the bottom edge of the lowest card.
+ */
+function anchor(model: TraceModel, columns: Map<number, TraceNode[]>, levels: number[]): number {
+  const pitch = BOX.h + BOX.gapY;
+  const features = new Map(model.nodes.filter((n) => n.kind === 'feat' && !n.gap).map((n) => [n.id, n]));
+  let bottom = BOX.top;
+  for (const lv of levels) {
+    const list = columns.get(lv)!;
+    if (lv >= 3) {
+      const groups = new Map<string, TraceNode[]>();
+      const loose: TraceNode[] = [];
+      for (const n of list) (n.owner && features.has(n.owner) ? (groups.get(n.owner) ?? groups.set(n.owner, []).get(n.owner)!) : loose).push(n);
+      let cursor = BOX.top;
+      for (const owner of [...groups.keys()].sort((a, b) => features.get(a)!.y - features.get(b)!.y)) {
+        const group = groups.get(owner)!;
+        const start = Math.max(cursor, features.get(owner)!.y - ((group.length - 1) * pitch) / 2);
+        group.forEach((n, i) => (n.y = start + i * pitch));
+        cursor = start + group.length * pitch;
+      }
+      for (const n of loose) {
+        n.y = cursor;
+        cursor += pitch;
+      }
+    }
+    for (const n of list) bottom = Math.max(bottom, n.y + BOX.h);
+  }
+  return bottom;
 }
 
 /** Every item above and below `id` along the chain, including itself, and the links between them. */

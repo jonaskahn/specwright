@@ -11,6 +11,7 @@
     emphasis = new Set<string>(),
     onselect,
     onview,
+    onfold,
   }: {
     model: TraceModel;
     selected?: string | null;
@@ -18,7 +19,10 @@
     onselect: (id: string | null) => void;
     /** Open an item's file; the eye on a card calls it. Choosing a card only lights its chain. */
     onview?: (key: string) => void;
+    /** Open or fold a feature's criteria and tasks; the arrow on a feature card calls it. */
+    onfold?: (key: string) => void;
   } = $props();
+  let svg = $state<SVGSVGElement | null>(null);
 
   let manual = $state<number | null>(null);
   let room = $state(0);
@@ -54,6 +58,17 @@
   const sentence = (n: TraceNode) =>
     n.gap ? `${n.title}. Next step: ask ${n.next}.` : `${kindWords(n.kind)}: ${n.title}. ${n.status ? look(n).label + '.' : ''}${n.foreign && n.scope ? ` In project ${n.scope}.` : ''}${n.jira ? ' Jira issue ' + n.jira + '.' : ''}`;
 
+  /** What a feature holds, in a few words: "5 criteria · 8 tasks". */
+  const counts = (n: TraceNode) => (n.below ? `${n.below.ac} ${n.below.ac === 1 ? 'criterion' : 'criteria'} · ${n.below.task} ${n.below.task === 1 ? 'task' : 'tasks'}` : '');
+  const heldBy = (n: TraceNode) => !!n.below && n.below.ac + n.below.task > 0;
+
+  // The card that was chosen scrolls into view, since opening a feature can move it far down the column.
+  $effect(() => {
+    if (!selected || !svg) return;
+    const found = [...svg.querySelectorAll<SVGGElement>('.trace-node')].find((g) => g.dataset.id === selected);
+    found?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  });
+
   function key(e: KeyboardEvent, n: TraceNode) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -80,6 +95,7 @@
   </div>
   <div class="trace-scroll" bind:clientWidth={room}>
     <svg
+      bind:this={svg}
       class="trace-svg"
       role="group"
       aria-label={`Trace map with ${model.nodes.length} items in ${model.levels.length} levels. Choose an item to light up everything it connects to.`}
@@ -102,7 +118,7 @@
         </path>
       {/each}
       {#each model.nodes as n (n.id)}
-        <g class="trace-node" class:gap={!!n.gap} class:foreign={n.foreign} class:picked={selected === n.id} class:dim={dimmed(n.id)} class:emph={emphasis.has(n.id)} transform={`translate(${n.x} ${n.y})`}>
+        <g class="trace-node" data-id={n.id} class:gap={!!n.gap} class:foreign={n.foreign} class:picked={selected === n.id} class:dim={dimmed(n.id)} class:emph={emphasis.has(n.id)} transform={`translate(${n.x} ${n.y})`}>
         <g
           class="card"
           role="button"
@@ -116,7 +132,7 @@
           <rect class="card-bg" width={BOX.w} height={BOX.h} rx="10" />
           {#if !n.gap}<rect class="bar" width="5" height={BOX.h} clip-path="url(#trace-card-clip)" style:fill={`oklch(58% 0.15 ${hue(n.kind)})`} />{/if}
           <rect class="card-edge" width={BOX.w} height={BOX.h} rx="10" />
-          <text class="t-kind" x="14" y="16">{n.gap ? 'Missing link' : n.kind === 'code' ? kindWords(n.kind) : fit(`${kindWords(n.kind)} · ${shortKey(n.key ?? '')}${where(n)}`, 28)}</text>
+          <text class="t-kind" x="14" y="16">{n.gap ? 'Missing link' : n.kind === 'code' ? kindWords(n.kind) : fit(`${kindWords(n.kind)} · ${shortKey(n.key ?? '')}${where(n)}`, n.below ? 24 : 28)}</text>
           <text class="t-title" x="14" y="33">{fit(n.title)}</text>
           {#if n.gap}
             <text class="t-note" x="14" y="47">Next step: ask {n.next}</text>
@@ -127,8 +143,18 @@
             {:else if n.jira}
               <text class="t-note" x="14" y="47">Jira {n.jira}</text>
             {/if}
+            {#if heldBy(n)}
+              <text class="t-note t-count" x="14" y="59">{counts(n)}{#if n.below && n.below.open}<tspan class="t-open"> ▲{n.below.open}</tspan>{/if}</text>
+            {/if}
           {/if}
         </g>
+        {#if onfold && heldBy(n)}
+          <g class="eye fold" role="button" tabindex="0" aria-expanded={n.open} aria-label={`${n.open ? 'Fold' : 'Open'} criteria and tasks of ${n.title}`} onclick={(e) => { e.stopPropagation(); onfold(n.key!); }} onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); onfold(n.key!); } }}>
+            <title>{n.open ? 'Fold criteria and tasks' : 'Open criteria and tasks'}</title>
+            <rect class="eye-hit" x={BOX.w - 54} y="4" width="24" height="22" rx="7" />
+            <path class="eye-icon" transform={`translate(${BOX.w - 52} 5.5)`} d={n.open ? 'M5 8l5 5 5-5' : 'M8 5l5 5-5 5'} />
+          </g>
+        {/if}
         {#if onview && n.key && n.kind !== 'code'}
           <g class="eye" role="button" tabindex="0" aria-label={`View ${n.title}`} onclick={(e) => { e.stopPropagation(); onview(n.key!); }} onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); onview(n.key!); } }}>
             <title>View</title>

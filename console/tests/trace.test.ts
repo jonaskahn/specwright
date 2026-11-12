@@ -174,3 +174,74 @@ describe('the card stripe follows the card corners', () => {
     expect(source.indexOf('class="bar"')).toBeLessThan(source.indexOf('class="card-edge"'));
   });
 });
+
+describe('criteria and tasks fold under their feature', () => {
+  const folded = buildTrace(nodes, edges, { jira, expand: new Set() });
+  const opened = buildTrace(nodes, edges, { jira, expand: new Set(['REF:FEAT-001']) });
+  const kinds = (m: typeof folded) => m.nodes.filter((n) => !n.gap).map((n) => n.kind);
+
+  it('draws no criterion or task until a feature is open', () => {
+    expect(kinds(folded).filter((k) => k === 'ac' || k === 'task')).toEqual([]);
+    expect(folded.levels).toEqual([0, 1, 2]);
+    expect(folded.hidden).toBe(10);
+    expect(folded.nodes.filter((n) => n.gap && n.level >= 3)).toEqual([]);
+    expect(folded.links.every((l) => folded.nodes.some((n) => n.id === l.left) && folded.nodes.some((n) => n.id === l.right))).toBe(true);
+  });
+
+  it('keeps the counts and the open work on the folded feature card', () => {
+    const feature = (key: string) => folded.nodes.find((n) => n.key === key)!;
+    expect(feature('REF:FEAT-001').below).toEqual({ ac: 2, task: 3, open: 1 });
+    expect(feature('REF:FEAT-001').open).toBe(false);
+    expect(plain.nodes.filter((n) => n.gap).length).toBeGreaterThan(0);
+    const open = (key: string) => feature(key).below!.open;
+    expect(['REF:FEAT-001', 'REF:FEAT-002', 'REF:FEAT-003'].map(open)).toEqual([1, 0, 1]);
+  });
+
+  it('opens only the chosen feature, with its own criteria and tasks beside it', () => {
+    const own = opened.nodes.filter((n) => !n.gap && (n.kind === 'ac' || n.kind === 'task')).map((n) => n.key).sort();
+    expect(own).toEqual(['REF:AC-001-1', 'REF:AC-001-2', 'REF:TASK-001-1', 'REF:TASK-001-2', 'REF:TASK-001-3']);
+    expect(opened.nodes.find((n) => n.key === 'REF:FEAT-001')!.open).toBe(true);
+    expect(opened.nodes.find((n) => n.key === 'REF:FEAT-002')!.open).toBe(false);
+    expect(opened.hidden).toBe(5);
+    expect(chainOf(opened, 'REF:FEAT-001').nodes.has('REF:TASK-001-3')).toBe(true);
+  });
+
+  it('draws everything by default and the same cards as before', () => {
+    expect(JSON.stringify(buildTrace(nodes, edges, { jira, expand: 'all' }))).toBe(JSON.stringify(plain));
+    expect(plain.hidden).toBe(0);
+    expect(plain.nodes.find((n) => n.key === 'REF:FEAT-001')!.open).toBe(true);
+  });
+
+  it('puts an open feature level with its criteria and keeps groups apart', () => {
+    const feature = opened.nodes.find((n) => n.key === 'REF:FEAT-001')!;
+    const criteria = opened.nodes.filter((n) => n.kind === 'ac');
+    const middle = criteria.reduce((sum, n) => sum + n.y, 0) / criteria.length;
+    expect(Math.abs(middle - feature.y)).toBeLessThanOrEqual(BOX.h + BOX.gapY);
+    for (const column of [3, 4]) {
+      const ys = opened.nodes.filter((n) => n.level === column).map((n) => n.y).sort((a, b) => a - b);
+      ys.slice(1).forEach((y, i) => expect(y - ys[i]).toBeGreaterThanOrEqual(BOX.h + BOX.gapY));
+    }
+    expect(opened.height).toBeGreaterThan(feature.y);
+  });
+
+  it('stays small when there are thousands of criteria', () => {
+    const many: GraphNode[] = [];
+    const links: GraphEdge[] = [];
+    const base = nodes.find((n) => n.key === 'REF:FEAT-001')!;
+    for (let f = 0; f < 200; f++) {
+      many.push({ ...base, key: `REF:FEAT-${String(f).padStart(3, '0')}`, title: `Feature ${f}` });
+      for (let a = 0; a < 10; a++) {
+        const key = `REF:AC-${f}-${a}`;
+        many.push({ ...base, key, kind: 'ac', title: key });
+        links.push({ from: `REF:FEAT-${String(f).padStart(3, '0')}`, rel: 'has_ac', to: key, class: 'declared', file: 'x', line: 1, resolution: 'resolved' });
+      }
+    }
+    const folded = buildTrace(many, links, { expand: new Set() });
+    expect(folded.nodes.filter((n) => n.kind === 'ac')).toHaveLength(0);
+    expect(folded.hidden).toBe(2000);
+    expect(folded.nodes.filter((n) => n.kind === 'feat')).toHaveLength(200);
+    const one = buildTrace(many, links, { expand: new Set(['REF:FEAT-100']) });
+    expect(one.nodes.filter((n) => n.kind === 'ac')).toHaveLength(10);
+    expect(one.nodes.find((n) => n.key === 'REF:FEAT-100')!.below).toEqual({ ac: 10, task: 0, open: 0 });
+  });
+});

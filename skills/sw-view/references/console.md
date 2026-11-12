@@ -27,6 +27,18 @@ Status is shown by a shape (circle with check, diamond, triangle, square, hollow
 a word, never by colour alone. `Ctrl/Cmd+K` opens a palette that jumps to a screen or item and
 runs queries. Theme, accent and density are kept in the browser (`specwright-*` keys).
 
+## Trace map folding
+
+The trace map draws objectives, epics and features by default. A feature's criteria and tasks are
+folded into counts on its card (`2 criteria · 3 tasks`, with `▲` and the number of open items:
+a criterion no task covers, a task no criterion owns, or no criterion at all). Choosing a feature
+opens its own criteria and tasks beside it and lights the chain; choosing it again, or the arrow
+on its card, folds it. The arrow keeps a feature open while you look at others. Open all is
+offered up to 150 criteria and tasks. Coverage, Find and the outline still reach folded items: a
+match inside a folded feature marks that feature, and choosing a criterion or task from the
+outline or an address opens its feature. A map with more than 250 objectives, epics and features
+shows the chain around one chosen item instead.
+
 ## Preview and tables
 
 Pressing View on a table row or board card, or the eye on a graph card or outline row, opens the

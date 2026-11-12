@@ -1,5 +1,5 @@
 {
- "bytes": 521339,
+ "bytes": 535393,
  "console": "0.5.0",
  "files": {
   ".nvmrc": "sha256:68ca3fba3b7e864770cb61aeb306d4bd4354b68ab4dd38450860c5d823e42a53",
@@ -37,8 +37,8 @@
   "src/components/Sidebar.svelte": "sha256:3d1e2745288dcdf239141b09dc750cb66a54a9a5a2c85e9e7014a6527feef69b",
   "src/components/StaleBanner.svelte": "sha256:39c17628efd77af83d9be802c985564b5489a425f15d941dd1604046a453b816",
   "src/components/Topbar.svelte": "sha256:7d2e1ce9ee5b4f5fb63c316fb5a5a7bf7d51a9556be3033f752a3ec12e7687a7",
-  "src/components/TraceMap.svelte": "sha256:4053260e9d8121e220f6a67c2efeefd297680f9d940b5b3f07be825c432a732c",
-  "src/components/TraceView.svelte": "sha256:4de600af74f0b31f8df8b9752d81b7b48b7cb23499cdbf693be0ecc75cb9af1a",
+  "src/components/TraceMap.svelte": "sha256:ff4a43c7c3c6addc60e9202c49040da5f72b5ecf13985517d405542a2f5a0b7e",
+  "src/components/TraceView.svelte": "sha256:ad28039597a4241ddf6cb7476e3b860fb5301afa350541ed531df7ded3b9174c",
   "src/components/md.ts": "sha256:dbeca7a53bb397e6a247d2ec5c0a87dd423e627b827644b485bc788c9b27e925",
   "src/components/nav.ts": "sha256:ae9fde24c998fc52879e8be05158b0b40bf2308a12f3f6c21b4e0dbc2b8dee76",
   "src/env.d.ts": "sha256:cc9c01ab82cd866d596b11028637a284c3cca4b115d2aa5a02c31d2c59977fc1",
@@ -49,7 +49,7 @@
   "src/lib/data/store.svelte.ts": "sha256:ab9f0417d94728a3f2dc6186429ff9fe02ecb1ccc00d6ea4188e9b2e5af2cc19",
   "src/lib/format.ts": "sha256:6856504ea3fe78c8ec09f193469ab2316c725e74ed191ba217efb625217c277f",
   "src/lib/graph/layout.ts": "sha256:3303a26a57b32ceab4f8dfc556c23e120f2d7c2d2c22eb30374a44b44668a393",
-  "src/lib/graph/trace.ts": "sha256:4ae2ccbeb6ffe79304a2bbc11f41f9dbe24f275910227ae02fbf444f9b94936b",
+  "src/lib/graph/trace.ts": "sha256:aefd743347f6a48f07df54ce0a818d6c1058e167679f417913e26855322f5f63",
   "src/lib/markdown/links.ts": "sha256:8c844e2526c0b5c4d0a5e9b1c5e39e424d889ad61563401e5cb914a09018ed33",
   "src/lib/markdown/parse.ts": "sha256:8b57b27c039c07d94b99e2071f1813d3258419c473020ce139b8e6092e5b2995",
   "src/lib/prefs.ts": "sha256:dfb340ec8705b4ae81ea41a96cf9453fda8e7e00714277c8003a109692eee281",
@@ -75,7 +75,7 @@
   "src/routes/Registry.svelte": "sha256:75c6bb944a35d991e4cfbcfe00d517336e99b4074277c52d3c8a2f78a33f0f46",
   "src/routes/Sources.svelte": "sha256:a65a9139d9ea4c9f2e2a521c64f8753ad5095770d0374f77255339c01281f7e2",
   "src/routes/Tasks.svelte": "sha256:04eb19e31345b4ea1842cdfab4afbbe708331f837e32413854ee4e322fa91a0c",
-  "src/styles/components.css": "sha256:81a26906e7602e7df15c488b600f472347e34afe4bcd8da8a30fbc5ba18993d7",
+  "src/styles/components.css": "sha256:1c4362f21720960070e2554312ab7c589b16358a5af85806dda4d65802be51d0",
   "src/styles/preview.css": "sha256:3b44c9467da5adc370daf0028ba3038fdcc247f0b7428fce4a2ea2378a3702de",
   "src/styles/shell.css": "sha256:dafa6377ebd7e14e83bc505b0230f7798add0fefc873eff1aefd282aa73194d0",
   "src/styles/tokens.css": "sha256:11d8c7fa0293ef947e495c721857900459b118001c2d6065554b10c133be5966",
@@ -91,13 +91,13 @@
   "tests/safety.test.ts": "sha256:408450054b6d70ae975e2d2b976fe7cff70f2859fe8fc70c60a16014515ca3f2",
   "tests/status.test.ts": "sha256:8d325a29b3a077ae74189a08ddbadca400022aabc85199031bfb87a237a8109c",
   "tests/table.test.ts": "sha256:e5c31173d8370aa618e3d2fcdc26d9df2573c2aec3e4c947088a88c566a8c882",
-  "tests/trace.test.ts": "sha256:793502ff383a760a1098f760e6fd87d6b81d016d6fb111143be2de3fe849627f",
+  "tests/trace.test.ts": "sha256:dd6fee90a44e6cfe919572fb938269dcc9074b03b54f3f491c49d5a4d1b4e3d5",
   "tests/tree.test.ts": "sha256:3214094257803b8073622856019521607aaba51fea50cf54a9a901716fcf8326",
   "tests/vocabulary.test.ts": "sha256:64853fc338fe138b5dae441dad762e7e62d83d74a79fc31f201cc0752a873b81",
   "tsconfig.json": "sha256:570966f0723394c2a3e120ea1198f9ec9d153380ae6c9ac3c303579c311ea8df",
   "vite.config.ts": "sha256:9e5a5fa2907e4884db59d61b8d15ea40b8fdf088fc5173d590d8c8b070caf716"
  },
  "formatVersion": 1,
- "tree": "sha256:855c6ef3c965a3b56f48e57982918ac9c637e868b0cacd231bbf864f2391e33e",
- "zip": "sha256:5fed14fa2bfd707fe3e904dd2a43271b388e28e1d9b9b2a3bba1371057778145"
+ "tree": "sha256:c7138674f6fc86a4035665f3345a86c6a545fd10508167a86e4062c5b9b35761",
+ "zip": "sha256:f581e9dc6c497368cf0e2c4873a712be40e772ccb7c30172702dadac0f8f8f42"
 }
