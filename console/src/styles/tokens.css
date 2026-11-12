@@ -1,0 +1,198 @@
+/* Design tokens, ported from the Kumo cockpit: OKLCH colour, soft squares, one control height. */
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../assets/fonts/inter-latin-wght-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../assets/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");
+}
+
+:root {
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "IBM Plex Mono", Menlo, monospace;
+
+  --space-3xs: 2px;
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.1875rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.875rem;
+  --text-figure: 2.75rem;
+
+  --radius-sm: 0.5rem;
+  --radius: 0.75rem;
+  --radius-lg: 1.125rem;
+  --radius-xl: 1.625rem;
+  --glass-blur: 28px;
+  --glass-sat: 1.7;
+  --shadow-soft: 0 0 0 1px oklch(20% 0.01 250 / 0.05), 0 1px 3px oklch(20% 0.01 250 / 0.05);
+  --shadow-lift: 0 0 0 1px oklch(20% 0.01 250 / 0.06), 0 10px 30px -10px oklch(20% 0.02 250 / 0.25);
+
+  --control-h: 2.5rem;
+  --row-h: 3.25rem;
+  --topbar-h: 3.5rem;
+  --sidebar-w: 15rem;
+  --rail-w: 4.25rem;
+  --page-max: 85rem;
+  --frame-gap: 8px;
+  --gutter: var(--space-xl);
+  --section: var(--space-xl);
+  --grid-gap: var(--space-md);
+  --card-pad: var(--space-lg);
+
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --z-raised: 10;
+  --z-sticky: 200;
+  --z-popover: 300;
+  --z-modal: 400;
+
+  --accent-red: oklch(52% 0.205 25);
+  --accent-orange: oklch(62% 0.17 50);
+  --accent-amber: oklch(68% 0.15 78);
+  --accent-green: oklch(54% 0.13 155);
+  --accent-teal: oklch(54% 0.1 192);
+  --accent-cyan: oklch(58% 0.1 225);
+  --accent-blue: oklch(52% 0.19 262);
+  --accent-rose: oklch(56% 0.19 8);
+  --ink-light: oklch(16% 0.01 60);
+  --paper-light: oklch(99% 0.005 85);
+}
+
+@media (max-width: 1023px) {
+  :root {
+    --gutter: var(--space-lg);
+  }
+}
+[data-density="compact"] {
+  --control-h: 2.25rem;
+  --row-h: 2.5rem;
+  --card-pad: var(--space-md);
+  --section: var(--space-lg);
+  --grid-gap: var(--space-sm);
+}
+@media (pointer: coarse), (max-width: 640px) {
+  :root {
+    --control-h: 2.75rem;
+    --gutter: var(--space-md);
+    --section: var(--space-lg);
+    --text-xs: 0.8125rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+  }
+}
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --color-paper: oklch(96.4% 0.003 250);
+  --color-paper-2: oklch(99.6% 0.003 250);
+  --color-paper-3: oklch(94% 0.004 250);
+  --color-ink: oklch(21% 0.004 250);
+  --color-ink-2: oklch(34% 0.005 250);
+  --color-muted: oklch(49% 0.008 250);
+  --color-rule: oklch(91% 0.004 250);
+  --color-rule-strong: oklch(82% 0.005 250);
+  --color-field: oklch(62% 0.006 250);
+  --color-ok: oklch(46% 0.13 150);
+  --color-warn: oklch(50% 0.13 55);
+  --color-danger: oklch(52% 0.21 27);
+  --color-on-danger: oklch(99% 0.005 25);
+  --color-scrim: oklch(20% 0.01 250 / 0.32);
+  --shadow-pop: 0 18px 48px -12px oklch(20% 0.02 250 / 0.28), 0 2px 8px oklch(20% 0.02 250 / 0.1);
+  --color-spine: oklch(94.5% 0.004 250 / 0.82);
+  --color-spine-hover: oklch(20% 0.01 250 / 0.06);
+  --color-spine-active: oklch(20% 0.01 250 / 0.11);
+  --color-spine-line: oklch(20% 0.01 250 / 0.12);
+  --color-on-spine: oklch(21% 0.004 250);
+  --color-spine-muted: oklch(44% 0.008 250);
+  --color-spine-faint: oklch(52% 0.008 250);
+  --shade: var(--ink-light);
+  --accent: var(--accent-base);
+  --on-accent: var(--on-accent-base, var(--paper-light));
+  --color-focus: oklch(52% 0.17 255);
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-paper: oklch(13% 0.004 250);
+  --color-paper-2: oklch(21% 0.005 250);
+  --color-paper-3: oklch(26% 0.006 250);
+  --color-ink: oklch(96% 0.002 250);
+  --color-ink-2: oklch(86% 0.004 250);
+  --color-muted: oklch(74% 0.006 250);
+  --color-rule: oklch(29% 0.006 250);
+  --color-rule-strong: oklch(40% 0.008 250);
+  --color-field: oklch(60% 0.008 250);
+  --color-ok: oklch(78% 0.16 150);
+  --color-warn: oklch(80% 0.14 70);
+  --color-danger: oklch(72% 0.18 25);
+  --color-on-danger: oklch(16% 0.01 27);
+  --color-scrim: oklch(5% 0.01 250 / 0.6);
+  --shadow-pop: 0 16px 36px -10px oklch(5% 0 0 / 0.75), 0 2px 6px oklch(5% 0 0 / 0.5);
+  --shadow-soft: 0 0 0 1px oklch(100% 0 0 / 0.06);
+  --shadow-lift: 0 0 0 1px oklch(100% 0 0 / 0.1), 0 12px 32px -10px oklch(0% 0 0 / 0.7);
+  --color-spine: oklch(18% 0.005 250 / 0.82);
+  --color-spine-hover: oklch(100% 0 0 / 0.07);
+  --color-spine-active: oklch(100% 0 0 / 0.13);
+  --color-spine-line: oklch(100% 0 0 / 0.14);
+  --color-on-spine: oklch(96% 0.002 250);
+  --color-spine-muted: oklch(76% 0.006 250);
+  --color-spine-faint: oklch(66% 0.006 250);
+  --shade: oklch(98% 0.005 85);
+  --accent: color-mix(in oklab, var(--accent-base) 72%, var(--paper-light));
+  --on-accent: var(--ink-light);
+  --color-focus: oklch(74% 0.13 255);
+}
+:root,
+[data-accent="red"] { --accent-base: var(--accent-red); --on-accent-base: var(--paper-light); }
+[data-accent="orange"] { --accent-base: var(--accent-orange); --on-accent-base: var(--ink-light); }
+[data-accent="amber"] { --accent-base: var(--accent-amber); --on-accent-base: var(--ink-light); }
+[data-accent="green"] { --accent-base: var(--accent-green); --on-accent-base: var(--paper-light); }
+[data-accent="teal"] { --accent-base: var(--accent-teal); --on-accent-base: var(--paper-light); }
+[data-accent="cyan"] { --accent-base: var(--accent-cyan); --on-accent-base: var(--ink-light); }
+[data-accent="blue"] { --accent-base: var(--accent-blue); --on-accent-base: var(--paper-light); }
+[data-accent="rose"] { --accent-base: var(--accent-rose); --on-accent-base: var(--paper-light); }
+
+:root,
+[data-theme] {
+  --canvas: var(--color-paper);
+  --surface: var(--color-paper-2);
+  --sunken: var(--color-paper-3);
+  --ink: var(--color-ink);
+  --ink-2: var(--color-ink-2);
+  --muted: var(--color-muted);
+  --rule: var(--color-rule);
+  --rule-strong: var(--color-rule-strong);
+  --fill: color-mix(in oklab, var(--shade) 7%, transparent);
+  --fill-2: color-mix(in oklab, var(--shade) 11%, transparent);
+  --fill-3: color-mix(in oklab, var(--shade) 16%, transparent);
+  --hover: var(--fill);
+  --material: color-mix(in oklab, var(--color-paper-2) 72%, transparent);
+  --material-thick: color-mix(in oklab, var(--color-paper-2) 86%, transparent);
+}

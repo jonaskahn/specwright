@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1024" height="1024" viewBox="256 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Specwright interlocking crimson petal ring</title>
+  <desc id="desc">Eight continuous overlapping rounded ribbon petals form a crimson and rose octagonal ring with a transparent opening. A square 1:1 icon with light and dark color schemes.</desc>
+  <style>
+    /* Use light colors by default; automatically adapt to OS/browser dark mode. */
+    svg { color-scheme: light dark; }
+    @media (prefers-color-scheme: dark) {
+      #leftFront stop:first-child  { stop-color: #ff6274; }
+      #leftFront stop:last-child   { stop-color: #f94c60; }
+      #leftCoral stop:first-child  { stop-color: #ff8d98; }
+      #leftCoral stop:last-child   { stop-color: #ff899c; }
+      #rose stop:first-child       { stop-color: #ffc7cd; }
+      #rose stop:last-child        { stop-color: #ffb9c5; }
+      #upperWine stop:first-child  { stop-color: #c72d52; }
+      #upperWine stop:last-child   { stop-color: #d63b60; }
+      #rightWine stop:first-child  { stop-color: #d42b56; }
+      #rightWine stop:last-child   { stop-color: #dc3e65; }
+      #lowerWine stop:first-child  { stop-color: #bf2854; }
+      #lowerWine stop:last-child   { stop-color: #d63860; }
+      #bottomRed stop:first-child  { stop-color: #ff485e; }
+      #bottomRed stop:last-child   { stop-color: #ff3a55; }
+      #frontRed stop:first-child   { stop-color: #ee3b5b; }
+      #frontRed stop:last-child    { stop-color: #d52e5b; }
+      .sw-backing { fill: #b82352; }
+    }
+    @media print {
+      svg { color-scheme: light; }
+    }
+  </style>
+  <defs>
+    <linearGradient id="leftFront" x1=".1" y1=".1" x2=".86" y2=".95" objectBoundingBox="true">
+      <stop offset="0" stop-color="#ff3849"/><stop offset="1" stop-color="#ff3039"/>
+    </linearGradient>
+    <linearGradient id="leftCoral" x1="0" y1="0" x2=".95" y2="1" objectBoundingBox="true">
+      <stop offset="0" stop-color="#ff707a"/><stop offset="1" stop-color="#fd707f"/>
+    </linearGradient>
+    <linearGradient id="rose" x1="0" y1="0" x2=".7" y2="1" objectBoundingBox="true">
+      <stop offset="0" stop-color="#ffb6bc"/><stop offset="1" stop-color="#ffb0b7"/>
+    </linearGradient>
+    <linearGradient id="upperWine" x1="0" y1="0" x2="1" y2="1" objectBoundingBox="true">
+      <stop offset="0" stop-color="#960321"/><stop offset="1" stop-color="#ae0631"/>
+    </linearGradient>
+    <linearGradient id="rightWine" x1="0" y1="0" x2="1" y2="1" objectBoundingBox="true">
+      <stop offset="0" stop-color="#b40531"/><stop offset="1" stop-color="#b80b3b"/>
+    </linearGradient>
+    <linearGradient id="lowerWine" x1="0" y1="0" x2="1" y2="1" objectBoundingBox="true">
+      <stop offset="0" stop-color="#a4002b"/><stop offset="1" stop-color="#ba002f"/>
+    </linearGradient>
+    <linearGradient id="bottomRed" x1="0" y1="0" x2="1" y2=".65" objectBoundingBox="true">
+      <stop offset="0" stop-color="#ff1934"/><stop offset="1" stop-color="#f8102a"/>
+    </linearGradient>
+    <linearGradient id="frontRed" x1="0" y1="0" x2=".9" y2="1" objectBoundingBox="true">
+      <stop offset="0" stop-color="#ea092e"/><stop offset="1" stop-color="#ce0b38"/>
+    </linearGradient>
+    <clipPath id="aperture" clipPathUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="1536" height="350"/>
+      <rect x="0" y="718" width="1536" height="306"/>
+      <rect x="0" y="350" width="566" height="368"/>
+      <rect x="962" y="350" width="574" height="368"/>
+      <polygon points="566,350 686,350 566,470"/>
+      <polygon points="848,350 962,350 962,464"/>
+      <polygon points="566,598 566,718 688,718"/>
+      <polygon points="962,599 962,718 843,718"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#aperture)">
+    <!-- Backing silhouette eliminates hairline seams at overlapping joins. -->
+    <path class="sw-backing" fill="#ae0834" d="M 725 113 H 814 C 870 113 918 147 936 199 H 960 C 1002 199 1035 218 1064 254 L 1117 319 C 1143 351 1149 393 1136 430 C 1164 456 1177 489 1177 536 V 591 C 1177 648 1154 688 1106 713 V 717 C 1106 762 1086 789 1058 815 L 1027 846 C 990 881 957 887 923 880 L 913 892 C 890 917 852 930 813 930 H 726 C 682 930 654 913 638 883 H 597 C 552 883 520 858 486 824 L 466 804 C 443 781 435 756 435 718 C 390 710 357 667 357 601 V 532 C 357 486 369 455 402 430 C 388 391 391 349 416 316 L 465 256 C 492 223 522 199 566 199 H 599 C 637 140 669 113 725 113 Z"/>
+
+    <!-- Left rounded blade -->
+    <path fill="url(#leftFront)" d="M 402 430 L 689 718 H 471 C 407 718 357 665 357 601 V 532 C 357 486 370 454 402 430 Z"/>
+    <!-- Upper-left rounded blade -->
+    <path fill="url(#leftCoral)" d="M 565 199 C 519 199 492 222 465 256 L 416 316 C 387 352 385 391 403 432 C 411 454 429 473 449 491 L 566 600 L 566 469 L 561 296 C 560 252 576 222 601 199 Z"/>
+    <!-- Top pastel blade -->
+    <path fill="url(#rose)" d="M 565 469 L 561 301 C 559 249 578 215 608 168 C 638 129 670 113 725 113 H 814 C 874 113 918 148 936 199 H 893 C 862 199 840 208 816 231 Z"/>
+    <!-- Bottom-left vivid blade -->
+    <path fill="url(#bottomRed)" d="M 435 715 H 847 L 697 862 C 673 879 657 883 623 883 H 597 C 551 883 523 860 488 825 L 468 806 C 446 783 435 757 435 715 Z"/>
+    <!-- Top-right wine blade -->
+    <path fill="url(#upperWine)" d="M 686 350 L 817 230 C 840 208 863 199 897 199 H 959 C 1002 199 1035 218 1063 254 L 1117 319 C 1140 348 1148 390 1136 430 L 1058 351 Z"/>
+    <!-- Right-side petal -->
+    <path fill="url(#rightWine)" d="M 849 350 H 964 C 1030 350 1073 374 1110 413 L 1143 452 C 1168 477 1177 506 1177 536 V 591 C 1177 652 1152 691 1106 712 L 1106 646 C 1106 603 1085 581 1062 558 Z"/>
+    <!-- Bottom-right outer blade -->
+    <path fill="url(#lowerWine)" d="M 962 462 L 1071 572 C 1095 596 1106 617 1106 653 V 716 C 1106 756 1090 781 1065 808 L 1026 847 C 990 880 958 883 923 880 L 699 863 L 962 598 Z"/>
+    <!-- Lower/front blade, completing the continuous ring -->
+    <path fill="url(#frontRed)" d="M 962 598 V 761 C 962 818 945 859 912 891 C 890 916 850 930 813 930 H 726 C 681 930 652 911 638 883 C 667 883 681 873 702 854 L 843 718 Z"/>
+  </g>
+</svg>

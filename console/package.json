@@ -1,0 +1,31 @@
+{
+  "name": "specwright-console",
+  "private": true,
+  "version": "0.4.1",
+  "type": "module",
+  "description": "Read-only dashboard for a Specwright workspace. Built and served by the sw-view skill.",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "gen:contract": "python3 ../workshop/tools/gen_console_contract.py",
+    "predev": "npm run gen:contract",
+    "dev": "vite",
+    "dev:golden": "DATA_DIR=../workshop/fixtures/console-golden/data vite",
+    "build": "vite build",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "d3-force": "^3.0.0"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@tsconfig/svelte": "^5.0.8",
+    "@types/d3-force": "^3.0.10",
+    "@types/node": "^24.0.0",
+    "svelte": "^5.57.3",
+    "svelte-check": "^4.7.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0"
+  }
+}

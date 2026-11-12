@@ -1,0 +1,33 @@
+<script lang="ts">
+  import type { TreeNode } from '../lib/data/selectors';
+  import { wordLook } from '../lib/status';
+  import { href } from '../lib/router';
+  import Mark from './Mark.svelte';
+  import TreeItem from './TreeItem.svelte';
+  let { node, depth = 0 }: { node: TreeNode; depth?: number } = $props();
+  const look = $derived(wordLook(node.status));
+  const link = $derived(node.kind === 'feat' ? href('features', node.key) : node.kind === 'project' ? null : href('graph', node.key));
+</script>
+
+{#if node.children.length}
+  <details open={depth < 2}>
+    <summary>
+      <span class="kind">{node.kind}</span>
+      {#if node.status}<Mark shape={look.shape} />{/if}
+      {#if link}<a class="name" href={link}>{node.title}</a>{:else}<span class="name">{node.title}</span>{/if}
+      <span class="sub mono">{node.key}</span>
+    </summary>
+    <ul>
+      {#each node.children as child (child.key)}
+        <li><TreeItem node={child} depth={depth + 1} /></li>
+      {/each}
+    </ul>
+  </details>
+{:else}
+  <svelte:element this={link ? 'a' : 'div'} class="leaf" href={link ?? undefined}>
+    <span class="kind">{node.kind}</span>
+    {#if node.status}<Mark shape={look.shape} />{/if}
+    <span class="name">{node.title}</span>
+    <span class="sub mono">{node.key}</span>
+  </svelte:element>
+{/if}
