@@ -79,6 +79,10 @@ station without re-confirming entry. Never advance a stage without its explicit
 decision. A passing plan is the Markdown delivery; ask destination only for an explicit,
 ambiguous publish request.
 
+Refresh the data you own: `_shared/scripts/status.py --save` (features) and
+`_shared/scripts/data.py export scopes --as sw-start`; `graph.py build` refreshes the graph.
+Format and owners: `_shared/references/data-format.md`.
+
 Step-back or reset: run scripts/transition.py to preview the target and action; apply
 only with its fresh TRANSITION token. It keeps files and IDs, never calls Jira, and
 refuses rewinding published text (use the supplied-baseline + CR path instead). Rules:

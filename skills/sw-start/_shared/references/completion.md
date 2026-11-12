@@ -11,7 +11,8 @@ Never auto-advance a stage or recurse into another handoff.
 4. Apply permitted trace updates.
 5. Rebuild a stale graph from the final saved inputs.
 6. Run the relevant lint and status detection.
-7. Report results and the next human decision.
+7. Refresh the data files you own (`data-format.md`), after the graph and lint.
+8. Report results and the next human decision.
 
 ## Triggers
 
@@ -21,6 +22,7 @@ Never auto-advance a stage or recurse into another handoff.
 | IDs or trace relations | Update allowed RTM fields through the trace implementation. Never infer links or break column ownership. |
 | Assets supplied or referenced | Collect authorized assets; deduplicate; register provenance and associations. Missing assets stay explicit. Scan before shared persistence. |
 | Plan saved or revised; other content changed; graph stale | Build or update the graph and query it after asset and visual work. Verify freshness on a no-op. |
+| Spec, plan, source, record or registry content changed | Refresh only the data files your skill owns, with `data.py export <kind> --as <skill>`. Never write another skill's file. |
 | Before any hand-off | Lint the applicable scope. Report a failure; never waive it silently. |
 | Drawing requested, missing or stale | Evaluate illustration need; render only when justified. No picture per spec by default. |
 | Accepted draft ready for review | Prepare findings. Never record approval or promote. |
