@@ -33,3 +33,9 @@ Common contract and CLI codes: references/style.md. Examples are illustrative, n
 Do not compress labels until they lose meaning, hide unsupported branches, or
 present missing knowledge as confirmed. Split unreadable pictures and ask for
 absent evidence. Confirm each spec-linked box against the draft.
+
+## Output
+
+Use assets/state.html as the shipped shell; run the loaded skill's absolute
+scripts/render_diagram.py path with absolute JSON and approved .html or .svg paths.
+A Mermaid companion (`.mmd` beside the output) is emitted; it is editable, not a pixel-identical export.

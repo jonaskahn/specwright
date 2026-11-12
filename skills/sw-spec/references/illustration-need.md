@@ -46,12 +46,13 @@ An item is one counted actor, branch, state change, hand-off or data line.
 
 ## Verdict
 
-- **DRAW** when three or more signals fire, or when two signals fire and the items are five
-  or more.
-- **PROSE** when one actor and fewer than five items carry the distinction, including when
-  two signals fired. Also when fewer than two signals fire and there is a single actor.
-- **UNSURE** in the borderline band: exactly two signals with fewer than five items and more
-  than one actor, or several actors and no other signal.
+Apply these in order; the first that matches wins. The chip printed by
+`scripts/illustration_check.py` is authoritative.
+
+1. One actor or none, and fewer than five items → **PROSE**.
+2. Three or more signals, or two signals and five or more items → **DRAW**.
+3. Exactly two signals, or one signal together with several actors → **UNSURE**.
+4. Anything else → **PROSE**.
 
 ## Chip
 

@@ -5,8 +5,8 @@
 Resolve all paths from the loaded skill directory, never the session working
 directory. Run the absolute scripts/render_diagram.py with absolute input JSON
 and approved output paths. Exit 0 written, 2 invalid input/I/O, 3 use a paragraph.
-Outputs can be .html or standalone .svg, with .mmd only for the nine direct
-Mermaid grammars in type-picker.md. No external renderer is invoked.
+Outputs can be .html or standalone .svg, with a .mmd sidecar only for er, flowchart,
+gantt, journey, sequence, state, timeline and tree. No external renderer is invoked.
 Files are individually atomically replaced, not a multi-file transaction.
 An old .mmd is not deleted when a basename is reused for another type.
 

@@ -8,7 +8,7 @@ Choose the distinction the consumer must test, then one type.
 | A rough request becomes a durable requirement | source, transformation and saved artifact        | process      |
 | Two policy outcomes diverge                   | concrete inputs, guards and first differing rule | flowchart    |
 | Boundaries constrain data access              | explicit zones and permitted/forbidden relations | architecture |
-| Responsibility changes at a layer             | enforcement owner and observable result          | layer-stack  |
+| Responsibility changes at a layer             | enforcement owner and observable result          | architecture |
 | A feature decomposes into testable pieces     | parentage, source IDs and scope boundary         | tree         |
 | An object waits, retries or terminates        | named states, events and guards                  | state        |
 | Change propagates to shared consumers         | saved dependency edges, not inferred approval    | dependency   |
