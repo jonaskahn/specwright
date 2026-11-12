@@ -232,7 +232,8 @@ def project_manifest(
     epic: str | None,
     approvers: list[dict[str, str]],
     code: str | None = None,
-    output: str = "ask",
+    output: str = schema.DEFAULT_OUTPUT,
+    governance: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     manifest: dict[str, Any] = {"scope": scope, "name": name}
     if code:
@@ -241,6 +242,7 @@ def project_manifest(
         {
             "jira": {"site": site, "project_key": project_key, "epic": epic or "None"},
             "status_map": dict(schema.DEFAULT_STATUS_MAP),
+            "governance": {**schema.DEFAULT_GOVERNANCE, **(governance or {})},
             "approvers": approvers,
             "publish": {"transitions": False, "sandbox": True, "attach_diagrams": False},
             "output": {"default": output},
@@ -345,7 +347,8 @@ def init(
     approvers: list[dict[str, str]] | None = None,
     layout: str = "docs",
     code: str | None = None,
-    output: str = "markdown",
+    output: str = schema.DEFAULT_OUTPUT,
+    governance: dict[str, str] | None = None,
 ) -> list[str]:
     """Create the manifests and the folder tree; refuses to overwrite an existing project.
 
@@ -357,6 +360,8 @@ def init(
         raise WorkspaceError("layout must be 'docs' or 'embedded'")
     if output not in schema.OUTPUT_CHOICES:
         raise WorkspaceError(f"output must be one of {list(schema.OUTPUT_CHOICES)}")
+    for key, value in (governance or {}).items():
+        _check_governance(key, value)
     if not ids.is_scope(scope):
         raise WorkspaceError(f"scope must be 2-5 uppercase letters, got '{scope}'")
     if code and layout != "embedded":
@@ -381,7 +386,9 @@ def init(
     prepare_git(git_root, layout)
     root.mkdir(parents=True, exist_ok=True)
     created: list[str] = []
-    manifest = project_manifest(scope, name, site, project_key, epic, approvers or [], code, output)
+    manifest = project_manifest(
+        scope, name, site, project_key, epic, approvers or [], code, output, governance
+    )
     if mode == "program":
         program_file = root / PROGRAM_MANIFEST
         data = load(program_file) if program_file.exists() else {"mode": "program", "projects": []}
@@ -418,9 +425,45 @@ def _seed_graph(root: Path, mode: str, scope: str, created: list[str]) -> None:
 
 
 def output_default(root: Path, scope: str) -> str:
-    """Stored delivery target; a manifest without the key reads as 'ask'."""
+    """Stored delivery target; a manifest without the key reads as Markdown."""
     value = (load(scope_dir(root, scope) / FLAT_MANIFEST).get("output") or {}).get("default")
-    return str(value) if value in schema.OUTPUT_CHOICES else "ask"
+    return str(value) if value in schema.OUTPUT_CHOICES else schema.DEFAULT_OUTPUT
+
+
+def _check_governance(key: str, value: str) -> None:
+    allowed = schema.GOVERNANCE_CHOICES.get(key)
+    if allowed is None:
+        raise WorkspaceError(f"governance key must be one of {sorted(schema.GOVERNANCE_CHOICES)}")
+    if value not in allowed:
+        raise WorkspaceError(f"governance {key} must be one of {list(allowed)}")
+
+
+def governance_of(manifest: dict[str, Any]) -> dict[str, str]:
+    """Governance settings of a loaded manifest; an absent or unknown value reads as the default."""
+    stored = manifest.get("governance")
+    stored = stored if isinstance(stored, dict) else {}
+    return {
+        key: str(stored[key]) if stored.get(key) in allowed else schema.DEFAULT_GOVERNANCE[key]
+        for key, allowed in schema.GOVERNANCE_CHOICES.items()
+    }
+
+
+def governance(root: Path, scope: str) -> dict[str, str]:
+    return governance_of(load(scope_dir(root, scope) / FLAT_MANIFEST))
+
+
+def signoff_mode(base: Path) -> str:
+    """`optional` or `required` for the project whose folder is base."""
+    return governance_of(load(base / FLAT_MANIFEST))["signoff"]
+
+
+def set_governance(root: Path, scope: str, key: str, value: str) -> dict[str, str]:
+    _check_governance(key, value)
+    path = scope_dir(root, scope) / FLAT_MANIFEST
+    data = load(path)
+    data["governance"] = {**governance_of(data), key: value}
+    fsio.atomic_write(path, miniyaml.dumps(data))
+    return governance_of(data)
 
 
 def set_output(root: Path, scope: str, value: str) -> None:
@@ -440,8 +483,14 @@ def upgrade(root: Path, scope: str, apply: bool = False, code: str | None = None
     plan: list[str] = []
     changed = False
     if not (data.get("output") or {}).get("default"):
-        plan.append("project.yaml: add output.default = ask")
-        data["output"] = {"default": "ask"}
+        plan.append(f"project.yaml: add output.default = {schema.DEFAULT_OUTPUT}")
+        data["output"] = {"default": schema.DEFAULT_OUTPUT}
+        changed = True
+    if not isinstance(data.get("governance"), dict):
+        # A workspace that already named approvers keeps its strict rules until relaxed.
+        mode = "required" if data.get("approvers") else schema.DEFAULT_GOVERNANCE["signoff"]
+        plan.append(f"project.yaml: add governance (signoff: {mode})")
+        data["governance"] = {**schema.DEFAULT_GOVERNANCE, "signoff": mode}
         changed = True
     for field_name, default in (
         ("sources", []),
@@ -595,6 +644,18 @@ def _build_parser() -> argparse.ArgumentParser:
     init_cmd.add_argument(
         "--output", default="markdown", choices=list(schema.OUTPUT_CHOICES), help="delivery target"
     )
+    init_cmd.add_argument(
+        "--signoff", default="optional", choices=list(schema.SIGNOFF_MODES), help="approval rules"
+    )
+    init_cmd.add_argument(
+        "--flow", default="guided", choices=list(schema.FLOW_MODES), help="run-through style"
+    )
+    gov_cmd = sub.add_parser("governance", help="get or set how much ceremony the project wants")
+    gov_cmd.add_argument("action", choices=["get", "set"])
+    gov_cmd.add_argument("key", nargs="?", choices=sorted(schema.GOVERNANCE_CHOICES))
+    gov_cmd.add_argument("value", nargs="?")
+    gov_cmd.add_argument("--cwd", default=".")
+    gov_cmd.add_argument("--scope")
     out_cmd = sub.add_parser("output", help="get or set the stored delivery target")
     out_cmd.add_argument("action", choices=["get", "set"])
     out_cmd.add_argument("value", nargs="?")
@@ -642,6 +703,7 @@ def main(argv: list[str] | None = None) -> int:
                 args.layout,
                 args.code,
                 args.output,
+                {"signoff": args.signoff, "flow": args.flow},
             )
             print("created:\n" + "\n".join(f"  {c}" for c in created))
             return 0
@@ -680,6 +742,14 @@ def main(argv: list[str] | None = None) -> int:
                         args.legacy_id_pattern,
                     )
                 print(json.dumps(source_list(root, scope), indent=2))
+            return 0
+        if args.command == "governance":
+            scope = resolve(root, args.scope, None, start, args.action == "set")
+            if args.action == "set":
+                if not (args.key and args.value):
+                    raise WorkspaceError("governance set needs a key and a value")
+                set_governance(root, scope, args.key, args.value)
+            print(json.dumps(governance(root, scope)))
             return 0
         if args.command in ("output", "upgrade"):
             writes = args.command == "upgrade" or args.action == "set"

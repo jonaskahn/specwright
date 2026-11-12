@@ -37,7 +37,7 @@ STATUSES = {
     "snapshot": ["raw"],
     "asset": ["captured", "superseded", "withdrawn"],
     "src": ["raw"],
-    "q": ["proposed", "candidate", "open", "answered", "withdrawn"],
+    "q": ["proposed", "candidate", "open", "assumed", "answered", "withdrawn"],
     "cr": ["proposed", "in-review", "approved", "applied", "withdrawn"],
     "amendment": ["proposed", "applied", "rejected", "withdrawn"],
     "candidates": ["raw", "verified", "withdrawn"],
@@ -55,10 +55,15 @@ STATUSES = {
 
 # Evidence kinds a decision may cite. Chat is opt-in per project because it is the weakest.
 DEFAULT_EVIDENCE_KINDS = ("url", "ticket", "document", "meeting")
-EVIDENCE_KINDS = (*DEFAULT_EVIDENCE_KINDS, "chat")
+# `session` is the owner deciding in this session; it needs no URL and is allowed only when
+# sign-off is optional.
+SESSION_EVIDENCE = "session"
+EVIDENCE_KINDS = (*DEFAULT_EVIDENCE_KINDS, "chat", SESSION_EVIDENCE)
 
 # Question states that still wait for an answer; every board and report counts the same set.
+# An `assumed` question is not waiting: its default was applied, and it can still be answered.
 OPEN_Q = frozenset({"proposed", "candidate", "open"})
+ANSWERABLE_Q = OPEN_Q | {"assumed"}
 
 DEFAULT_STATUS_MAP = {
     "published": "To Do",
@@ -127,6 +132,18 @@ SCOPE_DIRS = [
 ]
 
 OUTPUT_CHOICES = ("ask", "markdown", "jira", "both")
+DEFAULT_OUTPUT = "markdown"
+
+# Governance: how much ceremony a workspace wants. `optional` sign-off lets the owner accept a
+# story in plain words; `required` keeps the formal sign-off from a configured approver.
+# `guided` flow runs station to station with one plain confirmation; `step` stops at each one.
+SIGNOFF_MODES = ("optional", "required")
+FLOW_MODES = ("guided", "step")
+DEFAULT_GOVERNANCE = {"signoff": "optional", "flow": "guided"}
+GOVERNANCE_CHOICES = {"signoff": SIGNOFF_MODES, "flow": FLOW_MODES}
+
+# The stored status keeps its name so no data migrates; readers see the plain word.
+STATE_LABELS = {"ready-to-publish": "accepted"}
 GRAPH_DIR = "_meta/graph"
 # Derived, git-ignored views of the spec for the console and any other reader (dataformat.py).
 DATA_DIR = "_meta/data"

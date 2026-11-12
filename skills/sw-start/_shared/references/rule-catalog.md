@@ -8,7 +8,7 @@ judgment. A finding prints `path:line: L-NNN message`. Pick the gate by what mus
 | Gate | Exit | Blocks when |
 | --- | --- | --- |
 | `draft` | 10 | Shape or measurable rules fail. |
-| `review` | 20 | Sign-off or DoR fails (default). |
+| `review` | 20 | The accept path or DoR fails (default); formal sign-off applies when required. |
 | `publish` | 30 | The publish contract fails. |
 
 Exit 0 pass; 2 usage or unexpected checker failure. No network.
@@ -23,12 +23,12 @@ Exit 0 pass; 2 usage or unexpected checker failure. No network.
 | Shape | L-063 the INVEST table of an idea brief is malformed or hides a fail or unknown without a Reason |
 | Illustration | L-064 a feature needs an illustration and has no picture and no dismissal (warning, review gate); L-065 a diagram cites a withdrawn or missing ID (warning, review gate) |
 | Legacy names | L-056 a legacy ID (manifest `legacy_id_pattern`) in a body is not an alias of any artifact |
-| Records and folders | L-058 unknown top-level folder (warning); L-059 a question without `affects`; L-060 a decision without decider and evidence; L-061 decider not in the manifest approvers |
+| Records and folders | L-058 unknown top-level folder (warning); L-059 a question without `affects`; L-060 a decision without decider and evidence; L-061 decider not in the manifest approvers (both a warning when sign-off is optional, an error when required) |
 | Graph and plan | L-047 stale `.feature`; L-048 task trace; L-049 graph stale or missing; L-050/L-051 epic reference and scopes; L-052 Touches path; L-053 absolute registry path |
 | Acceptance criteria | L-005 BO reference; L-007 Given/When/Then order; L-008 observable literal; L-014 clarification markers; L-017 numbered AC heading |
 | Business rules and NFRs | L-010 metric, threshold, condition; L-011 worked example; L-012 UI states; L-013 exclusions with reason |
 | Wording and leakage | L-009 vague word, ambiguous pronoun, unqualified "secure"; L-015 implementation choice; L-024 card/word cap and lone-side borders |
-| Publish contract | L-018 open questions resolved; L-037; L-045; L-046 |
+| Publish contract | L-018 open questions resolved; L-037; L-045 (met by a fresh accept when sign-off is optional); L-046 |
 | Snapshot and drift | L-038 snapshot sections; L-039 contract checks; L-041/L-042 published draft changed without a CR; L-044 Jira status mapping |
 
 Never weaken a rule, word list or threshold to pass a report. Record a waiver only where

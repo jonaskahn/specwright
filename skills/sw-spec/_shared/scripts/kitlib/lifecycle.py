@@ -10,7 +10,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from kitlib import blockers, frontmatter, fsio, hashing, ids, tables, workspace, writelog
+from kitlib import blockers, frontmatter, fsio, hashing, ids, review, tables, workspace, writelog
 
 VERSION = 1
 ACTIONS = {
@@ -68,7 +68,9 @@ def approval_state(base: Path, feat: str, text: str) -> str:
     signoffs = fm.get("signoffs") or []
     if not signoffs:
         return "unknown"
-    scope = str(workspace.load(base / "project.yaml")["scope"])
+    manifest = workspace.load(base / "project.yaml")
+    scope = str(manifest["scope"])
+    mode = workspace.governance_of(manifest)["signoff"]
     try:
         history = decisions(base, f"{scope}:{feat}")
     except ValueError:
@@ -82,7 +84,16 @@ def approval_state(base: Path, feat: str, text: str) -> str:
     if (base / "_meta/lifecycle-pending.json").exists():
         return "invalidated"
     digest = hashing.short(hashing.draft_hash(text))
-    return "fresh" if any(digest in str(s) and "https://" in str(s) for s in signoffs) else "stale"
+    return "fresh" if any(review.line_counts(s, digest, mode) for s in signoffs) else "stale"
+
+
+def _approval_label(base: Path, text: str, state: str) -> str:
+    """The plain word for the approval: accepted, signed-off, needs-signoff, stale or unknown."""
+    if not text or state in ("unknown", "invalidated"):
+        return state
+    fm = frontmatter.parse(text).fm or {}
+    label = review.approval_label(text, fm.get("signoffs") or [], workspace.signoff_mode(base))
+    return label if label != "stale" or state == "stale" else state
 
 
 def _registry(base: Path):
@@ -116,6 +127,7 @@ def feature(base: Path, key: str, status: str = "reserved") -> dict:
         "blockers": [],
         "available": [],
         "approval": "unknown",
+        "approval_label": "unknown",
         "publication": publication(base, key),
         "planning": {"passing": False},
     }
@@ -129,6 +141,7 @@ def feature(base: Path, key: str, status: str = "reserved") -> dict:
         if text and (parsed.error or not parsed.fm):
             raise ValueError("invalid story front matter")
         result["approval"] = approval_state(base, feat, text) if text else "unknown"
+        result["approval_label"] = _approval_label(base, text, result["approval"])
         latest = next((r for r in reversed(history) if r["action"] != "set-destination"), {})
         action = latest.get("action")
         destination = next(
@@ -154,7 +167,8 @@ def feature(base: Path, key: str, status: str = "reserved") -> dict:
                 blockers=planning["findings"],
                 available=["sw-plan"],
             )
-            if planning["passing"] and not result["publication"]["published"]:
+            # Publishing needs an accepted story, not a finished plan: tasks are never published.
+            if not result["publication"]["published"]:
                 result["available"].append("request-publish")
                 if action == "request-publish":
                     result.update(
@@ -207,7 +221,7 @@ def transition(
     if current["condition"] == "unknown" or current["station"] == "inactive":
         raise ValueError("cannot transition unknown or inactive feature")
     if action == "request-publish" and "request-publish" not in current["available"]:
-        raise ValueError("publication requires a current passing plan and active approval")
+        raise ValueError("publication requires an accepted story with a current approval")
     if action == "defer-publish" and current["station"] != "publish":
         raise ValueError("feature is not awaiting publication")
     allowed_from = {

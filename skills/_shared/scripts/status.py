@@ -23,6 +23,7 @@ from kitlib import (  # noqa: E402
     hashing,
     ids,
     illustration,
+    review,
     rtm,
     schema,
     tables,
@@ -76,16 +77,21 @@ def report_cell(base, filename, key):
     return "; ".join(lines) if lines else UNKNOWN
 
 
-def signoff_state(entity):
+def signoff_state(entity, mode="required"):
+    """`signed-off`, `accepted`, `needs-signoff`, `stale` or unknown for the feature's lines."""
     approvals = entity.fm.get("signoffs") or []
     if not approvals:
         return UNKNOWN
-    digest = hashing.draft_hash(entity.path.read_text(encoding="utf-8"))
+    text = entity.path.read_text(encoding="utf-8")
+    label = review.approval_label(text, approvals, mode)
+    if label != "stale":
+        return label
+    digest = hashing.draft_hash(text)
     states = []
     for approval in approvals:
-        text = json.dumps(approval) if isinstance(approval, dict) else str(approval)
-        hashes = re.findall(r"sha256:([0-9a-f]{12,64})", text)
-        if "stale" in text.lower():
+        entry = json.dumps(approval) if isinstance(approval, dict) else str(approval)
+        hashes = re.findall(r"sha256:([0-9a-f]{12,64})", entry)
+        if "stale" in entry.lower():
             states.append("stale")
         elif hashes:
             states.append("fresh" if all(digest[7:].startswith(h) for h in hashes) else "stale")
@@ -94,6 +100,10 @@ def signoff_state(entity):
     return (
         "stale" if "stale" in states else "fresh" if all(s == "fresh" for s in states) else UNKNOWN
     )
+
+
+# What a current approval reads as: the older `fresh` plus the plain words.
+FRESH_LABELS = ("fresh", "accepted", "signed-off")
 
 
 def recommend(state, lint, drift, signoff, questions, changes):
@@ -105,14 +115,16 @@ def recommend(state, lint, drift, signoff, questions, changes):
         return "sw-spec", "BA"
     if questions and state == "in-review":
         return "sw-review", "PO"
-    if signoff == "stale":
+    if signoff in ("stale", "needs-signoff"):
         return "sw-review", "PO"
     if state in ("withdrawn", "superseded"):
         return "trace capability", "BA"
     if state == "ready-for-dev":
         return "implementation", "Dev and QA"
     if state == "ready-to-publish":
-        return ("sw-publish", "BA (after PO OK)") if signoff == "fresh" else ("sw-review", "PO")
+        return (
+            ("sw-publish", "BA (after PO OK)") if signoff in FRESH_LABELS else ("sw-review", "PO")
+        )
     if state == "in-review":
         return "sw-review", "PO"
     if state == "published":
@@ -157,7 +169,7 @@ def build_report(root: Path, scopes=None, today=None):
                 for e in linked
                 if e.kind == "cr" and e.fm.get("status") in ("proposed", "in-review", "approved")
             )
-            signoff = signoff_state(entity)
+            signoff = signoff_state(entity, workspace.signoff_mode(base))
             chip = illustration.state(base, key.split(":", 1)[1], scope)["chip"]
             idle = age_days(entity.fm.get("updated"), today)
             snapshot = registry.get(key, "Last snapshot")
@@ -189,6 +201,7 @@ def build_report(root: Path, scopes=None, today=None):
                 {
                     "id": key,
                     "state": state,
+                    "state_label": schema.STATE_LABELS.get(state, state),
                     "station": board_item["station"],
                     "condition": board_item["condition"],
                     "blockers": board_item["blockers"],
@@ -216,7 +229,7 @@ def render(report):
         records = [f"{key.split(':')[-1]} open" for key in item["open_questions"]]
         records += [f"{key.split(':')[-1]} open" for key in item["open_changes"]]
         lines.append(
-            f"{item['id']} | {item['state']} | lint {item['lint']} | Jira: "
+            f"{item['id']} | {item['state_label']} | lint {item['lint']} | Jira: "
             f"{item['jira']} | "
             + (", ".join(records) or "open records: none")
             + f" | next: {item['next']} ({item['turn']})"

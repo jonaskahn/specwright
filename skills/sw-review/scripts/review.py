@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
-"""Verify approval evidence or promote one draft after it passes.
+"""Accept a draft in plain words, or verify and promote it on formal sign-off evidence.
 
-Exit codes: 0 valid, 2 invalid evidence or usage. Only --apply writes the draft.
+`accept` is the default path: it records the owner's acceptance bound to the draft hash and needs
+no approver or URL, so it works only when the project's sign-off is optional. `verify` and
+`promote` check a configured approver's evidence and apply whatever the sign-off setting.
+
+Exit codes: 0 valid, 2 invalid evidence or usage. `promote` and `accept` write the draft.
 """
 
 from __future__ import annotations
@@ -23,26 +27,37 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import fsio, review  # noqa: E402
+from kitlib import fsio, hashing, review  # noqa: E402
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["verify", "promote"])
+    parser.add_argument("command", choices=["accept", "verify", "promote"])
     parser.add_argument("--draft", type=Path, required=True)
     parser.add_argument("--scope-id", required=True)
     parser.add_argument("--manifest", type=Path, required=True)
-    parser.add_argument("--author", required=True, help="the approver's account ID")
-    parser.add_argument("--role", required=True, help="the approver's role in the manifest")
-    parser.add_argument("--name", required=True, help="the approver's name in the manifest")
-    parser.add_argument("--url", required=True)
-    parser.add_argument("--kind", choices=sorted(review.KINDS), required=True)
+    parser.add_argument("--author", help="the approver's account ID (verify, promote)")
+    parser.add_argument("--role", help="the approver's role in the manifest (verify, promote)")
+    parser.add_argument("--name", help="the approver's name in the manifest (verify, promote)")
+    parser.add_argument("--url", help="evidence URL (verify, promote)")
+    parser.add_argument(
+        "--kind", choices=sorted(review.KINDS), help="evidence kind (verify, promote)"
+    )
     parser.add_argument("--body", default="")
     parser.add_argument(
         "--session-ref", default="", help="chat or meeting evidence: session or minutes reference"
     )
     args = parser.parse_args(argv)
     try:
+        if args.command == "accept":
+            updated = review.accept(args.draft, args.scope_id, args.manifest)
+            fsio.atomic_write(args.draft, updated)
+            digest = hashing.short(hashing.draft_hash(updated))
+            print(json.dumps({"status": "ready-to-publish", "accepted": True, "sha256": digest}))
+            return 0
+        missing = [f for f in ("author", "role", "name", "url", "kind") if not getattr(args, f)]
+        if missing:
+            parser.error("verify and promote need " + ", ".join("--" + f for f in missing))
         evidence = review.Evidence(
             args.kind,
             args.author,

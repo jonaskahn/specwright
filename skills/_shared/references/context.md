@@ -12,12 +12,15 @@ FEAT-NNN; never create a STORY identifier.
 | sw-ingest | Source snapshots, assets, candidate facts, conflicts. |
 | sw-shape | Idea brief, INVEST feature split, FEAT reservation. |
 | sw-spec | Story drafts, cards, diagrams, RTM draft columns. |
-| sw-review | The only recorder of human approval. |
+| sw-review | The only recorder of approval: the owner's accept, or a formal sign-off. |
 | sw-plan | Implementation plan and tasks. |
 | sw-publish | The only writer to Jira or Confluence. |
 
 Knowledge, trace, lint, status, assets and visuals are shared capabilities (see
 bundle-map.json); they are not stations.
+
+Governance (optional or required sign-off, guided or step flow, Markdown or Jira) is set in
+the manifest; `governance.md` is the one table of what each setting allows.
 
 ## Read order
 

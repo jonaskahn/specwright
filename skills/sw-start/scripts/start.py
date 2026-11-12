@@ -127,6 +127,7 @@ def scope_state(root, scope):
     )
     store = graph_query.Store(root, scope)
     freshness = store.freshness()
+    rules = workspace.governance(root, scope)
     state_baseline = baseline_state(root, scope, base, store, freshness == "fresh")
     return {
         "baseline": state_baseline,
@@ -141,14 +142,20 @@ def scope_state(root, scope):
         "graph": freshness,
         "graph_cmd": graph_command(root, scope),
         "output_default": workspace.output_default(root, scope),
+        "governance": rules["signoff"],
+        "flow": rules["flow"],
         "board": graph_query.board(graph_query.Store(root, scope)) if freshness == "fresh" else [],
     }
 
 
 def setup_needed(root, scope):
-    """What the project still lacks before records can be approved or decided."""
+    """What the project still lacks before records can be approved or decided.
+
+    Approvers matter only when sign-off is required; otherwise the owner accepts in plain words.
+    """
     missing = []
-    if not workspace.approver_list(root, scope):
+    required = workspace.governance(root, scope)["signoff"] == "required"
+    if required and not workspace.approver_list(root, scope):
         missing.append(
             "approvers: run workspace.py approvers add --role <role> --name <name> "
             "--account-id <id>"

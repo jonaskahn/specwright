@@ -30,6 +30,7 @@ from kitlib import (  # noqa: E402
     illustration,
     invest,
     markdown,
+    review,
     schema,
     tables,
     workspace,
@@ -68,7 +69,7 @@ RULE_HELP = {
     "L-042": "A published draft's body changed without a change request.",
     "L-043": "URLs must be https, scope must match, reference lists must hold spec IDs.",
     "L-044": "The Jira status must match the mapped repository status.",
-    "L-045": "Record fresh sign-offs with evidence and the draft hash for every required role.",
+    "L-045": "Record an accept, or fresh sign-offs with evidence and the hash for every role.",
     "L-046": "Use an action verb, a summary of at most 100 chars and all three identity labels.",
     "L-047": "A `.feature` export is stale; regenerate it from the draft.",
     "L-048": "A task traces to an acceptance criterion that is unresolved or withdrawn.",
@@ -83,8 +84,8 @@ RULE_HELP = {
     "L-057": "A citation must resolve to a real snapshot line with a matching hash.",
     "L-058": "A folder is unknown to the kit; list it in ignore_folders or remove it.",
     "L-059": "An open question must name the items it blocks in `affects`.",
-    "L-060": "A decision records decided_by (role and name) and evidence_kind plus evidence_ref.",
-    "L-061": "The decision's decider must be a manifest approver.",
+    "L-060": "A decision records decided_by and evidence (a warning when sign-off is optional).",
+    "L-061": "The decider must be a manifest approver (a warning when sign-off is optional).",
     "L-062": "A proposed amendment must be applied before review continues.",
     "L-063": "The INVEST split table needs pass/fail marks, not free text.",
     "L-064": "A feature needs an illustration and has no picture and no recorded dismissal.",
@@ -458,6 +459,12 @@ def rule_gate(rule):
     return "publish" if rule in PUBLISH else "review" if rule in REVIEW else "draft"
 
 
+def strict_or_named(who: dict, strict: bool) -> bool:
+    """The owner deciding for themselves needs no approver unless sign-off is required."""
+    owner = str(who.get("role", "")).casefold() == "owner"
+    return strict or not (owner and str(who.get("name", "")).casefold() == "self")
+
+
 def lint_document(doc, ctx):
     """Emit decidable checks; wording quality remains a human responsibility."""
     findings = []
@@ -515,22 +522,36 @@ def lint_document(doc, ctx):
         or fm.get("origin") == "local-transition"
         or fm.get("waives")
     ):
+        # Strict governance blocks on these; with optional sign-off they are advice, because a solo
+        # owner decides without a configured approver or a link.
+        strict = workspace.governance_of(ctx.manifest)["signoff"] == "required"
+        sev = "error" if strict else "warn"
         who = fm.get("decided_by")
         who = who if isinstance(who, dict) else {}
         if not str(who.get("role", "")).strip() or not str(who.get("name", "")).strip():
-            emit("L-060", "a decision records decided_by with a role and a name")
-        elif (approvers := sequence(ctx.manifest.get("approvers"))) and not any(
-            str(a.get("role", "")).casefold() == str(who["role"]).casefold()
-            and str(a.get("name", "")).casefold() == str(who["name"]).casefold()
-            for a in approvers
-            if isinstance(a, dict)
+            emit("L-060", "a decision records decided_by with a role and a name", sev=sev)
+        elif (
+            strict_or_named(who, strict)
+            and (approvers := sequence(ctx.manifest.get("approvers")))
+            and not any(
+                str(a.get("role", "")).casefold() == str(who["role"]).casefold()
+                and str(a.get("name", "")).casefold() == str(who["name"]).casefold()
+                for a in approvers
+                if isinstance(a, dict)
+            )
         ):
-            emit("L-061", f"{who['name']} ({who['role']}) is not in the manifest approvers")
+            emit(
+                "L-061",
+                f"{who['name']} ({who['role']}) is not in the manifest approvers",
+                sev=sev,
+            )
         if (
             fm.get("evidence_kind") not in schema.EVIDENCE_KINDS
             or not str(fm.get("evidence_ref", "")).strip()
         ):
-            emit("L-060", "a decision records evidence_kind and evidence_ref")
+            emit("L-060", "a decision records evidence_kind and evidence_ref", sev=sev)
+        elif strict and fm.get("evidence_kind") == schema.SESSION_EVIDENCE:
+            emit("L-060", "session evidence is not accepted when sign-off is required")
     if fm["type"] == "idea":
         for problem in invest.problems(doc.body):
             emit("L-063", problem)
@@ -851,7 +872,12 @@ def lint_document(doc, ctx):
                 for a in sequence(ctx.manifest.get("approvers"))
                 if isinstance(a, dict) and a.get("role")
             } or {"PO"}
-            if not required <= valid_roles:
+            short = hashing.short(digest)
+            accepted = workspace.governance_of(ctx.manifest)["signoff"] == "optional" and any(
+                (m := review.ACCEPT_LINE.match(str(e))) and m.group(1) == short
+                for e in sequence(fm.get("signoffs"))
+            )
+            if not accepted and not required <= valid_roles:
                 emit(
                     "L-045",
                     "record fresh sign-offs with evidence and draft hash for: "

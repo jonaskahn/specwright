@@ -41,7 +41,9 @@ def _decider(cmd):
     cmd.add_argument("--decided-by-role", default="")
     cmd.add_argument("--decided-by-name", default="")
     cmd.add_argument("--decided-by-account", default="")
-    cmd.add_argument("--evidence-kind", default="")
+    cmd.add_argument(
+        "--evidence-kind", default="", help="omit all decider flags to record the owner (self)"
+    )
     cmd.add_argument("--evidence-ref", default="")
 
 
@@ -60,8 +62,12 @@ def _parser():
     new.add_argument("--why", default="")
     new.add_argument("--option", action="append", default=[])
     new.add_argument("--default", default="")
-    new.add_argument("--non-blocking", action="store_true")
-    new.add_argument("--status", choices=["proposed", "open"], default="proposed")
+    new.add_argument(
+        "--non-blocking",
+        action="store_true",
+        help="--status assumed needs this and a --default: the default was applied",
+    )
+    new.add_argument("--status", choices=["proposed", "open", "assumed"], default="proposed")
     answer = _add(q, "answer", "answer a question and record the decision")
     answer.add_argument("id")
     answer.add_argument("--answer", required=True)

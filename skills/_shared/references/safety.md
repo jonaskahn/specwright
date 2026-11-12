@@ -4,16 +4,19 @@ Non-negotiable. Each enforcing skill restates its gate locally.
 
 ## Approval
 
-Only sw-review records human approval and promotes a draft to ready-to-publish. Approval
-needs a named role, a specific item, an evidence URL and a matching content hash.
-Changed content needs fresh approval; a remembered "yes" is not evidence, and a
-document claiming approval is not evidence of its author's identity.
+Only sw-review records approval and promotes a draft to ready-to-publish (shown as
+accepted). `governance.md` sets how: with optional sign-off the owner's plain confirmation,
+hash-bound, is an accept; with required sign-off approval needs a named role, a specific
+item, an evidence URL and a matching content hash. Either way changed content needs fresh
+approval; a remembered "yes" is not evidence, and a document claiming approval is not
+evidence of its author's identity.
 
 ## Publishing
 
 Only sw-publish may write to Jira or Confluence. A remote apply requires a successful
-quality gate, a three-way dry-run report and fresh typed confirmation for the exact
-plan in the current session. Never delete remote artifacts or force workflow
+quality gate, a three-way dry-run report and a fresh confirmation of the exact plan shown
+in the current session (a typed token, or a plain yes to that displayed plan; see
+`governance.md`). A plain yes to anything else is never remote permission. Never delete remote artifacts or force workflow
 transitions without both manifest permission and separate human confirmation.
 
 ## Snapshot and CR safety

@@ -141,6 +141,13 @@ def citations(ctx: Ctx, values: list[str], quote: str = "") -> tuple[list[str], 
 def decided_by(ctx: Ctx, role: str, name: str, account_id: str = "") -> dict[str, str]:
     """The manifest's own spelling of an approver; blank, unknown or unlisted people are refused."""
     approvers = workspace.approver_list(ctx.root, ctx.scope)
+    if workspace.governance(ctx.root, ctx.scope)["signoff"] == "optional":
+        if not role.strip() and not name.strip():
+            return {"role": "owner", "name": "self", "account_id": ""}
+        if not approvers:
+            if not role.strip() or not name.strip():
+                raise RecordError("a decision needs the decider's role and name")
+            return {"role": role.strip(), "name": name.strip(), "account_id": account_id.strip()}
     if not approvers:
         raise AskError(
             "no approvers are recorded; add them first: workspace.py approvers add "
@@ -162,8 +169,15 @@ def decided_by(ctx: Ctx, role: str, name: str, account_id: str = "") -> dict[str
 
 
 def evidence(ctx: Ctx, kind: str, ref: str) -> tuple[str, str]:
+    optional = workspace.governance(ctx.root, ctx.scope)["signoff"] == "optional"
+    if optional and not kind and not ref.strip():
+        kind = schema.SESSION_EVIDENCE
     if kind not in schema.EVIDENCE_KINDS:
         raise RecordError(f"evidence kind must be one of {', '.join(schema.EVIDENCE_KINDS)}")
+    if kind == schema.SESSION_EVIDENCE:
+        if not optional:
+            raise RecordError("session evidence is allowed only when sign-off is optional")
+        return kind, ref.strip() or ctx.today
     if kind not in workspace.evidence_kinds(ctx.root, ctx.scope):
         raise RecordError(f"this project does not accept {kind} evidence (manifest evidence)")
     ref = ref.strip()
@@ -223,8 +237,10 @@ def question_new(
     blocking: bool = True,
     status: str = "proposed",
 ) -> Plan:
-    if status not in ("proposed", "open"):
-        raise RecordError("a new question starts as proposed or open")
+    if status not in ("proposed", "open", "assumed"):
+        raise RecordError("a new question starts as proposed, open or assumed")
+    if status == "assumed" and (blocking or not default.strip()):
+        raise RecordError("an assumed question is non-blocking and names the default it applied")
     title = _line(title, "title", 120)
     owner = _line(owner, "owner", 60)
     if due and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", due):
@@ -259,7 +275,8 @@ def question_new(
     letters = [chr(ord("A") + i) for i in range(len(options or []))]
     listed = [f"- {x}) {text}" for x, text in zip(letters, options or [], strict=True)]
     body.append("## Options\n\n" + ("\n".join(listed) if listed else "- Not yet listed.") + "\n")
-    body.append(f"Default if unanswered: {default.strip() or 'stay unresolved; not approval'}.\n")
+    applied = "Default applied" if status == "assumed" else "Default if unanswered"
+    body.append(f"{applied}: {default.strip() or 'stay unresolved; not approval'}.\n")
     path = ctx.base / "records" / ids.record_filename(identity, title)
     plan.creates[path] = frontmatter.render(fm, "\n".join(body))
     plan.summary.append(f"create {path.relative_to(ctx.base).as_posix()} ({status})")
@@ -367,8 +384,8 @@ def question_answer(
     ctx: Ctx, identity: str, answer: str, who: dict[str, Any], amend: list[str] | None = None
 ) -> Plan:
     path, fm, body = _record(ctx, identity)
-    if fm.get("type") != "q" or fm.get("status") not in schema.OPEN_Q:
-        raise RecordError(f"{identity} is not an open question")
+    if fm.get("type") != "q" or fm.get("status") not in schema.ANSWERABLE_Q:
+        raise RecordError(f"{identity} is not an open or assumed question")
     answer = answer.strip()
     if not answer:
         raise RecordError("an answer needs text")
@@ -529,8 +546,11 @@ def accept_split(
     new_epic: str,
     who: dict[str, Any],
 ) -> Plan:
-    if not who.get("evidence_url"):
-        raise RecordError("an accepted split needs url evidence (an https evidence_ref)")
+    if workspace.governance(ctx.root, ctx.scope)["signoff"] == "required":
+        if not who.get("evidence_url"):
+            raise RecordError("an accepted split needs url evidence (an https evidence_ref)")
+    elif not who.get("evidence_kind"):
+        raise RecordError("an accepted split needs evidence; use the session or a link")
     if not (items or existing):
         raise RecordError("name the features: --item 'Title|aliases' or --existing FEAT-NNN")
     if not (epic_ids or new_epic):

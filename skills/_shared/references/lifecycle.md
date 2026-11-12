@@ -1,6 +1,7 @@
 # Lifecycle
 
-`shape -> spec -> review -> plan -> optional publish`
+`shape -> spec -> review (accept) -> plan`, with publish as an optional parallel exit.
+`governance.md` sets how much ceremony each step needs and whether the run is guided.
 
 Ingest, assets, visuals, knowledge, trace, lint and status support an action; they are
 not stations. There is no sync stage or automatic reconciliation.
@@ -13,10 +14,12 @@ publication evidence. Drafts, including open questions, stay in spec. A reviewed
 needs current task coverage and a plan before it is complete in plan. Published items
 without tasks remain incomplete. A Jira mapping alone does not prove publication.
 
-Request publication explicitly only after planning passes. A stored Jira preference is
-neither a publication request nor remote permission. Deferral is a durable decision,
-so rebuilding the graph cannot undo it. Markdown is the default for new workspaces.
-An explicit but ambiguous publish request still asks for the destination.
+Request publication explicitly once the story is accepted; a plan is not required,
+because tasks are never published. A stored Jira preference is neither a publication
+request nor remote permission. Deferral is a durable decision, so rebuilding the graph
+cannot undo it. Markdown is the default for new workspaces and there is no destination
+question: a publish request goes to sw-publish when Jira is configured, otherwise the
+Markdown is the delivery and Jira setup is offered.
 
 ## Guarded decisions
 
@@ -28,7 +31,8 @@ cannot create executed decisions. Broken/forked histories block; timestamps do n
 records. An incomplete transaction leaves _meta/lifecycle-pending.json and blocks work
 until its story/DEC changes are inspected and repaired; never delete it blindly.
 
-- submit-review: spec to review after a passing lint gate; not approval.
+- submit-review: spec to review after a passing lint gate; not approval. In the guided flow
+  the agent passes its token after the user's plain yes.
 - return-spec: review/plan/publish to spec; preserve files and invalidate active approval.
 - return-review: plan to review, including unstarted plan; old approval remains history.
 - reopen-shape: spec to shape for this feature slice only; siblings stay unchanged.
@@ -42,21 +46,24 @@ promotes forward, withdraws an ID, deletes an artifact or bypasses approval.
 
 Metadata-only rollback preserves the story hash. Tasks are blocked by lifecycle state,
 not falsely content-stale. A real requirement change makes spec_hash stale. Only
-sw-review can restore active approval with fresh evidence after invalidation. Published
+sw-review can restore active approval after invalidation: a fresh accept, or fresh
+evidence under required sign-off. Published
 text cannot rewind: supply a current immutable baseline and use the CR amendment path.
 Task-only repair remains in plan.
 
 ## Accepted split membership
 
 At accepted feature-ID reservation, record an accepted DEC with subtype accepted-split,
-qualified epic, features list, role/person/date and evidence_url. This declared mapping
+qualified epic, features list, decider, date and evidence (an evidence_url under required
+sign-off; the owner's session when optional). This declared mapping
 makes reserved features visible under the epic before story files exist. Missing or
 conflicting membership must be resolved, never inferred from loose mentions.
 
 ## Completion
 
 Finish the requested action, run completion.md maintenance, then report the item's
-station and condition. More than one eligible item requires selection, even
-when all share a station. No oldest-draft fallback and no sibling auto-advancement.
+station and condition. Under the guided flow, offer the next station with one plain
+confirmation; under the step flow, stop. More than one eligible item requires selection,
+even when all share a station. No oldest-draft fallback and no sibling auto-advancement.
 Only sw-publish may write remotely after the clean gate, three-way dry-run and fresh
 exact-plan PUBLISH confirmation; local TRANSITION tokens cannot substitute for it.

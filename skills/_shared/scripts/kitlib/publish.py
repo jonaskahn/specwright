@@ -65,22 +65,16 @@ def context(root: Path, feat: str, scope: str | None = None) -> Context:
 
 
 def preconditions(ctx: Context, lint_report: str = "") -> list[str]:
-    from kitlib import lifecycle, task_validation
+    """What must hold before a remote write. A plan is not one: tasks are never published."""
+    from kitlib import lifecycle
 
     errors = []
     draft = ctx.draft.read_text(encoding="utf-8")
     if lifecycle.approval_state(ctx.base, ctx.scope_id.split(":")[-1], draft) != "fresh":
         errors.append("active approval is absent, stale or invalidated")
-    errors.extend(task_validation.planning(ctx.base, ctx.scope_id.split(":")[-1])["findings"])
     fm, _ = frontmatter.split(draft)
     if fm.get("status") != "ready-to-publish":
-        errors.append("draft is not ready-to-publish")
-    signoffs = fm.get("signoffs") or []
-    if not any(
-        "https://" in str(x) and hashing.short(hashing.draft_hash(draft)) in str(x)
-        for x in signoffs
-    ):
-        errors.append("signoff is absent, stale or unverifiable")
+        errors.append("draft is not accepted (ready-to-publish)")
     report = ctx.base / "_meta/lint-report.md"
     if lint_report:
         if "0 blocking error(s)" not in lint_report:
