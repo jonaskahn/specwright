@@ -170,3 +170,47 @@ dialog.palette-dialog::backdrop { background: var(--color-scrim); }
 .helplist { display: grid; gap: 2px; margin-block-start: var(--space-xs); color: var(--muted); font: var(--text-xs) var(--font-mono); }
 .path-hops { display: flex; flex-direction: column; gap: var(--space-xs); }
 .hop { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; padding: var(--space-xs) var(--space-sm); border-radius: var(--radius); background: var(--fill); font-size: var(--text-sm); }
+
+/* trace map */
+.coverage { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1px; border-radius: var(--radius-lg); background: var(--rule); overflow: hidden; box-shadow: var(--shadow-soft); }
+.cover { all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; gap: var(--space-2xs); padding: var(--space-sm) var(--space-md); background: var(--surface); min-inline-size: 0; }
+.cover:hover:not(:disabled) { background: var(--fill); }
+.cover:disabled { cursor: default; }
+.cover:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.cover[aria-pressed="true"] { background: var(--fill-2); box-shadow: inset 0 -3px 0 var(--accent); }
+.cover .l { font-size: var(--text-sm); color: var(--muted); }
+.cover .v { font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
+.cover .v strong { font-size: var(--text-lg); }
+.cover .meter { display: block; block-size: 4px; border-radius: 2px; background: var(--fill-2); overflow: hidden; }
+.cover .meter i { display: block; block-size: 100%; inline-size: var(--w); background: var(--accent); }
+.cover.done .meter i { background: var(--color-ok); }
+.trace { position: relative; display: flex; flex-direction: column; gap: var(--space-xs); }
+.trace-tools { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+.trace-scroll { overflow: auto; max-block-size: min(72vh, 46rem); border-radius: var(--radius-lg); background: var(--sunken); box-shadow: var(--shadow-soft); padding: var(--space-xs); }
+.trace-svg { display: block; font-family: var(--font-body); }
+.trace-col { fill: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.trace-link { fill: none; stroke: var(--rule-strong); stroke-width: 1.4; transition: opacity 0.15s; }
+.trace-link.gap { stroke-dasharray: 5 4; }
+.trace-link.lit { stroke: var(--accent); stroke-width: 2.4; }
+.trace-link.dim { opacity: 0.12; }
+.trace-arrowhead { fill: var(--rule-strong); }
+.trace-node { cursor: pointer; outline: none; transition: opacity 0.15s; }
+.trace-node .card-bg { fill: var(--surface); stroke: var(--rule-strong); stroke-width: 1; }
+.trace-node.gap .card-bg { fill: transparent; stroke-dasharray: 5 4; }
+.trace-node:hover .card-bg { stroke: var(--ink); }
+.trace-node:focus-visible .card-bg, .trace-node.picked .card-bg { stroke: var(--accent); stroke-width: 2.4; }
+.trace-node.emph .card-bg { stroke: var(--accent); stroke-width: 2; }
+.trace-node.dim { opacity: 0.22; }
+.trace-node .t-kind { fill: var(--muted); font-size: 10.5px; }
+.trace-node .t-title { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.trace-node .t-note { fill: var(--muted); font-size: 10.5px; }
+.trace-node .glyph { fill: var(--muted); stroke: none; }
+.trace-node.gap .t-title { font-weight: 500; font-style: italic; }
+.trace-outline { display: none; }
+.broken { display: flex; flex-direction: column; gap: var(--space-2xs); }
+@media (max-width: 760px) {
+  .trace-scroll, .trace-tools { display: none; }
+  .trace-outline { display: block; }
+}
+.group-h::first-letter { text-transform: uppercase; }
+.broken .btn { white-space: normal; text-align: start; block-size: auto; min-block-size: var(--control-h); padding-block: var(--space-xs); }

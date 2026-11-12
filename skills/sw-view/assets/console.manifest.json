@@ -1,5 +1,5 @@
 {
- "bytes": 359535,
+ "bytes": 368619,
  "console": "0.4.1",
  "files": {
   ".nvmrc": "sha256:68ca3fba3b7e864770cb61aeb306d4bd4354b68ab4dd38450860c5d823e42a53",
@@ -20,7 +20,7 @@
   "src/components/GraphCanvas.svelte": "sha256:64aeaa7895e46727e10e58b6af0ff3d7cdc6c971e017a6ab0cc42397250439e6",
   "src/components/Icon.svelte": "sha256:fa7981c3cf50e2d454ce03daf891534afa634649ee3a17863f8cedaeda9108a2",
   "src/components/Mark.svelte": "sha256:3a6f6c6d432ba91aa8c6c3bad354409479ff18c0d82193e1fc2a5ca92ac88a8e",
-  "src/components/NodePanel.svelte": "sha256:05ca232353530b4f741954d03c56bef8c7661af88ee7d68471468764961ce020",
+  "src/components/NodePanel.svelte": "sha256:2b376ae9572b4a2303f12cd7c2cd207fb5b13ec5431673e2baacf6f7bbd2ce89",
   "src/components/OwnerEmpty.svelte": "sha256:54bc5bd50a6d407745ffa5e4327575cc1a81acf008fff56280a3ea818d773bb8",
   "src/components/PageHead.svelte": "sha256:d92beee5e3abd49f87effb0fa978a8bc2d40bcf87495e56d0fb4e8f5dddadbf7",
   "src/components/Palette.svelte": "sha256:bf3b35653e4a1cfd2432a9f695d4071b011747d5c22c02a5dde9dbd0c533d836",
@@ -35,7 +35,7 @@
   "src/env.d.ts": "sha256:cc9c01ab82cd866d596b11028637a284c3cca4b115d2aa5a02c31d2c59977fc1",
   "src/lib/data/loader.ts": "sha256:5799b7dfdbbfa22136573c6f8f091d1f1dede8baf17b4d998168b25e4573b20f",
   "src/lib/data/metrics.ts": "sha256:2d299d23a3a9bfb7922c8494069be1d0d5be1197239c6fd4127010269d177b39",
-  "src/lib/data/selectors.ts": "sha256:ae97afae05e8999b075a323db4c4bb1775dd5a591166119f6876d6eae6af4cfd",
+  "src/lib/data/selectors.ts": "sha256:4a4d7040c905ce2ca9280ea95fcfceb5e05ffbc945e12233b1a521f40344a096",
   "src/lib/data/store.svelte.ts": "sha256:d68af0f4a3e647488084de430270cc9f5ffdcda5e4f99d1b9326bf4485c61adf",
   "src/lib/format.ts": "sha256:6856504ea3fe78c8ec09f193469ab2316c725e74ed191ba217efb625217c277f",
   "src/lib/graph/layout.ts": "sha256:0448e52375a6a899f059a06c511843f903b5208ec4f28e5f8b0d1f40d27cc320",
@@ -50,8 +50,8 @@
   "src/routes/Board.svelte": "sha256:2563ab20aa58edc4d9926def8e914079e27f7cce5a6e90e7f6e2830d64c62260",
   "src/routes/FeatureDetail.svelte": "sha256:46c292ab877a28b5f71bfbdb11e7035018adc011f9facbd8ca156dc454a71821",
   "src/routes/Features.svelte": "sha256:67883485068c91b5d977703c809e354a30ccf7966abdcc9d540d5737631ac5d7",
-  "src/routes/Graph.svelte": "sha256:d96a8a913da10e1bce16c9ff775bcd1a5ea74e50772b52c4af084226d59f9314",
-  "src/routes/Metrics.svelte": "sha256:520e7e08131602bf2c6236778076043cde57c5ec5804164d5f7e56bae0cb42b4",
+  "src/routes/Graph.svelte": "sha256:c50904525dd2d73ad75c2dc3585754367f8371175f7f087211568041c8e64579",
+  "src/routes/Metrics.svelte": "sha256:68fc9a8a000f2f110c571b90365c59d49b5c4ff2a1a56fc13080d13a5860d0f7",
   "src/routes/Overview.svelte": "sha256:8d07b41e6eff8f203c4ce30f19774fe888461d0589273a5a632765dcabc25f2e",
   "src/routes/Projects.svelte": "sha256:b06eb5efa660be900db815ec451fed17972b74bfa13d7222c7d03773d39bf7a8",
   "src/routes/Quality.svelte": "sha256:f34a06829238dd31859c1b55f43bac7dec5771aa4c3e1691f417188fb2bba09b",
@@ -61,11 +61,11 @@
   "src/routes/Sources.svelte": "sha256:c9537387f69fd4fbc8d197526e1b305d7f9742e247bc0236a46f46a2fea7849a",
   "src/routes/Tasks.svelte": "sha256:8c3e9a1bf389ec8e3fc2bdef1d372aff30f5dc67b3202a5808fd689455407079",
   "src/routes/Tree.svelte": "sha256:8991ad7f125863be7a895b7d274efb180507785aec14bbe83df5312bce78bae2",
-  "src/styles/components.css": "sha256:2c3150c18ca73b48b2cd16fbe258bfcdd33d79712e84f2803cbb3178a7f008af",
+  "src/styles/components.css": "sha256:de046831a9d1d338090ce549c4bd632c2e3ed3128e0a6e65cabcbdc1b22d55e3",
   "src/styles/shell.css": "sha256:f43b0a09be5f58835b0ecddeb97de7751d0598213e292fc67f62705588966275",
   "src/styles/tokens.css": "sha256:11d8c7fa0293ef947e495c721857900459b118001c2d6065554b10c133be5966",
   "svelte.config.js": "sha256:38f4ed7a7ec5e5c793b4f3809b8f85876ce2ee232392e56c25c2d076e30370a4",
-  "tests/golden.ts": "sha256:5e220611649ef1df6865a65fcf9492d590fd89692eade17dab4e15ff2451bed3",
+  "tests/golden.ts": "sha256:eb368df231154c10dde8b05e5e75d83aea17d47b548dc6488c6810656bca4939",
   "tests/loader.test.ts": "sha256:4f117aa90df9240ff1fe4d83a4030a63f1fca6d441e7b81af28816ddbb2fdf46",
   "tests/metrics.test.ts": "sha256:d5f2d1f436711e414732e97065fd57c5a6ea6a2fe64f14de653d260dcb030304",
   "tests/query.parity.test.ts": "sha256:ff84a49d5ca8e4a421ba95ccdadb62de8d49ae1f4dcab67a00cbbde5fefa52ec",
@@ -76,6 +76,6 @@
   "vite.config.ts": "sha256:500a2492b90c3a9add4255e31f68a0934a9d56013011a401d3cfd70612c76d23"
  },
  "formatVersion": 1,
- "tree": "sha256:edf71cb484a7b01e472937368e7a57a6d2af2b7997782b40e4b5a6796b935135",
- "zip": "sha256:c8618933c827a3494b9a164964676fbe797647368932a572fa6fd2ecf34650c5"
+ "tree": "sha256:eff3cee0d6332d9c1eb90a7dcac931d31460c8ab098f223f8882348814bc683f",
+ "zip": "sha256:ab6ff284652b077d478d22beca9769872d0d75228dd72c30fe0d09a30b3bb5da"
 }

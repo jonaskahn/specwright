@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import type { Fetcher } from '../src/lib/data/loader';
 
 export const GOLDEN = resolve(__dirname, '../../workshop/fixtures/console-golden');
-export type Variant = 'flat' | 'program';
+export type Variant = 'flat' | 'program' | 'trace';
 
 export function read(variant: Variant, name: string): string {
   return readFileSync(resolve(GOLDEN, variant, name), 'utf-8');

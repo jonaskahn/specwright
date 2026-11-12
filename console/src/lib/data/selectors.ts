@@ -1,4 +1,4 @@
-import type { FeaturesRow, GraphNode, RecordsRow, ScopesRow, TasksRow } from '../../../contract/types';
+import type { FeaturesRow, GraphEdge, GraphNode, RecordsRow, ScopesRow, TasksRow } from '../../../contract/types';
 import { GraphIndex } from '../query/engine';
 import type { Loaded } from './loader';
 
@@ -22,6 +22,13 @@ export const rows = {
   findings: (d: Loaded) => d.data.quality?.findings ?? [],
   nodes: (d: Loaded): GraphNode[] => d.data.graph?.nodes ?? [],
 };
+
+/** The graph's items and links for one project, or all of them. Links must start inside the scope. */
+export function scopedGraph(d: Loaded, scope: string): { nodes: GraphNode[]; edges: GraphEdge[] } {
+  const nodes = (d.data.graph?.nodes ?? []).filter((n) => scope === '*' || n.scope === scope || n.scope === null);
+  const known = new Set(nodes.map((n) => n.key));
+  return { nodes, edges: (d.data.graph?.edges ?? []).filter((e) => known.has(e.from)) };
+}
 
 export function graphIndex(d: Loaded): GraphIndex {
   return new GraphIndex(d.data.graph?.nodes ?? [], d.data.graph?.edges ?? []);

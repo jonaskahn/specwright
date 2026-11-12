@@ -1,12 +1,20 @@
 <script lang="ts">
   import Bars from '../components/Bars.svelte';
   import PageHead from '../components/PageHead.svelte';
+  import CoverageStrip from '../components/CoverageStrip.svelte';
   import StaleBanner from '../components/StaleBanner.svelte';
+  import { scopedGraph } from '../lib/data/selectors';
+  import { traceCoverage } from '../lib/graph/trace';
+  import { href } from '../lib/router';
   import { app } from '../lib/data/store.svelte';
   import { stateLook } from '../lib/status';
   import { stationWords } from '../lib/vocabulary';
 
   const m = $derived(app.metrics);
+  const cover = $derived.by(() => {
+    const g = scopedGraph(app.loaded, app.scope);
+    return traceCoverage(g.nodes, g.edges);
+  });
 </script>
 
 <PageHead title="Metrics" lede="Numbers worked out from the data files. Nothing here is stored." />
@@ -18,6 +26,12 @@
     <div class="kpi"><div class="l">Tasks per feature</div><div class="v">{m.tasksPerFeature}</div></div>
     <div class="kpi"><div class="l">Idle {m.idleAfterDays}+ days</div><div class="v">{m.idle}</div></div>
   </div>
+  {#if cover.length}
+    <section class="stack-sm">
+      <div class="sec-h"><h2>Traceability coverage</h2><span class="sub">How completely goals, features, criteria and tasks are linked. Choose a measure to see the gaps on the graph.</span></div>
+      <CoverageStrip measures={cover} onpick={() => (location.hash = href('graph'))} />
+    </section>
+  {/if}
   <div class="grid">
     <section class="span-6 card pad stack-sm">
       <div class="sec-h"><h2>Features by state</h2></div>
