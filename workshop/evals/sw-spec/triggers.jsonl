@@ -14,3 +14,4 @@
 {"query": "Shape the unaccepted refund idea", "should_trigger": false, "near_miss_of": "sw-spec"}
 {"query": "Write concrete ACs for FEAT-001", "should_trigger": false, "near_miss_of": "sw-spec"}
 {"query": "Update the RTM manually", "should_trigger": false, "near_miss_of": "sw-spec"}
+{"query": "spec all the reserved refund features in parallel", "should_trigger": true}

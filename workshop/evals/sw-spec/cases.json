@@ -71,6 +71,18 @@
         "The dismissal is recorded in front matter with a reason",
         "The draft hash is unchanged by the dismissal"
       ]
+    },
+    {
+      "id": "parallel-features",
+      "prompt": "Use sw-spec to specify all reserved features of the accepted refund split.",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "One worker is used per reserved feature",
+        "Each worker writes only its own 02-drafts/FEAT-NNN files",
+        "The lead saves questions, trace, graph and data once after the guard passes",
+        "The parallel_guard verify result is clean before the lead writes shared state",
+        "No station is advanced without the user's confirmation"
+      ]
     }
   ]
 }

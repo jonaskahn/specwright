@@ -34,6 +34,15 @@
         "shows a ranked shortlist only as advice and asks the user to choose",
         "approves nothing by default"
       ]
+    },
+    {
+      "id": "route-batch",
+      "prompt": "start after the refund split is accepted with three reserved features",
+      "assertions": [
+        "offers all reserved features in parallel as the default",
+        "routes to sw-spec",
+        "one yes covers the batch under guided flow"
+      ]
     }
   ]
 }
