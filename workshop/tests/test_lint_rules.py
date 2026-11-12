@@ -51,13 +51,15 @@ class RuleTests(unittest.TestCase):
         self.base = Path(self.tmp.name)
 
     def context(self, documents, **kwargs):
-        return lint.Context(
-            self.base,
-            docs=documents,
-            gate="publish",
-            definitions=lint.definitions_for([*documents, doc(BO, "01-analysis/BO-001.md")], "REF"),
-            **kwargs,
-        )
+        defaults = {
+            "docs": documents,
+            "gate": "publish",
+            "definitions": lint.definitions_for(
+                [*documents, doc(BO, "01-analysis/BO-001.md")], "REF"
+            ),
+        }
+        defaults.update(kwargs)
+        return lint.Context(self.base, **defaults)
 
     def findings(self, document, **kwargs):
         ctx = self.context([document], **kwargs)
@@ -194,6 +196,33 @@ class RuleTests(unittest.TestCase):
             doc(update(card, links=[]), "02-drafts/FEAT-001.card.md"),
             doc(card, "02-drafts/FEAT-001.card.md"),
         )
+
+    def test_l040_names_the_failed_condition(self):
+        card = doc(
+            update(
+                "---\nid: FEAT-001\ntype: feature\nstatus: published\ncard: true\n"
+                "home: jira\n---\n## Summary\nReturn requests.\n",
+                links=[],
+            ),
+            "02-drafts/FEAT-001.card.md",
+        )
+        finding = next(f for f in self.findings(card) if f.rule == "L-040")
+        self.assertIn("links", finding.msg)
+        self.assertNotIn("Summary", finding.msg)
+
+    def test_l004_reserved_registry_row_defines_the_feature(self):
+        reg = tables.Table(list(schema.REGISTRY_COLUMNS))
+        reg.upsert("REF:FEAT-009", {"Kind": "story", "State": "reserved"})
+        defs = lint.definitions_for([doc(), doc(BO, "01-analysis/BO-001.md")], "REF")
+        defs |= lint.registry_definitions(reg, "REF")
+        ctx = self.context([doc()], definitions=defs)
+        text = GOOD + "\nSee FEAT-009 for the payout.\n"
+        self.assertNotIn("L-004", {f.rule for f in lint.lint_document(doc(text), ctx)})
+        reg.upsert("REF:FEAT-009", {"State": "withdrawn"})
+        defs2 = lint.definitions_for([doc(), doc(BO, "01-analysis/BO-001.md")], "REF")
+        defs2 |= lint.registry_definitions(reg, "REF")
+        ctx = self.context([doc()], definitions=defs2)
+        self.assertIn("L-004", {f.rule for f in lint.lint_document(doc(text), ctx)})
 
     def test_l041(self):
         registry = tables.Table(list(schema.REGISTRY_COLUMNS))
@@ -532,6 +561,10 @@ class RuleTests(unittest.TestCase):
         covered = {"L-" + name.removeprefix("test_l") for name in dir(self) if re_rule(name)}
         self.assertEqual(lint.RULE_IDS, covered)
 
+    def test_every_rule_has_help_text(self):
+        self.assertEqual(lint.RULE_IDS, set(lint.RULE_HELP))
+        self.assertTrue(all(isinstance(v, str) and v for v in lint.RULE_HELP.values()))
+
     def test_line_numbers_and_exempt_wording(self):
         text = GOOD.replace("the original price", "the FAST original price")
         finding = next(f for f in self.findings(doc(text)) if f.rule == "L-009")
@@ -653,6 +686,15 @@ class CommandTests(unittest.TestCase):
         shutil.rmtree(self.root / "02-drafts")
         (self.root / "project.yaml").unlink()
         self.assertEqual(self.cli()[0], 2)
+
+    def test_explain_prints_a_rule_description(self):
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            code = lint.main(["--root", str(self.root), "--explain", "L-040"])
+        self.assertEqual(code, 0)
+        self.assertIn("L-040:", out.getvalue())
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(lint.main(["--root", str(self.root), "--explain", "L-999"]), 2)
 
     def test_program_selection_and_cross_scope_resolution(self):
         (self.root / "project.yaml").unlink()
