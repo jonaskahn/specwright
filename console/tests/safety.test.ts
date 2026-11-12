@@ -33,8 +33,10 @@ describe('imported text is data, and the page stays CSP-clean', () => {
 
   it('ships a strict policy and no inline script', () => {
     const html = readFileSync(resolve(__dirname, '../index.html'), 'utf-8');
-    expect(html).toContain("default-src 'none'");
-    expect(html).toContain("script-src 'self'");
+    const config = readFileSync(resolve(__dirname, '../vite.config.ts'), 'utf-8');
+    expect(config).toContain("default-src 'none'");
+    expect(config).toContain("script-src 'self'");
+    expect(config).toContain("style-src 'self'");
     expect(html).not.toMatch(/<script(?![^>]*\ssrc=)/);
   });
 });

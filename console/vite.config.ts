@@ -26,9 +26,22 @@ function serveData(): Plugin {
   };
 }
 
+// The built page carries a strict policy. The dev server needs inline styles for hot reload, so
+// the policy is added only to the production build.
+export const CSP =
+  "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'";
+
+function policy(): Plugin {
+  return {
+    name: 'specwright-csp',
+    apply: 'build',
+    transformIndexHtml: () => [{ tag: 'meta', attrs: { 'http-equiv': 'Content-Security-Policy', content: CSP }, injectTo: 'head-prepend' }],
+  };
+}
+
 export default defineConfig({
   base: './',
-  plugins: [svelte(), serveData()],
+  plugins: [svelte(), serveData(), policy()],
   build: {
     target: 'es2022',
     assetsInlineLimit: 0,

@@ -9,7 +9,7 @@
     "gen:contract": "python3 ../workshop/tools/gen_console_contract.py",
     "predev": "npm run gen:contract",
     "dev": "vite",
-    "dev:golden": "DATA_DIR=../workshop/fixtures/console-golden/data vite",
+    "dev:golden": "DATA_DIR=../workshop/fixtures/console-golden/program/data vite",
     "build": "vite build",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "test": "vitest run"

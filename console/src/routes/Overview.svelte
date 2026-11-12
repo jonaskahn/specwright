@@ -9,7 +9,8 @@
   import { plural } from '../lib/format';
 
   const m = $derived(app.metrics);
-  const palette = ['var(--color-ok)', 'var(--accent)', 'var(--color-warn)', 'var(--muted)', 'var(--color-danger)', 'var(--rule-strong)', 'var(--ink-2)'];
+  const tones: Record<string, string> = { ok: 'var(--color-ok)', warn: 'var(--color-warn)', danger: 'var(--color-danger)', accent: 'var(--accent)', neutral: 'var(--rule-strong)' };
+  const toneOf = (state: string) => tones[stateLook(state).tone];
   const focus = $derived(
     app.features
       .filter((f) => f.condition === 'blocked' || /fail/i.test(f.lint ?? '') || f.openQuestions.length || f.openChanges.length)
@@ -41,10 +42,10 @@
     <div class="card pad">
       {#if m.byState.length}
         <div class="stackbar" role="img" aria-label={m.byState.map((s) => `${s.count} ${s.state}`).join(', ')}>
-          {#each m.byState as s, i (s.state)}<span style:--w={s.count} style:--c={palette[i % palette.length]}></span>{/each}
+          {#each m.byState as s (s.state)}<span style:--w={s.count} style:--c={toneOf(s.state)}></span>{/each}
         </div>
         <div class="legend">
-          {#each m.byState as s, i (s.state)}<span><i style:--c={palette[i % palette.length]}></i>{stateLook(s.state).label} · {s.count}</span>{/each}
+          {#each m.byState as s (s.state)}<span><i style:--c={toneOf(s.state)}></i>{stateLook(s.state).label} · {s.count}</span>{/each}
         </div>
       {:else}
         <OwnerEmpty kind="features" what="feature" />
