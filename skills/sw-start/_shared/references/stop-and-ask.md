@@ -19,9 +19,10 @@ unknown as a question with its default applied, list it in the summary and keep 
 blocker stops the run. The command, with every required flag:
 
 ```sh
-_shared/scripts/record.py q new --title <text> --owner <role> --affects <FEAT-NNN> \
+record.py q new --title <text> --owner <role> --affects <FEAT-NNN> \
   --non-blocking --default <text> --status assumed
 ```
 
-Run it from the project folder or add `--cwd <project>`; add `--scope <SCOPE>` in a program. Never invent approval or choose a project
+`record.py` lives in `_shared/scripts` of the skills that save questions. Run it from the project
+folder or add `--cwd <project>`; add `--scope <SCOPE>` in a program. Never invent approval or choose a project
 scope for an external write just to keep moving.

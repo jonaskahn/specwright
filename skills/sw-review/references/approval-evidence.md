@@ -20,7 +20,7 @@ describes formal sign-off, the only kind that counts under `required`.
 ## Kinds
 
 These are the kinds `review.py --kind` takes for a sign-off. Decision records use their own
-evidence kinds (`record.py --evidence-kind`; see `capabilities/records.md`).
+evidence kinds (`record.py dec new --evidence-kind`; see `capabilities/records.md`).
 
 | Kind | Requirement |
 | --- | --- |

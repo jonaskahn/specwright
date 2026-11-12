@@ -48,7 +48,7 @@ external key mappings in the ID registry. Use qualified IDs (`SCOPE:FEAT-NNN`) a
 | Active approval | An accept line or formal sign-off whose hash still matches the current story. A content change makes it stale. |
 | Accepted | Stored status `ready-to-publish`, always shown as accepted. The approval then reads `accepted`, `signed-off` or `needs-signoff`. |
 | Lead, worker | In a parallel batch the lead is the session agent that guards the writes and saves shared state; a worker is a sub-agent that writes one item's files. |
-| Lint gate | `_shared/scripts/sw_lint.py --root <project> --gate draft\|review\|publish`. Exit 0 clean; 10, 20 or 30 means blocking findings at that gate. |
+| Lint gate | `sw_lint.py --root <project> --gate draft\|review\|publish` (in `_shared/scripts` of the skills that lint). Exit 0 clean; 10, 20 or 30 means blocking findings at that gate. |
 | DoR | The definition of ready for review: `dor.md`. |
 | TRANSITION token | `TRANSITION <SCOPE>:FEAT-NNN <action> <digest>`, printed by sw-start's `scripts/transition.py` preview. After the user's plain yes the agent passes it; the user never types it. |
 | PUBLISH token | `PUBLISH <SCOPE>:FEAT-NNN <short-hash>`, printed by sw-publish's `publish.py plan`. |
