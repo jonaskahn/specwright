@@ -104,10 +104,11 @@ code, .mono { font-family: var(--font-mono); font-size: 0.92em; }
   min-inline-size: 0;
 }
 .page > * { max-inline-size: var(--page-max); margin-inline: auto; }
-.ph { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-lg); margin-block-end: var(--section); }
-.ph h1 { font-size: var(--text-2xl); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
-.ph .lede { margin-block-start: var(--space-2xs); color: var(--muted); max-inline-size: 60ch; }
-.ph .actions { display: flex; gap: var(--space-xs); }
+.ph { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--space-lg); margin-block-end: var(--section); }
+.ph > :first-child { flex: 1 1 18rem; min-inline-size: 0; }
+.ph h1 { font-size: var(--text-2xl); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; overflow-wrap: anywhere; }
+.ph .lede { overflow-wrap: anywhere; margin-block-start: var(--space-2xs); color: var(--muted); max-inline-size: 60ch; }
+.ph .actions { display: flex; flex-wrap: wrap; flex: none; gap: var(--space-xs); }
 .sec { margin-block-start: var(--section); }
 .sec:first-child { margin-block-start: 0; }
 .sec-h { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-md); margin-block-end: var(--space-sm); }

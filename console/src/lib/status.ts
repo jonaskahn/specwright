@@ -93,7 +93,16 @@ export function rungSteps(state: string, condition: string | null): RungStep[] {
   });
 }
 
+/** A rule that fires twice is named once: "review: fail L-005, L-030, L-005" reads "review: fail L-005, L-030". */
+export function tidyLint(result: string): string {
+  const found = /^(.*?)([A-Z]+-\d+(?:\s*,\s*[A-Z]+-\d+)*)\s*$/.exec(result);
+  if (!found) return result;
+  const codes = [...new Set(found[2].split(/\s*,\s*/))];
+  return found[1] + codes.join(', ');
+}
+
 export function lintLook(result: string | null): Look {
+  if (result) result = tidyLint(result);
   if (!result) return { shape: 'hollow', tone: 'neutral', label: 'Not run' };
   if (/fail/i.test(result)) return { shape: 'triangle', tone: 'danger', label: result };
   if (/pass/i.test(result)) return { shape: 'check', tone: 'ok', label: result };

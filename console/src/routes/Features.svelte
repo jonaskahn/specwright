@@ -45,7 +45,7 @@
     </select>
   </div>
   {#if shown.length}
-    <div class="ledger" style:--cols="minmax(0,2.2fr) 11rem 9rem 9rem 5rem 6rem">
+    <div class="ledger wide" style:--cols="minmax(0,2fr) 11rem 8rem minmax(9rem,1.4fr) 4rem 6rem">
       <div class="lhead">
         <button type="button" onclick={() => by('id')}>Feature</button><span>Rung</span>
         <button type="button" onclick={() => by('state')}>State</button><span>Lint</span><span>Open</span>
