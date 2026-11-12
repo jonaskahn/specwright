@@ -79,8 +79,7 @@
     "completion": {
       "why": "Bounded completion maintenance run by the entry skill after each action.",
       "roots": [
-        "references/completion.md",
-        "references/next-step-table.md"
+        "references/completion.md"
       ]
     },
     "data": {
@@ -546,7 +545,6 @@
         "references/governance.md",
         "references/graph-model.md",
         "references/lifecycle.md",
-        "references/next-step-table.md",
         "references/next-step.md",
         "references/parallel-writers.md",
         "references/query-cookbook.md",

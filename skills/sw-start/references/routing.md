@@ -22,7 +22,10 @@ own prerequisites.
 | Published feature, no tasks or task-only changes | sw-plan; never poll Jira. |
 | Dashboard, overview, console, graph in a browser, metrics for the whole workspace | sw-view; it only reads and never advances a stage. |
 | Published-text amendment | Stop until a current supplied baseline and a CR exist. |
+| Withdrawn or superseded item | Excluded from the active board; its trace tombstone stays. |
+| Conflicting decisions or an incomplete transaction | Unknown or blocked; inspect the evidence, never guess a route. |
 
-Stored destination preferences never authorize writes or force publication. Ordinary
+Questions in a draft are specification work, not implicit submission. Several eligible items
+require a target selection. Stored destination preferences never authorize writes or force publication. Ordinary
 completion asks no destination question. Withdrawn IDs stay tombstones. Whether to
 run on (`flow`) and how approval works (`signoff`): _shared/references/governance.md.

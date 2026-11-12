@@ -32,7 +32,7 @@ Read it with `workspace.py governance get`, change it with
 | Publish | Needs an accepted story and a clean publish lint. A plan is not required, because tasks are never published. | Same, with a fresh verified sign-off. |
 
 `ready-to-publish` is the stored status value, kept so no data migrates. Show it as
-**accepted** in every message, status line and the console.
+**accepted** everywhere (`status-map.md`).
 
 ## Never relaxed
 
