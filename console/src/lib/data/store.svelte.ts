@@ -31,9 +31,26 @@ class App {
     if (this.scope !== '*' && !scopes.some((s) => s.scope === this.scope)) this.scope = '*';
   }
 
+  /** Change the query part of the address (table filters, the preview) without leaving the page. */
+  setQuery(changes: Record<string, string | null>, push = false): void {
+    const [path, search = ''] = location.hash.replace(/^#/, '').split('?');
+    const query = new URLSearchParams(search);
+    for (const [name, value] of Object.entries(changes)) {
+      if (value === null || value === '') query.delete(name);
+      else query.set(name, value);
+    }
+    const text = query.toString();
+    const next = `#${path || '/overview'}${text ? `?${text}` : ''}`;
+    if (next === location.hash) return;
+    const url = location.pathname + location.search + next;
+    if (push) history.pushState(null, '', url);
+    else history.replaceState(null, '', url);
+    this.route = parseHash(location.hash);
+  }
+
   setPref<K extends keyof Prefs>(name: K, value: Prefs[K]): void {
     this.prefs[name] = value;
-    savePref(name, value as string | boolean);
+    savePref(name, value as string | boolean | number);
     applyPrefs(this.prefs);
   }
 }

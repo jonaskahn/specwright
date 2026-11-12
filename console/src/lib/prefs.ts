@@ -9,10 +9,15 @@ export interface Prefs {
   accent: (typeof ACCENTS)[number];
   density: (typeof DENSITIES)[number];
   folded: boolean;
+  /** Keep the preview docked beside the page instead of floating over it. */
+  previewPinned: boolean;
+  /** Width of the preview panel in pixels. */
+  previewWidth: number;
 }
 
 const KEY = 'specwright-';
-export const DEFAULTS: Prefs = { theme: 'system', accent: 'red', density: 'comfortable', folded: false };
+export const DEFAULTS: Prefs = { theme: 'system', accent: 'red', density: 'comfortable', folded: false, previewPinned: false, previewWidth: 640 };
+export const PREVIEW_WIDTH = { min: 380, max: 1100 };
 
 function read(name: string): string | null {
   try {
@@ -26,18 +31,24 @@ function pick<T extends string>(list: readonly T[], value: string | null, fallba
   return (list as readonly string[]).includes(value ?? '') ? (value as T) : fallback;
 }
 
+export function clampWidth(value: number): number {
+  return Number.isFinite(value) && value > 0 ? Math.min(PREVIEW_WIDTH.max, Math.max(PREVIEW_WIDTH.min, Math.round(value))) : DEFAULTS.previewWidth;
+}
+
 export function loadPrefs(): Prefs {
   return {
     theme: pick(THEMES, read('theme'), DEFAULTS.theme),
     accent: pick(ACCENTS, read('accent'), DEFAULTS.accent),
     density: pick(DENSITIES, read('density'), DEFAULTS.density),
     folded: read('folded') === '1',
+    previewPinned: read('previewPinned') === '1',
+    previewWidth: clampWidth(Number(read('previewWidth'))),
   };
 }
 
-export function savePref(name: keyof Prefs, value: string | boolean): void {
+export function savePref(name: keyof Prefs, value: string | boolean | number): void {
   try {
-    localStorage.setItem(KEY + name, typeof value === 'boolean' ? (value ? '1' : '0') : value);
+    localStorage.setItem(KEY + name, typeof value === 'boolean' ? (value ? '1' : '0') : String(value));
   } catch {
     /* blocked storage: the choice lasts for this page only */
   }

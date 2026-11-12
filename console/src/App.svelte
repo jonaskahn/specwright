@@ -1,9 +1,11 @@
 <script lang="ts">
   import Icon from './components/Icon.svelte';
+  import PreviewPanel from './components/PreviewPanel.svelte';
   import Palette from './components/Palette.svelte';
   import Sidebar from './components/Sidebar.svelte';
   import Topbar from './components/Topbar.svelte';
   import { app } from './lib/data/store.svelte';
+  import { preview } from './lib/preview.svelte';
   import { href } from './lib/router';
   import Board from './routes/Board.svelte';
   import FeatureDetail from './routes/FeatureDetail.svelte';
@@ -23,10 +25,17 @@
   const name = $derived(app.route.name);
   const phase = $derived(app.loaded.status);
   const fromDisk = location.protocol === 'file:';
+
+  $effect(() => {
+    if (phase === 'ready') {
+      preview.forget();
+      void preview.probe();
+    }
+  });
 </script>
 
 <a class="skip" href="#main">Skip to content</a>
-<div class="frame" class:folded={app.prefs.folded}>
+<div class="frame" class:folded={app.prefs.folded} class:docked={app.prefs.previewPinned && !!preview.current} style:--preview-w={`${app.prefs.previewWidth}px`}>
   <Sidebar />
   <div class="stage">
     <Topbar />
@@ -59,6 +68,7 @@
       {/if}
     </main>
   </div>
+  <PreviewPanel />
 </div>
 <nav class="dock" aria-label="Primary">
   <a href={href('overview')} aria-current={name === 'overview' ? 'page' : undefined}><Icon name="overview" />Overview</a>

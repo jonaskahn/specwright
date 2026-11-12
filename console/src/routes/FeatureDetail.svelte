@@ -7,6 +7,7 @@
   import { focusModel } from '../lib/graph/trace';
   import { app } from '../lib/data/store.svelte';
   import { ago, daysSince } from '../lib/format';
+  import { preview } from '../lib/preview.svelte';
   import { href } from '../lib/router';
   import { illustrationLook, lintLook, stateLook, wordLook } from '../lib/status';
   import { relationWords, stationWords } from '../lib/vocabulary';
@@ -29,6 +30,7 @@
 {#if feature}
   <PageHead title={feature.title} lede={feature.id}>
     {#snippet actions()}
+      <button class="btn" type="button" onclick={() => preview.openKey(id)}>Preview story</button>
       <a class="btn" href={href('features')}>All features</a>
       <a class="btn primary" href={href('graph', id)}>Show in graph</a>
     {/snippet}
@@ -59,7 +61,7 @@
     {#if chain && chain.nodes.length > 1}
       <section>
         <div class="sec-h"><h2>Where this feature sits</h2><span class="sub">Goal, epic, criteria and tasks it connects to. Missing links are shown too.</span></div>
-        <TraceMap model={chain} selected={picked} onselect={(k) => (picked = k)} />
+        <TraceMap model={chain} selected={picked} onselect={(k) => { picked = k; if (k && !k.startsWith('gap:')) preview.openKey(k); else preview.close(); }} />
       </section>
     {/if}
 
@@ -68,9 +70,9 @@
         <div class="sec-h"><h2>Acceptance criteria</h2><span class="sub">{feature.acCount}</span></div>
         <div class="ledger keep">
           {#each criteria as c (c.key)}
-            <a class="lrow" style:--cols="minmax(0,1fr)" href={href('graph', c.key)}>
+            <button class="lrow" type="button" style:--cols="minmax(0,1fr)" onclick={() => preview.openKey(c.key)}>
               <span><span class="name">{c.key.split(':')[1]}</span><div class="sub">{app.graph.node(c.key)?.title}</div></span>
-            </a>
+            </button>
           {:else}
             <div class="lrow" style:--cols="minmax(0,1fr)"><span class="muted">No criteria in the graph.</span></div>
           {/each}
@@ -80,9 +82,9 @@
         <div class="sec-h"><h2>Tasks</h2><span class="sub">{tasks.length}</span></div>
         <div class="ledger keep">
           {#each tasks as t (t.id)}
-            <div class="lrow" style:--cols="minmax(0,1fr) 7rem">
+            <button class="lrow" type="button" style:--cols="minmax(0,1fr) 7rem" onclick={() => preview.openKey(t.id)}>
               <span><span class="name">{t.id.split(':')[1]}</span><div class="sub">{t.title}</div></span><Pill look={wordLook(t.status)} />
-            </div>
+            </button>
           {:else}
             <div class="lrow" style:--cols="minmax(0,1fr)"><span class="muted">No tasks yet. sw-plan owns tasks.</span></div>
           {/each}
@@ -94,14 +96,14 @@
       <div class="sec-h"><h2>Records and links</h2></div>
       <div class="ledger keep">
         {#each records as r (r.id)}
-          <div class="lrow" style:--cols="minmax(0,1fr) 7rem">
+          <button class="lrow" type="button" style:--cols="minmax(0,1fr) 7rem" onclick={() => preview.openKey(r.id)}>
             <span><span class="name">{r.id}</span><div class="sub">{r.title}</div></span><Pill look={wordLook(r.status)} />
-          </div>
+          </button>
         {/each}
         {#each links as l, i (i)}
-          <a class="lrow" style:--cols="minmax(0,1fr)" href={href('graph', l.other)}>
+          <button class="lrow" type="button" style:--cols="minmax(0,1fr)" onclick={() => preview.openKey(l.other)}>
             <span class="sub">{relationWords(l.rel, l.side)} {app.graph.node(l.other)?.title ?? l.other} <span class="mono">{l.other}</span></span>
-          </a>
+          </button>
         {/each}
         {#if !records.length && !links.length}<div class="lrow" style:--cols="minmax(0,1fr)"><span class="muted">No related records.</span></div>{/if}
       </div>

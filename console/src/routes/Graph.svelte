@@ -1,13 +1,13 @@
 <script lang="ts">
   import CoverageStrip from '../components/CoverageStrip.svelte';
   import GraphCanvas from '../components/GraphCanvas.svelte';
-  import NodePanel from '../components/NodePanel.svelte';
   import OwnerEmpty from '../components/OwnerEmpty.svelte';
   import PageHead from '../components/PageHead.svelte';
   import Pill from '../components/Pill.svelte';
   import TraceMap from '../components/TraceMap.svelte';
   import TreeItem from '../components/TreeItem.svelte';
   import { app } from '../lib/data/store.svelte';
+  import { preview } from '../lib/preview.svelte';
   import { buildTree, scopedGraph } from '../lib/data/selectors';
   import { hue } from '../lib/graph/layout';
   import { buildTrace, focusModel, LEVEL_KINDS, traceCoverage } from '../lib/graph/trace';
@@ -27,6 +27,14 @@
   let code = $state(false);
 
   $effect(() => { if (app.route.param) selected = app.route.param; });
+  $effect(() => { const key = preview.current?.key; if (key) selected = key; });
+
+  /** Choosing an item lights its chain and opens its file in the preview; choosing it again clears both. */
+  function pick(id: string | null) {
+    selected = id;
+    if (id && !id.startsWith('gap:')) preview.openKey(id);
+    else if (!id) preview.close();
+  }
 
   const scoped = $derived(scopedGraph(app.loaded, app.scope));
   const all = $derived(scoped.nodes);
@@ -61,7 +69,6 @@
     return out;
   });
   const ghost = $derived(selected ? model.nodes.find((n) => n.id === selected && n.gap) : undefined);
-  const real = $derived(selected && !ghost ? selected : null);
   const outline = $derived(buildTree(app.loaded, app.scope));
 
   function toggle(kind: string) {
@@ -86,7 +93,7 @@
     <div class="row-flex wrap gap-2">
       <input class="input" style:max-inline-size="18rem" type="search" placeholder="Find an item" aria-label="Find an item" bind:value={text} />
       {#if view === 'trace' && big}
-        <select class="select" style:max-inline-size="20rem" aria-label="Show the chain around" value={start} onchange={(e) => { focusKey = e.currentTarget.value; selected = null; }}>
+        <select class="select" style:max-inline-size="20rem" aria-label="Show the chain around" value={start} onchange={(e) => { focusKey = e.currentTarget.value; pick(null); }}>
           {#each picks as p (p.key)}<option value={p.key}>{kindWords(p.kind)}: {p.title}</option>{/each}
         </select>
       {/if}
@@ -109,10 +116,17 @@
     {/if}
     {#if view !== 'trace' && all.length > LIMIT}<div class="banner warn">Showing the first {LIMIT} of {all.length} items. Narrow it with a filter.</div>{/if}
     <div class="grid">
-      <div class={selected ? 'span-8' : 'span-12'}>
+      <div class="span-12">
+        {#if ghost}
+          <div class="card panel stack-sm">
+            <h3>{ghost.title}</h3>
+            <p class="sub">The data holds no link here. Ask <strong>{ghost.next}</strong> to add it; the console only reads.</p>
+            <button class="btn" type="button" onclick={() => pick(null)}>Close</button>
+          </div>
+        {/if}
         {#if view === 'trace'}
           {#each model.notes as note (note)}<p class="sub">{note}</p>{/each}
-          <TraceMap {model} {selected} {emphasis} onselect={(id) => (selected = id)} />
+          <TraceMap {model} {selected} {emphasis} onselect={pick} />
           <div class="trace-outline card pad tree">
             {#each outline as root (root.key)}<TreeItem node={root} />{/each}
           </div>
@@ -120,17 +134,17 @@
             <section class="broken card pad">
               <div class="sec-h"><h2>Broken references</h2><span class="sub">{model.broken.length}</span></div>
               {#each model.broken as b (b.from + b.target)}
-                <p><button class="btn ghost" type="button" onclick={() => (selected = b.from)}>{b.sentence}</button></p>
+                <p><button class="btn ghost" type="button" onclick={() => pick(b.from)}>{b.sentence}</button></p>
               {/each}
             </section>
           {/if}
         {:else if view === 'network'}
-          <div class="graph-wrap"><GraphCanvas {nodes} {edges} {selected} onselect={(k) => (selected = k)} /></div>
+          <div class="graph-wrap"><GraphCanvas {nodes} {edges} {selected} onselect={pick} /></div>
         {:else}
           <div class="ledger" style:--cols="minmax(0,1.4fr) 10rem 8rem minmax(0,2fr)">
             <div class="lhead"><span>Identifier</span><span>Kind</span><span>Status</span><span>Title</span></div>
             {#each nodes.slice(0, 300) as n (n.key)}
-              <button class="lrow" type="button" onclick={() => (selected = n.key)}>
+              <button class="lrow" type="button" onclick={() => pick(n.key)}>
                 <span class="name mono">{n.key}</span><span data-label="Kind" class="chip">{kindWords(n.kind)}</span>
                 <span data-label="Status"><Pill look={wordLook(n.status)} /></span><span data-label="Title">{n.title}</span>
               </button>
@@ -138,19 +152,6 @@
           </div>
         {/if}
       </div>
-      {#if selected}
-        <div class="span-4">
-          {#if ghost}
-            <div class="card panel">
-              <h3>{ghost.title}</h3>
-              <p class="sub">The data holds no link here. Ask <strong>{ghost.next}</strong> to add it; the console only reads.</p>
-              <button class="btn" type="button" onclick={() => (selected = null)}>Close</button>
-            </div>
-          {:else if real}
-            <NodePanel nodeKey={real} onpick={(k) => (selected = k)} />
-          {/if}
-        </div>
-      {/if}
     </div>
     <p class="sub">Ask the graph a question in <a href={href('query')}><u>Query</u></a>.</p>
   </div>
