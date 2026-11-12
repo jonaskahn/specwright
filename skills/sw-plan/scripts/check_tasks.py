@@ -44,6 +44,7 @@ def main(argv=None):
         scope = workspace.resolve(root, args.scope, args.feat, cwd, args.mark_ready)
         base = workspace.scope_dir(root, scope)
         path, findings, parsed = check(base, feat)
+        print(task_validation.label(base, feat))
         for line in findings:
             print(line)
         if findings:

@@ -47,6 +47,8 @@ def main(argv=None):
             scope_id=ctx.scope_id,
             jira_key=publish.registry_key(ctx) or "NEW",
         )
+        # Names are shown beside the ID; they are not part of what the plan hash binds.
+        result["name"], result["aliases"] = publish.names(ctx, draft)
         if args.command == "confirm":
             print(
                 json.dumps(

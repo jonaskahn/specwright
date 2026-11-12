@@ -72,3 +72,13 @@ def planning(base: Path, feat: str) -> dict:
     if not path.is_file() or not frontmatter.parse(path.read_text(encoding="utf-8")).body.strip():
         findings.append(f"{feat}: implementation plan is missing or empty")
     return {"passing": not findings, "findings": findings}
+
+
+def label(base: Path, feat: str) -> str:
+    """`FEAT-001 — Request a refund (LEG-100)`: the ID with the names a reader knows it by."""
+    story = base / "02-drafts" / f"{feat}.story.md"
+    fm = (frontmatter.parse(story.read_text(encoding="utf-8")).fm or {}) if story.is_file() else {}
+    name = str(fm.get("title") or fm.get("jira_summary") or "")
+    aliases = [str(a) for a in fm.get("aliases") or []]
+    text = f"{feat} — {name}" if name else feat
+    return text + (f" ({', '.join(aliases)})" if aliases else "")

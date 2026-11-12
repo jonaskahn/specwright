@@ -123,6 +123,8 @@ def render_plan(result):
         "# Publish plan",
         "",
         f"Spec ID: {result['scope_id']}",
+        *([f"Name: {result['name']}"] if result.get("name") else []),
+        *([f"Aliases: {', '.join(result['aliases'])}"] if result.get("aliases") else []),
         f"Jira key: {result['jira_key']}",
         f"Target project: {result['project']}",
         f"Sandbox: {'yes' if result['sandbox'] else 'no'}",

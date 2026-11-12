@@ -30,7 +30,7 @@
   "scripts/kitlib/rtm.py": "dc57dda3403f",
   "scripts/kitlib/schema.py": "1b26b5e99c4f",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
-  "scripts/kitlib/task_validation.py": "a72c8fe85965",
+  "scripts/kitlib/task_validation.py": "a182b597a8b2",
   "scripts/kitlib/workspace.py": "034886a2acb8",
   "scripts/kitlib/writelog.py": "1a34e6e3c8c9",
   "scripts/record.py": "6593f7beaabe",

@@ -92,6 +92,16 @@ def preconditions(ctx: Context, lint_report: str = "") -> list[str]:
     return errors
 
 
+def names(ctx: Context, draft: str) -> tuple[str, list[str]]:
+    """The feature's name and aliases, so a report shows more than a bare ID."""
+    fm = frontmatter.parse(draft).fm or {}
+    aliases = [str(a) for a in fm.get("aliases") or []]
+    row = tables.parse(ctx.registry.read_text(encoding="utf-8")).table
+    if row is not None and "Aliases" in row.header:
+        aliases += [a for a in row.value(ctx.scope_id, "Aliases").split("|") if a]
+    return str(fm.get("title") or fm.get("jira_summary") or ""), list(dict.fromkeys(aliases))
+
+
 def registry_key(ctx: Context) -> str | None:
     table = tables.parse(ctx.registry.read_text(encoding="utf-8")).table
     value = table.get(ctx.scope_id, "Jira key") if table else None
