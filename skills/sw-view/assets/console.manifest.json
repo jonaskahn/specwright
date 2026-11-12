@@ -1,11 +1,11 @@
 {
- "bytes": 380966,
+ "bytes": 381183,
  "console": "0.4.1",
  "files": {
   ".nvmrc": "sha256:68ca3fba3b7e864770cb61aeb306d4bd4354b68ab4dd38450860c5d823e42a53",
   "README.md": "sha256:b25b030305cd94fb485634932f044d8fa377b43c288fc311543c0a5a495dad16",
-  "contract/console-data.schema.json": "sha256:d0796aae8ad8f5e6aa2c6a1d1bb40a84f9c3b111fc30f02a70ad507f74a45cf3",
-  "contract/types.ts": "sha256:14c1e04195f8ab6d9486d83eb6b26cf0544400c8653f2a454e999d1fb2647554",
+  "contract/console-data.schema.json": "sha256:e2efeb530394c3d23d3d755bf21fcdd370d4709b8305ffaa6bf667c2a2c3c2e9",
+  "contract/types.ts": "sha256:60df38c8c6f5d37c53a438a299d079a982b582b624d7073ea2180315d0faa357",
   "index.html": "sha256:fdda151a641aa12223ccfc96a24c3c29e3abf742e5d5c91c3387d3718274670b",
   "package-lock.json": "sha256:54a8c770fb04c9ca4f45eaf2c3a2d1c7bc0c2a1321058e759b3a295cc6ffb8f0",
   "package.json": "sha256:758f618bc246fdc3d2ae43d8e5227b5e365c92db4aee7a1be384ac7700c887e5",
@@ -78,6 +78,6 @@
   "vite.config.ts": "sha256:500a2492b90c3a9add4255e31f68a0934a9d56013011a401d3cfd70612c76d23"
  },
  "formatVersion": 1,
- "tree": "sha256:4eacb3eeb86952d2296514a7cb3b2403a407b56ec567fb8bb2dbbb246a271a00",
- "zip": "sha256:4b33c8f5e3e85e7cc1d1928360f22000e8771454c8d2ded48780f52eecfd8cb8"
+ "tree": "sha256:8052f523d9580a3c728ede928b144ef72f064167651def37f822771ed1f81dce",
+ "zip": "sha256:f6e8bca9a293ead2ec1faac496efd8156f4632f4afc5ce2430a597ffe19bee0c"
 }

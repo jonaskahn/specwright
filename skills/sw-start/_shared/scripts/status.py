@@ -22,6 +22,7 @@ from kitlib import (  # noqa: E402
     graph,
     hashing,
     ids,
+    illustration,
     rtm,
     schema,
     tables,
@@ -157,6 +158,7 @@ def build_report(root: Path, scopes=None, today=None):
                 if e.kind == "cr" and e.fm.get("status") in ("proposed", "in-review", "approved")
             )
             signoff = signoff_state(entity)
+            chip = illustration.state(base, key.split(":", 1)[1], scope)["chip"]
             idle = age_days(entity.fm.get("updated"), today)
             snapshot = registry.get(key, "Last snapshot")
             snapshot_age = UNKNOWN
@@ -196,6 +198,7 @@ def build_report(root: Path, scopes=None, today=None):
                     "open_questions": questions,
                     "open_changes": changes,
                     "signoff": signoff,
+                    "illustration": chip,
                     "snapshot_age_days": snapshot_age,
                     "idle_days": idle,
                     "idle": idle >= 14 if isinstance(idle, int) else UNKNOWN,
@@ -217,6 +220,7 @@ def render(report):
             f"{item['jira']} | "
             + (", ".join(records) or "open records: none")
             + f" | next: {item['next']} ({item['turn']})"
+            + f" | illustration: {item['illustration']}"
             + f" | drift: {item['drift']} | sign-off: {item['signoff']}"
             + f" | snapshot age: {item['snapshot_age_days']} days | idle: "
             f"{item['idle_days']} days" + (" (14+ days)" if item["idle"] is True else "")

@@ -204,6 +204,7 @@ def export_features(root: Path, scopes: list[str]) -> dict[str, Any]:
                 "condition": norm(item["condition"]),
                 "blockers": _list(item["blockers"]),
                 "lint": norm(item["lint"]),
+                "illustration": norm(item.get("illustration")),
                 "jira": norm(item["jira"]),
                 "drift": norm(item["drift"]),
                 "openQuestions": _list(item["open_questions"]),

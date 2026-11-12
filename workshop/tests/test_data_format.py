@@ -59,6 +59,10 @@ class DataTests(unittest.TestCase):
         first = features[0]
         self.assertIsNone(first["jira"])
         self.assertEqual((first["acCount"], first["state"]), (2, "in-review"))
+        self.assertEqual(
+            [row["illustration"] for row in features],
+            ["needs illustration", "no illustration"],
+        )
         self.assertEqual(first["openQuestions"], ["REF:Q-001"])
         nodes = json.loads((folder / "graph.json").read_text())["nodes"]
         self.assertTrue(all(n["key"].startswith("REF:") for n in nodes))

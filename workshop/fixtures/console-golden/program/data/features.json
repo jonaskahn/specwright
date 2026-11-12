@@ -17,6 +17,7 @@
    "condition": "in-progress",
    "blockers": [],
    "lint": "review: pass",
+   "illustration": "needs illustration",
    "jira": null,
    "drift": null,
    "openQuestions": [
@@ -45,6 +46,7 @@
    "condition": "in-progress",
    "blockers": [],
    "lint": "review: fail L-005",
+   "illustration": "no illustration",
    "jira": null,
    "drift": null,
    "openQuestions": [],
@@ -71,6 +73,7 @@
    "condition": "in-progress",
    "blockers": [],
    "lint": "review: pass",
+   "illustration": "needs illustration",
    "jira": null,
    "drift": null,
    "openQuestions": [
@@ -99,6 +102,7 @@
    "condition": "in-progress",
    "blockers": [],
    "lint": "review: fail L-005",
+   "illustration": "no illustration",
    "jira": null,
    "drift": null,
    "openQuestions": [],
