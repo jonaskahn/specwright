@@ -475,6 +475,35 @@ def set_output(root: Path, scope: str, value: str) -> None:
     fsio.atomic_write(path, miniyaml.dumps(data))
 
 
+def jira_of(root: Path, scope: str) -> dict[str, str]:
+    stored = load(scope_dir(root, scope) / FLAT_MANIFEST).get("jira")
+    stored = stored if isinstance(stored, dict) else {}
+    return {
+        "site": str(stored.get("site") or "TBD"),
+        "project_key": str(stored.get("project_key") or "TBD"),
+        "epic": str(stored.get("epic") or "None"),
+    }
+
+
+def set_jira(
+    root: Path, scope: str, site: str, project_key: str, epic: str | None
+) -> dict[str, str]:
+    """Record where Jira lives. It configures sw-publish; it never permits a remote write."""
+    site, project_key = site.strip(), project_key.strip()
+    if not site or not project_key or "TBD" in (site, project_key):
+        raise WorkspaceError("jira set needs a real --site and --project-key")
+    path = scope_dir(root, scope) / FLAT_MANIFEST
+    data = load(path)
+    current = jira_of(root, scope)
+    data["jira"] = {
+        "site": site,
+        "project_key": project_key,
+        "epic": (epic or "").strip() or current["epic"],
+    }
+    fsio.atomic_write(path, miniyaml.dumps(data))
+    return jira_of(root, scope)
+
+
 def upgrade(root: Path, scope: str, apply: bool = False, code: str | None = None) -> list[str]:
     """Add what newer versions expect to an existing project. Additive; never overwrites."""
     base = scope_dir(root, scope)
@@ -661,6 +690,13 @@ def _build_parser() -> argparse.ArgumentParser:
     out_cmd.add_argument("value", nargs="?")
     out_cmd.add_argument("--cwd", default=".")
     out_cmd.add_argument("--scope")
+    jira_cmd = sub.add_parser("jira", help="get or set the Jira site and project key")
+    jira_cmd.add_argument("action", choices=["get", "set"])
+    jira_cmd.add_argument("--site")
+    jira_cmd.add_argument("--project-key")
+    jira_cmd.add_argument("--epic")
+    jira_cmd.add_argument("--cwd", default=".")
+    jira_cmd.add_argument("--scope")
     appr = sub.add_parser("approvers", help="list or add the people who may approve")
     appr.add_argument("action", choices=["add", "list"])
     appr.add_argument("--role")
@@ -742,6 +778,12 @@ def main(argv: list[str] | None = None) -> int:
                         args.legacy_id_pattern,
                     )
                 print(json.dumps(source_list(root, scope), indent=2))
+            return 0
+        if args.command == "jira":
+            scope = resolve(root, args.scope, None, start, args.action == "set")
+            if args.action == "set":
+                set_jira(root, scope, args.site or "", args.project_key or "", args.epic)
+            print(json.dumps(jira_of(root, scope)))
             return 0
         if args.command == "governance":
             scope = resolve(root, args.scope, None, start, args.action == "set")

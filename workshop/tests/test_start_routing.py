@@ -94,7 +94,7 @@ class BaselineRoutingTests(unittest.TestCase):
         item = start.report(other)["scopes_state"][0]
         self.assertTrue(item["setup"][0].startswith("approvers:"))
         self.assertIn("approvers add", item["action"])
-        self.assertEqual(item["governance"], "required")
+        self.assertEqual((item["signoff"], item["governance"]), ("required", "required"))
 
     def test_optional_signoff_asks_for_no_approvers(self):
         other = Path(tempfile.mkdtemp())
@@ -103,7 +103,7 @@ class BaselineRoutingTests(unittest.TestCase):
         graph.build(other, "OTH")
         item = start.report(other)["scopes_state"][0]
         self.assertEqual(item["setup"], [])
-        self.assertEqual((item["governance"], item["flow"]), ("optional", "guided"))
+        self.assertEqual((item["signoff"], item["flow"]), ("optional", "guided"))
         self.assertEqual(item["output_default"], "markdown")
 
 

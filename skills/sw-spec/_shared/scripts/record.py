@@ -5,6 +5,9 @@ Every command validates first. With --dry-run it prints the plan and writes noth
 logs the write, rebuilds the trace and graph, and undoes itself on failure. Registry cells are
 checked against the owner given by --as.
 
+`backup <path>` archives the exact bytes of one authored artifact under _meta/history/ just before
+an accepted requirement edit.
+
 Exit codes: 0 done, 2 invalid request or unreadable data, 3 a human must supply something first
 (for example the approvers), 4 the skill does not own a registry column.
 """
@@ -19,7 +22,7 @@ if str(_here) not in sys.path:
 import argparse
 import json
 
-from kitlib import dataformat, recordops, rtm, schema, workspace  # noqa: E402
+from kitlib import dataformat, ingest_impact, recordops, rtm, schema, workspace  # noqa: E402
 
 COMMON = {
     "--cwd": {"default": "."},
@@ -118,6 +121,9 @@ def _parser():
     split.add_argument("--new-epic", default="")
     _decider(split)
 
+    bak = _add(top, "backup", "archive an authored artifact just before an accepted edit")
+    bak.add_argument("path", help="project-relative path, e.g. 02-drafts/FEAT-001.md")
+
     reg = _add(top, "register", "set registry cells (ownership checked)")
     reg.add_argument("key")
     reg.add_argument("--set", action="append", default=[], metavar="COLUMN=VALUE", dest="cells")
@@ -211,6 +217,16 @@ def _build(ctx, args):
     return recordops.register(ctx, args.key, cells), "register", args.key
 
 
+def _backup(root, scope, args):
+    base = workspace.scope_dir(root, scope)
+    if args.dry_run:
+        print(f"plan:\n  back up {args.path} under _meta/history/")
+        return 0
+    target = ingest_impact.backup(base, args.path)
+    print(f"done:\n  {target.relative_to(base)}")
+    return 0
+
+
 def main(argv=None):
     args = _parser().parse_args(argv)
     try:
@@ -219,6 +235,8 @@ def main(argv=None):
         if root is None:
             raise recordops.RecordError("no workspace; run the sw-start workspace setup first")
         scope = workspace.resolve(root, args.scope, None, cwd, True)
+        if args.noun == "backup":
+            return _backup(root, scope, args)
         ctx = recordops.Ctx(root, scope, args.skill)
         plan, action, target = _build(ctx, args)
         warnings = [] if args.dry_run else recordops.execute(ctx, plan, action, target)

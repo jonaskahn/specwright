@@ -100,6 +100,17 @@ class ManifestTests(unittest.TestCase):
             workspace.governance(self.root, "REF"), {"signoff": "required", "flow": "step"}
         )
 
+    def test_jira_setup_is_explicit_and_validated(self):
+        workspace.init(self.root, "flat", "REF", "Refunds")
+        self.assertEqual(workspace.jira_of(self.root, "REF")["site"], "TBD")
+        for site, key in (("", "REF"), ("https://x.atlassian.net", ""), ("TBD", "REF")):
+            with self.assertRaises(workspace.WorkspaceError):
+                workspace.set_jira(self.root, "REF", site, key, None)
+        got = workspace.set_jira(self.root, "REF", "https://x.atlassian.net", "REF", "REF-1")
+        want = {"site": "https://x.atlassian.net", "project_key": "REF", "epic": "REF-1"}
+        self.assertEqual(got, want)
+        self.assertEqual(workspace.jira_of(self.root, "REF"), got)
+
     def test_set_governance_validates_and_persists(self):
         workspace.init(self.root, "flat", "REF", "Refunds")
         workspace.set_governance(self.root, "REF", "signoff", "required")

@@ -91,7 +91,7 @@ def export_graph(root: Path, scopes: list[str]) -> dict[str, Any]:
     if fresh != "fresh":
         raise DataError(
             f"the knowledge graph is {fresh}; "
-            f"run: python3 <skill>/scripts/graph.py build --cwd {root}"
+            f"run: python3 <skill>/_shared/scripts/graph.py build --cwd {root}"
         )
     nodes = []
     for node in store.nodes():

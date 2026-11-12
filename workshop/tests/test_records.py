@@ -54,6 +54,15 @@ class RecordTests(WorkflowTestCase):
             timeout=60,
         )
 
+    def test_backup_cli_archives_an_authored_artifact_only(self):
+        done = self.cli("backup", "02-drafts/FEAT-001.story.md")
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual(len(list((self.base / "_meta/history").rglob("*.bak"))), 1)
+        refused = self.cli("backup", "00-inbox/SRC-0001.md")
+        self.assertEqual(refused.returncode, 2)
+        planned = self.cli("backup", "02-drafts/FEAT-001.story.md", "--dry-run")
+        self.assertIn("plan:", planned.stdout)
+
     def make_question(self, **kwargs):
         values = {
             "title": "Which refund window applies",

@@ -19,8 +19,8 @@
   "scripts/kitlib/blockers.py": "d03d32f54080",
   "scripts/kitlib/candidates.py": "0faaa3eb934b",
   "scripts/kitlib/cite.py": "e68bc074e2bf",
-  "scripts/kitlib/data_export.py": "fa8ab4f47031",
-  "scripts/kitlib/dataformat.py": "d3617a24b5e3",
+  "scripts/kitlib/data_export.py": "2aff228dcd56",
+  "scripts/kitlib/dataformat.py": "126a031db0af",
   "scripts/kitlib/epics.py": "7e2170516483",
   "scripts/kitlib/frontmatter.py": "8f5e22fd72e7",
   "scripts/kitlib/fsio.py": "ab1846444c3c",
@@ -30,6 +30,7 @@
   "scripts/kitlib/hashing.py": "8236e6704e63",
   "scripts/kitlib/ids.py": "88a0e53a1198",
   "scripts/kitlib/index.py": "d1455540d597",
+  "scripts/kitlib/ingest_impact.py": "d3e258c5c943",
   "scripts/kitlib/lifecycle.py": "7f71fe5f8692",
   "scripts/kitlib/markdown.py": "e3b4f0bf14ab",
   "scripts/kitlib/miniyaml.py": "73a1bbe68a05",
@@ -40,10 +41,10 @@
   "scripts/kitlib/schema.py": "f832e091ebb3",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "a182b597a8b2",
-  "scripts/kitlib/workspace.py": "8f837193d951",
+  "scripts/kitlib/workspace.py": "304523e323d8",
   "scripts/kitlib/writelog.py": "c75ee83de4ff",
   "scripts/parallel_guard.py": "c393aea1d3ee",
-  "scripts/record.py": "1c43f54595f0"
+  "scripts/record.py": "b7f1e970a84b"
  },
  "kit_version": "0.5.0"
 }

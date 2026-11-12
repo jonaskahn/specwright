@@ -142,7 +142,8 @@ def scope_state(root, scope):
         "graph": freshness,
         "graph_cmd": graph_command(root, scope),
         "output_default": workspace.output_default(root, scope),
-        "governance": rules["signoff"],
+        "signoff": rules["signoff"],
+        "governance": rules["signoff"],  # alias of signoff, kept for one release
         "flow": rules["flow"],
         "board": graph_query.board(graph_query.Store(root, scope)) if freshness == "fresh" else [],
     }

@@ -546,7 +546,7 @@ def refresh(root: Path, kind: str, scope: str | None = None) -> None:
 
 def owner_command(kind: str) -> str:
     spec = KINDS[kind]
-    return f"python3 <skill>/scripts/data.py export {kind} --as {spec.owner} --cwd <root>"
+    return f"python3 <skill>/_shared/scripts/data.py export {kind} --as {spec.owner} --cwd <root>"
 
 
 def check(root: Path, scope: str | None = None) -> list[dict[str, str]]:
