@@ -86,15 +86,20 @@
       "capabilities": [
         "core",
         "citations",
-        "records"
+        "records",
+        "knowledge"
       ],
       "shared": [
         "references/capabilities/citations.md",
+        "references/capabilities/knowledge.md",
         "references/capabilities/records.md",
+        "references/graph-model.md",
         "references/next-step.md",
+        "references/query-cookbook.md",
         "references/stop-and-ask.md",
         "references/untrusted-content.md",
         "scripts/cite.py",
+        "scripts/graph.py",
         "scripts/kitlib/__init__.py",
         "scripts/kitlib/baseline.py",
         "scripts/kitlib/blockers.py",
@@ -171,15 +176,20 @@
       "capabilities": [
         "core",
         "quality",
-        "trace"
+        "trace",
+        "knowledge"
       ],
       "shared": [
+        "references/capabilities/knowledge.md",
         "references/capabilities/quality.md",
+        "references/graph-model.md",
         "references/next-step.md",
+        "references/query-cookbook.md",
         "references/rtm-contract.md",
         "references/rule-catalog.md",
         "references/stop-and-ask.md",
         "references/untrusted-content.md",
+        "scripts/graph.py",
         "scripts/kitlib/__init__.py",
         "scripts/kitlib/adf.py",
         "scripts/kitlib/blockers.py",
@@ -188,6 +198,7 @@
         "scripts/kitlib/frontmatter.py",
         "scripts/kitlib/fsio.py",
         "scripts/kitlib/graph.py",
+        "scripts/kitlib/graph_query.py",
         "scripts/kitlib/hashing.py",
         "scripts/kitlib/ids.py",
         "scripts/kitlib/index.py",
@@ -213,15 +224,20 @@
       "capabilities": [
         "core",
         "citations",
-        "records"
+        "records",
+        "knowledge"
       ],
       "shared": [
         "references/capabilities/citations.md",
+        "references/capabilities/knowledge.md",
         "references/capabilities/records.md",
+        "references/graph-model.md",
         "references/next-step.md",
+        "references/query-cookbook.md",
         "references/stop-and-ask.md",
         "references/untrusted-content.md",
         "scripts/cite.py",
+        "scripts/graph.py",
         "scripts/kitlib/__init__.py",
         "scripts/kitlib/baseline.py",
         "scripts/kitlib/blockers.py",
@@ -231,6 +247,7 @@
         "scripts/kitlib/frontmatter.py",
         "scripts/kitlib/fsio.py",
         "scripts/kitlib/graph.py",
+        "scripts/kitlib/graph_query.py",
         "scripts/kitlib/hashing.py",
         "scripts/kitlib/ids.py",
         "scripts/kitlib/index.py",
@@ -254,17 +271,22 @@
         "core",
         "quality",
         "citations",
-        "records"
+        "records",
+        "knowledge"
       ],
       "shared": [
         "references/capabilities/citations.md",
+        "references/capabilities/knowledge.md",
         "references/capabilities/quality.md",
         "references/capabilities/records.md",
+        "references/graph-model.md",
         "references/next-step.md",
+        "references/query-cookbook.md",
         "references/rule-catalog.md",
         "references/stop-and-ask.md",
         "references/untrusted-content.md",
         "scripts/cite.py",
+        "scripts/graph.py",
         "scripts/kitlib/__init__.py",
         "scripts/kitlib/baseline.py",
         "scripts/kitlib/blockers.py",
@@ -275,6 +297,7 @@
         "scripts/kitlib/frontmatter.py",
         "scripts/kitlib/fsio.py",
         "scripts/kitlib/graph.py",
+        "scripts/kitlib/graph_query.py",
         "scripts/kitlib/hashing.py",
         "scripts/kitlib/ids.py",
         "scripts/kitlib/index.py",

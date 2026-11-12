@@ -2,6 +2,8 @@
 
 Run bounded completion maintenance, then read sw-start/scripts/start.py with --cwd
 and --item when the feature is known. Resolve scripts against the loaded skill root.
+When start.py reports a stale or missing graph, run the command it prints; every skill
+ships `_shared/scripts/graph.py`.
 
 Report the produced outputs and the named item's station/condition. Its siblings stay
 where they are. A draft remains in spec, including open questions. A passing plan is

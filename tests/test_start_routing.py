@@ -35,6 +35,17 @@ class BaselineRoutingTests(unittest.TestCase):
         graph.build(self.root, "REF")
         return start.report(self.root)["scopes_state"][0]
 
+    def test_a_stale_graph_names_the_command_that_rebuilds_it(self):
+        (self.root / "01-analysis/ideas/IDEA-001.md").write_text(
+            "---\nid: IDEA-001\ntype: idea\ntitle: Late idea\naliases: []\n"
+            "status: draft\n---\n# Late\n"
+        )
+        item = start.report(self.root)["scopes_state"][0]
+        self.assertEqual(item["graph"], "stale")
+        self.assertEqual(item["next"][0], "shared graph build")
+        self.assertIn("graph.py build --cwd", item["next"][1])
+        self.assertIn("--scope REF", item["next"][1])
+
     def test_a_project_with_nothing_still_starts_at_ingest(self):
         item = self.scope()
         self.assertEqual(item["next"][0], "sw-ingest")

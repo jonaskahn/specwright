@@ -138,6 +138,7 @@ def scope_state(root, scope):
         "with_tasks": sorted(tasks),
         "open_questions": open_q,
         "graph": freshness,
+        "graph_cmd": graph_command(root, scope),
         "output_default": workspace.output_default(root, scope),
         "board": graph_query.board(graph_query.Store(root, scope)) if freshness == "fresh" else [],
     }
@@ -220,12 +221,21 @@ def rank(root, scope, board, store):
     return ranked[:3]
 
 
+def graph_command(root, scope):
+    """The exact command that rebuilds this scope's graph, from this skill's own copy."""
+    script = _shared / "graph.py"
+    return f"python3 {script} build --cwd {root} --scope {scope}"
+
+
 def route(state):
     """Deterministic next action for one scope; each answer carries the evidence behind it."""
     if state["graph"] in ("missing", "incompatible"):
         return ("sw-start workspace upgrade dry-run", "board schema is missing or incompatible")
     if state["graph"] != "fresh":
-        return ("shared graph build", "board is unavailable until the graph is fresh")
+        return (
+            "shared graph build",
+            "board is unavailable until the graph is fresh; run: " + state["graph_cmd"],
+        )
     step = baseline_step(state)
     if step:
         return (step[0], "existing baseline: " + step[1])
