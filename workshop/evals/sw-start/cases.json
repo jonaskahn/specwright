@@ -71,6 +71,16 @@
         "shows runtime.sh plan python and asks once",
         "installs nothing without approval of that exact command"
       ]
+    },
+    {
+      "id": "route-review-batch",
+      "prompt": "What is next? Three features were submitted to review",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "start.py answers batch sw-review with every feature named",
+        "Offers all of them together as the default, or one pick",
+        "Does not ask which single item to work on when every item is in the review station"
+      ]
     }
   ]
 }

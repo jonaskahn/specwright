@@ -66,6 +66,18 @@
         "A state needed by an AC but missing from the visual becomes a question, not a guess",
         "A frontend task without Visuals makes check_tasks.py exit 1"
       ]
+    },
+    {
+      "id": "backlog-no-feature-named",
+      "prompt": "/sw-plan",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "Reads the plan backlog from the board instead of asking which feature",
+        "Lists the accepted features without a current plan in one table, started ones first",
+        "Plans them together, one worker per feature, and the lead runs graph, lint and export once",
+        "A feature that is not accepted is listed as skipped with its reason and is not planned",
+        "Does not offer publication as a next step"
+      ]
     }
   ]
 }

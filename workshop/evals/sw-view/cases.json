@@ -48,6 +48,26 @@
         "The server takes the next free port",
         "The address given to the user is the one the server printed"
       ]
+    },
+    {
+      "id": "preview-source-document",
+      "prompt": "Show me the PDF source behind FEAT-001 in the console",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "Starts the console with view.py serve, because file contents are only served there",
+        "Says that a copy-data static server shows the data but cannot read documents",
+        "Opens the item in the preview panel and never copies a file outside the project"
+      ]
+    },
+    {
+      "id": "two-projects-two-graphs",
+      "prompt": "Show the graph of my two projects",
+      "fixture": "workshop/fixtures/embedded-program",
+      "assertions": [
+        "Describes one graph per project, chosen with the project select, not one mixed map",
+        "Names the separate view for links that cross projects",
+        "States that the console only reads and never edits a spec"
+      ]
     }
   ]
 }

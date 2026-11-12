@@ -46,6 +46,29 @@
         "Refused unless the manifest allows chat evidence",
         "When allowed, a session reference is recorded"
       ]
+    },
+    {
+      "id": "batch-review",
+      "prompt": "/sw-review",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "Reads the review backlog from the board and checks every submitted feature",
+        "The read-only checks run in parallel and write nothing",
+        "Shows one table with each feature's verdict, its draft hash and what blocks it",
+        "A blocked feature is listed with its reasons and is not offered for accept",
+        "Asks once to accept the listed features, then runs review.py accept --hash for each named one",
+        "After the accepts, asks once whether to continue to sw-plan for the accepted features"
+      ]
+    },
+    {
+      "id": "batch-accept-hash-changed",
+      "prompt": "Accept FEAT-001 and FEAT-002 from the table, after FEAT-002 was edited",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "review.py accept --hash exits 2 for the edited feature and records nothing",
+        "The edited feature is reported and excluded; the other one is accepted",
+        "A plain yes to the old table is not treated as approval of the new text"
+      ]
     }
   ]
 }
