@@ -66,11 +66,11 @@ class StatusTests(unittest.TestCase):
                 {"signoffs": [f"PO | Lan | sha256:{digest[7:19]} | https://example.test/review/1"]},
             )
         )
-        self.assertEqual(status.build_report(self.root)["features"][0]["signoff"], "fresh")
+        self.assertEqual(status.build_report(self.root)["features"][0]["signoff"], "signed-off")
         path.write_text(
             path.read_text().replace("identity FEAT-001.", "identity FEAT-001; checked.")
         )
-        self.assertEqual(status.build_report(self.root)["features"][0]["signoff"], "fresh")
+        self.assertEqual(status.build_report(self.root)["features"][0]["signoff"], "signed-off")
         path.write_text(path.read_text().replace("50 USD", "60 USD"))
         self.assertEqual(status.build_report(self.root)["features"][0]["signoff"], "stale")
 

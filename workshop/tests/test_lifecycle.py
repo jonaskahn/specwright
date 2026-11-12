@@ -132,12 +132,16 @@ class LifecycleTests(WorkflowTestCase):
         reserved = next(r for r in rows if r["id"] == "REF:FEAT-002")
         self.assertEqual((reserved["station"], reserved["condition"]), ("spec", "not-started"))
 
-    def test_publication_cannot_skip_plan(self):
-        self.approve()
+    def test_publication_needs_an_accepted_story_but_not_a_plan(self):
         ctx = publish.context(self.root, "FEAT-001", "REF")
         self.assertTrue(publish.preconditions(ctx))
         with self.assertRaises(ValueError):
             lifecycle.transition(self.base, "REF:FEAT-001", "request-publish")
+        self.approve()
+        self.assertEqual(publish.preconditions(ctx), [])
+        self.assertIn("request-publish", lifecycle.feature(self.base, "REF:FEAT-001")["available"])
+        self.apply("request-publish")
+        self.assertEqual(lifecycle.feature(self.base, "REF:FEAT-001")["station"], "publish")
 
     def test_graph_schema_mismatch_blocks_resume(self):
         graph.build(self.root, "REF")

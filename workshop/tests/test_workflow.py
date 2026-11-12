@@ -65,6 +65,11 @@ QA consumer check: yes
 
 
 class WorkflowTestCase(unittest.TestCase):
+    """A project with one approver. Strict by default so these tests keep proving governed mode."""
+
+    signoff = "required"
+    approvers = ({"role": "PO", "name": "Lan", "account_id": "712020:aa11"},)
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
@@ -75,7 +80,8 @@ class WorkflowTestCase(unittest.TestCase):
             "REF",
             "Refunds",
             project_key="PROJ",
-            approvers=[{"role": "PO", "name": "Lan", "account_id": "712020:aa11"}],
+            approvers=[dict(a) for a in self.approvers],
+            governance={"signoff": self.signoff},
         )
         self.base = self.root
         self.draft = self.root / "02-drafts" / "FEAT-001.story.md"

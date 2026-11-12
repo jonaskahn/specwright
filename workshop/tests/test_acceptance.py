@@ -103,6 +103,7 @@ class BaselineAcceptance(unittest.TestCase):
             "REF",
             "Refunds",
             approvers=[{"role": "PO", "name": "Lan", "account_id": "712020:aa11"}],
+            governance={"signoff": "required"},
         )
         workspace.add_source(
             cls.root, "REF", "wiki", "confluence", "REFUNDS/100", "2026-11-01", 5, r"LEG-\d{3}"

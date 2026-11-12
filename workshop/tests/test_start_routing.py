@@ -28,6 +28,7 @@ class BaselineRoutingTests(unittest.TestCase):
             "REF",
             "Refunds",
             approvers=[{"role": "PO", "name": "Lan", "account_id": "1"}],
+            governance={"signoff": "required"},
         )
         graph.build(self.root, "REF")
 
@@ -88,11 +89,22 @@ class BaselineRoutingTests(unittest.TestCase):
         self.assertIn("PO", data)
         other = Path(tempfile.mkdtemp())
         self.addCleanup(lambda: __import__("shutil").rmtree(other, ignore_errors=True))
-        workspace.init(other, "flat", "OTH", "Other")
+        workspace.init(other, "flat", "OTH", "Other", governance={"signoff": "required"})
         graph.build(other, "OTH")
         item = start.report(other)["scopes_state"][0]
         self.assertTrue(item["setup"][0].startswith("approvers:"))
         self.assertIn("approvers add", item["action"])
+        self.assertEqual(item["governance"], "required")
+
+    def test_optional_signoff_asks_for_no_approvers(self):
+        other = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: __import__("shutil").rmtree(other, ignore_errors=True))
+        workspace.init(other, "flat", "OTH", "Other")
+        graph.build(other, "OTH")
+        item = start.report(other)["scopes_state"][0]
+        self.assertEqual(item["setup"], [])
+        self.assertEqual((item["governance"], item["flow"]), ("optional", "guided"))
+        self.assertEqual(item["output_default"], "markdown")
 
 
 class RankingAndPackTests(WorkflowTestCase):
