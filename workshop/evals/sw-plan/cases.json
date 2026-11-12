@@ -78,6 +78,15 @@
         "A feature that is not accepted is listed as skipped with its reason and is not planned",
         "Does not offer publication as a next step"
       ]
+    },
+    {
+      "id": "checkpoint-plan",
+      "prompt": "Use sw-plan to plan two accepted features in parallel.",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "The workers write only their own plan and task files and never run checkpoint.py",
+        "The lead runs checkpoint.py once after graph, lint and data export"
+      ]
     }
   ]
 }

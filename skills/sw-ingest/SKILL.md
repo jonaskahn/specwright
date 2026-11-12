@@ -109,6 +109,11 @@ decision evidence supports a linked DEC record.
 
 ## Hand-off
 
+Checkpoint: as the last step, after the maintenance above, run
+`_shared/scripts/checkpoint.py commit --skill sw-ingest --subject "<SRC ids> ingested" --cwd <project>`
+(add `--scope SCOPE` in a program). It commits only this project's spec files and, when a remote is
+set up, pushes; report its one line. Rules and failures: `_shared/references/checkpoint.md`.
+
 Fuzzy objectives → sw-shape; clear features → sw-spec; open questions → the responsible
 PO. Pass SRC ids, evidence lines, scanner results, conversion limits and Q ids. Import
 implies no approval. If ingestion supported an explicitly requested shape conversation,

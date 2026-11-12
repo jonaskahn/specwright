@@ -81,6 +81,15 @@
         "Offers all of them together as the default, or one pick",
         "Does not ask which single item to work on when every item is in the review station"
       ]
+    },
+    {
+      "id": "checkpoint-busy",
+      "prompt": "Use sw-start to finish a command while a git merge is open in the repository.",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "checkpoint.py reports busy and the files stay uncommitted",
+        "The report tells the user to finish the merge and run the command again"
+      ]
     }
   ]
 }

@@ -1,6 +1,6 @@
 # Bounded completion maintenance
 
-Bounded means the eight steps below once, plus at most one repair pass (see Repair), and
+Bounded means the nine steps below once, plus at most one repair pass (see Repair), and
 never the next station. Finish the requested action, run the maintenance below, then report. Never advance a
 stage without the user's confirmation: under `flow: guided` one plain yes to "Continue to
 <next station>?" is that confirmation for a local station (`governance.md`); under
@@ -17,7 +17,9 @@ stage without the user's confirmation: under `flow: guided` one plain yes to "Co
    matches the station (exit 0 clean; 10, 20 or 30 means blocking findings) and, where shipped,
    `_shared/scripts/status.py`.
 7. Refresh the data files you own (`data-format.md`), after the graph and lint.
-8. Report results and the next human decision.
+8. Checkpoint: `checkpoint.py commit` once, last (`checkpoint.md`): the project's spec files are
+   committed and, when a remote is set up, pushed. Report its line with the results.
+9. Report results and the next human decision.
 
 ## Triggers
 
@@ -36,7 +38,8 @@ stage without the user's confirmation: under `flow: guided` one plain yes to "Co
 | Ingestion suggests changed logic | Save a quoted proposed impact. Back up the artifact only immediately before an accepted real edit; no revision increment before then. |
 | Status-only rollback | Keep content hashes and historical sign-offs; invalidate active approval through the lifecycle decision. Do not call unchanged tasks content-stale. |
 | Exact remote plan confirmed | Apply only through sw-publish. A changed plan, scope or hash needs new confirmation; a plain yes counts only for the exact dry-run just shown. |
-| Nothing relevant changed | Skip maintenance and state why. |
+| Command finished | One git checkpoint, last, by the lead only. Not a station change and not approval. |
+| Nothing relevant changed | Skip maintenance and state why; the checkpoint reports `nothing`. |
 
 ## Repair
 

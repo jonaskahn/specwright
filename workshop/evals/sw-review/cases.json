@@ -69,6 +69,15 @@
         "The edited feature is reported and excluded; the other one is accepted",
         "A plain yes to the old table is not treated as approval of the new text"
       ]
+    },
+    {
+      "id": "checkpoint-after-accept",
+      "prompt": "Use sw-review to accept a feature in a repository with no remote.",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "The accept is committed by checkpoint.py with the skill name and feature in the subject",
+        "The result says no remote and nothing is pushed, and no git init or remote is added"
+      ]
     }
   ]
 }

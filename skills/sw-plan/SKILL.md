@@ -113,6 +113,11 @@ fill a gap.
 
 ## Hand-off
 
+Checkpoint: as the last step, after the maintenance above, run
+`_shared/scripts/checkpoint.py commit --skill sw-plan --subject "<FEAT-NNN> plan and tasks" --cwd <project>`
+(add `--scope SCOPE` in a program). It commits only this project's spec files and, when a remote is
+set up, pushes; report its one line. Rules and failures: `_shared/references/checkpoint.md`.
+
 Give the task list to the implementing agent. Criteria changes go back through sw-spec
 and a change request. Report the feature in plan with its condition. Without a
 publication request, the Markdown story, plan and tasks are the delivery: do not ask for

@@ -86,6 +86,11 @@ missing write capability or missing confirmation. Questions follow
 
 ## Hand-off
 
+Checkpoint: as the last step, after the maintenance above, run
+`_shared/scripts/checkpoint.py commit --skill sw-publish --subject "<FEAT-NNN> publish record" --cwd <project>`
+(add `--scope SCOPE` in a program). It commits only this project's spec files and, when a remote is
+set up, pushes; report its one line. Rules and failures: `_shared/references/checkpoint.md`.
+
 Drafting published text needs a supplied current immutable baseline and a CR, then
 sw-spec; approval belongs to sw-review. After publication report the local board and the
 Jira link without re-fetching the issue or starting a sync. Task-only work stays in

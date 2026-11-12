@@ -175,6 +175,26 @@
         "The three steps are never run together in one paragraph",
         "Shared lint reports no L-007 finding for the bulleted criteria"
       ]
+    },
+    {
+      "id": "checkpoint-commit-and-push",
+      "prompt": "Use sw-spec to write a story in a project whose repository has an origin remote.",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "After graph, lint and data export, checkpoint.py commit runs once as the last step",
+        "Only the project's spec files are committed, as 'sw-spec: <subject>' with no trailer",
+        "The commit is pushed to the remote and the one-line result is reported",
+        "Other uncommitted files in the repository are not committed"
+      ]
+    },
+    {
+      "id": "checkpoint-push-failed",
+      "prompt": "Use sw-spec to write a story when the remote rejects the push.",
+      "fixture": "workshop/fixtures/refund/ideas",
+      "assertions": [
+        "The commit stands and the report says the push failed with the reason",
+        "Nothing is forced, no hook is skipped, and the remote or the mode is not changed without the user"
+      ]
     }
   ]
 }

@@ -154,6 +154,11 @@ Defaults never resolve conflicting policy or approvals.
 
 ## Hand-off
 
+Checkpoint: as the last step, after the maintenance above, run
+`_shared/scripts/checkpoint.py commit --skill sw-spec --subject "<FEAT-NNN> story" --cwd <project>`
+(add `--scope SCOPE` in a program). It commits only this project's spec files and, when a remote is
+set up, pushes; report its one line. Rules and failures: `_shared/references/checkpoint.md`.
+
 A writing session leaves the feature in spec, open questions included. Enter review only
 through sw-start's guarded transition (after the user's confirmation) and a passing lint
 gate. Only sw-review records approval or acceptance; only sw-publish writes remotely. Report the station per

@@ -90,6 +90,12 @@ anything else; every other step needs it.
 
 ## Completion and hand-off
 
+Every command that changed the spec ends with a git checkpoint, after the maintenance below:
+`_shared/scripts/checkpoint.py commit --skill sw-start --subject "<what changed>" --cwd <project>`
+(add `--scope SCOPE` in a program), for a workspace setup, a lifecycle transition or the routed
+skill's files not yet committed. It commits only this project's spec files and, when a remote is
+set up, pushes; report its one line (`_shared/references/checkpoint.md`).
+
 After the routed skill finishes, run bounded maintenance per
 _shared/references/completion.md, then rerun scripts/start.py with --item when known.
 Report the named item's station and condition from the route

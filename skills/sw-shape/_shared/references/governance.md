@@ -15,6 +15,10 @@ output:
 Read it with `workspace.py governance get`, change it with
 `workspace.py governance set signoff required`. `start.py` reports both values.
 
+A separate manifest key, `checkpoint: push | commit | off` (default `push`), sets whether a skill
+command's spec changes are committed and pushed (`checkpoint.md`). It is not a gate: it never
+approves, advances a station or writes to Jira.
+
 ## Gates under each sign-off setting
 
 | Gate | `optional` (default) | `required` |

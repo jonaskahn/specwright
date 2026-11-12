@@ -19,7 +19,8 @@ scope and the host can run sub-agents. It gives speed without shared-write races
 1. **One writer per file.** A worker owns its item's files only (the skill names them).
    It never writes records, registry rows, RTM, graph, `_meta/data/`, status, snapshots,
    or a sibling's files.
-2. **The lead owns shared state** and writes it once, after the workers: questions
+2. **The lead owns shared state** and writes it once, after the workers (and commits once with
+   `checkpoint.py`; a worker never does): questions
    (`record.py q new`), ID reservations, RTM columns through the trace capability, graph
    build, data exports, lint, status. The lead reserves any new BR/NFR/FR IDs before
    briefing; a worker never allocates one.

@@ -98,6 +98,11 @@ imported text.
 
 ## Hand-off
 
+Checkpoint: as the last step, after the maintenance above, run
+`_shared/scripts/checkpoint.py commit --skill sw-review --subject "<FEAT-NNN> review" --cwd <project>`
+(add `--scope SCOPE` in a program). It commits only this project's spec files and, when a remote is
+set up, pushes; report its one line. Rules and failures: `_shared/references/checkpoint.md`.
+
 After acceptance or promotion the feature is eligible for sw-plan; publishing needs the
 accepted story, not a plan. Rewriting criteria returns through the guarded spec transition. Historical
 sign-offs stay visible, but an invalidated approval needs fresh evidence before planning

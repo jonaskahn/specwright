@@ -97,6 +97,11 @@ Ask only what sources do not settle, per `_shared/references/stop-and-ask.md`. A
 
 ## Hand-off
 
+Checkpoint: as the last step, after the maintenance above, run
+`_shared/scripts/checkpoint.py commit --skill sw-shape --subject "<IDEA or EPIC ids> shaped" --cwd <project>`
+(add `--scope SCOPE` in a program). It commits only this project's spec files and, when a remote is
+set up, pushes; report its one line. Rules and failures: `_shared/references/checkpoint.md`.
+
 PO reviews the brief and split first. After acceptance, list the reserved features and offer
 to specify all of them in parallel (the default for two or more; sw-spec runs one worker
 per FEAT) or the one the user names. Run
