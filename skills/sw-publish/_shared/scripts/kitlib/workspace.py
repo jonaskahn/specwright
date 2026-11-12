@@ -426,6 +426,11 @@ def upgrade(root: Path, scope: str, apply: bool = False, code: str | None = None
     asset_registry = base / "_meta/asset-registry.md"
     if not asset_registry.is_file():
         plan.append("create _meta/asset-registry.md")
+    registry_path = base / "_meta/id-registry.md"
+    if registry_path.is_file():
+        header = tables.parse(registry_path.read_text(encoding="utf-8")).table
+        if header is not None and header.header != schema.REGISTRY_COLUMNS:
+            plan.append("migrate _meta/id-registry.md: add Title, Aliases and Source ref columns")
     plan.append("graph: build _meta/graph/")
     if not apply:
         return plan
@@ -435,6 +440,9 @@ def upgrade(root: Path, scope: str, apply: bool = False, code: str | None = None
         (base / folder).mkdir(parents=True, exist_ok=True)
         _write_new(base / folder / ".gitkeep", "", [], root)
     _write_new(asset_registry, _asset_registry_text(), [], root)
+    from kitlib import rtm  # imported here because rtm depends on this module
+
+    rtm.migrate_registry(registry_path)
     _seed_graph(root, mode_of(root), scope, [])
     return plan
 

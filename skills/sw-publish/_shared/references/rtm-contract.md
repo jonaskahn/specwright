@@ -23,12 +23,19 @@ skill updates only its own columns through it.
 ## Registry columns
 
 The ID registry holds external keys: `Kind`, `Jira key`, `Confluence id`, `Label`,
-`Entity property`, `Last published draft hash`, `Last snapshot`, `State`.
+`Entity property`, `Last published draft hash`, `Last snapshot`, `State`, and for
+reserved items that have no file yet `Title`, `Aliases` (legacy IDs, `|` separated) and
+`Source ref` (the remote page or tracker key an imported snapshot came from).
+`Jira key` and `Confluence id` mean "published as"; an import never writes them. A
+registry written by an older release is widened when read and rewritten by the workspace
+upgrade.
 
 | Writer | May set |
 | --- | --- |
 | trace capability | Kind |
 | sw-spec | Kind, State |
+| sw-shape | Kind, State, Title, Aliases |
+| sw-ingest | Kind, State, Last snapshot, Source ref |
 | sw-publish | Jira key, Confluence id, Label, Entity property, Last published draft hash, Last snapshot, State |
 
 ## Qualified references

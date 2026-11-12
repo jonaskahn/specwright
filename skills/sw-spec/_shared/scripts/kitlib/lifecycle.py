@@ -42,7 +42,7 @@ def decisions(base: Path, key: str) -> list[dict]:
             or fm.get("action") not in ACTIONS
             or fm.get("origin") != "local-transition"
             or fm.get("status") != "accepted"
-            or fm.get("id") != path.stem
+            or fm.get("id") != ids.id_from_name(path.name)
         ):
             raise ValueError(f"invalid lifecycle decision: {path.name}")
         records.append(fm)
@@ -263,11 +263,12 @@ def transition(
                 raise ValueError("an incomplete lifecycle transaction needs recovery")
             text = story.read_text(encoding="utf-8")
             fm, body = frontmatter.split(text)
-            taken = [p.stem for p in (base / "records").glob("*.md")]
-            identity = ids.next_id("DEC", taken)
+            identity = ids.next_id("DEC", ids.taken_ids(base))
             record = {
                 "id": identity,
                 "type": "dec",
+                "title": f"{key} {action}",
+                "aliases": [],
                 "subtype": "lifecycle",
                 "status": "accepted",
                 "schema_version": VERSION,
@@ -296,7 +297,7 @@ def transition(
             updated = frontmatter.render(fm, body)
             fsio.atomic_write(pending, json.dumps({**result, "record": identity}) + "\n")
             fsio.atomic_write(story, updated)
-            target = base / "records" / f"{identity}.md"
+            target = base / "records" / ids.record_filename(identity, record["title"])
             with target.open("x", encoding="utf-8") as handle:
                 handle.write(frontmatter.render(record, f"# {key}: {action}\n"))
             pending.unlink()

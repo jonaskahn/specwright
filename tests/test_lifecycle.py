@@ -106,7 +106,7 @@ class LifecycleTests(WorkflowTestCase):
 
     def test_forked_records_are_not_ordered_by_filename(self):
         self.apply("return-spec")
-        path = self.base / "records/DEC-001.md"
+        path = next((self.base / "records").glob("DEC-001*.md"))
         fm, body = frontmatter.split(path.read_text())
         fm["id"] = "DEC-002"
         (path.parent / "DEC-002.md").write_text(frontmatter.render(fm, body))

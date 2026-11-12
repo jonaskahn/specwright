@@ -532,7 +532,7 @@ def _lifecycle_nodes(graph: Graph, root: Path, scopes: list[str]) -> None:
                         key,
                         "feat",
                         state,
-                        "Reserved feature",
+                        registry.value(key, "Title"),
                         _rel(registry_path, root),
                         0,
                         0,

@@ -142,6 +142,11 @@ def _scan_tasks(path: Path, scope: str, entities: dict[str, Entity], findings: l
 def read_table(path: Path, header: list[str]) -> tables.Document:
     if path.exists():
         doc = tables.parse(path.read_text(encoding="utf-8"))
+        if doc.table is not None and header[: len(doc.table.header)] == doc.table.header:
+            # A table written by an older release lacks the newest columns; read it widened.
+            missing = len(header) - len(doc.table.header)
+            doc.table.header = list(header)
+            doc.table.rows = [row + [tables.EMPTY] * missing for row in doc.table.rows]
         if doc.table is None or doc.table.header != header:
             raise ValueError(f"{path}: unexpected table columns")
         keys = [row[0] for row in doc.table.rows]
@@ -196,6 +201,8 @@ def set_cell(root: Path, scope: str, key: str, column: str, value: str, skill: s
 REGISTRY_OWNERS = {
     "shared-trace": {"Kind"},
     "sw-spec": {"Kind", "State"},
+    "sw-shape": {"Kind", "State", "Title", "Aliases"},
+    "sw-ingest": {"Kind", "State", "Last snapshot", "Source ref"},
     "sw-publish": {
         "Jira key",
         "Confluence id",
@@ -220,6 +227,19 @@ def registry_upsert(path: Path, key: str, cells: dict[str, str], skill: str) -> 
     doc = read_table(path, list(schema.REGISTRY_COLUMNS))
     doc.table.upsert(key, cells)
     fsio.atomic_write(path, doc.render())
+
+
+def migrate_registry(path: Path) -> bool:
+    """Rewrite an older registry with the current columns; True when the file changed."""
+    if not path.is_file():
+        return False
+    before = path.read_text(encoding="utf-8")
+    doc = read_table(path, list(schema.REGISTRY_COLUMNS))
+    after = doc.render()
+    if after == before:
+        return False
+    fsio.atomic_write(path, after)
+    return True
 
 
 def jira_keys(root: Path) -> dict[str, str]:

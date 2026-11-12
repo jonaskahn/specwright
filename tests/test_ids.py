@@ -1,4 +1,6 @@
+import tempfile
 import unittest
+from pathlib import Path
 
 from kitlib import ids
 
@@ -59,3 +61,55 @@ class IdTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class NamingTests(unittest.TestCase):
+    def test_slug_is_ascii_lowercase_and_bounded(self):
+        self.assertEqual(ids.slugify("Reset password: e-mail link!"), "reset-password-e-mail-link")
+        self.assertEqual(ids.slugify("Hoàn tiền đơn hàng"), "hoan-tien-on-hang")
+        self.assertEqual(ids.slugify("???"), "")
+        long = ids.slugify("word " * 40)
+        self.assertLessEqual(len(long), ids.SLUG_MAX)
+        self.assertFalse(long.endswith("-"))
+
+    def test_filename_keeps_the_id_before_the_double_hyphen(self):
+        self.assertEqual(
+            ids.record_filename("FEAT-012", "Reset password"), "FEAT-012--reset-password.md"
+        )
+        self.assertEqual(ids.record_filename("Q-001", "???"), "Q-001.md")
+
+    def test_id_is_read_back_from_every_name_form(self):
+        for name in ("Q-001.md", "Q-001--why-so.md", "Q-001", "records/Q-001--x.md"):
+            self.assertEqual(ids.id_from_name(name), "Q-001", name)
+        self.assertEqual(ids.id_from_name("FEAT-001.story.md"), "FEAT-001")
+        self.assertEqual(ids.id_from_name("SRC-0007--po-email.md"), "SRC-0007")
+        self.assertIsNone(ids.id_from_name("notes.md"))
+        self.assertIsNone(ids.id_from_name("Q-0011.md"))
+
+    def test_find_record_accepts_plain_and_slugged_names(self):
+        with tempfile.TemporaryDirectory() as raw:
+            folder = Path(raw)
+            (folder / "Q-001.md").write_text("a")
+            (folder / "Q-002--later.md").write_text("b")
+            self.assertEqual(ids.find_record(folder, "Q-001").name, "Q-001.md")
+            self.assertEqual(ids.find_record(folder, "Q-002").name, "Q-002--later.md")
+            self.assertIsNone(ids.find_record(folder, "Q-003"))
+            self.assertIsNone(ids.find_record(folder / "missing", "Q-001"))
+
+    def test_taken_ids_include_names_text_and_tombstones(self):
+        with tempfile.TemporaryDirectory() as raw:
+            base = Path(raw)
+            (base / "records").mkdir()
+            (base / "records/Q-004--old.md").write_text("withdrawn\n")
+            (base / "_meta").mkdir()
+            (base / "_meta/id-registry.md").write_text("| REF:FEAT-009 |\n")
+            (base / "02-drafts").mkdir()
+            (base / "02-drafts/FEAT-001.story.md").write_text("~~AC-001-3~~ and DEC-007\n")
+            (base / "00-inbox/raw").mkdir(parents=True)
+            (base / "00-inbox/raw/ignored.md").write_text("Q-999\n")
+            taken = ids.taken_ids(base)
+            for wanted in ("Q-004", "FEAT-009", "FEAT-001", "AC-001-3", "DEC-007"):
+                self.assertIn(wanted, taken)
+            self.assertNotIn("Q-999", taken)
+            self.assertEqual(ids.next_id("Q", taken), "Q-005")
+            self.assertEqual(ids.next_id("DEC", taken), "DEC-008")

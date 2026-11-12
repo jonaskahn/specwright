@@ -50,6 +50,14 @@ class Table:
         row = self.find(key)
         return row[self.col(column)] if row else None
 
+    def value(self, key: str, column: str, default: str = "") -> str:
+        """Cell text, or the default when the row or the column is absent or empty."""
+        row = self.find(key)
+        if row is None or column not in self.header:
+            return default
+        cell = row[self.header.index(column)]
+        return default if cell in ("", EMPTY) else cell
+
     def upsert(self, key: str, cells: dict[str, str] | None = None) -> bool:
         """Create the row if missing and set the given cells; return True when it was created."""
         row = self.find(key)

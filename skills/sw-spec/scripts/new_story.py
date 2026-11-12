@@ -47,11 +47,7 @@ def create(
         raise ValueError(
             "provide an uppercase scope and a single-line summary of 1..100 characters"
         )
-    taken = []
-    for path in sorted(root.rglob("*.md")):
-        taken.extend(ref.id for ref in ids.find_refs(path.read_text(encoding="utf-8")))
-        taken.extend(ref.id for ref in ids.find_refs(path.name))
-    candidate = ids.next_id("FEAT", taken)
+    candidate = ids.next_id("FEAT", ids.taken_ids(root))
     ids.feat_number(candidate)
     if feature and feature != candidate:
         raise ValueError(f"next allocatable feature is {candidate}; existing IDs cannot be reused")
@@ -72,6 +68,8 @@ def create(
             "id": candidate,
             "type": "feature",
             "scope": scope,
+            "title": summary,
+            "aliases": [],
             "status": "draft",
             "jira_summary": summary,
             "jira_issuetype": "Story",

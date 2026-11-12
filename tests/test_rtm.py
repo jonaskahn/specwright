@@ -132,3 +132,48 @@ class RtmTests(unittest.TestCase):
         path.write_text("not a table\n")
         with self.assertRaises(ValueError):
             rtm.read_table(path, list(schema.REGISTRY_COLUMNS))
+
+
+class RegistryColumnTests(unittest.TestCase):
+    OLD = schema.REGISTRY_COLUMNS[:9]
+
+    def setUp(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.path = Path(temp.name) / "id-registry.md"
+        old = rtm.tables.Table(list(self.OLD))
+        old.upsert("REF:FEAT-001", {"Kind": "story", "State": "published"})
+        self.path.write_text("# ID registry\n\n" + old.render())
+
+    def test_an_older_registry_is_read_widened_without_loss(self):
+        doc = rtm.read_table(self.path, list(schema.REGISTRY_COLUMNS))
+        self.assertEqual(doc.table.header, schema.REGISTRY_COLUMNS)
+        self.assertEqual(doc.table.get("REF:FEAT-001", "State"), "published")
+        self.assertEqual(doc.table.value("REF:FEAT-001", "Title"), "")
+
+    def test_migration_rewrites_once(self):
+        self.assertTrue(rtm.migrate_registry(self.path))
+        self.assertFalse(rtm.migrate_registry(self.path))
+        self.assertIn("Source ref", self.path.read_text())
+
+    def test_shape_may_name_a_reservation_but_not_touch_remote_keys(self):
+        rtm.registry_upsert(
+            self.path,
+            "REF:FEAT-002",
+            {"Kind": "story", "Title": "Reset password", "Aliases": "LEG-12"},
+            "sw-shape",
+        )
+        with self.assertRaises(rtm.OwnershipError):
+            rtm.registry_upsert(self.path, "REF:FEAT-002", {"Jira key": "PROJ-1"}, "sw-shape")
+        doc = rtm.read_table(self.path, list(schema.REGISTRY_COLUMNS))
+        self.assertEqual(doc.table.value("REF:FEAT-002", "Aliases"), "LEG-12")
+
+    def test_ingest_owns_snapshot_and_source_ref_only(self):
+        cells = {
+            "Kind": "snapshot",
+            "Last snapshot": "00-inbox/SRC-0001.md",
+            "Source ref": "wiki:12",
+        }
+        rtm.registry_upsert(self.path, "REF:SRC-0001", cells, "sw-ingest")
+        with self.assertRaises(rtm.OwnershipError):
+            rtm.registry_upsert(self.path, "REF:SRC-0001", {"Confluence id": "9"}, "sw-ingest")

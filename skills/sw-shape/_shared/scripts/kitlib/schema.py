@@ -97,6 +97,9 @@ REGISTRY_COLUMNS = [
     "Last published draft hash",
     "Last snapshot",
     "State",
+    "Title",
+    "Aliases",
+    "Source ref",
 ]
 
 SCOPE_DIRS = [

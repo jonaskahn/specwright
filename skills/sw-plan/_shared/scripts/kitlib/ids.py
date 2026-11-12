@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 from collections.abc import Iterable
 from dataclasses import dataclass
+from pathlib import Path
 
 TYPE_PATTERNS = {
     "feature": r"FEAT-\d{3}",
@@ -145,3 +147,51 @@ def next_id(prefix: str, taken: Iterable[str], width: int = 3) -> str:
         if match:
             highest = max(highest, int(match.group(1)))
     return f"{prefix}-{highest + 1:0{width}d}"
+
+
+_NAME_ID = re.compile(rf"^(?:{_ID})(?=--|\.|$)")
+SLUG_MAX = 48
+
+
+def slugify(title: str, limit: int = SLUG_MAX) -> str:
+    """Lowercase ASCII words joined by hyphens, cut at a word boundary; may be empty."""
+    plain = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode()
+    words = re.sub(r"[^a-z0-9]+", "-", plain.lower()).strip("-")
+    if len(words) <= limit:
+        return words
+    return words[:limit].rsplit("-", 1)[0] if "-" in words[:limit] else words[:limit]
+
+
+def record_filename(identity: str, title: str, suffix: str = ".md") -> str:
+    """`<ID>--<slug>.md`. The ID is the stable part; the slug may change without breaking links."""
+    slug = slugify(title)
+    return f"{identity}--{slug}{suffix}" if slug else f"{identity}{suffix}"
+
+
+def id_from_name(name: str) -> str | None:
+    """The ID leading a file name or stem: `Q-001`, `Q-001--slug.md` or `FEAT-001.story.md`."""
+    match = _NAME_ID.match(Path(name).name)
+    return match.group(0) if match else None
+
+
+def find_record(folder: Path, identity: str) -> Path | None:
+    """File holding an ID, named `<ID>.md` or `<ID>--<slug>.md`; None when absent."""
+    exact = folder / f"{identity}.md"
+    if exact.is_file():
+        return exact
+    named = sorted(folder.glob(f"{identity}--*.md")) if folder.is_dir() else []
+    return named[0] if named else None
+
+
+_SKIP_DIRS = {".git", "raw", "graph", "node_modules", "__pycache__"}
+
+
+def taken_ids(base: Path) -> list[str]:
+    """Every ID named by any file name or text under a scope, withdrawn ones included."""
+    found: list[str] = []
+    for path in sorted(base.rglob("*.md")):
+        if _SKIP_DIRS & set(path.relative_to(base).parts) or path.is_symlink():
+            continue
+        found.extend(ref.id for ref in find_refs(path.name))
+        found.extend(ref.id for ref in find_refs(path.read_text(encoding="utf-8")))
+    return found

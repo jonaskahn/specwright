@@ -836,7 +836,7 @@ def load_waivers(ctx):
     """Only decision records with explicit targets and evidence can excuse findings."""
     for doc in ctx.docs:
         if (
-            not re.fullmatch(r"records/DEC-\d{3}\.md", doc.path)
+            not re.fullmatch(r"records/DEC-\d{3}(--[^/]*)?\.md", doc.path)
             or doc.fm.get("type") != "dec"
             or doc.fm.get("status") != "accepted"
             or doc.parsed.error

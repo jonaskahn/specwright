@@ -38,7 +38,9 @@ def propose(base: Path, source: str, target: str, source_quote: str, claim_quote
         or not source_ref.id.startswith("SRC-")
     ):
         raise ValueError("impact requires a local source snapshot")
-    snapshot = base / "00-inbox" / f"{source_ref.id}.md"
+    snapshot = ids.find_record(base / "00-inbox", source_ref.id)
+    if snapshot is None:
+        raise ValueError(f"no snapshot file for {source_ref.id}")
     story = base / "02-drafts" / f"{ref.id}.story.md"
     if snapshot.is_symlink() or story.is_symlink():
         raise ValueError("impact input must not be a symlink")
@@ -64,10 +66,13 @@ def propose(base: Path, source: str, target: str, source_quote: str, claim_quote
         fm = frontmatter.parse(path.read_text(encoding="utf-8")).fm or {}
         if fm.get("proposal_hash") == identity:
             return path
-    number = ids.next_id("CR", [p.stem for p in records.glob("*.md")])
+    number = ids.next_id("CR", ids.taken_ids(base))
+    title = f"Evidence impact on {key}"
     fm = {
         "id": number,
         "type": "cr",
+        "title": title,
+        "aliases": [],
         "scope": scope,
         "status": "proposed",
         "affects": [key],
@@ -86,7 +91,7 @@ def propose(base: Path, source: str, target: str, source_quote: str, claim_quote
         "## Decision needed\n\nPotential conflict, not an accepted requirement change. "
         "Confirm relevance and the intended change through the owning skill.\n"
     )
-    path = records / f"{number}.md"
+    path = records / ids.record_filename(number, title)
     with path.open("x", encoding="utf-8") as handle:
         handle.write(frontmatter.render(fm, body))
     return path

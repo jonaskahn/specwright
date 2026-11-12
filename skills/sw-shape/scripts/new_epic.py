@@ -34,11 +34,7 @@ def create(root, scope, title, scopes=None, template=None):
     participants = scopes or [scope]
     if scope not in participants or not all(ids.is_scope(s) for s in participants):
         raise ValueError("scopes must be valid and include the home scope")
-    taken = []
-    for path in sorted(root.rglob("*.md")):
-        taken.extend(ref.id for ref in ids.find_refs(path.read_text(encoding="utf-8")))
-        taken.extend(ref.id for ref in ids.find_refs(path.name))
-    candidate = ids.next_id("EPIC", taken)
+    candidate = ids.next_id("EPIC", ids.taken_ids(root))
     template = template or _here.parent / "assets" / "epic.md"
     if not template.is_file():
         raise ValueError("template unavailable; provide --template pointing to assets/epic.md")
@@ -51,11 +47,12 @@ def create(root, scope, title, scopes=None, template=None):
             "type": "epic",
             "scope": scope,
             "title": title,
+            "aliases": [],
             "status": "draft",
             "scopes": participants,
         }
     )
-    target = root / "01-analysis" / "epics" / f"{candidate}.md"
+    target = root / "01-analysis" / "epics" / ids.record_filename(candidate, title)
     target.parent.mkdir(parents=True, exist_ok=True)
     # Exclusive creation protects a reservation made by another writer during allocation.
     with target.open("x", encoding="utf-8", newline="") as handle:

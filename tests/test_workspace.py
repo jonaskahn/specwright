@@ -51,6 +51,20 @@ class FlatTests(WorkspaceTestCase):
         self.assertEqual(rtm.table.header[0], "Spec ID")
         self.assertIn("Jira [sw-publish]", rtm.table.header)
 
+    def test_upgrade_adds_registry_columns_only_on_apply(self):
+        self.init_flat()
+        path = self.root / "_meta/id-registry.md"
+        old = tables.Table(schema.REGISTRY_COLUMNS[:9])
+        old.upsert("REF:FEAT-001", {"Kind": "story"})
+        path.write_text("# ID registry\n\n" + old.render())
+        plan = workspace.upgrade(self.root, "REF")
+        self.assertTrue(any("id-registry.md" in line for line in plan))
+        self.assertEqual(len(tables.parse(path.read_text()).table.header), 9)
+        workspace.upgrade(self.root, "REF", apply=True)
+        table = tables.parse(path.read_text()).table
+        self.assertEqual(table.header, schema.REGISTRY_COLUMNS)
+        self.assertEqual(table.get("REF:FEAT-001", "Kind"), "story")
+
     def test_init_refuses_to_overwrite(self):
         self.init_flat()
         with self.assertRaises(workspace.WorkspaceError):
