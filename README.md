@@ -165,8 +165,8 @@ docker run --rm -v "$PWD:/workspace:ro" -w /workspace python:3.13-slim \
           PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -t .'
 ```
 
-The canonical runtime lives in `skills/_shared/`; packaging embeds it into each skill. `tools/vendor.py --check`
-verifies that no source skill vendors a duplicate.
+The canonical runtime lives in `skills/_shared/`; each skill folder carries a generated copy of the files it needs,
+so it works when installed alone. `tools/vendor.py --write` refreshes the copies and `--check` verifies them.
 
 Trigger evals are fixtures, not a claim of measured model accuracy. The publish protocol and adapters are tested against
 a local Jira mock; the test suite never touches a real Jira instance. A sandbox trial and human sign-off are required

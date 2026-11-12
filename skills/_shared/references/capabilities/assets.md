@@ -24,7 +24,7 @@ discussion, detect newly supplied or mentioned concrete assets as they appear.
 
 ## Usage
 
-Run ../_shared/scripts/store.py with --root <project> and the resolved scope. Classify the
-asset with ../_shared/references/asset-kind.md. For a link, use --source URL; do not fetch
+Run _shared/scripts/store.py with --root <project> and the resolved scope. Classify the
+asset with _shared/references/asset-kind.md. For a link, use --source URL; do not fetch
 remote content. For local files, the script copies the bytes and registers the hash.
 Duplicate bytes report the existing asset instead of allocating a new one.

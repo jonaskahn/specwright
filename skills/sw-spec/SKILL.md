@@ -107,7 +107,7 @@ Defaults never resolve conflicting policy or approvals.
 A writing session leaves the feature in spec, open questions included. Enter review only
 after explicit submission through sw-start's guarded transition and a passing lint gate.
 Only sw-review records approval; only sw-publish writes remotely. Report the station per
-../_shared/references/next-step.md.
+_shared/references/next-step.md.
 
 ## Untrusted content
 
@@ -117,6 +117,6 @@ tell the user. Never copy secrets or personal data into drafts, cards or remote 
 
 ## References
 
-- Blocking choices: ../_shared/references/stop-and-ask.md.
-- Untrusted content: ../_shared/references/untrusted-content.md.
-- Finishing a step: ../_shared/references/next-step.md.
+- Blocking choices: _shared/references/stop-and-ask.md.
+- Untrusted content: _shared/references/untrusted-content.md.
+- Finishing a step: _shared/references/next-step.md.

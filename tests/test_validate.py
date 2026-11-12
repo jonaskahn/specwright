@@ -121,10 +121,6 @@ class ValidateTests(unittest.TestCase):
         (self.root / "evals" / "sw-demo" / "cases.json").unlink()
         self.assertIn("V045", self.codes(self.run_validate()))
 
-    def test_source_skill_must_not_vendor_shared(self):
-        (self.skill / "_shared").mkdir()
-        self.assertIn("V052", self.codes(self.run_validate()))
-
     def test_missing_license(self):
         (self.skill / "LICENSE").unlink()
         self.assertIn("V050", self.codes(self.run_validate()))

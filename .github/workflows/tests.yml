@@ -32,6 +32,12 @@ jobs:
           python tools/validate.py
           python tools/vendor.py --check
           python tools/hygiene.py files
+      - name: Skill installed alone smoke test
+        shell: bash
+        run: |
+          tmp="$(mktemp -d)"
+          cp -R skills/sw-start "$tmp/sw-start"
+          python "$tmp/sw-start/scripts/start.py" --help
       - name: Package and install smoke test
         shell: bash
         run: |

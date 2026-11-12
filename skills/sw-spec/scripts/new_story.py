@@ -14,7 +14,7 @@ from pathlib import Path
 _here = Path(__file__).resolve().parent
 _source_shared = _here.parent.parent / "_shared" / "scripts"
 _local_shared = _here.parent / "_shared" / "scripts"
-_shared = _source_shared if _source_shared.is_dir() else _local_shared
+_shared = _local_shared if _local_shared.is_dir() else _source_shared
 if not (_shared / "kitlib").is_dir():
     sys.exit(
         f"error: shared library missing at {_shared}/kitlib; "

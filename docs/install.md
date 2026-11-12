@@ -26,7 +26,8 @@ Claude Code plugin marketplace:
 /plugin install specwright@specwright
 ```
 
-Both routes read `skills/` straight from the repository, so they always carry the full
+Both routes read `skills/` straight from the repository. Each skill folder carries its own
+generated `_shared/` copy, so installing a skill on its own works. They always carry the full
 `extended` set of 20 diagram types (`skills/sw-spec` holds core and extended; only
 `extras/` is left out). Only `tools/package.py` defaults to the 10-type core profile.
 

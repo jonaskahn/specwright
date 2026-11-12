@@ -48,6 +48,14 @@ class VerifyPackageTests(unittest.TestCase):
         )
         self.assertTrue(any("names missing" in p for p in problems))
 
+    def test_each_source_skill_works_when_copied_alone(self):
+        # `npx skills add` copies one skill folder, never its sibling skills/_shared.
+        for source in sorted((ROOT / "skills").glob("sw-*")):
+            with self.subTest(skill=source.name), tempfile.TemporaryDirectory() as raw:
+                alone = Path(raw) / source.name
+                shutil.copytree(source, alone, ignore=shutil.ignore_patterns("__pycache__"))
+                self.assertEqual(verify.verify_skill(alone), [])
+
     def test_empty_distribution_folder_fails(self):
         with tempfile.TemporaryDirectory() as raw:
             self.assertTrue(verify.verify_zips(Path(raw)))

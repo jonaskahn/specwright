@@ -298,9 +298,6 @@ def _check_license(skill: Path, root: Path, report: Report) -> None:
 
 
 def _check_vendored(skill: Path, root: Path, report: Report) -> None:
-    vendored = skill / "_shared"
-    if vendored.exists():
-        report.add(vendored, 1, "V052", "source skill must not vendor _shared")
     if (skill / "scripts" / "kitlib").exists():
         report.add(skill / "scripts" / "kitlib", 1, "V053", "source skill must not vendor kitlib")
 

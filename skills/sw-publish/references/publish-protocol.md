@@ -9,7 +9,7 @@ fresh typed confirmation.
 - At least one sign-off carries an HTTPS evidence URL and the current draft hash
   (`sha256:` short form). A URL without the matching hash is stale.
 - The publish lint report exists and shows `0 blocking error(s)`. Produce it with
-  `../_shared/scripts/sw_lint.py --gate publish`.
+  `_shared/scripts/sw_lint.py --gate publish`.
 - Manifest `publish.transitions` is false. Transitions stay off unless the manifest grants
   them and a separate human confirms.
 

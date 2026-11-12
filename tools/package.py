@@ -66,6 +66,9 @@ def _ignore(source: Path, skip: set[str]):
         ignored = set(junk(directory, names))
         folder = Path(directory).relative_to(source)
         ignored.update(n for n in names if (folder / n).as_posix() in skip)
+        if folder == Path("."):
+            # The committed _shared copy is replaced by the mapped list copied afterwards.
+            ignored.update(n for n in names if n == SHARED)
         return ignored
 
     return ignore

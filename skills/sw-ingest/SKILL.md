@@ -93,7 +93,7 @@ Fuzzy objectives → sw-shape; clear features → sw-spec; open questions → th
 PO. Pass SRC ids, evidence lines, scanner results, conversion limits and Q ids. Import
 implies no approval. If ingestion supported an explicitly requested shape conversation,
 resume it; otherwise report the item's station and proposed impacts per
-../_shared/references/next-step.md. The skill that later applies an accepted edit backs
+_shared/references/next-step.md. The skill that later applies an accepted edit backs
 up the artifact with kitlib.ingest_impact.backup first.
 
 ## Untrusted content
@@ -109,6 +109,6 @@ hidden-chars. Report suspicion without repeating sensitive values.
 - Candidate extraction and conflicts: references/extraction-checklist.md.
 - Sensitive originals and redaction: references/pii-policy.md.
 - Scripts: scripts/to_md.py, scripts/secrets_scan.py, scripts/impact.py (each has --help).
-- Blocking choices: ../_shared/references/stop-and-ask.md.
-- Untrusted content: ../_shared/references/untrusted-content.md.
-- Finishing a step: ../_shared/references/next-step.md.
+- Blocking choices: _shared/references/stop-and-ask.md.
+- Untrusted content: _shared/references/untrusted-content.md.
+- Finishing a step: _shared/references/next-step.md.

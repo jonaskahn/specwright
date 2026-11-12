@@ -80,7 +80,7 @@ lint.hygiene:
 
 ##@ format: → apply Ruff fixes, format sources, regenerate vendored files and the bundle map
 
-format.default: format.ruff format.write format.vendor format.bundle
+format.default: format.ruff format.write format.bundle format.vendor
 
 ## format.ruff: apply Ruff's safe lint fixes
 format.ruff:
@@ -90,7 +90,7 @@ format.ruff:
 format.write:
 	$(RUFF) format .
 
-## format.vendor: regenerate vendored shared code
+## format.vendor: regenerate each skill's _shared copy (run after format.bundle)
 format.vendor:
 	$(PYTHON) tools/vendor.py --write
 
