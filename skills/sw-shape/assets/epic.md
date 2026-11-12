@@ -22,5 +22,5 @@ scopes: [<SCOPE>]
 
 ## Jira
 
-<Existing Jira key, if one is mapped in the ID registry; otherwise None. Specwright does not publish epics.>
+<Existing Jira key if the ID registry maps one, else None. Epics are never published.>
 

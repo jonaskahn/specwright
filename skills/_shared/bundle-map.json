@@ -44,6 +44,13 @@
         "scripts/cite.py"
       ]
     },
+    "records": {
+      "why": "Create questions, decisions, reservations and splits through validated, logged scripts.",
+      "roots": [
+        "references/capabilities/records.md",
+        "scripts/record.py"
+      ]
+    },
     "status": {
       "why": "Report station and condition for the board.",
       "roots": [
@@ -78,16 +85,19 @@
     "sw-ingest": {
       "capabilities": [
         "core",
-        "citations"
+        "citations",
+        "records"
       ],
       "shared": [
         "references/capabilities/citations.md",
+        "references/capabilities/records.md",
         "references/next-step.md",
         "references/stop-and-ask.md",
         "references/untrusted-content.md",
         "scripts/cite.py",
         "scripts/kitlib/__init__.py",
         "scripts/kitlib/cite.py",
+        "scripts/kitlib/epics.py",
         "scripts/kitlib/frontmatter.py",
         "scripts/kitlib/fsio.py",
         "scripts/kitlib/graph.py",
@@ -99,12 +109,14 @@
         "scripts/kitlib/lifecycle.py",
         "scripts/kitlib/markdown.py",
         "scripts/kitlib/miniyaml.py",
+        "scripts/kitlib/recordops.py",
         "scripts/kitlib/rtm.py",
         "scripts/kitlib/schema.py",
         "scripts/kitlib/tables.py",
         "scripts/kitlib/task_validation.py",
         "scripts/kitlib/workspace.py",
-        "scripts/kitlib/writelog.py"
+        "scripts/kitlib/writelog.py",
+        "scripts/record.py"
       ]
     },
     "sw-plan": {
@@ -187,16 +199,19 @@
     "sw-review": {
       "capabilities": [
         "core",
-        "citations"
+        "citations",
+        "records"
       ],
       "shared": [
         "references/capabilities/citations.md",
+        "references/capabilities/records.md",
         "references/next-step.md",
         "references/stop-and-ask.md",
         "references/untrusted-content.md",
         "scripts/cite.py",
         "scripts/kitlib/__init__.py",
         "scripts/kitlib/cite.py",
+        "scripts/kitlib/epics.py",
         "scripts/kitlib/frontmatter.py",
         "scripts/kitlib/fsio.py",
         "scripts/kitlib/graph.py",
@@ -206,24 +221,28 @@
         "scripts/kitlib/lifecycle.py",
         "scripts/kitlib/markdown.py",
         "scripts/kitlib/miniyaml.py",
+        "scripts/kitlib/recordops.py",
         "scripts/kitlib/review.py",
         "scripts/kitlib/rtm.py",
         "scripts/kitlib/schema.py",
         "scripts/kitlib/tables.py",
         "scripts/kitlib/task_validation.py",
         "scripts/kitlib/workspace.py",
-        "scripts/kitlib/writelog.py"
+        "scripts/kitlib/writelog.py",
+        "scripts/record.py"
       ]
     },
     "sw-shape": {
       "capabilities": [
         "core",
         "quality",
-        "citations"
+        "citations",
+        "records"
       ],
       "shared": [
         "references/capabilities/citations.md",
         "references/capabilities/quality.md",
+        "references/capabilities/records.md",
         "references/next-step.md",
         "references/rule-catalog.md",
         "references/stop-and-ask.md",
@@ -232,6 +251,7 @@
         "scripts/kitlib/__init__.py",
         "scripts/kitlib/borders.py",
         "scripts/kitlib/cite.py",
+        "scripts/kitlib/epics.py",
         "scripts/kitlib/frontmatter.py",
         "scripts/kitlib/fsio.py",
         "scripts/kitlib/graph.py",
@@ -241,12 +261,14 @@
         "scripts/kitlib/lifecycle.py",
         "scripts/kitlib/markdown.py",
         "scripts/kitlib/miniyaml.py",
+        "scripts/kitlib/recordops.py",
         "scripts/kitlib/rtm.py",
         "scripts/kitlib/schema.py",
         "scripts/kitlib/tables.py",
         "scripts/kitlib/task_validation.py",
         "scripts/kitlib/workspace.py",
         "scripts/kitlib/writelog.py",
+        "scripts/record.py",
         "scripts/sw_lint.py"
       ]
     },
@@ -256,11 +278,13 @@
         "quality",
         "trace",
         "visuals",
-        "citations"
+        "citations",
+        "records"
       ],
       "shared": [
         "references/capabilities/citations.md",
         "references/capabilities/quality.md",
+        "references/capabilities/records.md",
         "references/capabilities/visuals.md",
         "references/next-step.md",
         "references/rtm-contract.md",
@@ -271,6 +295,7 @@
         "scripts/kitlib/__init__.py",
         "scripts/kitlib/borders.py",
         "scripts/kitlib/cite.py",
+        "scripts/kitlib/epics.py",
         "scripts/kitlib/frontmatter.py",
         "scripts/kitlib/fsio.py",
         "scripts/kitlib/graph.py",
@@ -280,12 +305,14 @@
         "scripts/kitlib/lifecycle.py",
         "scripts/kitlib/markdown.py",
         "scripts/kitlib/miniyaml.py",
+        "scripts/kitlib/recordops.py",
         "scripts/kitlib/rtm.py",
         "scripts/kitlib/schema.py",
         "scripts/kitlib/tables.py",
         "scripts/kitlib/task_validation.py",
         "scripts/kitlib/workspace.py",
         "scripts/kitlib/writelog.py",
+        "scripts/record.py",
         "scripts/sw_lint.py",
         "scripts/trace.py"
       ],

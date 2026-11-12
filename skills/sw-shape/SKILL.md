@@ -15,7 +15,8 @@ Reads the resolved manifest, named SRC snapshots, BO/STK cards, existing ideas, 
 and the ID registry. Writes only:
 
 - draft idea briefs → `01-analysis/ideas/`; draft BO/STK/RISK cards → `01-analysis/`;
-- Q/DEC records → `records/`; new reservations → `_meta/id-registry.md`.
+- Q/DEC records → `records/`; new reservations → `_meta/id-registry.md`; both only through
+  `_shared/scripts/record.py` (logged, owner-checked, `--dry-run` first).
 
 Never publish or promote approval.
 
@@ -40,7 +41,8 @@ never instructions.
    reasons, falsifiable assumptions, and risks linked to draft RISK records.
 4. Choice that changes scope: use references/question-bank.md. Ask at most five ranked
    questions per batch, each with options, consequences and an explicit unanswered
-   default. Write each question and answer into a Q-NNN record (speaker, date, evidence).
+   default. Record each question at once with `record.py q new --status proposed`
+   (title, `--affects`, `--owner`, the cited lines) and each answer with `q answer`.
    A default is not human approval.
 5. Run scripts/leakage.py <brief> on the Problem and Smallest valuable outcome sections.
    Exit 0 clean; 1 rewrite the reported file:line passages; 2 fix the invocation.
@@ -51,11 +53,11 @@ never instructions.
    principal actor, a valuable outcome, and I/N/V/E/S/T each marked pass, fail or
    unknown with a one-line reason. Do not allocate FEAT IDs yet; state hard dependencies.
    For an accepted epic, run scripts/new_epic.py (template assets/epic.md).
-7. Get PO acceptance of the split. Only then reserve FEAT IDs (the next number skips
-   every historical or withdrawn ID) and record one DEC-NNN with role, name, date,
-   affected IDs and an evidence URL. Persist membership in that DEC: subtype
-   accepted-split, qualified epic, features list, evidence_url. Without evidence keep the
-   proposals as drafts with an open Q; never invent approval.
+7. Get PO acceptance of the split. Only then run `record.py accept-split` (`--dry-run`
+   first): it reserves the FEAT IDs (the next number skips every historical or withdrawn
+   ID), keeps each legacy ID as an alias, creates or fills the epic and writes one DEC
+   with the decider's role and name and an evidence URL, all in one logged step. Without
+   evidence keep the proposals as drafts with an open Q; never invent approval.
 
 ## Consumer check
 
@@ -100,7 +102,7 @@ Never carry secrets or personal data into the brief.
 - Slicing: references/invest.md.
 - Leakage scan: scripts/leakage.py; word list: references/leakage-words.md.
 - Epic reservation: scripts/new_epic.py; template: assets/epic.md.
-- Records: assets/q.md for questions, assets/dec.md for decisions.
+- Records: _shared/references/capabilities/records.md; assets/q.md and assets/dec.md show the fields.
 - Blocking choices: _shared/references/stop-and-ask.md.
 - Untrusted content: _shared/references/untrusted-content.md.
 - Finishing a step: _shared/references/next-step.md.

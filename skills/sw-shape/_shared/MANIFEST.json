@@ -2,6 +2,7 @@
  "files": {
   "references/capabilities/citations.md": "d3c8ec81a8fb",
   "references/capabilities/quality.md": "2834b91b2c77",
+  "references/capabilities/records.md": "3c38657c5bda",
   "references/next-step.md": "014dd8c606b1",
   "references/rule-catalog.md": "2b54c90358b1",
   "references/stop-and-ask.md": "8dcf14ae3f9f",
@@ -10,6 +11,7 @@
   "scripts/kitlib/__init__.py": "b15fdecaaa14",
   "scripts/kitlib/borders.py": "61c9a3762adc",
   "scripts/kitlib/cite.py": "e68bc074e2bf",
+  "scripts/kitlib/epics.py": "7e2170516483",
   "scripts/kitlib/frontmatter.py": "8f5e22fd72e7",
   "scripts/kitlib/fsio.py": "ab1846444c3c",
   "scripts/kitlib/graph.py": "2feedb873e9a",
@@ -19,12 +21,14 @@
   "scripts/kitlib/lifecycle.py": "fa5d945dc981",
   "scripts/kitlib/markdown.py": "e3b4f0bf14ab",
   "scripts/kitlib/miniyaml.py": "73a1bbe68a05",
+  "scripts/kitlib/recordops.py": "557a9a779fbd",
   "scripts/kitlib/rtm.py": "dc57dda3403f",
   "scripts/kitlib/schema.py": "9b9d2e8b88d0",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "a72c8fe85965",
   "scripts/kitlib/workspace.py": "dbb1251f4d0e",
   "scripts/kitlib/writelog.py": "1a34e6e3c8c9",
+  "scripts/record.py": "6756819a6199",
   "scripts/sw_lint.py": "acae578a48d9"
  },
  "kit_version": "0.3.0"

@@ -23,41 +23,14 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import frontmatter, ids  # noqa: E402
+from kitlib import epics  # noqa: E402
 
 
 def create(root, scope, title, scopes=None, template=None):
-    if not root.is_dir() or (root / "workspace.yaml").exists():
-        raise ValueError("scope-root must be an existing, resolved project directory")
-    if not ids.is_scope(scope) or not title.strip() or len(title) > 100 or "\n" in title:
-        raise ValueError("provide an uppercase scope and a single-line title of 1..100 characters")
-    participants = scopes or [scope]
-    if scope not in participants or not all(ids.is_scope(s) for s in participants):
-        raise ValueError("scopes must be valid and include the home scope")
-    candidate = ids.next_id("EPIC", ids.taken_ids(root))
     template = template or _here.parent / "assets" / "epic.md"
     if not template.is_file():
         raise ValueError("template unavailable; provide --template pointing to assets/epic.md")
-    fm, body = frontmatter.split(template.read_text(encoding="utf-8"))
-    if fm is None:
-        raise ValueError("template requires front matter")
-    fm.update(
-        {
-            "id": candidate,
-            "type": "epic",
-            "scope": scope,
-            "title": title,
-            "aliases": [],
-            "status": "draft",
-            "scopes": participants,
-        }
-    )
-    target = root / "01-analysis" / "epics" / ids.record_filename(candidate, title)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    # Exclusive creation protects a reservation made by another writer during allocation.
-    with target.open("x", encoding="utf-8", newline="") as handle:
-        handle.write(frontmatter.render(fm, body))
-    return target
+    return epics.create(root, scope, title, scopes, template.read_text(encoding="utf-8"))
 
 
 def main(argv=None):
