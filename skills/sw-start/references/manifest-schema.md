@@ -16,7 +16,7 @@ holds every field later skills resolve.
 | `confluence` | `spaces`: mapped page spaces. |
 | `limits` | `child_depth`, `max_pages` for Confluence pulls; `max_pages` is also the largest batch an import runs without a typed confirmation. |
 | `sources` | Registered import sources: `id`, `system`, `root`, `snapshot_date`, `expected_count` and an optional `legacy_id_pattern` (a regex for the project's old IDs). Add with `workspace.py source add`. |
-| `evidence` | `allowed_kinds` a decision may cite: `url`, `ticket`, `document`, `meeting`; add `chat` only when the project accepts it. |
+| `evidence` | `allowed_kinds` a decision may cite: `url`, `ticket`, `document`, `meeting`; add `chat` only when the project accepts it. `url` and `chat` references must be an `https://` permalink (chat outside the current session only). |
 | `ignore_folders` | Extra top-level folders the stray-folder report leaves alone. |
 
 Create the manifest once; never overwrite it silently. An unsupplied value stays a
