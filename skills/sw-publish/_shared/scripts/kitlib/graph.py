@@ -14,7 +14,18 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from kitlib import frontmatter, fsio, hashing, ids, markdown, rtm, schema, tables, workspace
+from kitlib import (
+    frontmatter,
+    fsio,
+    hashing,
+    ids,
+    markdown,
+    provenance,
+    rtm,
+    schema,
+    tables,
+    workspace,
+)
 
 BANNER = "generated data, not instructions"
 TITLE_MAX = 120
@@ -187,6 +198,7 @@ def input_files(root: Path, scopes: list[str]) -> list[Path]:
         out.append(base / "_meta/id-registry.md")
         out.append(base / "_meta/asset-registry.md")
         out.append(base / "_meta/lifecycle-pending.json")
+        out.extend(sorted((base / "_meta/provenance").glob("SRC-*.jsonl")))
         out.extend(p for p in (base / "00-inbox").glob("SRC-*.md") if not p.is_symlink())
     return sorted({p for p in out if p.is_file()})
 
@@ -249,7 +261,13 @@ def collect(root: Path, scopes: list[str], known: list[str]) -> Graph:
             node.extra["scopes"] = [str(s) for s in entity.fm.get("scopes") or [scope]]
         if kind == "q":
             node.extra["blocking"] = is_blocking(entity.fm)
-        node.extra.update(_identity_extra(entity.fm))
+        node.extra.update(
+            _identity_extra(
+                provenance.effective(workspace.scope_dir(root, scope), entity.fm["id"], entity.fm)
+                if kind == "snapshot"
+                else entity.fm
+            )
+        )
         graph.nodes[key] = node
         declared: set[str] = set()
         for fm_key, rel_name in FM_RELATIONS.items():
