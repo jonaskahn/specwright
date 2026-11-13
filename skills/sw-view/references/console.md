@@ -70,6 +70,17 @@ inline in the story's preview, and clicking it opens the file at full width. A f
 tab lists its pictures, so one that is drawn but not yet embedded (an approved story) is still one
 click away. An HTML diagram is not previewed; only Markdown, PDF and images open.
 
+A story's preview draws its acceptance criteria as cards, or as a table with Given, When and Then
+columns (the choice is kept in this browser). Chips filter them by kind, with counts. The kind, the
+shared background and the value chips are worked out when the file is read; the story is not edited.
+
+- **Kind:** validation when the title or outcome is a refusal or an error, interface when it is a
+  display rule, happy path for any other criterion written in steps, and free text for one that is not.
+- **Background:** a Given that three or more criteria share is shown once, naming the criteria it
+  applies to, and is left off their cards.
+- **Values:** quoted text in a step is set as a value chip. A criterion that does not read as steps
+  keeps its text as written.
+
 Every table has a filter, facet selects, sortable headers and pages of 25, 50 or 100 rows, and its
 state is kept in the address (`t.<table>.q`, `.f.<column>`, `.s`, `.p`, `.n`).
 

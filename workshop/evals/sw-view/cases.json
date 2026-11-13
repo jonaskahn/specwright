@@ -78,6 +78,16 @@
         "Clicking the diagram opens the SVG file in the panel at full width",
         "An HTML diagram is not offered for preview and the panel says only Markdown, PDF and images open"
       ]
+    },
+    {
+      "id": "criteria-cards-in-preview",
+      "prompt": "Use sw-view to preview a story whose criteria are written as bold Given, When and Then bullets.",
+      "fixture": "workshop/fixtures/embedded-program",
+      "assertions": [
+        "The preview shows the criteria as cards with a count, kind chips with counts, and a Cards and Table switch",
+        "A Given shared by three or more criteria appears once as a Background block naming them, not on each card",
+        "Quoted text in a step is set as a value chip, and the story file is not changed"
+      ]
     }
   ]
 }
