@@ -1,7 +1,7 @@
 {
   "name": "specwright-console",
   "private": true,
-  "version": "0.5.0",
+  "version": "0.6.0",
   "type": "module",
   "description": "Read-only dashboard for a Specwright workspace. Built and served by the sw-view skill.",
   "engines": { "node": ">=24" },
