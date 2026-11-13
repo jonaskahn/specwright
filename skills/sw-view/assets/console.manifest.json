@@ -1,5 +1,5 @@
 {
- "bytes": 589859,
+ "bytes": 589885,
  "console": "0.5.0",
  "files": {
   ".nvmrc": "sha256:68ca3fba3b7e864770cb61aeb306d4bd4354b68ab4dd38450860c5d823e42a53",
@@ -82,7 +82,7 @@
   "src/routes/Registry.svelte": "sha256:75c6bb944a35d991e4cfbcfe00d517336e99b4074277c52d3c8a2f78a33f0f46",
   "src/routes/Sources.svelte": "sha256:a65a9139d9ea4c9f2e2a521c64f8753ad5095770d0374f77255339c01281f7e2",
   "src/routes/Tasks.svelte": "sha256:04eb19e31345b4ea1842cdfab4afbbe708331f837e32413854ee4e322fa91a0c",
-  "src/styles/components.css": "sha256:d5a3bebd787170aecd257dc85918102c610934daa76bf044dda5660292863c27",
+  "src/styles/components.css": "sha256:592b5168ac3272dd117b0b0d3486e467bf7a7031b6dec126c48e272cc8d1ce3a",
   "src/styles/preview.css": "sha256:fe33343a437978f33b0501e815e0c0966184ff820f2afb8925c69d4bb57cf61a",
   "src/styles/shell.css": "sha256:dafa6377ebd7e14e83bc505b0230f7798add0fefc873eff1aefd282aa73194d0",
   "src/styles/tokens.css": "sha256:11d8c7fa0293ef947e495c721857900459b118001c2d6065554b10c133be5966",
@@ -108,6 +108,6 @@
   "vite.config.ts": "sha256:9e5a5fa2907e4884db59d61b8d15ea40b8fdf088fc5173d590d8c8b070caf716"
  },
  "formatVersion": 1,
- "tree": "sha256:b7f39d4671ce0fa2a11d4edd23938d82282f78619f99fd5022c85fae2229b418",
- "zip": "sha256:528876889e178a7619d4c7c6ad74b9d8459c9730b62440bc8be9f9600658560b"
+ "tree": "sha256:599daa7ef527dded655f7f7d37329c1ee41f2995a4b5e7a4c5d41827417a149a",
+ "zip": "sha256:c86f9af90a4887acd3e28f265384398f090dd3cd958164ee83ec67eea2385780"
 }

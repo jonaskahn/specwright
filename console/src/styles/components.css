@@ -195,7 +195,7 @@ dialog.palette-dialog::backdrop { background: var(--color-scrim); }
 .cover:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .cover[aria-pressed="true"] { background: var(--fill-2); box-shadow: inset 0 -3px 0 var(--accent); }
 .cover .l { font-size: var(--text-sm); color: var(--muted); }
-.cover .v { font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
+.cover .v { margin-block-start: auto; font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
 .cover .v strong { font-size: var(--text-lg); }
 .cover .meter { display: block; block-size: 4px; border-radius: 2px; background: var(--fill-2); overflow: hidden; }
 .cover .meter i { display: block; block-size: 100%; inline-size: var(--w); background: var(--accent); }
