@@ -71,7 +71,7 @@ tab lists its pictures, so one that is drawn but not yet embedded (an approved s
 click away. An HTML diagram is not previewed; only Markdown, PDF and images open.
 
 A story's preview draws its acceptance criteria as cards, or as a table with Given, When and Then
-columns (the choice is kept in this browser). Chips filter them by kind, with counts. The kind, the
+columns (the Cards or Table choice is kept in this browser and used for tasks too). Chips filter them by kind, with counts. The kind, the
 shared background and the value chips are worked out when the file is read; the story is not edited.
 
 - **Kind:** validation when the title or outcome is a refusal or an error, interface when it is a
@@ -80,6 +80,11 @@ shared background and the value chips are worked out when the file is read; the 
   applies to, and is left off their cards.
 - **Values:** quoted text in a step is set as a value chip. A criterion that does not read as steps
   keeps its text as written.
+
+A plan's task file gets the same treatment: a "Tasks" heading with a count, chips for each layer, and
+cards or the table. A card shows Done when, Traces to, Depends on, Visuals, Touches and Stop and ask
+if, and leaves out a field that says only "None". A task marked `[P]` carries a Parallel marker. A
+task whose lines are not labelled keeps its text as written.
 
 Every table has a filter, facet selects, sortable headers and pages of 25, 50 or 100 rows, and its
 state is kept in the address (`t.<table>.q`, `.f.<column>`, `.s`, `.p`, `.n`).

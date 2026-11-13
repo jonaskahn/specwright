@@ -88,6 +88,16 @@
         "A Given shared by three or more criteria appears once as a Background block naming them, not on each card",
         "Quoted text in a step is set as a value chip, and the story file is not changed"
       ]
+    },
+    {
+      "id": "task-cards-in-preview",
+      "prompt": "Use sw-view to preview a task from a plan's tasks file.",
+      "fixture": "workshop/fixtures/embedded-program",
+      "assertions": [
+        "The preview shows a Tasks heading with a count, layer chips, and a Cards and Table switch",
+        "The task that was chosen is open and highlighted, and each card lists Done when, Traces to and the other labelled lines",
+        "A task without labelled lines keeps its text as written, and the plan file is not changed"
+      ]
     }
   ]
 }
