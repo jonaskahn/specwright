@@ -3,11 +3,13 @@
   import { app } from '../lib/data/store.svelte';
   import { dirOf } from '../lib/markdown/links';
   import { findCriteria } from '../lib/markdown/criteria';
+  import { findTasks } from '../lib/markdown/tasks';
   import { hitRange, parseInline, parseMarkdown, type OutlineEntry } from '../lib/markdown/parse';
   import { preview } from '../lib/preview.svelte';
   import { forFile, forKey } from '../lib/preview-target';
   import { MD, type MdContext } from './md';
   import Criteria from './Criteria.svelte';
+  import Tasks from './Tasks.svelte';
   import MdBlocks from './MdBlocks.svelte';
   import MdInline from './MdInline.svelte';
 
@@ -17,13 +19,15 @@
     path,
     line = 1,
     criteria = false,
+    tasks = false,
     outline = $bindable<OutlineEntry[]>([]),
-  }: { text: string; scope: string; path: string; line?: number; criteria?: boolean; outline?: OutlineEntry[] } = $props();
+  }: { text: string; scope: string; path: string; line?: number; criteria?: boolean; tasks?: boolean; outline?: OutlineEntry[] } = $props();
 
   const doc = $derived(parseMarkdown(text));
   const hit = $derived(hitRange(doc, line > 1 ? line : 0));
-  /** A story's criteria are drawn as cards or a table, and its front matter is left to the Details tab; any other file is drawn as written. */
+  /** A story's criteria and a plan's tasks are drawn as cards or a table, with the front matter left to the Details tab; any other file is drawn as written. */
   const section = $derived(criteria ? findCriteria(doc) : null);
+  const plan = $derived(tasks ? findTasks(doc) : null);
   let root = $state<HTMLElement | null>(null);
 
   function jump(id: string) {
@@ -62,7 +66,7 @@
 </script>
 
 <article class="md" bind:this={root}>
-  {#if doc.meta && !section}
+  {#if doc.meta && !section && !plan}
     <dl class="md-meta">
       {#each doc.meta as [name, value] (name)}
         <dt>{name}</dt>
@@ -74,6 +78,10 @@
     <MdBlocks blocks={section.before} />
     <Criteria {section} />
     <MdBlocks blocks={section.after} />
+  {:else if plan}
+    <MdBlocks blocks={plan.before} />
+    <Tasks section={plan} />
+    <MdBlocks blocks={plan.after} />
   {:else}
     <MdBlocks blocks={doc.blocks} />
   {/if}

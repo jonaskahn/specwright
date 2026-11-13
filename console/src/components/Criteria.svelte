@@ -5,6 +5,7 @@
   import { columns, type Criterion, type Section, type Step, type Tag } from '../lib/markdown/criteria';
   import { ms } from '../lib/motion';
   import Icon from './Icon.svelte';
+  import ListBar from './ListBar.svelte';
   import { MD, type MdContext } from './md';
   import MdBlocks from './MdBlocks.svelte';
   import StepText from './StepText.svelte';
@@ -30,7 +31,7 @@
   const everyOpen = $derived(shown.length > 0 && shown.every((c) => open[c.id]));
   const hitId = $derived(items.find((c) => md.hit && md.hit[0] >= c.line && md.hit[0] <= c.end)?.id ?? null);
   const ruled = $derived(section.background && shown.some((c) => c.background) ? section.background : null);
-  const view = $derived(app.prefs.criteriaView);
+  const view = $derived(app.prefs.listView);
 
   // A criterion that was asked for opens (the document scrolls to it); otherwise the first one does, so the panel is never all closed.
   $effect(() => {
@@ -55,23 +56,14 @@
   </div>
   {#if section.lead.length}<MdBlocks blocks={section.lead} />{/if}
 
-  <div class="ac-bar">
-    {#if present.length > 1}
-      <div class="ac-chips" role="group" aria-label="Filter criteria by kind">
-        <button class="ac-chip" type="button" aria-pressed={active === 'all'} onclick={() => (filter = 'all')}>All {count('all')}</button>
-        {#each present as t (t)}
-          <button class="ac-chip" type="button" aria-pressed={active === t} onclick={() => (filter = t)}>{TAGS[t].label} {count(t)}</button>
-        {/each}
-      </div>
-    {/if}
-    <div class="ac-tools">
-      {#if view === 'cards'}<button class="ac-link" type="button" onclick={setAll}>{everyOpen ? 'Collapse all' : 'Expand all'}</button>{/if}
-      <div class="seg" role="group" aria-label="Layout of the criteria">
-        <button type="button" aria-pressed={view === 'cards'} onclick={() => app.setPref('criteriaView', 'cards')}>Cards</button>
-        <button type="button" aria-pressed={view === 'table'} onclick={() => app.setPref('criteriaView', 'table')}>Table</button>
-      </div>
-    </div>
-  </div>
+  <ListBar
+    chips={[{ key: 'all', label: 'All', count: items.length }, ...present.map((t) => ({ key: t, label: TAGS[t].label, count: count(t) }))]}
+    active={active}
+    onpick={(k) => (filter = k as Tag | 'all')}
+    what="criteria"
+    expand={everyOpen ? 'Collapse all' : 'Expand all'}
+    onexpand={setAll}
+  />
 
   {#if ruled}
     <div class="ac-background">

@@ -118,3 +118,7 @@ ol.md-list { list-style: decimal; }
 .ac-dim { color: var(--muted); font-style: italic; }
 .ac-and { color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { .ac-chev { transition: none; } }
+.tk-row { display: flex; align-items: baseline; gap: var(--space-sm); margin: 0; }
+.tk-label { flex: none; inline-size: 8rem; color: var(--muted); font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.tk-done .ac-text { font-weight: 500; }
+.ac-table .pill { margin-inline-start: var(--space-xs); vertical-align: baseline; }

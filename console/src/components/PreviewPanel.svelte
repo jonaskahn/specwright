@@ -165,7 +165,7 @@
             </details>
           {/if}
           {#if suffix === '.md'}
-            <Markdown text={body.text} scope={readable.scope} path={readable.path} line={t.line} criteria={readable.path.endsWith('.story.md')} bind:outline />
+            <Markdown text={body.text} scope={readable.scope} path={readable.path} line={t.line} criteria={readable.path.endsWith('.story.md')} tasks={readable.path.endsWith('.tasks.md')} bind:outline />
           {:else}
             <pre class="md-code">{body.text}</pre>
           {/if}

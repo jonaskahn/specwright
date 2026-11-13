@@ -3,7 +3,7 @@
 export const THEMES = ['light', 'dark', 'system'] as const;
 export const ACCENTS = ['red', 'orange', 'amber', 'green', 'teal', 'cyan', 'blue', 'rose'] as const;
 export const DENSITIES = ['comfortable', 'compact'] as const;
-export const CRITERIA_VIEWS = ['cards', 'table'] as const;
+export const LIST_VIEWS = ['cards', 'table'] as const;
 
 export interface Prefs {
   theme: (typeof THEMES)[number];
@@ -14,12 +14,12 @@ export interface Prefs {
   previewPinned: boolean;
   /** Width of the preview panel in pixels; 0 means half the screen. */
   previewWidth: number;
-  /** How a story's criteria are laid out in the preview. */
-  criteriaView: (typeof CRITERIA_VIEWS)[number];
+  /** How a story's criteria or a plan's tasks are laid out in the preview. */
+  listView: (typeof LIST_VIEWS)[number];
 }
 
 const KEY = 'specwright-';
-export const DEFAULTS: Prefs = { theme: 'system', accent: 'red', density: 'comfortable', folded: false, previewPinned: false, previewWidth: 0, criteriaView: 'cards' };
+export const DEFAULTS: Prefs = { theme: 'system', accent: 'red', density: 'comfortable', folded: false, previewPinned: false, previewWidth: 0, listView: 'cards' };
 /** The preview is half the screen until the user drags it; 0 stands for that. */
 export const PREVIEW_WIDTH = { min: 380, share: 0.85 };
 
@@ -48,7 +48,7 @@ export function loadPrefs(): Prefs {
     folded: read('folded') === '1',
     previewPinned: read('previewPinned') === '1',
     previewWidth: clampWidth(Number(read('previewWidth'))),
-    criteriaView: pick(CRITERIA_VIEWS, read('criteriaView'), DEFAULTS.criteriaView),
+    listView: pick(LIST_VIEWS, read('listView'), DEFAULTS.listView),
   };
 }
 
