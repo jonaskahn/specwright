@@ -44,8 +44,10 @@
     const y1 = a.y + BOX.h / 2;
     const x2 = b.x;
     const y2 = b.y + BOX.h / 2;
-    const bend = Math.max(BOX.gapX / 2, (x2 - x1) / 2);
-    return `M${x1} ${y1} C${x1 + bend} ${y1} ${x2 - bend} ${y2} ${x2} ${y2}`;
+    // The curve ends level for the length of the arrowhead, so the line meets the head at its middle.
+    const lead = 18;
+    const bend = Math.max(BOX.gapX / 2, (x2 - lead - x1) / 2);
+    return `M${x1} ${y1} C${x1 + bend} ${y1} ${x2 - lead - bend} ${y2} ${x2 - lead} ${y2} H${x2}`;
   }
   const lit = (l: TraceLink) => !!chain && chain.links.has(l.id);
   const linkDim = (l: TraceLink) => (chain ? !chain.links.has(l.id) : emphasis.size > 0 && !(emphasis.has(l.left) && emphasis.has(l.right)));

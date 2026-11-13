@@ -1,5 +1,5 @@
 {
- "bytes": 589885,
+ "bytes": 590037,
  "console": "0.6.0",
  "files": {
   ".nvmrc": "sha256:68ca3fba3b7e864770cb61aeb306d4bd4354b68ab4dd38450860c5d823e42a53",
@@ -41,7 +41,7 @@
   "src/components/StepText.svelte": "sha256:352d2b0dd6a26ea7bcf5bd06fe83a25adccd875e4d2e114adfb2c9a50dc4bff3",
   "src/components/Tasks.svelte": "sha256:b8f3dae27c3e7c0de56bbe6750c063caaf76ae10abb35a4febbdb1ab50cdae2c",
   "src/components/Topbar.svelte": "sha256:7d2e1ce9ee5b4f5fb63c316fb5a5a7bf7d51a9556be3033f752a3ec12e7687a7",
-  "src/components/TraceMap.svelte": "sha256:db7145ae88232b06f9e5efdae2016fddc75eca0faadcb67c0ba19fd423e8f7b2",
+  "src/components/TraceMap.svelte": "sha256:1dc9d46b822985cc9d9e92988807dffe55eaf38711392231db2686564ffa58c9",
   "src/components/TraceView.svelte": "sha256:ad28039597a4241ddf6cb7476e3b860fb5301afa350541ed531df7ded3b9174c",
   "src/components/md.ts": "sha256:dbeca7a53bb397e6a247d2ec5c0a87dd423e627b827644b485bc788c9b27e925",
   "src/components/nav.ts": "sha256:ae9fde24c998fc52879e8be05158b0b40bf2308a12f3f6c21b4e0dbc2b8dee76",
@@ -108,6 +108,6 @@
   "vite.config.ts": "sha256:9e5a5fa2907e4884db59d61b8d15ea40b8fdf088fc5173d590d8c8b070caf716"
  },
  "formatVersion": 1,
- "tree": "sha256:0d6924002cb5c351dab334b007a9bcd1c04c9707e6e5944f1d625905ccbd7017",
- "zip": "sha256:1ba78fb380aa48593c2fd2e9b14aefb0d3484308312b75f70cb9312499765d2f"
+ "tree": "sha256:7559ea446e7cb9104160c1939e7da016ad1c0fd5262694f92aa8dd4a5bc0deec",
+ "zip": "sha256:09c273db65da2e5a66c3fdb1fc3c49e537eaad5acab711c355169be587c7ea67"
 }
