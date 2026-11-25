@@ -25,7 +25,16 @@ import json  # noqa: E402
 
 from kitlib import graph, graph_query, handoff, workspace  # noqa: E402
 
-SKILLS = ("sw-start", "sw-analyze", "sw-ingest", "sw-shape", "sw-spec", "sw-review", "sw-plan", "sw-publish")
+SKILLS = (
+    "sw-start",
+    "sw-analyze",
+    "sw-ingest",
+    "sw-shape",
+    "sw-spec",
+    "sw-review",
+    "sw-plan",
+    "sw-publish",
+)
 
 
 def _say(answer: dict) -> str:

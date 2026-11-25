@@ -96,7 +96,7 @@ def _delta(parsed) -> list[dict]:
             continue
         if set(s.replace("|", "").strip()) <= {"-", ":", " "}:
             continue
-        rows.append(dict(zip(header, cells)))
+        rows.append(dict(zip(header, cells, strict=False)))
     return rows
 
 

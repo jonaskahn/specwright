@@ -77,7 +77,7 @@ def _table(section) -> list[dict[str, str]]:
             continue
         if set(s.replace("|", "").strip()) <= {"-", ":", " "}:
             continue
-        row = dict(zip(header, cells))
+        row = dict(zip(header, cells, strict=False))
         row["_line"] = str(number)
         rows.append(row)
     return rows

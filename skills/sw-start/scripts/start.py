@@ -26,17 +26,17 @@ import json
 
 from kitlib import (  # noqa: E402
     baseline,
+    coderoots,
     frontmatter,
     graph_query,
     guard,
-    coderoots,
     handoff,
-    stack,
     hashing,
     index,
     invest,
     runtime,
     schema,
+    stack,
     workspace,
 )
 

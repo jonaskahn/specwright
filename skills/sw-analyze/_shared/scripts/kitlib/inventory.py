@@ -311,7 +311,10 @@ def scan_docs(folders: list[tuple[Path, str]]) -> list[dict[str, Any]]:
             continue
         for p in sorted(folder.rglob("*.md"))[:400]:
             rel = p.relative_to(folder).as_posix()
-            if any(part in SKIP or part == "raw" or part.startswith(".") for part in Path(rel).parts[:-1]):
+            if any(
+                part in SKIP or part == "raw" or part.startswith(".")
+                for part in Path(rel).parts[:-1]
+            ):
                 continue
             try:
                 lines = p.read_text(encoding="utf-8", errors="replace").splitlines()

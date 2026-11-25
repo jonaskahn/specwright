@@ -26,7 +26,7 @@ off to each other by `handoff.md`.
 
 ## Read order
 
-1. sw-start/SKILL.md, then safety.md.
+1. sw-start/SKILL.md, then _shared/references/safety.md.
 2. Route: the output of sw-start's start script and its routing reference.
 3. Work: the routed skill's SKILL.md and the references it names.
 4. Finish: completion.md, then the route table in sw-start's routing reference; stop at the next human

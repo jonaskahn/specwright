@@ -45,4 +45,4 @@ AC-001-2, AC-001-4 — regression tests stay green.
 4. `merge.py finish --change FEAT-NNN`: verifies the text, bumps `version`, adds a `changelog`
    line, marks the change `superseded` with `merged_into`. Old versions live in git history.
 5. The target's text changed, so it returns to sw-review for the owner's finalize.
-6. Jira status (optional, opt-in): sw-publish `references/status-sync.md`.
+6. Jira status (optional, opt-in): see `../sw-publish/references/status-sync.md`.

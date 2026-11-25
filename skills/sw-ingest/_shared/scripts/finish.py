@@ -81,9 +81,13 @@ def _changed(base: Path, prefixes: list[str]) -> list[Path]:
             inner = path.relative_to(base.resolve()).as_posix()
         except ValueError:
             continue
-        if path.suffix == ".md" and path.is_file() and any(inner.startswith(p) for p in prefixes):
-            if "/prompts/" not in inner:
-                out.append(path)
+        if (
+            path.suffix == ".md"
+            and path.is_file()
+            and any(inner.startswith(p) for p in prefixes)
+            and "/prompts/" not in inner
+        ):
+            out.append(path)
     return out
 
 

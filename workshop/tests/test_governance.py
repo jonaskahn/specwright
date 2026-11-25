@@ -273,6 +273,10 @@ class AcceptTests(SoloTestCase):
             "REF:FEAT-001",
             "--manifest",
             str(self.manifest),
+            # This case exercises the accept/verify CLI contract, not the debate
+            # requirement, so it uses the documented owner escape hatch.
+            "--skip-debate",
+            "CLI contract test",
         ]
         shown = hashing.short(hashing.draft_hash(self.draft.read_text()))
         before = self.draft.read_text()

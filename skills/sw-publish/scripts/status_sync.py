@@ -54,7 +54,7 @@ def _registry(base: Path) -> dict[str, str]:
             continue
         if set("".join(cells)) <= {"-"}:
             continue
-        row = dict(zip(header, cells))
+        row = dict(zip(header, cells, strict=False))
         key = row.get("Jira key", "")
         if key and key not in ("—", "-", ""):
             out[row.get("Spec ID", "").split(":")[-1]] = key

@@ -57,11 +57,20 @@ def _has_build(folder: Path) -> bool:
         return True
     if any(folder.glob("*.csproj")) or any(folder.glob("*.sln")):
         return True
-    # A monorepo keeps build files one level down (apps/api/pom.xml).
-    for child in folder.iterdir() if folder.is_dir() else []:
-        if child.is_dir() and child.name not in SKIP:
-            if any((child / m).is_file() for m in BUILD_MARKERS):
+    # A monorepo keeps build files one level down (apps/api/pom.xml). A folder we
+    # may not read (another user's, a protected temp dir) is skipped, never fatal.
+    try:
+        children = list(folder.iterdir()) if folder.is_dir() else []
+    except OSError:
+        return False
+    for child in children:
+        if child.name in SKIP:
+            continue
+        try:
+            if child.is_dir() and any((child / m).is_file() for m in BUILD_MARKERS):
                 return True
+        except OSError:
+            continue
     return False
 
 

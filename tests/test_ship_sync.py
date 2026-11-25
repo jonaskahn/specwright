@@ -9,7 +9,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "skills" / "_shared" / "scripts"))
 sys.path.insert(0, str(ROOT / "skills" / "sw-publish" / "scripts"))
 
-from kitlib import analysis  # noqa: E402  (full kitlib first; skill scripts reuse it)
+# kitlib must be imported before status_sync: status_sync prepends its own _shared on import.
+from kitlib import analysis  # noqa: E402,I001
 
 import status_sync  # noqa: E402
 
