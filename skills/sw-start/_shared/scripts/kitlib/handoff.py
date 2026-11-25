@@ -174,7 +174,7 @@ def decide(
         else:
             answer.update(
                 mode="done",
-                reason="local pipeline finished: story, plan and tasks are the Markdown delivery",
+                reason="pipeline finished: story, plan, tasks and agent prompts are the delivery",
             )
         return answer
 

@@ -10,6 +10,7 @@ assets: []
 ### TASK-NNN-1 — [<layer>] <verb-first outcome>
 
 Traces to: <AC-NNN-1>
+Stack: <layer line from stack.py show; code layers only, else omit>
 Visuals: <ASSET-NNN or diagrams/ path; frontend, mobile and design tasks when the story has visuals; else omit>
 Depends on: None
 Done when: <observable result with concrete values>

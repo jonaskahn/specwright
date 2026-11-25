@@ -1,5 +1,8 @@
 # Bounded completion maintenance
 
+`_shared/scripts/finish.py` runs these steps in order; read this file only to understand or
+repair one of them.
+
 Bounded means the steps below once per station, plus at most one repair pass (see Repair).
 Maintenance itself never does the next station's work; the hand-off in step 9 does, by
 `handoff.md`: under `flow: auto` the next skill starts at once with no question, under

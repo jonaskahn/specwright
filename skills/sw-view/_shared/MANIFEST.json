@@ -1,12 +1,14 @@
 {
  "files": {
+  "references/agent-style.md": "4d9b3390dba7",
   "references/capabilities/knowledge.md": "9f9e8150b6e9",
   "references/context.md": "d1a53c517f68",
   "references/data-format.md": "5ff853a951b5",
   "references/governance.md": "89773349918c",
   "references/graph-model.md": "264abea7c9ec",
-  "references/handoff.md": "b35a6dcd5ec9",
-  "references/next-step.md": "9a980c36a67d",
+  "references/handoff.md": "64ce76289ce3",
+  "references/kernel.md": "e8521736e2cd",
+  "references/next-step.md": "d379ead504ac",
   "references/query-cookbook.md": "6f8a7beedc70",
   "references/runtime.md": "90964d273588",
   "references/status-map.md": "149f1b5b9524",
@@ -27,13 +29,13 @@
   "scripts/kitlib/ids.py": "88a0e53a1198",
   "scripts/kitlib/index.py": "d1455540d597",
   "scripts/kitlib/lifecycle.py": "7f71fe5f8692",
-  "scripts/kitlib/markdown.py": "d5ff6d3e4297",
+  "scripts/kitlib/markdown.py": "20a3c53d9c84",
   "scripts/kitlib/miniyaml.py": "73a1bbe68a05",
   "scripts/kitlib/provenance.py": "7657b964c364",
   "scripts/kitlib/review.py": "6dc3afe32427",
   "scripts/kitlib/rtm.py": "d31e7c1f1c46",
   "scripts/kitlib/runtime.py": "e835e3c99318",
-  "scripts/kitlib/schema.py": "95f46cd8ab90",
+  "scripts/kitlib/schema.py": "66b412b6c2c1",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "e775798548a1",
   "scripts/kitlib/view_build.py": "9062bd7d5c82",
@@ -45,5 +47,5 @@
   "scripts/runtime.ps1": "771f91a98c4b",
   "scripts/runtime.sh": "0728558e61b1"
  },
- "kit_version": "0.7.0"
+ "kit_version": "0.8.0"
 }

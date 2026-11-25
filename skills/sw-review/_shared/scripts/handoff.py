@@ -37,7 +37,7 @@ def _say(answer: dict) -> str:
     if mode == "confirm":
         return answer["ask"]
     if mode == "done":
-        return "Done: the story, plan and tasks are delivered as Markdown."
+        return "Done: story, plan, tasks and agent prompts are delivered as Markdown."
     return "Paused: " + answer["reason"]
 
 

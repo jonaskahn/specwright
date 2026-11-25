@@ -30,6 +30,7 @@ from kitlib import (  # noqa: E402
     graph_query,
     guard,
     handoff,
+    stack,
     hashing,
     index,
     invest,
@@ -400,10 +401,14 @@ def action_for(item):
 def report(cwd, target=None, pack=False):
     info = workspace.detect(cwd)
     if info["mode"] == "none":
+        layout = default_layout(cwd)
+        detected = stack.detect(Path(cwd).resolve()) if layout == "embedded" else {}
         return {
             **info,
             "fresh_setup": True,
-            "suggested_layout": default_layout(cwd),
+            "suggested_layout": layout,
+            "detected_stack": detected,
+            "intake": intake_questions(layout, detected),
             "next": ["sw-start", "choose a layout and then ingest, shape or supply a baseline"],
             "scopes_state": [],
         }
@@ -437,10 +442,99 @@ def report(cwd, target=None, pack=False):
             ]
             return {**info, "fresh_setup": False, "scopes_state": scopes}
     for item in scopes:
+        item["stack"] = stack_state(root, item["scope"])
         item["next"] = list(route(item))
         item["action"] = action_for(item)
         item["handoff"] = handoff_for(root, item, named=bool(target))
     return {**info, "fresh_setup": False, "scopes_state": scopes}
+
+
+def stack_state(root, scope):
+    """Locked, proposed or missing; with a one-line summary per layer for the brief."""
+    profile = stack.effective(root, scope)
+    if profile is None:
+        code = workspace.code_root(root, scope)
+        return {"status": "missing", "detectable": bool(code and stack.detect(code))}
+    layers = {k: stack.layer_line(profile, k) for k in sorted(profile.get("layers") or {})}
+    return {
+        "status": profile["status"],
+        "hash": (profile.get("locked") or {}).get("hash"),
+        "layers": layers,
+    }
+
+
+def intake_questions(layout, detected):
+    """At most three first-run questions, each with options and a default (intake.md)."""
+    questions = [
+        {
+            "q": "What do you have to start from?",
+            "options": ["an idea in words", "documents to import", "an existing register or Jira"],
+            "default": "an idea in words",
+        },
+        {
+            "q": "How far should this run go before it stops for good?",
+            "options": [
+                "stories (spec)",
+                "accepted stories (review)",
+                "plan, tasks and agent prompts",
+            ],
+            "default": "plan, tasks and agent prompts",
+        },
+    ]
+    if detected:
+        summary = "; ".join(
+            f"{k}: {stack.layer_line({'layers': detected}, k) or v.get('framework', '')}"
+            for k, v in sorted(detected.items())
+        )
+        questions.append(
+            {
+                "q": f"Lock this stack for implementation? {summary}",
+                "options": ["lock as detected", "edit first", "no stack lock"],
+                "default": "edit first",
+            }
+        )
+    else:
+        questions.append(
+            {
+                "q": "Which stack should tasks and agent prompts use?",
+                "options": ["name it now", "decide at plan time", "no stack lock"],
+                "default": "decide at plan time",
+            }
+        )
+    return questions
+
+
+def brief(data):
+    """A short capability card fitted to what was detected; printed by --brief."""
+    lines = [
+        f"Specwright {data['kit_version']}: idea -> testable stories -> accepted -> "
+        "plan, tasks and one prompt per task for an implementing agent.",
+        "- shape: problem-led brief and a feature split you accept",
+        "- spec: Given/When/Then criteria, rules with numbers, diagrams when they help",
+        "- review: your plain accept, bound to the content hash",
+        "- plan: layered tasks traced to criteria, checked against a locked tech stack",
+        "- ingest: documents, Jira or Confluence exports as cited snapshots",
+        "- view: a local read-only console; publish: guarded Jira write on request",
+        "Runs on its own between steps; stops only for your decisions.",
+    ]
+    if data.get("fresh_setup"):
+        lines.append(f"Here: no workspace yet; suggested layout {data['suggested_layout']}.")
+        if data.get("detected_stack"):
+            lines.append("Detected stack: " + ", ".join(sorted(data["detected_stack"])) + ".")
+        return lines
+    for item in data["scopes_state"][:3]:
+        feats = ", ".join(f"{n} {s}" for s, n in sorted(item["feats"].items())) or "no features"
+        st = item.get("stack", {})
+        lock = st.get("status", "missing") + (f" {st['hash']}" if st.get("hash") else "")
+        lines.append(f"Here: {item['scope']}: {feats}; stack {lock}.")
+        h = item.get("handoff") or {}
+        if h.get("say"):
+            lines.append("Next: " + h["say"])
+        elif h.get("next_skill"):
+            lines.append(
+                f"Next: {h['next_skill']} for {', '.join(h.get('items') or []) or 'the scope'}."
+            )
+    return lines
 
 
 def handoff_for(root, item, named=False):
@@ -497,6 +591,7 @@ def main(argv=None):
     parser.add_argument("--item", help="qualified epic or feature to resume")
     parser.add_argument("--pack", action="store_true", help="with --item: files to read, in order")
     parser.add_argument("--hook", action="store_true", help="short session summary")
+    parser.add_argument("--brief", action="store_true", help="capability card for this workspace")
     args = parser.parse_args(argv)
     problems = guard.check(_here.parent)
     if problems:
@@ -510,6 +605,9 @@ def main(argv=None):
         }
         if args.hook:
             print("\n".join(hook_lines(data)))
+            return 0
+        if args.brief:
+            print("\n".join(brief(data)))
             return 0
         print(json.dumps(data, indent=2, sort_keys=True))
         return 0

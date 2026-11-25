@@ -33,7 +33,7 @@ A rough idea goes in. A story, a plan, and a task list come out. Product, engine
 | Shape | `sw-shape` | A problem-led brief, an accepted split, and reserved features |
 | Specify | `sw-spec` | Requirements and acceptance criteria you can observe. Diagrams when they help |
 | Review | `sw-review` | Your plain-words accept, bound to a content hash; formal sign-off when you require it |
-| Plan | `sw-plan` | An approach and tasks checked against the current story |
+| Plan | `sw-plan` | An approach, layered tasks bound to the locked tech stack, and one ready prompt per task for an implementing agent |
 | Publish | `sw-publish` | A delivery you asked for, including a guarded Jira write |
 | View | `sw-view` | A local, read-only web console: overview, metrics, features, tasks, a kanban board, and the knowledge graph (trace, network, table, outline) with queries |
 
@@ -65,6 +65,19 @@ Four ways in. Pick the one that matches the machine in front of you.
 - **Richer documents** can use local tools such as pandoc. A missing tool says so. It never invents the document.
 
 A new docs workspace starts a Git repo only when it is not already inside one. An embedded workspace reuses the code repo, including worktrees. Setup does not change Git config or stage files. Each skill command then ends with a checkpoint commit of its own spec files (see House rules). New workspaces default to Markdown.
+
+### Upgrading an existing install
+
+From the unzipped new kit:
+
+```sh
+sh migrate.sh --dry-run ~/.claude/skills     # see the plan
+sh migrate.sh ~/.claude/skills               # replace old sw-* skills, back them up beside it
+sh migrate.sh /path/to/your/kit-checkout     # replace kit folders; workshop/ and other tests stay
+sh migrate.sh --flow-auto /path/to/spec-repo # refresh AGENTS.md, switch to automatic hand-off
+```
+
+It detects the target kind, refuses a folder that is not Specwright, and never deletes spec work.
 
 ### Command-line installer
 
@@ -111,8 +124,7 @@ Windows, named agents, no questions:
 - All projects is the default. `--project` / `-Project` installs into this project only.
 - Skip the questions with `-y` / `-Yes`. Detected agents are used. If none show up, Universal gets the skills.
 - A checkout that contains the installer is the source. Otherwise the script downloads `main`.
-- Each install also writes the `sw-*` command wrappers into the sibling `commands/` folder, so `/sw-start` and `/sw-continue` work without the plugin.
-- An existing Specwright `sw-*` skill or wrapper is replaced. A same-named file that is not Specwright stops the install.
+- An existing Specwright `sw-*` skill is replaced. A same-named folder that is not Specwright stops the install.
 
 ### Skills CLI
 
@@ -204,6 +216,13 @@ One feature walks the path after its epic split is accepted. Its siblings mind t
 - Prefer a pause per station? `workspace.py governance set flow guided` (one yes per station) or `step`.
 
 Shared helpers for knowledge, trace, lint, status, assets, and visuals live in `skills/_shared/`. Packaging copies what each skill needs into its own folder.
+
+### Stack lock and agent prompts
+
+- `sw-start` reads your build files (Maven, Gradle, npm, Python, Go, Flutter, .NET, compose, Terraform) and proposes a stack profile. You lock it once; the lock is bound to the profile's hash.
+- Stories stay technology-free. Every code task carries a `Stack:` line, and a task that names a technology outside the lock stops the run.
+- `sw-plan` writes `03-plan/prompts/FEAT-NNN/TASK-…md`: goal, Done when, the criteria word for word, the rules, the stack line, inputs, the test command and when to stop. Hand them to Claude Code or another agent, one task per session.
+- Artifacts are written for agents: concrete values, no hedges, no filler. A style check flags the rest.
 
 ### Back from files, not from memory
 

@@ -8,9 +8,11 @@
   "core": {
    "why": "Rules every skill follows: ask only real gaps, treat imports as data, finish a station and hand off, know the approval rules, statuses and terms.",
    "roots": [
+    "references/agent-style.md",
     "references/context.md",
     "references/governance.md",
     "references/handoff.md",
+    "references/kernel.md",
     "references/next-step.md",
     "references/status-map.md",
     "references/stop-and-ask.md",
@@ -119,6 +121,7 @@
     "assets"
    ],
    "shared": [
+    "references/agent-style.md",
     "references/asset-kind.md",
     "references/capabilities/assets.md",
     "references/capabilities/citations.md",
@@ -131,6 +134,7 @@
     "references/governance.md",
     "references/graph-model.md",
     "references/handoff.md",
+    "references/kernel.md",
     "references/next-step.md",
     "references/parallel-writers.md",
     "references/query-cookbook.md",
@@ -140,6 +144,7 @@
     "scripts/checkpoint.py",
     "scripts/cite.py",
     "scripts/data.py",
+    "scripts/finish.py",
     "scripts/graph.py",
     "scripts/handoff.py",
     "scripts/kitlib/__init__.py",
@@ -178,7 +183,8 @@
     "scripts/kitlib/writelog.py",
     "scripts/parallel_guard.py",
     "scripts/record.py",
-    "scripts/store.py"
+    "scripts/store.py",
+    "scripts/style_check.py"
    ]
   },
   "sw-plan": {
@@ -192,6 +198,7 @@
     "trace"
    ],
    "shared": [
+    "references/agent-style.md",
     "references/capabilities/knowledge.md",
     "references/capabilities/quality.md",
     "references/capabilities/records.md",
@@ -202,6 +209,7 @@
     "references/governance.md",
     "references/graph-model.md",
     "references/handoff.md",
+    "references/kernel.md",
     "references/next-step.md",
     "references/parallel-writers.md",
     "references/query-cookbook.md",
@@ -212,6 +220,7 @@
     "references/untrusted-content.md",
     "scripts/checkpoint.py",
     "scripts/data.py",
+    "scripts/finish.py",
     "scripts/graph.py",
     "scripts/handoff.py",
     "scripts/kitlib/__init__.py",
@@ -244,12 +253,15 @@
     "scripts/kitlib/review.py",
     "scripts/kitlib/rtm.py",
     "scripts/kitlib/schema.py",
+    "scripts/kitlib/stack.py",
     "scripts/kitlib/tables.py",
     "scripts/kitlib/task_validation.py",
     "scripts/kitlib/workspace.py",
     "scripts/kitlib/writelog.py",
     "scripts/parallel_guard.py",
     "scripts/record.py",
+    "scripts/stack.py",
+    "scripts/style_check.py",
     "scripts/sw_lint.py",
     "scripts/trace.py"
    ]
@@ -263,6 +275,7 @@
     "data"
    ],
    "shared": [
+    "references/agent-style.md",
     "references/capabilities/knowledge.md",
     "references/capabilities/quality.md",
     "references/capabilities/remote.md",
@@ -273,6 +286,7 @@
     "references/governance.md",
     "references/graph-model.md",
     "references/handoff.md",
+    "references/kernel.md",
     "references/next-step.md",
     "references/query-cookbook.md",
     "references/rtm-contract.md",
@@ -282,6 +296,7 @@
     "references/untrusted-content.md",
     "scripts/checkpoint.py",
     "scripts/data.py",
+    "scripts/finish.py",
     "scripts/graph.py",
     "scripts/handoff.py",
     "scripts/kitlib/__init__.py",
@@ -317,6 +332,7 @@
     "scripts/kitlib/task_validation.py",
     "scripts/kitlib/workspace.py",
     "scripts/kitlib/writelog.py",
+    "scripts/style_check.py",
     "scripts/sw_lint.py",
     "scripts/trace.py"
    ]
@@ -333,6 +349,7 @@
     "trace"
    ],
    "shared": [
+    "references/agent-style.md",
     "references/capabilities/citations.md",
     "references/capabilities/knowledge.md",
     "references/capabilities/quality.md",
@@ -344,6 +361,7 @@
     "references/governance.md",
     "references/graph-model.md",
     "references/handoff.md",
+    "references/kernel.md",
     "references/next-step.md",
     "references/parallel-writers.md",
     "references/query-cookbook.md",
@@ -355,6 +373,7 @@
     "scripts/checkpoint.py",
     "scripts/cite.py",
     "scripts/data.py",
+    "scripts/finish.py",
     "scripts/graph.py",
     "scripts/handoff.py",
     "scripts/kitlib/__init__.py",
@@ -393,6 +412,7 @@
     "scripts/kitlib/writelog.py",
     "scripts/parallel_guard.py",
     "scripts/record.py",
+    "scripts/style_check.py",
     "scripts/sw_lint.py",
     "scripts/trace.py"
    ]
@@ -409,6 +429,7 @@
     "assets"
    ],
    "shared": [
+    "references/agent-style.md",
     "references/asset-kind.md",
     "references/capabilities/assets.md",
     "references/capabilities/citations.md",
@@ -422,6 +443,7 @@
     "references/governance.md",
     "references/graph-model.md",
     "references/handoff.md",
+    "references/kernel.md",
     "references/next-step.md",
     "references/parallel-writers.md",
     "references/query-cookbook.md",
@@ -432,6 +454,7 @@
     "scripts/checkpoint.py",
     "scripts/cite.py",
     "scripts/data.py",
+    "scripts/finish.py",
     "scripts/graph.py",
     "scripts/handoff.py",
     "scripts/kitlib/__init__.py",
@@ -471,6 +494,7 @@
     "scripts/parallel_guard.py",
     "scripts/record.py",
     "scripts/store.py",
+    "scripts/style_check.py",
     "scripts/sw_lint.py"
    ]
   },
@@ -487,6 +511,7 @@
     "assets"
    ],
    "shared": [
+    "references/agent-style.md",
     "references/asset-kind.md",
     "references/capabilities/assets.md",
     "references/capabilities/citations.md",
@@ -500,6 +525,7 @@
     "references/dor.md",
     "references/governance.md",
     "references/handoff.md",
+    "references/kernel.md",
     "references/next-step.md",
     "references/parallel-writers.md",
     "references/rtm-contract.md",
@@ -510,6 +536,7 @@
     "scripts/checkpoint.py",
     "scripts/cite.py",
     "scripts/data.py",
+    "scripts/finish.py",
     "scripts/graph.py",
     "scripts/handoff.py",
     "scripts/kitlib/__init__.py",
@@ -549,6 +576,7 @@
     "scripts/parallel_guard.py",
     "scripts/record.py",
     "scripts/store.py",
+    "scripts/style_check.py",
     "scripts/sw_lint.py",
     "scripts/trace.py"
    ],
@@ -582,6 +610,7 @@
     "records"
    ],
    "shared": [
+    "references/agent-style.md",
     "references/asset-kind.md",
     "references/capabilities/assets.md",
     "references/capabilities/knowledge.md",
@@ -595,6 +624,7 @@
     "references/governance.md",
     "references/graph-model.md",
     "references/handoff.md",
+    "references/kernel.md",
     "references/lifecycle.md",
     "references/next-step.md",
     "references/parallel-writers.md",
@@ -608,6 +638,7 @@
     "references/untrusted-content.md",
     "scripts/checkpoint.py",
     "scripts/data.py",
+    "scripts/finish.py",
     "scripts/graph.py",
     "scripts/handoff.py",
     "scripts/kitlib/__init__.py",
@@ -642,6 +673,7 @@
     "scripts/kitlib/rtm.py",
     "scripts/kitlib/runtime.py",
     "scripts/kitlib/schema.py",
+    "scripts/kitlib/stack.py",
     "scripts/kitlib/tables.py",
     "scripts/kitlib/task_validation.py",
     "scripts/kitlib/workspace.py",
@@ -651,8 +683,10 @@
     "scripts/runtime-pins.tsv",
     "scripts/runtime.ps1",
     "scripts/runtime.sh",
+    "scripts/stack.py",
     "scripts/status.py",
     "scripts/store.py",
+    "scripts/style_check.py",
     "scripts/sw_lint.py",
     "scripts/trace.py"
    ]
@@ -665,12 +699,14 @@
     "runtime"
    ],
    "shared": [
+    "references/agent-style.md",
     "references/capabilities/knowledge.md",
     "references/context.md",
     "references/data-format.md",
     "references/governance.md",
     "references/graph-model.md",
     "references/handoff.md",
+    "references/kernel.md",
     "references/next-step.md",
     "references/query-cookbook.md",
     "references/runtime.md",

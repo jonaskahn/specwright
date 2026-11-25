@@ -62,26 +62,26 @@ A non-blocking unknown is never a stop: save it as an assumed question with its 
 
 ## Procedure at the end of every station
 
-1. Finish the station's own work, its maintenance (`completion.md`) and its checkpoint.
-2. Ask the board what comes next:
+1. Finish the station's own work.
+2. Run one command; it does maintenance, checks, checkpoint and the hand-off decision:
 
    ```sh
-   _shared/scripts/handoff.py next --cwd <project> --done <this skill> [--item <key>] [--until <station>]
+   _shared/scripts/finish.py --skill <this skill> --subject "<what changed>" --cwd <project> [--item <key>]... [--until <station>]
    ```
 
-   Pass `--item` when the user named an item (only that item and, for an epic, its members
-   move); omit it for "continue" or a bare command (the whole scope, station by station).
-   It reads saved files, rebuilds a stale graph and writes nothing else.
-3. Act on `mode`:
+   Pass `--item` when the user named items (only those move; an epic moves its members). Omit it
+   for "continue" or a bare command (the whole scope, station by station). The decision alone,
+   without maintenance: `_shared/scripts/handoff.py next --cwd <project> --done <skill>`.
+3. Act on `handoff.mode`:
    - `continue`: print `say` as one line (for example `→ sw-review for REF:FEAT-001, REF:FEAT-002`),
      apply each entry in `transitions` with `../sw-start/scripts/transition.py <action> --item <key>`
      (preview, then `--confirm` with the token it printed), then read `../<next_skill>/SKILL.md`
-     and run it for `items` at once. If that skill is not installed, name it, say it is the next
-     step, and stop.
+     and run it for `items` at once. If that skill is not installed, name it and stop.
+   - `repair`: the lint gate is blocked. Fix the findings once, rerun finish.py with `--repaired`.
    - `confirm` (`flow: guided`): print the short summary and `ask`; a plain yes continues.
    - `stop`: print the summary, then the `reason` and the questions for every entry in `waiting`
-     together, in one batch.
-   - `done`: report the delivery (story, plan, tasks) and stop.
+     together, in one batch, with 2–3 ready replies.
+   - `done`: report the delivery (story, plan, tasks, agent prompts) and stop.
 4. After the next skill finishes, repeat from step 1. The chain ends only at a stop or done.
 
 A transition that refuses (blocking question, lint) turns that item into a stop with the
