@@ -56,7 +56,7 @@
   "scripts/kitlib/recordops.py": "48410da17420",
   "scripts/kitlib/review.py": "6dc3afe32427",
   "scripts/kitlib/rtm.py": "d31e7c1f1c46",
-  "scripts/kitlib/schema.py": "50afcdaf1722",
+  "scripts/kitlib/schema.py": "47595ab0a944",
   "scripts/kitlib/stack.py": "fb2b7277056e",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "e775798548a1",
@@ -69,5 +69,5 @@
   "scripts/sw_lint.py": "e96b34eafa64",
   "scripts/trace.py": "74bfe2e50aea"
  },
- "kit_version": "0.9.1"
+ "kit_version": "0.9.0"
 }
