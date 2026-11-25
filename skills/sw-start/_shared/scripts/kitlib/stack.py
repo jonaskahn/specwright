@@ -357,10 +357,11 @@ def detect(code: Path) -> dict[str, Any]:
                 ("rabbitmq", "rabbitmq"),
                 ("elasticsearch", "elasticsearch"),
             ):
-                if f"image: {img}" in text or f'image: "{img}' in text or f"/{img}:" in text:
-                    if tech not in seen_data:
-                        seen_data.append(tech)
-                        put("data", f"{rel(p)}:{_line_of(text, img)}")
+                if (
+                    f"image: {img}" in text or f'image: "{img}' in text or f"/{img}:" in text
+                ) and tech not in seen_data:
+                    seen_data.append(tech)
+                    put("data", f"{rel(p)}:{_line_of(text, img)}")
             put("devops", f"{rel(p)}:1", framework="docker")
         elif name == "Dockerfile":
             put("devops", f"{rel(p)}:1", framework="docker")
@@ -536,9 +537,12 @@ def check_tasks(profile: dict[str, Any] | None, blocks: dict, layer_of) -> list[
     for tid, block in blocks.items():
         layer = layer_of(block.title)
         text = " ".join([block.title, *block.fields.values()])
-        if layer in CODE_LAYERS and layer in (profile.get("layers") or {}):
-            if not block.field_line("Stack"):
-                findings.append(f"{tid}: Stack line missing (layer {layer})")
+        if (
+            layer in CODE_LAYERS
+            and layer in (profile.get("layers") or {})
+            and not block.field_line("Stack")
+        ):
+            findings.append(f"{tid}: Stack line missing (layer {layer})")
         for tech in sorted(_mentions(text) - known):
             findings.append(f"{tid}: names {tech}, which is not in the locked stack")
         low = text.lower()

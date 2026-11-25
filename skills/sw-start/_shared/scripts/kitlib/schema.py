@@ -5,7 +5,7 @@ from __future__ import annotations
 SKILL_PREFIX = "sw-"
 KIT_NAME = "specwright"
 # Mirrors pyproject.toml (tools/validate.py checks it) so a running skill can name its version.
-KIT_VERSION = "0.9.0"
+KIT_VERSION = "0.9.1"
 
 STORY_SECTIONS = [
     "Goal",

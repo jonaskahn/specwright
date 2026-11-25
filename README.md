@@ -235,6 +235,10 @@ Install the kit at any point in a project's life. The kit adapts to what it find
 - **Finalize, not click-through.** Three independent reviewers (critic, builder, tester) challenge each draft with evidence; the author fixes or rebuts. You then see a review pack: what is new to you since your last finalize, assumptions, existing-behaviour gaps and every dispute still standing.
 - **Optional Jira status sync.** Opt in once; local state (accepted, planned, shipped, withdrawn) maps to Jira statuses in a dry-run table; transitions run only after your yes. Jira ahead of the files is reported as drift, never pulled back.
 
+### Foundation story for new codebases
+
+After the stack step, a new project gets one story before any feature: project structure, format, lint, tests with a coverage floor, one `make check` gate, CI and an AI workflow file. The kit asks up to five prefilled questions (tools per layer, coverage floor, CI and hooks, AGENTS.md) and checks current tool guidance before asking. It drafts the story and reference files: a `Makefile` with `setup · fmt · fmt-check · lint · typecheck · test · build · check`, an `AGENTS.md` with the stack, commands, structure, working principles (adapted from multica-ai/andrej-karpathy-skills) and definition of done, and a `CLAUDE.md` that imports it.
+
 ### Stack lock and agent prompts
 
 - `sw-start` reads your build files (Maven, Gradle, npm, Python, Go, Flutter, .NET, compose, Terraform) and proposes a stack profile. You lock it once; the lock is bound to the profile's hash.

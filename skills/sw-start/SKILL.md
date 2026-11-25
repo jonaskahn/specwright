@@ -25,14 +25,18 @@ Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
 5. Stack (`stack.status`): `missing` with code → `_shared/scripts/stack.py detect --write`, show
    the layers, ask lock/edit; `proposed` → show and ask once; on yes run
    `stack.py lock --confirm <hash shown>`. Docs-only and no answer → leave it; plan reports it.
-6. Route by `handoff` (`references/routing.md`): `continue` → load `../<next_skill>/SKILL.md` for
+6. Foundation (new codebase: no code roots, `foundation.suggest` true): offer the foundation
+   story once (`_shared/references/foundation.md`): check current tool guidance, ask
+   `_shared/scripts/foundation.py questions` in one message, save answers (`foundation.py set`),
+   reserve and draft it, continue to sw-spec. Declined → never offer again in this scope.
+7. Route by `handoff` (`references/routing.md`): `continue` → load `../<next_skill>/SKILL.md` for
    `items` now; "continue", "next", "resume" with no item → whole scope, station by station;
    a named item → `start.py --item <key> --pack`, read the listed files, run its station.
    `stop` → show the board, `ranking` as advice, ask.
-7. Runtimes: Python missing → show `runtime.sh plan python`, install only after a yes. Node is
+8. Runtimes: Python missing → show `runtime.sh plan python`, install only after a yes. Node is
    only for sw-view; ask once (`_shared/references/runtime.md`).
-8. Old graph schema → show `workspace.py upgrade` dry-run; `--apply` after a yes.
-9. Push/publish request: Jira configured → sw-publish; else say Markdown is delivered and offer
+9. Old graph schema → show `workspace.py upgrade` dry-run; `--apply` after a yes.
+10. Push/publish request: Jira configured → sw-publish; else say Markdown is delivered and offer
    `workspace.py jira set --site <url> --project-key <KEY>`.
 
 ## Stop when
@@ -55,6 +59,7 @@ rerun with `--repaired`; `confirm` → ask once; `stop` → ask what `waiting` n
 | Route table, edge states | references/routing.md |
 | Register or legacy baseline present | references/brownfield.md |
 | Existing code or feature; gap shapes | ../sw-analyze/references/method.md |
+| Foundation story: tooling questions, Makefile, AGENTS.md | _shared/references/foundation.md |
 | Layout choice; manifest fields | references/layouts.md; references/manifest-schema.md |
 | Step-back, reset, guarded transitions | _shared/references/lifecycle.md; scripts/transition.py --help |
 | Several items in one station | _shared/references/parallel-writers.md |

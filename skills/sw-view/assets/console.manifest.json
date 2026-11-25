@@ -1,14 +1,14 @@
 {
  "bytes": 590037,
- "console": "0.9.0",
+ "console": "0.9.1",
  "files": {
   ".nvmrc": "sha256:68ca3fba3b7e864770cb61aeb306d4bd4354b68ab4dd38450860c5d823e42a53",
   "README.md": "sha256:b25b030305cd94fb485634932f044d8fa377b43c288fc311543c0a5a495dad16",
   "contract/console-data.schema.json": "sha256:d74af133211eb8ee3a60ce87b3bd23458f8649126fa22f21efcec1e9c8654ad8",
   "contract/types.ts": "sha256:8259cade43566506ce17db6f96ee08b85b666c81d678a26cb09282f7c01c6b64",
   "index.html": "sha256:fdda151a641aa12223ccfc96a24c3c29e3abf742e5d5c91c3387d3718274670b",
-  "package-lock.json": "sha256:fccf478540947acaf7a942f2d5748d6ac07d2be82100fa39c1f88a3c3834e333",
-  "package.json": "sha256:a206566623e1490f4b8ec2dfd4e4f4cdf84a90b3dbed0d0af52fd368be5f3bd6",
+  "package-lock.json": "sha256:93b4577da284e65f309d8afd7d96014ed92221f1ff3911fe46659189d6d5fe33",
+  "package.json": "sha256:a3bb86dd6fe4c0ad815d43f86fdcca6695ab3ac576f1b933529c9ce483e94773",
   "src/App.svelte": "sha256:feb992715db5f65c8ab0f5630fce504d5044e967aef5222b3072e01063632027",
   "src/assets/fonts/ibm-plex-mono-latin-400-normal.woff2": "sha256:08949f728dc52d528e69b1667d15c89a5686a4ee9a296ff90983985f99c380f7",
   "src/assets/fonts/ibm-plex-mono-latin-500-normal.woff2": "sha256:01d285447409c8a588692162439a038b8cbd7871309ee20267b0d2d91c6e8e22",
@@ -108,6 +108,6 @@
   "vite.config.ts": "sha256:9e5a5fa2907e4884db59d61b8d15ea40b8fdf088fc5173d590d8c8b070caf716"
  },
  "formatVersion": 1,
- "tree": "sha256:839a9346a5510107b25d74b89f43512f3541fb2362c7447493a3594002446cb4",
- "zip": "sha256:f2ddea0f10fa715b89d332997cd6541fe2135e509e15fd6a85fb439738a1e85d"
+ "tree": "sha256:6d1fd7015403ec0703f13a0a73743497392ff4f195fc6c2dbf0c0b88b7ce025b",
+ "zip": "sha256:505c8c24eefff5b76845c8a5a3ba8fc59a5d658f57cafd036245d09957a00411"
 }

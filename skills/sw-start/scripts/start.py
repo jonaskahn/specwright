@@ -299,7 +299,10 @@ def route(state):
     code = state.get("code") or {}
     if not feats and not ideas and (code.get("registered") or code.get("detected")):
         if not code.get("inventory"):
-            return ("sw-analyze", "existing code and no specs: adopt it (code roots, light inventory)")
+            return (
+                "sw-analyze",
+                "existing code and no specs: adopt it (code roots, light inventory)",
+            )
         return ("sw-analyze", "inventory exists; choose a candidate feature to analyse in depth")
     if ideas.get("draft") and not feats:
         return ("sw-shape", "an idea is still a draft")
@@ -450,10 +453,26 @@ def report(cwd, target=None, pack=False):
     for item in scopes:
         item["stack"] = stack_state(root, item["scope"])
         item["code"] = code_state(root, item["scope"])
+        item["foundation"] = foundation_state(root, item["scope"], item["code"])
         item["next"] = list(route(item))
         item["action"] = action_for(item)
         item["handoff"] = handoff_for(root, item, named=bool(target))
     return {**info, "fresh_setup": False, "scopes_state": scopes}
+
+
+def foundation_state(root, scope, code):
+    """Suggest the foundation story for a new codebase that has none (and was not declined)."""
+    base = workspace.scope_dir(root, scope)
+    for story in sorted((base / "02-drafts").glob("FEAT-*.story.md")):
+        fm = frontmatter.parse(story.read_text(encoding="utf-8")).fm or {}
+        if fm.get("kind") == "foundation":
+            return {"suggest": False, "story": fm.get("id"), "status": fm.get("status")}
+    own = stack.load(stack.path_for(root, scope)) or {}
+    if (own.get("tooling") or {}).get("declined"):
+        return {"suggest": False, "reason": "declined by the owner"}
+    if code.get("registered"):
+        return {"suggest": False, "reason": "existing code: offer a gate change instead if none"}
+    return {"suggest": True, "reason": "new codebase without a foundation story"}
 
 
 def code_state(root, scope):

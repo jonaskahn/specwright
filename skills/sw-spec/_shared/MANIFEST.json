@@ -12,6 +12,7 @@
   "references/context.md": "d1a53c517f68",
   "references/data-format.md": "5ff853a951b5",
   "references/dor.md": "f98a0bc522f7",
+  "references/foundation.md": "4d8e1b57de60",
   "references/governance.md": "89773349918c",
   "references/handoff.md": "70a001be305f",
   "references/kernel.md": "1a75e548be57",
@@ -26,6 +27,7 @@
   "scripts/cite.py": "a7b886ab0215",
   "scripts/data.py": "040fc73e347b",
   "scripts/finish.py": "bad4d11fbf2c",
+  "scripts/foundation.py": "375950587b95",
   "scripts/graph.py": "3413ca3e01f2",
   "scripts/handoff.py": "39a14e5ddbf7",
   "scripts/kitlib/__init__.py": "b15fdecaaa14",
@@ -40,6 +42,7 @@
   "scripts/kitlib/data_export.py": "ba993803e450",
   "scripts/kitlib/dataformat.py": "0e84db370b34",
   "scripts/kitlib/epics.py": "5a83eccabc16",
+  "scripts/kitlib/foundation.py": "2b89cfa8b539",
   "scripts/kitlib/frontmatter.py": "8f5e22fd72e7",
   "scripts/kitlib/fsio.py": "ab1846444c3c",
   "scripts/kitlib/gitignore.py": "fae07f5626eb",
@@ -59,7 +62,8 @@
   "scripts/kitlib/recordops.py": "48410da17420",
   "scripts/kitlib/review.py": "6dc3afe32427",
   "scripts/kitlib/rtm.py": "d31e7c1f1c46",
-  "scripts/kitlib/schema.py": "47595ab0a944",
+  "scripts/kitlib/schema.py": "50afcdaf1722",
+  "scripts/kitlib/stack.py": "c9ed4eda20be",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "e775798548a1",
   "scripts/kitlib/workspace.py": "5212a36aa558",
@@ -71,5 +75,5 @@
   "scripts/sw_lint.py": "e96b34eafa64",
   "scripts/trace.py": "74bfe2e50aea"
  },
- "kit_version": "0.9.0"
+ "kit_version": "0.9.1"
 }

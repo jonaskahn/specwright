@@ -1,0 +1,475 @@
+"""Project foundation: the first story of a new codebase (structure, format, lint, tests with
+coverage, one `make check` gate, CI, and an AI workflow file for coding agents).
+
+Tooling choices are asked at runtime, prefilled from the stack, and saved in `stack.yaml` under
+`tooling`. Defaults are well-known, widely used tools; versions are never pinned here: the
+implementing agent pins current stable versions from official docs when it sets them up.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+# Per language: options per concern, first option is the default.
+CATALOG: dict[str, dict[str, Any]] = {
+    "java": {
+        "build": ["maven", "gradle"],
+        "format": ["spotless (google-java-format)", "spotless (palantir-java-format)"],
+        "lint": ["checkstyle + spotbugs", "checkstyle", "errorprone"],
+        "test": ["junit5 + jacoco", "junit5 + jacoco + testcontainers"],
+        "cmd": {
+            "maven": {
+                "setup": "./mvnw -q -DskipTests install",
+                "fmt": "./mvnw -q spotless:apply",
+                "fmt-check": "./mvnw -q spotless:check",
+                "lint": "./mvnw -q checkstyle:check spotbugs:check",
+                "test": "./mvnw -q verify",
+                "build": "./mvnw -q -DskipTests package",
+                "coverage-report": "target/site/jacoco/index.html",
+            },
+            "gradle": {
+                "setup": "./gradlew --quiet build -x test",
+                "fmt": "./gradlew --quiet spotlessApply",
+                "fmt-check": "./gradlew --quiet spotlessCheck",
+                "lint": "./gradlew --quiet checkstyleMain spotbugsMain",
+                "test": "./gradlew --quiet test jacocoTestCoverageVerification",
+                "build": "./gradlew --quiet assemble",
+                "coverage-report": "build/reports/jacoco/test/html/index.html",
+            },
+        },
+        "structure": "src/main/java/<group>/<app>/{api,domain,infra}, src/test/java mirrors main",
+    },
+    "kotlin": {"alias": "java"},
+    "typescript": {
+        "build": ["pnpm", "npm"],
+        "format": ["prettier", "biome"],
+        "lint": ["eslint (typescript-eslint)", "biome"],
+        "test": ["vitest + v8 coverage", "jest + istanbul"],
+        "cmd": {
+            "pnpm": {
+                "setup": "pnpm install --frozen-lockfile",
+                "fmt": "pnpm exec prettier --write .",
+                "fmt-check": "pnpm exec prettier --check .",
+                "lint": "pnpm exec eslint . --max-warnings 0",
+                "typecheck": "pnpm exec tsc --noEmit",
+                "test": "pnpm exec vitest run --coverage",
+                "build": "pnpm build",
+                "coverage-report": "coverage/index.html",
+            },
+            "npm": {
+                "setup": "npm ci",
+                "fmt": "npx prettier --write .",
+                "fmt-check": "npx prettier --check .",
+                "lint": "npx eslint . --max-warnings 0",
+                "typecheck": "npx tsc --noEmit",
+                "test": "npx vitest run --coverage",
+                "build": "npm run build",
+                "coverage-report": "coverage/index.html",
+            },
+        },
+        "structure": "src/{app,features/<name>,shared}, tests beside code as *.test.ts",
+    },
+    "javascript": {"alias": "typescript"},
+    "python": {
+        "build": ["uv", "pip"],
+        "format": ["ruff format"],
+        "lint": ["ruff + mypy", "ruff"],
+        "test": ["pytest + pytest-cov"],
+        "cmd": {
+            "uv": {
+                "setup": "uv sync --frozen",
+                "fmt": "uv run ruff format .",
+                "fmt-check": "uv run ruff format --check .",
+                "lint": "uv run ruff check .",
+                "typecheck": "uv run mypy src",
+                "test": "uv run pytest --cov=src --cov-report=term-missing --cov-report=html",
+                "build": "uv build",
+                "coverage-report": "htmlcov/index.html",
+            },
+            "pip": {
+                "setup": "python -m pip install -r requirements-dev.txt",
+                "fmt": "ruff format .",
+                "fmt-check": "ruff format --check .",
+                "lint": "ruff check .",
+                "typecheck": "mypy src",
+                "test": "pytest --cov=src --cov-report=term-missing --cov-report=html",
+                "build": "python -m build",
+                "coverage-report": "htmlcov/index.html",
+            },
+        },
+        "structure": "src/<package>/{api,domain,infra}, tests/ mirrors src",
+    },
+    "go": {
+        "build": ["go"],
+        "format": ["gofmt + goimports"],
+        "lint": ["golangci-lint"],
+        "test": ["go test + cover"],
+        "cmd": {
+            "go": {
+                "setup": "go mod download",
+                "fmt": "gofmt -w . && goimports -w .",
+                "fmt-check": 'test -z "$$(gofmt -l .)"',
+                "lint": "golangci-lint run",
+                "test": "go test ./... -coverprofile=coverage.out",
+                "build": "go build ./...",
+                "coverage-report": "coverage.out",
+            }
+        },
+        "structure": "cmd/<app>, internal/{api,domain,infra}, tests beside code as *_test.go",
+    },
+    "dart": {
+        "build": ["flutter"],
+        "format": ["dart format"],
+        "lint": ["flutter analyze (flutter_lints)", "flutter analyze (very_good_analysis)"],
+        "test": ["flutter test --coverage"],
+        "cmd": {
+            "flutter": {
+                "setup": "flutter pub get",
+                "fmt": "dart format .",
+                "fmt-check": "dart format --output=none --set-exit-if-changed .",
+                "lint": "flutter analyze --fatal-infos",
+                "test": "flutter test --coverage",
+                "build": "flutter build apk --debug",
+                "coverage-report": "coverage/lcov.info",
+            }
+        },
+        "structure": "lib/{app,features/<name>,shared}, test/ mirrors lib",
+    },
+    "csharp": {
+        "build": ["dotnet"],
+        "format": ["dotnet format"],
+        "lint": ["roslyn analyzers (warnings as errors)"],
+        "test": ["xunit + coverlet"],
+        "cmd": {
+            "dotnet": {
+                "setup": "dotnet restore",
+                "fmt": "dotnet format",
+                "fmt-check": "dotnet format --verify-no-changes",
+                "lint": "dotnet build -warnaserror --no-restore",
+                "test": 'dotnet test --collect:"XPlat Code Coverage"',
+                "build": "dotnet build -c Release",
+                "coverage-report": "TestResults/**/coverage.cobertura.xml",
+            }
+        },
+        "structure": "src/<App>.{Api,Domain,Infrastructure}, tests/<App>.*.Tests",
+    },
+}
+COMMON = {
+    "coverage": ["80", "70", "90"],
+    "ci": ["github-actions", "gitlab-ci", "none"],
+    "hooks": ["pre-commit (fmt-check + lint)", "none"],
+    "ai_workflow": ["AGENTS.md + CLAUDE.md pointer", "AGENTS.md only", "none"],
+}
+PRINCIPLES_SOURCE = (
+    "https://github.com/multica-ai/andrej-karpathy-skills (CLAUDE.md, guidelines for coding agents)"
+)
+
+
+def language_of(profile: dict[str, Any] | None, layer: str) -> str | None:
+    values = ((profile or {}).get("layers") or {}).get(layer) or {}
+    lang = str(values.get("language") or "").lower()
+    if not lang and values.get("framework") == "flutter":
+        lang = "dart"
+    entry = CATALOG.get(lang)
+    if entry and "alias" in entry:
+        return entry["alias"]
+    return lang if lang in CATALOG else None
+
+
+def code_layers(profile: dict[str, Any] | None) -> list[str]:
+    return [k for k in ("backend", "frontend", "mobile") if language_of(profile, k)]
+
+
+def questions(profile: dict[str, Any] | None) -> list[dict[str, Any]]:
+    """At most five questions, options first-is-default, prefilled from the stack."""
+    out = []
+    for layer in code_layers(profile):
+        lang = language_of(profile, layer)
+        cat = CATALOG[lang]
+        build = str(((profile or {}).get("layers") or {}).get(layer, {}).get("build") or "")
+        builds = cat["build"] if build not in cat["build"] else [build]
+        out.append(
+            {
+                "key": f"{layer}",
+                "q": f"{layer} ({lang}) tooling: build / format / lint / test?",
+                "options": [
+                    f"{builds[0]} · {cat['format'][0]} · {cat['lint'][0]} · {cat['test'][0]}",
+                    *(
+                        f"{b} · {f} · {lint} · {cat['test'][0]}"
+                        for b, f, lint in zip(
+                            cat["build"][1:],
+                            cat["format"][1:],
+                            cat["lint"][1:],
+                            strict=False,
+                        )
+                    ),
+                    "tell me your choice",
+                ][:4],
+                "default": 0,
+            }
+        )
+    out.append(
+        {
+            "key": "coverage",
+            "q": "Minimum line coverage that fails the build?",
+            "options": COMMON["coverage"],
+            "default": 0,
+        }
+    )
+    out.append(
+        {
+            "key": "ci_hooks",
+            "q": "CI and local hooks?",
+            "options": [
+                "github-actions + pre-commit",
+                "gitlab-ci + pre-commit",
+                "github-actions, no hooks",
+                "none",
+            ],
+            "default": 0,
+        }
+    )
+    out.append(
+        {
+            "key": "ai_workflow",
+            "q": "AI workflow file for coding agents in the repo?",
+            "options": COMMON["ai_workflow"],
+            "default": 0,
+        }
+    )
+    return out[:5]
+
+
+def default_tooling(profile: dict[str, Any] | None) -> dict[str, Any]:
+    tooling: dict[str, Any] = {"layers": {}}
+    for layer in code_layers(profile):
+        lang = language_of(profile, layer)
+        cat = CATALOG[lang]
+        build = str(((profile or {}).get("layers") or {}).get(layer, {}).get("build") or "")
+        build = build if build in cat["cmd"] else cat["build"][0]
+        tooling["layers"][layer] = {
+            "language": lang,
+            "build": build,
+            "format": cat["format"][0],
+            "lint": cat["lint"][0],
+            "test": cat["test"][0],
+        }
+    tooling.update(
+        {
+            "coverage": 80,
+            "ci": "github-actions",
+            "hooks": "pre-commit",
+            "ai_workflow": "agents+claude",
+        }
+    )
+    return tooling
+
+
+def commands(tooling: dict[str, Any]) -> dict[str, dict[str, str]]:
+    out = {}
+    for layer, t in (tooling.get("layers") or {}).items():
+        cmd = CATALOG[t["language"]]["cmd"].get(t["build"]) or {}
+        out[layer] = dict(cmd)
+    return out
+
+
+def makefile(tooling: dict[str, Any], name: str) -> str:
+    cmds = commands(tooling)
+    targets = ["setup", "fmt", "fmt-check", "lint", "typecheck", "test", "build"]
+    lines = [
+        f"# {name} — one entry point for humans, CI and coding agents.",
+        "# `make check` is the gate: it must pass before every commit and in CI.",
+        ".PHONY: " + " ".join(targets + ["check", "coverage", "help"]),
+        "",
+        "help:  ## list targets",
+        "\t@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | sed 's/:.*## /\\t/'",
+        "",
+    ]
+    for target in targets:
+        steps = []
+        for layer, c in cmds.items():
+            if target in c:
+                folder = "" if len(cmds) == 1 else f"cd {layer} && "
+                steps.append(f"\t{folder}{c[target]}")
+        lines.append(f"{target}:  ## {target} for every layer")
+        lines += steps or ["\t@echo 'nothing to do'"]
+        lines.append("")
+    lines += [
+        "check: fmt-check lint typecheck test  ## the gate: format, lint, types, tests + coverage",
+        "",
+        "coverage: test  ## open the coverage report paths",
+    ]
+    for layer, c in cmds.items():
+        if c.get("coverage-report"):
+            lines.append(f"\t@echo '{layer}: {c['coverage-report']}'")
+    return "\n".join(lines) + "\n"
+
+
+def agents_md(
+    tooling: dict[str, Any], name: str, stack_lines: dict[str, str], lock: str | None = None
+) -> str:
+    cov = tooling.get("coverage", 80)
+    structure = [
+        f"- {layer}: {CATALOG[t['language']]['structure']}"
+        for layer, t in (tooling.get("layers") or {}).items()
+    ]
+    return "\n".join(
+        [
+            f"# {name} — instructions for coding agents",
+            "",
+            (
+                f"## Stack (locked {lock}; no framework or library outside it without asking)"
+                if lock
+                else "## Stack (proposed, not locked yet; ask before adding anything outside it)"
+            ),
+            *(f"- {k}: {v}" for k, v in stack_lines.items()),
+            "",
+            "## Commands",
+            "- `make setup` — install dependencies from the lockfile",
+            "- `make fmt` / `make fmt-check` — format / verify formatting",
+            "- `make lint` — static checks, zero warnings",
+            "- `make typecheck` — types (where the language has them)",
+            f"- `make test` — tests with coverage; below {cov}% line coverage fails",
+            "- `make check` — the gate: run it before every commit; CI runs the same",
+            "",
+            "## Structure",
+            *(structure or ["- see the foundation story"]),
+            "",
+            "## How to work",
+            "- Think first: state assumptions; when a request has several readings, list them "
+            "and ask; when unclear, stop and name what is unclear.",
+            "- Least code first: only what the acceptance criteria need; no speculative "
+            "features, options or abstractions.",
+            "- Change surgically: touch only what the task needs; match the existing style; "
+            "mention unrelated problems instead of fixing them; remove only what your change "
+            "made unused.",
+            "- Work toward a check: turn each task into a test that fails first, make it pass, "
+            "then run `make check`. For several steps, write the plan with a check per step.",
+            f"- Principles adapted from {PRINCIPLES_SOURCE}.",
+            "",
+            "## Definition of done",
+            "- Every acceptance criterion the task traces to has a test.",
+            f"- `make check` passes; coverage ≥ {cov}%.",
+            "- No new dependency outside the locked stack.",
+            "- The report names files changed, tests added and AC IDs satisfied.",
+            "",
+            "## Specs",
+            "- Stories, plans and tasks come from Specwright; a task prompt is self-contained.",
+            "- Never edit the spec files; when code and spec disagree, stop and ask.",
+            "",
+        ]
+    )
+
+
+def claude_md() -> str:
+    return "# CLAUDE.md\n\n@AGENTS.md\n"
+
+
+def story_sections(tooling: dict[str, Any], bo: str, feat_num: str) -> dict[str, str]:
+    """Body sections of the foundation story, AC IDs numbered for the reserved FEAT."""
+    cov = int(tooling.get("coverage", 80))
+    ci = tooling.get("ci", "github-actions")
+    layers = tooling.get("layers") or {}
+    names = ", ".join(f"{k} ({v['language']}, {v['build']})" for k, v in layers.items()) or "none"
+    n = iter(range(1, 20))
+
+    def ac(title: str, given: str, when: str, then: str) -> str:
+        return (
+            f"### AC-{feat_num}-{next(n)} — {title}\n\n- **Given** {given}\n- **When** {when}\n"
+            f"- **Then** {then}\n"
+        )
+
+    acs = [
+        ac(
+            "Fresh clone sets up in one command",
+            "a fresh clone on a machine with the locked runtime versions",
+            "a developer runs `make setup`",
+            "it exits with code 0 and installs only what the lockfile lists",
+        ),
+        ac(
+            "Formatting is enforced",
+            "a source file with one wrongly indented line",
+            "`make fmt-check` runs",
+            "it exits non-zero and names that file; after `make fmt` it exits 0",
+        ),
+        ac(
+            "Lint fails on a violation",
+            "a source file with an unused import",
+            "`make lint` runs",
+            "it exits non-zero and reports the file and line",
+        ),
+        ac(
+            f"Tests run with a {cov}% coverage floor",
+            "the sample module and its test",
+            "`make test` runs",
+            f"tests pass, a coverage report is written, and line coverage below {cov}% "
+            "exits non-zero",
+        ),
+        ac(
+            "One gate for humans, CI and agents",
+            "the skeleton project",
+            "`make check` runs",
+            "it runs fmt-check, lint, typecheck and test in that order and exits 0",
+        ),
+    ]
+    if ci != "none":
+        acs.append(
+            ac(
+                "CI blocks a failing change",
+                "a pull request where `make check` fails",
+                f"the {ci} pipeline runs",
+                "the check is red and the merge is blocked",
+            )
+        )
+    if tooling.get("ai_workflow", "none") != "none":
+        acs.append(
+            ac(
+                "Coding agents get the rules from the repo",
+                "a coding agent opens the repository",
+                "it reads `AGENTS.md`",
+                "it finds the locked stack, the `make` commands, the structure, the working "
+                "principles and the definition of done",
+            )
+        )
+    acs.append(
+        ac(
+            "Structure follows the convention",
+            "the skeleton project",
+            "a developer lists the source folders",
+            "they match the structure in `AGENTS.md`, with one sample module and one test",
+        )
+    )
+    return {
+        "Goal": (
+            "As a developer or coding agent, I want a project skeleton with one verified quality "
+            f"gate, so that every later feature starts from the same checks. Business objective: "
+            f"{bo}."
+        ),
+        "Context": (
+            f"Layers: {names}. Coverage floor {cov}%. CI: {ci}. Hooks: "
+            f"{tooling.get('hooks', 'none')}. Reference files: `02-drafts/foundation/Makefile`, "
+            "`02-drafts/foundation/AGENTS.md`"
+            + (" and `CLAUDE.md`" if tooling.get("ai_workflow") == "agents+claude" else "")
+            + ". Tool versions: current stable from official docs, pinned in the lockfiles."
+        ),
+        "Acceptance criteria": "\n".join(acs),
+        "Business rules": (
+            f"- BR: line coverage below {cov}% fails `make test`. Example: "
+            f"{cov - 0.1:.1f}% fails, {cov:.1f}% passes."
+        ),
+        "Edge cases and error behavior": (
+            "- A missing runtime or wrong major version: `make setup` exits non-zero and names the "
+            "required version.\n- No tests found: `make test` exits non-zero."
+        ),
+        "Non-functional": (
+            "- NFR: run time of `make check` on the skeleton ≤ 120 s on a standard CI runner, "
+            "measured from the CI job log."
+        ),
+        "UI/UX": "None — no user interface in the foundation.",
+        "Out of scope": (
+            "- Deployment and environments — reason: a later story per target.\n"
+            "- Feature code — reason: each feature has its own story."
+        ),
+        "Dependencies and relations": "None — the first story of the codebase.",
+        "Open questions": "None",
+    }

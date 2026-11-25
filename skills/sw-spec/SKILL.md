@@ -58,5 +58,6 @@ rerun with `--repaired`; `confirm` → ask once; `stop` → ask what `waiting` n
 | Drawing (chip says needs or check) | references/illustration-need.md; references/type-picker.md |
 | Several features at once | references/parallel-spec.md |
 | Gherkin export | scripts/export_feature.py --help |
+| Foundation story (structure, lint, format, coverage, CI, AGENTS.md) | _shared/references/foundation.md; _shared/scripts/foundation.py --help |
 | Version 1, change, fix, ship, merge | references/change-fix.md; scripts/merge.py --help |
 | A step above is unclear or a script errors | references/procedure.md |
