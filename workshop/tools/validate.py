@@ -166,9 +166,20 @@ def _check_body(skill: Path, parsed: frontmatter.Parsed, report: Report) -> None
                 md, 1, "V023", f"'{marker}' belongs in workshop/evals/, not in the skill body"
             )
     normalised = " ".join(parsed.body.split())
+    # The runtime-root contract lives once, in the kernel every skill reads. A skill body
+    # may restate it, but naming the kernel is what the contract requires now.
+    kernel = skill / "_shared" / "references" / "kernel.md"
+    kernel_text = ""
+    if kernel.is_file():
+        kernel_text = " ".join(kernel.read_text(encoding="utf-8").split())
+    names_kernel = "kernel.md" in normalised
     for marker in RUNTIME_MARKERS:
-        if " ".join(marker.split()) not in normalised:
-            report.add(md, 1, "V024", f"runtime-root contract is missing: {marker}")
+        wanted = " ".join(marker.split())
+        if wanted in normalised:
+            continue
+        if names_kernel and wanted in kernel_text:
+            continue
+        report.add(md, 1, "V024", f"runtime-root contract is missing: {marker}")
     if CWD_COMMAND.search(parsed.body):
         report.add(
             md, 1, "V025", "run shipped scripts through skill-root paths, not CWD-relative paths"
@@ -484,12 +495,27 @@ def _walk_parser(parser, words: list[str]):
 
 
 def _check_checkpoint(skill: Path, report: Report) -> None:
-    """Every skill that writes the spec ends with a checkpoint (V131); sw-view writes none."""
+    """Every skill that writes the spec ends with a checkpoint (V131); sw-view writes none.
+
+    A station now ends with `finish.py`, which runs the checkpoint itself; calling
+    `checkpoint.py` directly is still accepted.
+    """
     if skill.name == "sw-view" or not (skill / "_shared").is_dir():
         return
     path = skill / "SKILL.md"
-    if path.is_file() and "_shared/scripts/checkpoint.py" not in path.read_text(encoding="utf-8"):
-        report.add(path, 1, "V131", "name _shared/scripts/checkpoint.py as the final step")
+    if not path.is_file():
+        return
+    text = path.read_text(encoding="utf-8")
+    if "_shared/scripts/checkpoint.py" in text:
+        return
+    if "_shared/scripts/finish.py" in text and "--no-checkpoint" not in text:
+        return
+    report.add(
+        path,
+        1,
+        "V131",
+        "end with _shared/scripts/finish.py (it checkpoints) or name _shared/scripts/checkpoint.py",
+    )
 
 
 def _check_record_commands(skill: Path, root: Path, report: Report) -> None:
@@ -841,7 +867,10 @@ def _check_commands(root: Path, report: Report) -> None:
         loaded = re.findall(r"\$\{CLAUDE_PLUGIN_ROOT\}/skills/([a-z0-9-]+)/SKILL\.md", parsed.body)
         if not loaded:
             report.add(
-                wrapper, 1, "V095", "command must load ${CLAUDE_PLUGIN_ROOT}/skills/<skill>/SKILL.md"
+                wrapper,
+                1,
+                "V095",
+                "command must load ${CLAUDE_PLUGIN_ROOT}/skills/<skill>/SKILL.md",
             )
         for skill in loaded:
             if skill not in EXPECTED_SKILLS:

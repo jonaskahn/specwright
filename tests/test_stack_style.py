@@ -9,6 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "skills" / "_shared" / "scripts"))
 
 import style_check  # noqa: E402
+
 from kitlib import markdown, stack  # noqa: E402
 
 

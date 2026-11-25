@@ -175,6 +175,36 @@ def own_roots(skill: Path) -> tuple[set[str], list[str]]:
     return roots, problems
 
 
+def reference_closure(shared: Path, roots: set[str]) -> set[str]:
+    """Roots plus every shared file their text names, followed transitively.
+
+    A capability root such as ``references/kernel.md`` names ``scripts/finish.py``; that
+    file is only shipped if the closure reads the reference text. Without this, a skill
+    ships the rule that says "end with finish.py" but not finish.py.
+    """
+    needed = set(roots)
+    pending = [r for r in roots if r.endswith(".md")]
+    scanned: set[str] = set()
+    while pending:
+        rel = pending.pop()
+        if rel in scanned:
+            continue
+        scanned.add(rel)
+        path = shared / rel
+        if not path.is_file():
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            continue
+        for ref in SHARED_REF.findall(text):
+            if (shared / ref).is_file() and ref not in needed:
+                needed.add(ref)
+                if ref.endswith(".md"):
+                    pending.append(ref)
+    return needed
+
+
 def derive(root: Path, data: dict, skill: Path) -> tuple[list[str], list[str]]:
     """The sorted shared list a skill must ship, plus problems met while deriving it."""
     shared = shared_folder(root)
@@ -190,7 +220,7 @@ def derive(root: Path, data: dict, skill: Path) -> tuple[list[str], list[str]]:
                 roots.add(rel)
             else:
                 problems.append(f"capability '{name}': root {rel} does not exist")
-    return sorted(python_closure(shared, roots)), problems
+    return sorted(python_closure(shared, reference_closure(shared, roots))), problems
 
 
 def count_files(root: Path, data: dict, skill: Path, profile: str = "extended") -> int:
@@ -287,7 +317,7 @@ def write(root: Path) -> list[str]:
             entry["shared"] = wanted
             changed.append(skill.name)
     if changed:
-        map_path(root).write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+        map_path(root).write_text(json.dumps(data, indent=1) + "\n", encoding="utf-8")
     return changed
 
 

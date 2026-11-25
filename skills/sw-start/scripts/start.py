@@ -30,12 +30,12 @@ from kitlib import (  # noqa: E402
     graph_query,
     guard,
     handoff,
-    stack,
     hashing,
     index,
     invest,
     runtime,
     schema,
+    stack,
     workspace,
 )
 

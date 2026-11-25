@@ -159,6 +159,109 @@ lead() { row "  ${BRIGHT}▶${OFF} $*"; }
 done_() { clear_line; row "  ${BRIGHT}✓${OFF} $*"; }
 note() { clear_line; row "  ${NOTE}·${OFF} ${NOTE}$*${OFF}"; }
 
+# ------------------------------------------------------------- progress ----
+# One live line for the processing steps of a checkout install: the step, a
+# bar and a count, redrawn as each item lands. An online install leaves
+# PROGRESS=0, so its steps print the plain step/done pair they always had.
+
+PROGRESS=0
+PROG_LABEL=""
+PROG_TOTAL=0
+PROG_DONE=0
+PROG_DRAWN=0
+BAR_W=20
+
+shorten() {
+	# shorten <max> <text>; clip to <max> columns, ellipsis included
+	_max="$1"
+	_text="$2"
+	if [ "$(vislen "$_text")" -le "$_max" ]; then
+		printf '%s' "$_text"
+		return 0
+	fi
+	_rest="$_text"
+	_out=""
+	_vis=0
+	_max=$((_max - 1))
+	while [ -n "$_rest" ] && [ "$_vis" -lt "$_max" ]; do
+		_head="${_rest#?}"
+		_out="$_out${_rest%"$_head"}"
+		_rest="$_head"
+		_vis=$((_vis + 1))
+	done
+	printf '%s…' "$_out"
+}
+
+bar() {
+	# bar <done> <total>; drawn in columns, so UTF8 framing must be on
+	_fill=0
+	if [ "$2" -gt 0 ]; then
+		_fill=$((($1 * BAR_W + $2 / 2) / $2))
+	fi
+	[ "$_fill" -le "$BAR_W" ] || _fill="$BAR_W"
+	_out=""
+	_i=0
+	while [ "$_i" -lt "$BAR_W" ]; do
+		if [ "$_i" -lt "$_fill" ]; then _out="${_out}█"; else _out="${_out}░"; fi
+		_i=$((_i + 1))
+	done
+	printf '%s' "$_out"
+}
+
+progress_live() { [ "$PROGRESS" = 1 ] && [ "$UTF8" = 1 ]; }
+
+# Erase the live line the bar last drew, so the next draw replaces it in place
+# instead of stacking one line per tick.
+progress_erase() {
+	[ "$PROG_DRAWN" = 1 ] || return 0
+	printf '%s\r%s' "${ESC}[1A" "${ESC}[2K"
+	PROG_DRAWN=0
+}
+
+progress_draw() {
+	progress_live || return 0
+	_count="$PROG_DONE/$PROG_TOTAL"
+	# "  ▶ label" + "  bar count" must fit inside the frame walls.
+	_room=$((INNER - 7 - BAR_W - ${#_count}))
+	[ "$_room" -ge 8 ] || _room=8
+	progress_erase
+	row "  ${BRIGHT}▶${OFF} $(shorten "$_room" "$PROG_LABEL")  ${MID}$(bar "$PROG_DONE" "$PROG_TOTAL")${OFF} ${BOLD}${_count}${OFF}"
+	PROG_DRAWN=1
+}
+
+progress_begin() {
+	progress_live || return 0
+	PROG_LABEL="$1"
+	PROG_TOTAL="$2"
+	PROG_DONE=0
+	progress_draw
+}
+
+progress_tick() {
+	progress_live || return 0
+	PROG_DONE=$((PROG_DONE + 1))
+	progress_draw
+}
+
+progress_end() {
+	# Fill the bar, replace it with the done row, and hand the line back.
+	if progress_live; then
+		if [ "$PROG_DONE" -lt "$PROG_TOTAL" ]; then
+			PROG_DONE="$PROG_TOTAL"
+			progress_draw
+		fi
+		progress_erase
+	fi
+	done_ "$1"
+}
+
+progress_start() {
+	# progress_start <label> <total>; only a running install draws the bar, so an
+	# online install keeps the step and done lines it always printed.
+	progress_live || return 0
+	progress_begin "$1" "$2"
+}
+
 section() {
 	if [ "$FIRST_SECTION" = 1 ]; then FIRST_SECTION=0; else hline '├' '┤'; fi
 	row ""
@@ -224,6 +327,7 @@ error_box() {
 }
 
 die() {
+	progress_erase
 	clear_line
 	screen_close
 	error_box "$@"
@@ -1058,10 +1162,14 @@ EOF
 	[ -s "$TMP_DIR/old" ] || return 0
 	_n="$(wc -l <"$TMP_DIR/old" | tr -d ' ')"
 	note "Replacing $_n existing Specwright file(s)"
+	if progress_live; then
+		progress_start "Removing $_n previous file(s)" "$_n"
+	fi
 	while IFS= read -r _path; do
 		rm -rf "$_path"
+		progress_tick
 	done <"$TMP_DIR/old"
-	done_ "Removed the previous install"
+	progress_end "Removed the previous install"
 }
 
 devof() {
@@ -1101,6 +1209,7 @@ copy_skills() {
 	mkdir -p "$1"
 	for _skill in $SKILLS; do
 		cp -R "$SKILL_ROOT/skills/$_skill" "$1/$_skill"
+		progress_tick
 	done
 }
 
@@ -1111,6 +1220,7 @@ link_skills() {
 	for _skill in $SKILLS; do
 		_rel="$(relpath "$_dest" "$_canon/$_skill")"
 		ln -s "$_rel" "$_dest/$_skill" || return 1
+		progress_tick
 	done
 }
 
@@ -1143,16 +1253,19 @@ install_commands() {
 	_base="$(dirname "${_dest%/}")"
 	mkdir -p "$_out"
 	_n=0
+	_cmds="$(command_files "$_src" | wc -l | tr -d ' ')"
+	progress_start "Writing $_cmds command wrapper(s) into $_out" "$_cmds"
 	while IFS= read -r _file; do
 		[ -n "$_file" ] || continue
 		_name="${_file##*/}"
 		rewrite_command "$_file" "$_base" >"$_out/$_name" ||
 			die "could not write $_out/$_name"
 		_n=$((_n + 1))
+		progress_tick
 	done <<EOF
 $(command_files "$_src")
 EOF
-	done_ "Copied $_n command(s) into $_out"
+	progress_end "Copied $_n command(s) into $_out"
 }
 
 pick_canonical() {
@@ -1170,19 +1283,31 @@ pick_canonical() {
 
 install_skills() {
 	_canon="$(pick_canonical)"
-	step "Installing into $_canon"
+	_total=0
+	for _skill in $SKILLS; do _total=$((_total + 1)); done
+	if progress_live; then
+		progress_start "Installing $_total skills into $_canon" "$_total"
+	else
+		step "Installing into $_canon"
+	fi
 	copy_skills "$_canon"
-	done_ "Copied 8 skills into $_canon"
+	progress_end "Copied $_total skills into $_canon"
 	install_commands "${COMMANDS_SRC:-}" "$_canon"
 	while IFS= read -r _dest; do
 		[ "$_dest" = "$_canon" ] && continue
 		mkdir -p "$_dest"
+		if progress_live; then
+			progress_start "Linking $_total skills into $_dest" "$_total"
+		fi
 		if same_device "$_canon" "$_dest" && link_skills "$_dest" "$_canon"; then
-			done_ "Linked 8 skills into $_dest"
+			progress_end "Linked $_total skills into $_dest"
 		else
 			clear_new_links "$_dest"
+			if progress_live; then
+				progress_start "Copying $_total skills into $_dest" "$_total"
+			fi
 			copy_skills "$_dest"
-			done_ "Copied 8 skills into $_dest"
+			progress_end "Copied $_total skills into $_dest"
 		fi
 		install_commands "${COMMANDS_SRC:-}" "$_dest"
 	done <"$TMP_DIR/dests"
@@ -1268,6 +1393,8 @@ main() {
 	fi
 	if [ -n "$SKILL_ROOT" ]; then
 		note "Using the checkout at $SKILL_ROOT"
+		# A checkout install reports its processing steps as a live bar.
+		PROGRESS=1
 	else
 		note "No local checkout; downloading $REPO@$REF"
 		fetch_archive

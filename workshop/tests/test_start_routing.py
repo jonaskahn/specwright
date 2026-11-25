@@ -103,7 +103,7 @@ class BaselineRoutingTests(unittest.TestCase):
         graph.build(other, "OTH")
         item = start.report(other)["scopes_state"][0]
         self.assertEqual(item["setup"], [])
-        self.assertEqual((item["signoff"], item["flow"]), ("optional", "guided"))
+        self.assertEqual((item["signoff"], item["flow"]), ("optional", "auto"))
         self.assertEqual(item["output_default"], "markdown")
 
 

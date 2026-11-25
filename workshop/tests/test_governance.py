@@ -84,10 +84,10 @@ class ManifestTests(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name).resolve()
 
-    def test_a_new_workspace_is_optional_guided_and_markdown(self):
+    def test_a_new_workspace_is_optional_auto_and_markdown(self):
         workspace.init(self.root, "flat", "REF", "Refunds")
         self.assertEqual(
-            workspace.governance(self.root, "REF"), {"signoff": "optional", "flow": "guided"}
+            workspace.governance(self.root, "REF"), {"signoff": "optional", "flow": "auto"}
         )
         self.assertEqual(workspace.output_default(self.root, "REF"), "markdown")
         self.assertEqual(workspace.approver_list(self.root, "REF"), [])
@@ -121,7 +121,7 @@ class ManifestTests(unittest.TestCase):
 
     def test_a_manifest_without_the_block_reads_as_the_defaults(self):
         self.assertEqual(
-            workspace.governance_of({"scope": "REF"}), {"signoff": "optional", "flow": "guided"}
+            workspace.governance_of({"scope": "REF"}), {"signoff": "optional", "flow": "auto"}
         )
         self.assertEqual(
             workspace.governance_of({"governance": {"signoff": "bogus", "flow": "step"}}),
