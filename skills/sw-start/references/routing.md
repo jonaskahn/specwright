@@ -10,6 +10,7 @@ own prerequisites.
 | Missing or incompatible graph schema | Show the upgrade dry-run; migrate only after agreement. |
 | Stale graph | Rebuild as bounded maintenance; this is not a workspace upgrade. |
 | Sources registered or imported, nothing shaped | Existing-baseline flow (references/brownfield.md); `action` names the step. |
+| Code beside or inside the workspace, no specs yet; or a request to analyse, change, fix or complete existing behaviour | sw-analyze: register code roots, light inventory, then a gap table for the chosen feature. Its shape tells sw-spec what to write. |
 | "continue", "next", "go on", "resume" with no item | Follow `handoff` from `start.py` (`_shared/references/handoff.md`): under `flow: auto` run its `next_skill` for its `items`, station by station, until a human decision or a blocker. |
 | Several active candidates at different stations | Under `flow: auto` the whole-scope run takes them station by station (`handoff`). Otherwise, or when `handoff` stops, show the board and the ranked top three with reasons (advice only), then ask which item. |
 | Two or more reserved accepted features, submitted features, or accepted features without a plan (every active item in one station) | Same skill for all: `start.py` answers `batch sw-<station>`; offer the batch in parallel (default) or one pick; sw-spec / sw-review / sw-plan fan out one worker per FEAT (`_shared/references/parallel-writers.md`). |

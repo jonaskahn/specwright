@@ -29,13 +29,14 @@ from kitlib import (  # noqa: E402
     frontmatter,
     graph_query,
     guard,
+    coderoots,
     handoff,
+    stack,
     hashing,
     index,
     invest,
     runtime,
     schema,
-    stack,
     workspace,
 )
 
@@ -295,6 +296,11 @@ def route(state):
         return ("sw-plan", "approved features have no tasks file: " + ", ".join(needs_tasks))
     if ideas.get("accepted") and not feats:
         return ("sw-spec", "an accepted idea has no feature drafts")
+    code = state.get("code") or {}
+    if not feats and not ideas and (code.get("registered") or code.get("detected")):
+        if not code.get("inventory"):
+            return ("sw-analyze", "existing code and no specs: adopt it (code roots, light inventory)")
+        return ("sw-analyze", "inventory exists; choose a candidate feature to analyse in depth")
     if ideas.get("draft") and not feats:
         return ("sw-shape", "an idea is still a draft")
     if not state["sources"] and not ideas and not feats:
@@ -443,10 +449,21 @@ def report(cwd, target=None, pack=False):
             return {**info, "fresh_setup": False, "scopes_state": scopes}
     for item in scopes:
         item["stack"] = stack_state(root, item["scope"])
+        item["code"] = code_state(root, item["scope"])
         item["next"] = list(route(item))
         item["action"] = action_for(item)
         item["handoff"] = handoff_for(root, item, named=bool(target))
     return {**info, "fresh_setup": False, "scopes_state": scopes}
+
+
+def code_state(root, scope):
+    """Registered and detected code roots and whether a light inventory exists."""
+    base = workspace.scope_dir(root, scope)
+    return {
+        "registered": [r["name"] for r in coderoots.registered(root, scope) if r["exists"]],
+        "detected": [d["path"] for d in coderoots.detect(root, scope)],
+        "inventory": (base / "01-analysis" / "as-is" / "inventory.md").is_file(),
+    }
 
 
 def stack_state(root, scope):
@@ -468,7 +485,12 @@ def intake_questions(layout, detected):
     questions = [
         {
             "q": "What do you have to start from?",
-            "options": ["an idea in words", "documents to import", "an existing register or Jira"],
+            "options": [
+                "an idea in words",
+                "documents to import",
+                "an existing system or feature to analyse (code, docs, Jira)",
+                "an existing register or Jira",
+            ],
             "default": "an idea in words",
         },
         {
@@ -509,6 +531,7 @@ def brief(data):
     lines = [
         f"Specwright {data['kit_version']}: idea -> testable stories -> accepted -> "
         "plan, tasks and one prompt per task for an implementing agent.",
+        "- analyze: what an existing system or feature does today vs what it should do (gap table)",
         "- shape: problem-led brief and a feature split you accept",
         "- spec: Given/When/Then criteria, rules with numbers, diagrams when they help",
         "- review: your plain accept, bound to the content hash",

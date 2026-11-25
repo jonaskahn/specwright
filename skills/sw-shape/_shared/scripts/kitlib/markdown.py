@@ -12,8 +12,7 @@ _AC_TOMBSTONE = re.compile(r"~~(AC-\d{3}-\d+)~~")
 _TASK_HEADING = re.compile(r"^### +(TASK-\d{3}-\d+)\b\s*(?:[—–-]+\s*(.*))?$")
 _TASK_TOMBSTONE = re.compile(r"~~(TASK-\d{3}-\d+)~~")
 _TASK_FIELD = re.compile(
-    r"^\s*(?:[-*]\s+)?(Traces to|Stack|Touches|Depends on|Done when|Stop and ask if|Visuals)"
-    r"\s*:\s*(.*)$"
+    r"^\s*(?:[-*]\s+)?(Traces to|Stack|Touches|Depends on|Done when|Stop and ask if|Visuals)\s*:\s*(.*)$"
 )
 
 

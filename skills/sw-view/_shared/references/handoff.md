@@ -28,7 +28,7 @@ person can make. Each stop asks one batch of questions, never a bare "continue?"
 | sw-ingest | Re-route with sw-start (shape for a new idea, spec for clear features) | Proposed impacts on accepted or published stories wait for a decision |
 | sw-shape writing | — | Owner accepts or revises the split (`accept-split`) |
 | Split accepted | sw-spec for every reserved feature (parallel batch) | — |
-| sw-spec | `submit-review` (agent passes the token itself), then sw-review | Owner accepts the table shown (`signoff: optional`), or sign-off evidence (`required`) |
+| sw-spec | `submit-review` (agent passes the token itself), then sw-review | Independent reviewers debate first (no stop); then the owner finalizes the review pack (`signoff: optional`), or sign-off evidence (`required`) |
 | Accept recorded | sw-plan for every accepted feature | — |
 | sw-plan, check passes | Done: Markdown delivery | — |
 | Any station, publish | Never automatic | sw-publish dry-run and a fresh yes to it |

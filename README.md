@@ -217,6 +217,24 @@ One feature walks the path after its epic split is accepted. Its siblings mind t
 
 Shared helpers for knowledge, trace, lint, status, assets, and visuals live in `skills/_shared/`. Packaging copies what each skill needs into its own folder.
 
+### Existing systems and features
+
+Install the kit at any point in a project's life. The kit adapts to what it finds:
+
+- **Code inside or beside the docs.** It detects the repository it sits in and neighbouring repos with build files (`../shop-api`, `../shop-web`), and registers them after one yes. No code is fine too.
+- **Light inventory.** Endpoints, screens, entities, tests and doc headings, grouped into candidate features: names and pointers only, cheap on any repo size.
+- **Gap table per feature.** `sw-analyze` compares what a feature should do (docs, Jira, another system, the owner) with what code and tests do today, criterion by criterion: done, partial, missing, divergent or unknown, each with a `CODE:` citation that goes stale when the code changes. Code and documents weigh the same; disagreements become questions.
+- **The shape decides the next step.** Nothing built → a new story. All done → the feature's version 1. Some gaps → version 1 plus a completion change. Code wrong → a fix.
+
+### Changes, fixes and finalize
+
+- **Version 1 of a live feature** comes from a confirmed analysis: only behaviour the code really has.
+- **Change or fix** with a story that names its target, a Delta (criteria changed, added, removed) and a "must not change" list, bound to the target's hash so a stale change is caught.
+- **Pre-ship check.** Shipping needs a verification table: one row per criterion, cited to code, marked done. Gaps block the ship unless you give a reason, which is recorded.
+- **Ship and merge.** The kit records the git commit of each code root, merges the change into the feature as the next version with a changelog line, and sends the feature back for your finalize. Git keeps old versions.
+- **Finalize, not click-through.** Three independent reviewers (critic, builder, tester) challenge each draft with evidence; the author fixes or rebuts. You then see a review pack: what is new to you since your last finalize, assumptions, existing-behaviour gaps and every dispute still standing.
+- **Optional Jira status sync.** Opt in once; local state (accepted, planned, shipped, withdrawn) maps to Jira statuses in a dry-run table; transitions run only after your yes. Jira ahead of the files is reported as drift, never pulled back.
+
 ### Stack lock and agent prompts
 
 - `sw-start` reads your build files (Maven, Gradle, npm, Python, Go, Flutter, .NET, compose, Terraform) and proposes a stack profile. You lock it once; the lock is bound to the profile's hash.

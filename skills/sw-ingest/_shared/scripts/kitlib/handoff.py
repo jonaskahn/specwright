@@ -37,8 +37,13 @@ def annotate(root: Path, scope: str, rows: list[dict]) -> list[dict]:
         if row.get("kind") == "epic":
             row["split_accepted"] = row.get("id") in accepted
         if row.get("kind", "feat") == "feat" and ":FEAT-" in row.get("id", ""):
-            found = blockers.blocking_questions(base, scope, row["id"].split(":")[-1])
+            feat = row["id"].split(":")[-1]
+            found = blockers.blocking_questions(base, scope, feat)
             row["questions"] = [f"{qid} {title}".strip() for qid, title in found]
+            story = base / "02-drafts" / f"{feat}.story.md"
+            if story.is_file():
+                fm = frontmatter.parse(story.read_text(encoding="utf-8")).fm or {}
+                row["origin"], row["story_kind"] = fm.get("origin"), fm.get("kind")
     return rows
 
 
@@ -93,12 +98,13 @@ def _row_next(row: dict, done: str | None, signoff: str) -> dict:
             why = (
                 "a configured approver's sign-off evidence"
                 if signoff == "required"
-                else "the owner's plain accept of the table just shown"
+                else "the owner's finalize of the review pack just shown"
             )
             return {"item": rid, "wait": "decision", "why": why}
         return {"item": rid, "skill": "sw-review"}
     if station == "plan":
-        if cond == "complete":
+        # Version 1 of an existing feature is already built: finalizing it ends its pipeline.
+        if cond == "complete" or row.get("origin") == "as-is":
             return {"item": rid, "complete": True}
         if done == "sw-plan":
             why = "; ".join(blockers) or "the task check still fails"

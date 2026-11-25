@@ -30,6 +30,30 @@ if str(_shared) not in sys.path:
 from kitlib import fsio, hashing, review  # noqa: E402
 
 
+def _require_debate(args):
+    """Finalize needs a passing independent review of this exact draft (debate.py check)."""
+    sys.path.insert(0, str(_here))
+    import debate
+
+    feat = args.draft.name.split(".")[0]
+    base = args.draft.resolve().parent.parent
+    result = debate.check(base, feat)
+    if result["finalizable"]:
+        return
+    if args.skip_debate:
+        # The owner's reason is kept in the debate record, which the checkpoint commits.
+        note = f"Skipped by the owner before finalize: {args.skip_debate}"
+        path = base / debate.FOLDER / f"{feat}.debate.md"
+        if not path.is_file():
+            debate.start(base, feat, "same-session")
+        text = path.read_text(encoding="utf-8")
+        fsio.atomic_write(path, text.rstrip() + f"\n\n{note}\n")
+        print(json.dumps({"warning": note}), file=sys.stderr)
+        return
+    reasons = "; ".join(result["findings"][:3]) or "open blocker findings"
+    raise review.ApprovalError(f"not finalizable: {reasons} (debate.py check --feat {feat})")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=["accept", "verify", "promote"])
@@ -49,6 +73,11 @@ def main(argv=None):
     )
     parser.add_argument("--body", default="")
     parser.add_argument(
+        "--skip-debate",
+        metavar="REASON",
+        help="finalize without a passing independent review; the reason is recorded (accept)",
+    )
+    parser.add_argument(
         "--session-ref", default="", help="chat or meeting evidence: session or minutes reference"
     )
     args = parser.parse_args(argv)
@@ -61,6 +90,7 @@ def main(argv=None):
                         f"the draft changed since it was shown (now {hashing.short(now)}); "
                         "review it again before accepting"
                     )
+            _require_debate(args)
             updated = review.accept(args.draft, args.scope_id, args.manifest)
             fsio.atomic_write(args.draft, updated)
             digest = hashing.short(hashing.draft_hash(updated))

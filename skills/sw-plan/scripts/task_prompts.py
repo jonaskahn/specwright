@@ -13,6 +13,7 @@ Exit codes: 0 written, 1 tasks not ready (without --draft) or invalid, 2 usage o
 """
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -28,7 +29,7 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import frontmatter, fsio, hashing, ids, markdown, stack, workspace  # noqa: E402
+from kitlib import analysis, frontmatter, fsio, hashing, ids, markdown, stack, workspace  # noqa: E402
 
 OUT = "prompts"
 
@@ -49,6 +50,38 @@ def _order(blocks: dict) -> list[str]:
         done.append(ready[0])
         pending.remove(ready[0])
     return done
+
+
+def _existing(base: Path, feat: str, fm: dict, body: str) -> dict:
+    """For work on existing code: files to read first, regression tests, must-not-change ACs."""
+    target = str(fm.get("changes") or "").split(":")[-1]
+    cited = body
+    tbody = ""
+    if target and (base / "02-drafts" / f"{target}.story.md").is_file():
+        tbody = frontmatter.parse(
+            (base / "02-drafts" / f"{target}.story.md").read_text(encoding="utf-8")
+        ).body
+        cited += tbody
+    code, tests = [], []
+    for a in sorted((base / "01-analysis" / "as-is").glob("*.analysis.md")):
+        text = a.read_text(encoding="utf-8")
+        afm = frontmatter.parse(text).fm or {}
+        rel = a.relative_to(base).as_posix()
+        if rel not in cited and str(afm.get("target", "")).split(":")[-1] not in (feat, target):
+            continue
+        for m in analysis.CODE_CITE.finditer(text):
+            path = f"{m.group(1)}/{m.group(2)}"
+            bucket = tests if analysis.TEST_PATH.search(m.group(2)) else code
+            if path not in bucket:
+                bucket.append(path)
+    keep = []
+    sec = markdown.sections(body, level=3).get("Must not change")
+    if sec and tbody:
+        tacs = markdown.ac_blocks(markdown.sections(tbody).get("Acceptance criteria"))
+        for ac_id in re.findall(r"AC-\d{3}-\d+", sec.text):
+            if ac_id in tacs:
+                keep.append(f"{ac_id} — {tacs[ac_id].title}")
+    return {"read_first": code[:8], "tests": tests[:8], "keep": keep, "target": target}
 
 
 def _rule_lines(body: str, refs: list[str]) -> list[str]:
@@ -90,6 +123,7 @@ def build(base: Path, scope: str, feat: str, draft: bool) -> tuple[list[Path], l
     folder = base / "03-plan" / OUT / feat
     folder.mkdir(parents=True, exist_ok=True)
     order = _order(blocks)
+    existing = _existing(base, feat, sp.fm, sp.body)
     written = []
     for tid in order:
         b = blocks[tid]
@@ -130,6 +164,19 @@ def build(base: Path, scope: str, feat: str, draft: bool) -> tuple[list[Path], l
             lines.append("Needs approval: " + ", ".join(libs["needs_approval"]))
         for c in (profile or {}).get("conventions") or []:
             lines.append(f"Convention: {c}")
+        if existing["read_first"] or existing["tests"] or existing["keep"]:
+            lines += ["", "## Existing code"]
+            if existing["target"]:
+                lines.append(
+                    f"Changes {existing['target']}; behaviour not in the Delta stays as is."
+                )
+            if existing["read_first"]:
+                lines.append("Read first: " + "; ".join(existing["read_first"]))
+                lines.append("Follow the patterns in these files; do not restructure them.")
+            if existing["keep"]:
+                lines += ["Must not change:", *(f"- {k}" for k in existing["keep"])]
+            if existing["tests"]:
+                lines.append("Regression tests (must stay green): " + "; ".join(existing["tests"]))
         lines += ["", "## Inputs"]
         for name in ("Depends on", "Touches", "Visuals"):
             value = b.field_line(name)

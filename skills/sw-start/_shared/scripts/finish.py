@@ -28,6 +28,7 @@ from kitlib import workspace  # noqa: E402
 CONF = {
     "sw-start": {"gate": "draft", "data": ["scopes"], "status": True, "style": []},
     "sw-ingest": {"gate": "draft", "data": ["sources"], "style": []},
+    "sw-analyze": {"gate": "draft", "data": [], "style": ["01-analysis/as-is/"], "analyze": True},
     "sw-shape": {"gate": "draft", "data": [], "style": ["01-analysis/"]},
     "sw-spec": {"gate": "review", "data": ["registry"], "style": ["02-drafts/"]},
     "sw-review": {"gate": "review", "data": ["quality"], "style": []},
@@ -80,13 +81,9 @@ def _changed(base: Path, prefixes: list[str]) -> list[Path]:
             inner = path.relative_to(base.resolve()).as_posix()
         except ValueError:
             continue
-        if (
-            path.suffix == ".md"
-            and path.is_file()
-            and any(inner.startswith(p) for p in prefixes)
-            and "/prompts/" not in inner
-        ):
-            out.append(path)
+        if path.suffix == ".md" and path.is_file() and any(inner.startswith(p) for p in prefixes):
+            if "/prompts/" not in inner:
+                out.append(path)
     return out
 
 
@@ -218,6 +215,50 @@ def main(argv=None):
             base,
         )
         report["checkpoint"] = _tail(cp.stdout + cp.stderr, 2)
+
+    # sw-analyze: the gap table, not the board, decides what comes next.
+    if conf.get("analyze"):
+        scripts = _skill_scripts(a.skill)
+        results = {}
+        for item in a.item:
+            done = _run([str(scripts / "analyze.py"), "check", item, "--cwd", str(base), *sc], base)
+            try:
+                results[item] = json.loads(done.stdout)
+            except ValueError:
+                results[item] = {"findings": _tail(done.stderr, 2) or ["check failed"], "ask": []}
+        report["analysis"] = results
+        findings = [f"{i}: {f}" for i, r in results.items() for f in r.get("findings", [])]
+        asks = [{"item": i, **q} for i, r in results.items() for q in r.get("ask", [])]
+        if not a.item:
+            handoff = {"mode": "stop", "reason": "choose a candidate to analyse (inventory.md)"}
+        elif findings and not a.repaired:
+            handoff = {"mode": "repair", "reason": "; ".join(findings[:4])}
+        elif findings:
+            handoff = {
+                "mode": "stop",
+                "reason": "analysis still invalid: " + "; ".join(findings[:3]),
+            }
+        elif asks:
+            handoff = {
+                "mode": "stop",
+                "reason": "confirm these rows (low confidence, divergent, unknown or partial)",
+                "waiting": asks,
+            }
+        else:
+            handoff = {
+                "mode": "continue",
+                "next_skill": "sw-spec",
+                "items": a.item,
+                "reason": "; ".join(f"{i}: {r['recommend']}" for i, r in results.items()),
+            }
+        handoff["say"] = (
+            f"→ sw-spec for {', '.join(a.item)}"
+            if handoff["mode"] == "continue"
+            else "Paused: " + handoff["reason"]
+        )
+        report["handoff"] = handoff
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
 
     cmd = [f"{s}/handoff.py", "next", "--cwd", str(base), *sc, "--done", a.skill]
     if len(a.item) == 1:

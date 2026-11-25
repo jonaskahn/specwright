@@ -1016,6 +1016,8 @@ def discover(base, ignore=()):
         "console",
         "node_modules",
         "03-plan",
+        "as-is",  # analysis files: checked by sw-analyze (analyze.py check)
+        "review",  # review packs and debate records: checked by sw-review
         *(str(i).strip("/") for i in ignore),
     }
     docs = []

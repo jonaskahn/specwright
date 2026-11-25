@@ -17,6 +17,9 @@ reservations via scripts, RTM draft columns via the trace capability.
 
 ## Steps
 
+0. Existing behaviour (an analysis file exists, or the request changes, fixes or completes a
+   feature): follow `references/change-fix.md` — version 1 from confirmed rows, then a change or
+   fix story bound to its target (`scripts/merge.py base`, `check`). Shipping and merging: same file.
 1. Resolve scope. Unaccepted idea → sw-shape. Run `_shared/scripts/graph.py context FEAT-NNN`;
    read its answers, decisions and sources. Cite with `cite.py stamp`.
 2. New: `scripts/new_story.py --scope-root <project> --scope <S> --reserved FEAT-NNN`.
@@ -55,4 +58,5 @@ rerun with `--repaired`; `confirm` → ask once; `stop` → ask what `waiting` n
 | Drawing (chip says needs or check) | references/illustration-need.md; references/type-picker.md |
 | Several features at once | references/parallel-spec.md |
 | Gherkin export | scripts/export_feature.py --help |
+| Version 1, change, fix, ship, merge | references/change-fix.md; scripts/merge.py --help |
 | A step above is unclear or a script errors | references/procedure.md |

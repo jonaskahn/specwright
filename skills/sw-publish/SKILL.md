@@ -26,6 +26,9 @@ Jira through the session jira-write tool only; then registry, RTM Jira column, c
 6. Execute through jira-write bound to the plan hash. No write tool → stop after the dry-run.
 7. After every remote call succeeds, update the local index (`references/field-ownership.md`).
 
+Status sync (optional, opt-in): `references/status-sync.md`. Same rule: a dry-run table and a
+fresh yes to its token before any transition.
+
 ## Stop when
 
 Failed precondition, CONFLICT, identity ambiguity, ambiguous create, no write tool, no fresh yes.
@@ -44,4 +47,5 @@ rerun with `--repaired`; `confirm` → ask once; `stop` → ask what `waiting` n
 | Dry-run sections, exit codes | references/dry-run-format.md |
 | Owned fields, local updates | references/field-ownership.md |
 | Tool capabilities | references/capabilities.md |
+| Status-only sync of shipped, planned, accepted features | references/status-sync.md; scripts/status_sync.py --help |
 | A step above is unclear or a script errors | references/procedure.md |
