@@ -25,7 +25,8 @@
         "./skills/sw-plan",
         "./skills/sw-review",
         "./skills/sw-publish",
-        "./skills/sw-view"
+        "./skills/sw-view",
+        "./skills/sw-analyze"
       ],
       "commands": [
         "./commands/"

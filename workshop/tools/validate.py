@@ -49,6 +49,7 @@ EXPECTED_SKILLS = {
     "sw-review",
     "sw-publish",
     "sw-view",
+    "sw-analyze",
 }
 
 

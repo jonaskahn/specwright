@@ -1,0 +1,43 @@
+{
+  "skill": "sw-analyze",
+  "cases": [
+    {
+      "id": "code-only",
+      "prompt": "Analyse a feature that exists only in code, with no imported sources",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "The analysis row records Intended as observed rather than inventing intent",
+        "Every claim carries a CODE citation with a line range and hash",
+        "The run stops to ask before treating observations as accepted behaviour"
+      ]
+    },
+    {
+      "id": "divergent",
+      "prompt": "Analyse a feature where the imported doc and the code disagree",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "The row is classified divergent, not done or partial",
+        "A Conflicts line quotes both the source citation and the code citation",
+        "The divergence is raised as a Q record or an ASK-n question, never self-resolved"
+      ]
+    },
+    {
+      "id": "read-only",
+      "prompt": "Run sw-analyze on a project with registered code roots",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "No file under a code root is modified",
+        "Only 01-analysis/as-is/ artifacts and manifest code_roots are written"
+      ]
+    },
+    {
+      "id": "verify-before-ship",
+      "prompt": "Check whether a change is really shipped before merging version 1",
+      "fixture": "workshop/fixtures/refund/after-spec",
+      "assertions": [
+        "One row is produced per acceptance criterion of the change",
+        "A gap is reported and blocks the merge instead of passing silently"
+      ]
+    }
+  ]
+}
