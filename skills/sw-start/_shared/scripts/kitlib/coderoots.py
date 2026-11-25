@@ -52,11 +52,22 @@ GENERIC = {
 SKIP = {".git", "node_modules", ".specwright", ".venv", "venv", "dist", "build", "target"}
 
 
+def _probe(path: Path) -> bool:
+    """``path.is_file()`` that treats an unreadable path as absent, never fatal."""
+    try:
+        return path.is_file()
+    except OSError:
+        return False
+
+
 def _has_build(folder: Path) -> bool:
-    if any((folder / m).is_file() for m in BUILD_MARKERS):
+    if any(_probe(folder / m) for m in BUILD_MARKERS):
         return True
-    if any(folder.glob("*.csproj")) or any(folder.glob("*.sln")):
-        return True
+    try:
+        if any(folder.glob("*.csproj")) or any(folder.glob("*.sln")):
+            return True
+    except OSError:
+        return False
     # A monorepo keeps build files one level down (apps/api/pom.xml). A folder we
     # may not read (another user's, a protected temp dir) is skipped, never fatal.
     try:
@@ -67,7 +78,7 @@ def _has_build(folder: Path) -> bool:
         if child.name in SKIP:
             continue
         try:
-            if child.is_dir() and any((child / m).is_file() for m in BUILD_MARKERS):
+            if child.is_dir() and any(_probe(child / m) for m in BUILD_MARKERS):
                 return True
         except OSError:
             continue
@@ -115,20 +126,25 @@ def detect(root: Path, scope: str) -> list[dict[str, Any]]:
         except OSError:
             continue
         for child in children:
-            if (
-                child.is_dir()
-                and child.name not in SKIP
-                and not child.name.startswith(".")
-                and child.resolve() != base
-                and _has_build(child)
-            ):
+            try:
+                usable = (
+                    child.is_dir()
+                    and child.name not in SKIP
+                    and not child.name.startswith(".")
+                    and child.resolve() != base
+                    and _has_build(child)
+                )
+            except OSError:
+                continue
+            if usable:
                 found.setdefault(
                     str(child.resolve()), {"reason": "a neighbouring folder with build files"}
                 )
     # Rank neighbours by name overlap with the project (shop-docs ↔ shop-api), keep the top few.
+    # Only the project's own names count: a parent folder name ("tmp", "home", "work") is
+    # shared by unrelated siblings and would turn a scratch folder into a code root.
     names = {
         base.name,
-        base.parent.name,
         str(workspace.load(base / workspace.FLAT_MANIFEST).get("name") or ""),
     }
     if repo:
@@ -143,6 +159,10 @@ def detect(root: Path, scope: str) -> list[dict[str, Any]]:
         p = Path(abs_path)
         rel = Path(_relpath(p, base))
         score = 100 if "repository" in info["reason"] else len(_tokens(p.name) & tokens)
+        # A neighbour with no name relationship to the project (score 0) is a stranger:
+        # a sibling in a shared temp folder or a unrelated checkout. Never a code root.
+        if score == 0:
+            continue
         out.append(
             {"name": p.name, "path": rel.as_posix(), "abs": abs_path, "score": score, **info}
         )

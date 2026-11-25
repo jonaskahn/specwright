@@ -40,7 +40,7 @@
   "scripts/kitlib/candidates.py": "0faaa3eb934b",
   "scripts/kitlib/checkpoint.py": "bd942701e296",
   "scripts/kitlib/cite.py": "e68bc074e2bf",
-  "scripts/kitlib/coderoots.py": "fc59df0308ad",
+  "scripts/kitlib/coderoots.py": "1d04979c20da",
   "scripts/kitlib/data_export.py": "ba993803e450",
   "scripts/kitlib/dataformat.py": "0e84db370b34",
   "scripts/kitlib/epics.py": "5a83eccabc16",
