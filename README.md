@@ -4,7 +4,7 @@
 <h2 align="center">SPEC-WRIGHT</h2>
 <p align="center">
   <strong>From raw idea to implementation-ready work.</strong><br />
-  Eight portable agent skills. One trail of evidence.<br />
+  Nine portable agent skills. One trail of evidence.<br />
 </p>
 <p align="center">
   <code>SHAPE</code> &nbsp;▸&nbsp; <code>SPEC</code> &nbsp;▸&nbsp; <code>REVIEW</code> &nbsp;▸&nbsp; <code>PLAN</code> &nbsp;▸&nbsp; <code>MARKDOWN READY</code><br />
@@ -29,6 +29,7 @@ A rough idea goes in. A story, a plan, and a task list come out. Product, engine
 | You ask for | Skill | You get |
 | --- | --- | --- |
 | Start or resume | `sw-start` | A board for one item, and a guarded next step |
+| Analyse what exists | `sw-analyze` | A gap table of what a feature should do against what code and tests do today, with `CODE:` citations |
 | Ingest evidence | `sw-ingest` | A frozen snapshot, plus quoted impacts. The story stays as it is |
 | Shape | `sw-shape` | A problem-led brief, an accepted split, and reserved features |
 | Specify | `sw-spec` | Requirements and acceptance criteria you can observe. Diagrams when they help |
@@ -82,7 +83,7 @@ It detects the target kind, refuses a folder that is not Specwright, and never d
 ### Command-line installer
 
 > [!TIP]
-> The easy door. All eight skills, for the agents you pick. All projects is the default.
+> The easy door. All nine skills, for the agents you pick. All projects is the default.
 
 All projects:
 
@@ -129,7 +130,7 @@ Windows, named agents, no questions:
 ### Skills CLI
 
 > [!NOTE]
-> Same eight skills, through `npx`. Node comes along for the ride.
+> Same nine skills, through `npx`. Node comes along for the ride.
 
 All projects:
 
@@ -143,7 +144,7 @@ This project:
 npx skills add jonaskahn/specwright
 ```
 
-This path and the Claude plugin install the skills as they are in the repo, including all 20 diagram types. Zip builds from `workshop/tools/package.py` default to the smaller set of 10.
+This path and the Claude plugin install the skills as they are in the repo, including all 45 diagram types. Zip builds from `workshop/tools/package.py` default to the core set of 35.
 
 ### Claude Code plugin
 
@@ -189,6 +190,7 @@ Plain language is enough. `sw-start` finds the workspace and sends you to the ri
 "start a spec for the refunds flow"
 "turn this doc into testable acceptance criteria"
 "draw the refunds flow as a diagram"
+"analyse the refunds feature: what is actually built?"
 "resume REF:FEAT-004"
 "show the board for EPIC-001"
 "send FEAT-004 to review"
@@ -293,10 +295,14 @@ Then the tests, in Docker. The repo is mounted read-only. Git is there for works
 docker run --rm -v "$PWD:/workspace:ro" -w /workspace python:3.13-slim \
   sh -ec 'apt-get update -qq &&
           apt-get install -y -qq --no-install-recommends git &&
-          PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -t .'
+          PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s workshop/tests -t workshop &&
+          PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests'
 ```
 
+`make test` runs the same suite locally.
+
 - The real runtime is `skills/_shared/`. Each skill folder carries a generated copy so it still works alone.
+- Two test roots, both run above: `workshop/tests` is the toolkit suite, `tests/` covers the skill libraries (`analyze`, `foundation`, `handoff`, `review_merge`, `ship_sync`, `stack_style`).
 - `workshop/tools/vendor.py --write` refreshes those copies. `--check` verifies them.
 - Trigger evals are fixtures. They are not a score of model accuracy.
 - Publish tests talk to a local Jira mock. They never touch a real Jira site.

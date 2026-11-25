@@ -1,5 +1,5 @@
 #!/bin/sh
-# Specwright installer: all eight skills, into the agents you choose.
+# Specwright installer: all nine skills, into the agents you choose.
 #
 #   curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh
 #   curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh -s -- --project
@@ -14,7 +14,7 @@ set -eu
 
 REPO="${SPECWRIGHT_REPO:-jonaskahn/specwright}"
 REF="${SPECWRIGHT_REF:-main}"
-SKILLS="sw-start sw-shape sw-ingest sw-spec sw-plan sw-review sw-publish sw-view"
+SKILLS="sw-start sw-analyze sw-shape sw-ingest sw-spec sw-plan sw-review sw-publish sw-view"
 INNER=76
 TERMINAL=0
 [ ! -t 1 ] || TERMINAL=1
@@ -288,7 +288,7 @@ screen_open() {
 	row ''
 	center_row "${BRIGHT}I N S T A L L E R${OFF}"
 	row ''
-	center_row "${LIGHT}eight skills · ${REF}${OFF}"
+	center_row "${LIGHT}nine skills · ${REF}${OFF}"
 	center_row "${LIGHT}$(printf '%s' "$OS" | tr '[:lower:]' '[:upper:]')${OFF}"
 	row ''
 	hline '├' '┤'
@@ -1001,7 +1001,7 @@ enter_ids() {
 
 options_screen() {
 	section "Make it yours"
-	row "  All eight skills install together. Pick a scope and the agents."
+	row "  All nine skills install together. Pick a scope and the agents."
 	row "  ${MID}Project: $TARGET${OFF}"
 	row ""
 
@@ -1320,7 +1320,7 @@ summary() {
 	row "  ${BRIGHT}✓${OFF} ${BOLD}Specwright is installed.${OFF}"
 	row ""
 	row "  ${MID}Scope${OFF}    $SCOPE"
-	row "  ${MID}Skills${OFF}   8 skills in $_places location(s)"
+	row "  ${MID}Skills${OFF}   9 skills in $_places location(s)"
 	[ -z "$COMMANDS_SRC" ] || row "  ${MID}Commands${OFF} $(command_files "$COMMANDS_SRC" | wc -l | tr -d ' ') /sw-* wrappers beside them"
 	row ""
 	while IFS= read -r _dest; do
