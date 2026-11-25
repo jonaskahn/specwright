@@ -20,8 +20,9 @@ FEAT-NNN; never create a STORY identifier.
 Knowledge, trace, lint, status, assets, visuals, data, citations and records are shared
 capabilities; they are not stations.
 
-Governance (optional or required sign-off, guided or step flow, Markdown or Jira) is set in
-the manifest; `governance.md` is the one table of what each setting allows.
+Governance (optional or required sign-off; auto, guided or step flow; Markdown or Jira) is set
+in the manifest; `governance.md` is the one table of what each setting allows. Stations hand
+off to each other by `handoff.md`.
 
 ## Read order
 

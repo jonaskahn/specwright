@@ -1,15 +1,16 @@
 {
  "files": {
   "references/capabilities/knowledge.md": "9f9e8150b6e9",
-  "references/context.md": "22f1e263ed8a",
+  "references/context.md": "d1a53c517f68",
   "references/data-format.md": "5ff853a951b5",
-  "references/governance.md": "43e8e605e8eb",
+  "references/governance.md": "89773349918c",
   "references/graph-model.md": "264abea7c9ec",
-  "references/next-step.md": "81ad78f0a79d",
+  "references/handoff.md": "b35a6dcd5ec9",
+  "references/next-step.md": "9a980c36a67d",
   "references/query-cookbook.md": "6f8a7beedc70",
   "references/runtime.md": "90964d273588",
   "references/status-map.md": "149f1b5b9524",
-  "references/stop-and-ask.md": "2c265c482d51",
+  "references/stop-and-ask.md": "d409b984d439",
   "references/untrusted-content.md": "03ff18989296",
   "scripts/data.py": "040fc73e347b",
   "scripts/graph.py": "3413ca3e01f2",
@@ -32,17 +33,17 @@
   "scripts/kitlib/review.py": "6dc3afe32427",
   "scripts/kitlib/rtm.py": "d31e7c1f1c46",
   "scripts/kitlib/runtime.py": "e835e3c99318",
-  "scripts/kitlib/schema.py": "ce166abac50c",
+  "scripts/kitlib/schema.py": "95f46cd8ab90",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "e775798548a1",
   "scripts/kitlib/view_build.py": "9062bd7d5c82",
   "scripts/kitlib/view_extract.py": "9fdcbd8a26dc",
   "scripts/kitlib/view_server.py": "fbb0da521e1f",
-  "scripts/kitlib/workspace.py": "304523e323d8",
+  "scripts/kitlib/workspace.py": "5212a36aa558",
   "scripts/kitlib/writelog.py": "c75ee83de4ff",
   "scripts/runtime-pins.tsv": "ce9b02898b76",
   "scripts/runtime.ps1": "771f91a98c4b",
   "scripts/runtime.sh": "0728558e61b1"
  },
- "kit_version": "0.6.0"
+ "kit_version": "0.7.0"
 }

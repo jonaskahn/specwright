@@ -5,7 +5,7 @@ from __future__ import annotations
 SKILL_PREFIX = "sw-"
 KIT_NAME = "specwright"
 # Mirrors pyproject.toml (tools/validate.py checks it) so a running skill can name its version.
-KIT_VERSION = "0.6.0"
+KIT_VERSION = "0.7.0"
 
 STORY_SECTIONS = [
     "Goal",
@@ -144,10 +144,12 @@ DEFAULT_OUTPUT = "markdown"
 
 # Governance: how much ceremony a workspace wants. `optional` sign-off lets the owner accept a
 # story in plain words; `required` keeps the formal sign-off from a configured approver.
-# `guided` flow runs station to station with one plain confirmation; `step` stops at each one.
+# `auto` flow hands off from station to station on its own and stops only for a human decision,
+# a missing input or a blocker; `guided` asks one plain "continue?" per station; `step` stops at
+# each station and waits for the user to name the next one.
 SIGNOFF_MODES = ("optional", "required")
-FLOW_MODES = ("guided", "step")
-DEFAULT_GOVERNANCE = {"signoff": "optional", "flow": "guided"}
+FLOW_MODES = ("auto", "guided", "step")
+DEFAULT_GOVERNANCE = {"signoff": "optional", "flow": "auto"}
 GOVERNANCE_CHOICES = {"signoff": SIGNOFF_MODES, "flow": FLOW_MODES}
 
 # The stored status keeps its name so no data migrates; readers see the plain word.

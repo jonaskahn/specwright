@@ -10,7 +10,8 @@ own prerequisites.
 | Missing or incompatible graph schema | Show the upgrade dry-run; migrate only after agreement. |
 | Stale graph | Rebuild as bounded maintenance; this is not a workspace upgrade. |
 | Sources registered or imported, nothing shaped | Existing-baseline flow (references/brownfield.md); `action` names the step. |
-| Several active candidates at different stations | Show the board and the ranked top three with reasons (advice only), then ask which item. |
+| "continue", "next", "go on", "resume" with no item | Follow `handoff` from `start.py` (`_shared/references/handoff.md`): under `flow: auto` run its `next_skill` for its `items`, station by station, until a human decision or a blocker. |
+| Several active candidates at different stations | Under `flow: auto` the whole-scope run takes them station by station (`handoff`). Otherwise, or when `handoff` stops, show the board and the ranked top three with reasons (advice only), then ask which item. |
 | Two or more reserved accepted features, submitted features, or accepted features without a plan (every active item in one station) | Same skill for all: `start.py` answers `batch sw-<station>`; offer the batch in parallel (default) or one pick; sw-spec / sw-review / sw-plan fan out one worker per FEAT (`_shared/references/parallel-writers.md`). |
 | Draft epic or reopened slice | sw-shape. |
 | One reserved accepted feature | sw-spec, not started. |
@@ -28,4 +29,5 @@ own prerequisites.
 Questions in a draft are specification work, not implicit submission. Several eligible items
 require a target selection. Stored destination preferences never authorize writes or force publication. Ordinary
 completion asks no destination question. Withdrawn IDs stay tombstones. Whether to
-run on (`flow`) and how approval works (`signoff`): _shared/references/governance.md.
+run on (`flow`) and how approval works (`signoff`): _shared/references/governance.md; the
+hand-off after each station: _shared/references/handoff.md.

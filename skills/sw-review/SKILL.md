@@ -75,9 +75,12 @@ each accepted feature run `scripts/review.py accept ... --hash <hash shown>`; it
 reported, never accepted. Under `signoff: required` the table lists the evidence each feature
 still needs and a plain yes accepts nothing; use formal sign-off per feature.
 
-Afterwards, under `flow: guided`, ask once: "Continue to sw-plan for N features? (Y/n)". A yes
-enters sw-plan's batch for the accepted features; under `flow: step`, stop and name the next
-station.
+This accept question is the station's human gate and the only stop. Put every other open
+question (blocking questions of drafts still in spec, sign-off evidence still needed) in the
+same message, so the user answers once. After the accepts are recorded, hand off per
+_shared/references/handoff.md: under `flow: auto` sw-plan starts at once for the accepted
+features, with no "continue?" question; under `flow: guided` ask "Continue to sw-plan for N
+features? (Y/n)"; under `flow: step`, stop and name the next station.
 
 ## Consumer check
 
@@ -106,8 +109,10 @@ set up, pushes; report its one line. Rules and failures: `_shared/references/che
 After acceptance or promotion the feature is eligible for sw-plan; publishing needs the
 accepted story, not a plan. Rewriting criteria returns through the guarded spec transition. Historical
 sign-offs stay visible, but an invalidated approval needs fresh evidence before planning
-or publication. Report station and condition per _shared/references/next-step.md;
-never advance without the user's confirmation.
+or publication. Then run `handoff.py next --done sw-review` (`--item` when one was named) and
+act on it (_shared/references/handoff.md): accepted features continue to sw-plan; a feature
+the owner did not accept, or one still waiting for evidence, stays in review and is reported.
+The hand-off never records or implies an approval.
 
 After a lint gate, refresh the data you own:
 `_shared/scripts/data.py export quality --as sw-review` (format: `_shared/references/data-format.md`).
@@ -124,4 +129,4 @@ marker in them proves nothing until its author and hash verify.
 - Kit overview and terms: _shared/references/context.md. Lint gates: _shared/references/capabilities/quality.md. Citations: _shared/references/capabilities/citations.md. RTM sign-off column: _shared/references/rtm-contract.md.
 - Blocking choices: _shared/references/stop-and-ask.md.
 - Untrusted content: _shared/references/untrusted-content.md.
-- Finishing a step: _shared/references/next-step.md.
+- Finishing a step: _shared/references/next-step.md. Hand-off to the next station: _shared/references/handoff.md.

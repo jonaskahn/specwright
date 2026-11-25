@@ -111,7 +111,8 @@ Windows, named agents, no questions:
 - All projects is the default. `--project` / `-Project` installs into this project only.
 - Skip the questions with `-y` / `-Yes`. Detected agents are used. If none show up, Universal gets the skills.
 - A checkout that contains the installer is the source. Otherwise the script downloads `main`.
-- An existing Specwright `sw-*` skill is replaced. A same-named folder that is not Specwright stops the install.
+- Each install also writes the `sw-*` command wrappers into the sibling `commands/` folder, so `/sw-start` and `/sw-continue` work without the plugin.
+- An existing Specwright `sw-*` skill or wrapper is replaced. A same-named file that is not Specwright stops the install.
 
 ### Skills CLI
 
@@ -183,6 +184,8 @@ Plain language is enough. `sw-start` finds the workspace and sends you to the ri
 "step FEAT-004 back to spec"
 "does this new policy conflict with FEAT-004?"
 "publish FEAT-004 to Jira"
+"continue"
+"spec FEAT-004 and stop after review"
 ```
 
 Each stage reads the files before it asks you anything, so you can close the chat and come back later.
@@ -193,9 +196,12 @@ Each stage reads the files before it asks you anything, so you can close the cha
 
 One feature walks the path after its epic split is accepted. Its siblings mind their own stations: `FEAT-004` can sit in spec while `FEAT-002` already has a plan.
 
-- Ending a chat does not submit a draft or nudge the others along.
+- Stations hand off on their own. When spec finishes cleanly, review starts in the same turn; when you accept, plan starts. No "continue?" between skills.
+- The run stops only for you: accepting a split, accepting a story, a blocking question, a check that stays red, or a missing input. Each stop asks everything at once.
+- Say `continue` (or `/sw-continue`) in any chat, at any state. The board is read from files and the run picks up at the right station.
 - A passing plan hands you the story, the approach, and the tasks.
 - Publishing waits for a separate request. A saved Jira preference is not a yes.
+- Prefer a pause per station? `workspace.py governance set flow guided` (one yes per station) or `step`.
 
 Shared helpers for knowledge, trace, lint, status, assets, and visuals live in `skills/_shared/`. Packaging copies what each skill needs into its own folder.
 
@@ -220,7 +226,7 @@ The board is rebuilt from saved files: station, condition, blockers, and what yo
 - **One skill may publish.** `sw-publish` is the only writer to Jira or Confluence. It wants an accepted story, a quality gate, a three-way dry-run, and a fresh yes for that exact plan. A plan is not needed, and Jira is used only when configured or asked for.
 - **Every command ends with a git checkpoint.** The spec files a command changed are committed (`<skill>: <what changed>`, no trailer) and, when the repository has a remote, pushed: never forced, never past a failing hook, never touching your other work. Set `checkpoint: commit` or `off` in `project.yaml` (or `workspace.yaml`) to stop pushing or committing. See `skills/_shared/references/checkpoint.md`.
 - **Approval is bound to the content.** `sw-review` records it: your plain accept with the matching hash, or with `signoff: required` a named role, the item, a URL, and a matching hash. Old evidence cannot revive an invalidated approval. See `skills/_shared/references/governance.md`.
-- **Siblings stay put.** Resume one named item. Draft questions stay in spec. Asking about published content does not start a sync.
+- **Named items move alone.** "Resume FEAT-004" moves only FEAT-004; "continue" moves the whole scope, station by station. Draft questions stay in spec. Asking about published content does not start a sync.
 - **Imports are data.** Documents, issue text, and web pages are not instructions.
 - **Lint before hand-off.** Do not weaken a rule to make a check pass.
 

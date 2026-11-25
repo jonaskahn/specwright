@@ -45,6 +45,7 @@ $script:Selected = @()
 $script:Detected = @()
 $script:Destinations = @()
 $script:SkillRoot = ''
+$script:CommandsRoot = ''
 $script:Target = ''
 $script:DownloadDir = ''
 
@@ -303,6 +304,7 @@ Usage: install.ps1 [options]
   -Help             this text
 
 Every public skill is installed: $($Skills -join ' ').
+The sw-* command wrappers in commands/ are installed beside them.
 
 Environment: SPECWRIGHT_REPO, SPECWRIGHT_REF, SPECWRIGHT_URL, SPECWRIGHT_ROOT,
 SPECWRIGHT_TARGET, SPECWRIGHT_INSTALL_YES, NO_COLOR.
@@ -526,6 +528,47 @@ function Find-Root([string] $Start) {
 		$dir = $parent
 	}
 	return $null
+}
+# Commands ship beside the skills. A checkout without them still installs; the
+# wrappers are a convenience, the skill folders are the product.
+function Find-Commands([string] $Root) {
+	$dir = Join-Path $Root 'commands'
+	if (-not (Test-Path -LiteralPath $dir -PathType Container)) { return $null }
+	$files = @(Get-CommandFiles $dir)
+	if ($files.Count -eq 0) { return $null }
+	return $dir
+}
+function Get-CommandFiles([string] $Dir) {
+	if (-not (Test-Path -LiteralPath $Dir -PathType Container)) { return @() }
+	return @(Get-ChildItem -LiteralPath $Dir -Filter 'sw-*.md' -File | Sort-Object Name)
+}
+# Wrappers are copied, never linked, because each one is rewritten to the
+# absolute skill path of its own destination.
+function Install-Commands([string] $Source, [string] $SkillsDir) {
+	if (-not $Source) { return 0 }
+	$out = Join-Path (Split-Path $SkillsDir -Parent) 'commands'
+	New-Item -ItemType Directory -Force -Path $out | Out-Null
+	$base = (Split-Path $SkillsDir -Parent) -replace '\\', '/'
+	$count = 0
+	foreach ($file in (Get-CommandFiles $Source)) {
+		$text = [IO.File]::ReadAllText($file.FullName)
+		$text = $text.Replace('${CLAUDE_PLUGIN_ROOT}/skills/', "$base/skills/")
+		[IO.File]::WriteAllText((Join-Path $out $file.Name), $text)
+		$count++
+	}
+	return $count
+}
+function Test-SpecwrightCommand([string] $Path) {
+	if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { return $false }
+	$stem = [IO.Path]::GetFileNameWithoutExtension($Path)
+	$lines = @(Get-Content -LiteralPath $Path -TotalCount 30)
+	if (-not ($lines -contains "name: $stem")) { return $false }
+	# Both the plugin form (`${CLAUDE_PLUGIN_ROOT}/skills/…`) and the rewritten
+	# absolute form contain `/skills/sw-*/SKILL.md`.
+	foreach ($line in $lines) {
+		if ($line -match '/skills/sw-[a-z0-9-]+/SKILL\.md') { return $true }
+	}
+	return $false
 }
 function Save-Archive {
 	$tar = Get-Command tar -ErrorAction SilentlyContinue
@@ -788,6 +831,12 @@ foreach ($skill in $Skills) {
 	$path = Join-Rel $script:SkillRoot "skills/$skill/SKILL.md"
 	if (-not (Test-Path $path)) { Fail "missing skill: $skill" @($path) }
 }
+$script:CommandsRoot = Find-Commands $script:SkillRoot
+if ($script:CommandsRoot) {
+	Write-Note "Commands: $(@(Get-CommandFiles $script:CommandsRoot).Count) wrappers from $($script:CommandsRoot)"
+} else {
+	Write-Note 'No commands/ in the source; installing skills only'
+}
 
 $raw = @()
 foreach ($id in $script:Selected) {
@@ -839,9 +888,19 @@ foreach ($dest in $script:Destinations) {
 		}
 		$previous += $path
 	}
+	$cmdDir = Join-Path (Split-Path $dest -Parent) 'commands'
+	foreach ($file in (Get-CommandFiles $cmdDir)) {
+		if (-not (Test-SpecwrightCommand $file.FullName)) {
+			Fail 'refusing to replace a command that is not a Specwright wrapper' @(
+				$file.FullName,
+				'That file does not load a Specwright skill.'
+			)
+		}
+		$previous += $file.FullName
+	}
 }
 if ($previous.Count -gt 0) {
-	Write-Note "Replacing $($previous.Count) existing Specwright skill folder(s)"
+	Write-Note "Replacing $($previous.Count) existing Specwright file(s)"
 	foreach ($path in $previous) {
 		$item = Get-Item -LiteralPath $path -Force
 		if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
@@ -860,6 +919,10 @@ foreach ($dest in $script:Destinations) {
 		Copy-Item -Recurse -Path (Join-Rel $script:SkillRoot "skills/$skill") -Destination (Join-Path $dest $skill)
 	}
 	Write-OK "Copied 8 skills into $dest"
+	if ($script:CommandsRoot) {
+		$count = Install-Commands $script:CommandsRoot $dest
+		Write-OK "Copied $count command(s) into $(Join-Path (Split-Path $dest -Parent) 'commands')"
+	}
 }
 
 Write-Rule
@@ -867,12 +930,19 @@ Write-OK (Paint 'Specwright is installed.' 'bold')
 Write-Row ''
 Write-Row ("  " + (Paint 'Scope' 'mid') + "    $($script:Scope)")
 Write-Row ("  " + (Paint 'Skills' 'mid') + "   8 skills in $($script:Destinations.Count) location(s)")
+if ($script:CommandsRoot) {
+	Write-Row ("  " + (Paint 'Commands' 'mid') + "  $(@(Get-CommandFiles $script:CommandsRoot).Count) /sw-* wrappers beside them")
+}
 Write-Row ''
-foreach ($dest in $script:Destinations) { Write-Row ("  " + (Paint $script:Dot 'mid') + " $dest") }
+foreach ($dest in $script:Destinations) {
+	Write-Row ("  " + (Paint $script:Dot 'mid') + " $dest")
+	if ($script:CommandsRoot) { Write-Row ("  " + (Paint ' ' 'mid') + " $(Join-Path (Split-Path $dest -Parent) 'commands')") }
+}
 Write-Row ''
 Write-Row (Paint '  Your next step' 'bold')
 Write-Row '  Open the project in your agent and say what you want:'
 Write-Row '    start a spec for the refunds flow'
+Write-Row '    or use /sw-start and /sw-continue'
 Write-Row ''
 $hasPython = $false
 foreach ($name in @('python3', 'python')) {

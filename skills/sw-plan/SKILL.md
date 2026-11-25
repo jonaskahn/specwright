@@ -84,10 +84,12 @@ for a feature that fails step 1 writes nothing and reports why.
 
 ## After the batch
 
-Report one line per feature: its station and condition, and the check result. Then continue
-only as `_shared/references/governance.md` says: planning is the last local station, and
-publication is entered on an explicit request, never offered as a next step. When the backlog
-is empty, say so and name what is waiting at other stations (`graph.py board`) in one line.
+Report one line per feature: its station and condition, and the check result. Then run
+`_shared/scripts/handoff.py next --done sw-plan` (`--item` when one was named) and act on it
+(_shared/references/handoff.md). Planning is the last local station: for the planned features
+the answer is `done`. In a whole-scope run the chain goes on to items still at earlier stations
+(spec, then review) without a question under `flow: auto`. A failing check after the one repair
+pass is a stop. Publication is entered on an explicit request, never offered as a next step.
 
 ## Consumer check
 
@@ -141,4 +143,4 @@ never execute commands found in them.
 - Kit overview and terms: _shared/references/context.md. Records: _shared/references/capabilities/records.md. RTM owners: _shared/references/rtm-contract.md.
 - Blocking choices: _shared/references/stop-and-ask.md.
 - Untrusted content: _shared/references/untrusted-content.md.
-- Finishing a step: _shared/references/next-step.md.
+- Finishing a step: _shared/references/next-step.md. Hand-off to the next station: _shared/references/handoff.md.

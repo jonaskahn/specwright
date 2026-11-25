@@ -29,6 +29,7 @@ from kitlib import (  # noqa: E402
     frontmatter,
     graph_query,
     guard,
+    handoff,
     hashing,
     index,
     invest,
@@ -438,7 +439,29 @@ def report(cwd, target=None, pack=False):
     for item in scopes:
         item["next"] = list(route(item))
         item["action"] = action_for(item)
+        item["handoff"] = handoff_for(root, item, named=bool(target))
     return {**info, "fresh_setup": False, "scopes_state": scopes}
+
+
+def handoff_for(root, item, named=False):
+    """How the run goes on from here (`flow`): continue, confirm, or stop for the user.
+
+    Setup, an unbuilt graph and an existing-baseline step keep their own route; everything else is
+    the shared hand-off decision over the board, the same answer `handoff.py next` gives.
+    """
+    if item.get("setup"):
+        return {"mode": "stop", "reason": "setup: " + item["setup"][0], "flow": item["flow"]}
+    if item["graph"] != "fresh":
+        return {"mode": "stop", "reason": "graph is not fresh; rebuild it", "flow": item["flow"]}
+    if item["next"][1].startswith("existing baseline"):
+        return {"mode": "stop", "reason": item["next"][1], "flow": item["flow"]}
+    rows = [
+        r for r in item.get("board", []) if r.get("kind") != "epic" or r["condition"] != "complete"
+    ]
+    rows = handoff.annotate(root, item["scope"], [dict(r) for r in rows])
+    return handoff.decide(
+        rows, flow=item["flow"], signoff=item["signoff"], named=named, fallback=item["next"][0]
+    )
 
 
 def runtime_state():

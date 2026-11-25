@@ -10,7 +10,7 @@ holds every field later skills resolve.
 | `code` | Code folder this project owns (embedded layout only). |
 | `jira` | `site`, `project_key`, `epic`; `TBD` until the user supplies them. |
 | `status_map` | Repository-to-Jira status mapping. |
-| `governance` | `signoff`: `optional` (default) or `required`; `flow`: `guided` (default) or `step`. Change with `workspace.py governance set`. See `_shared/references/governance.md`. |
+| `governance` | `signoff`: `optional` (default) or `required`; `flow`: `auto` (default; stations hand off on their own and stop only for a human decision or a blocker), `guided` (one plain "continue?" per station) or `step`. Change with `workspace.py governance set`. See `_shared/references/governance.md`. |
 | `approvers` | `role`, `name`, `account_id` entries. Needed only when `signoff: required`; only these may then record sign-off or decide. Add with `workspace.py approvers add`; blank or `TBD` values are refused. |
 | `publish` | `transitions` (must stay false), `sandbox`, `attach_diagrams`. |
 | `output` | `default`: `markdown` (default), `jira` or `both`; `ask` stays valid but is not the default. Jira only when configured or the user asks to push. |

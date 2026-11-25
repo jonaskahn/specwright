@@ -677,7 +677,7 @@ def _build_parser() -> argparse.ArgumentParser:
         "--signoff", default="optional", choices=list(schema.SIGNOFF_MODES), help="approval rules"
     )
     init_cmd.add_argument(
-        "--flow", default="guided", choices=list(schema.FLOW_MODES), help="run-through style"
+        "--flow", default="auto", choices=list(schema.FLOW_MODES), help="run-through style"
     )
     gov_cmd = sub.add_parser("governance", help="get or set how much ceremony the project wants")
     gov_cmd.add_argument("action", choices=["get", "set"])

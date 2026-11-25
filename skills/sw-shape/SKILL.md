@@ -102,9 +102,11 @@ Checkpoint: as the last step, after the maintenance above, run
 (add `--scope SCOPE` in a program). It commits only this project's spec files and, when a remote is
 set up, pushes; report its one line. Rules and failures: `_shared/references/checkpoint.md`.
 
-PO reviews the brief and split first. After acceptance, list the reserved features and offer
-to specify all of them in parallel (the default for two or more; sw-spec runs one worker
-per FEAT) or the one the user names. Run
+The split acceptance (step 7) is this station's human gate: ask it once, together with any
+open blocking questions, as the stop. After the owner accepts, do not ask again: hand off per
+_shared/references/handoff.md (`handoff.py next --done sw-shape`, after the acceptance is
+recorded): under `flow: auto` sw-spec starts at once for every reserved feature in parallel (one
+worker per FEAT), or for the one the user named. Run
 `_shared/scripts/sw_lint.py --root <project> --gate draft` (`_shared/references/capabilities/quality.md`)
 before hand-off and report
 unresolved Q records instead of suppressing findings. A reopened slice is handled alone:
@@ -131,4 +133,4 @@ brief.
 - Kit overview and terms: _shared/references/context.md. Citations: _shared/references/capabilities/citations.md. Graph: _shared/references/capabilities/knowledge.md. Data files: _shared/references/data-format.md. Parallel batches: _shared/references/parallel-writers.md.
 - Blocking choices: _shared/references/stop-and-ask.md.
 - Untrusted content: _shared/references/untrusted-content.md.
-- Finishing a step: _shared/references/next-step.md.
+- Finishing a step: _shared/references/next-step.md. Hand-off to the next station: _shared/references/handoff.md.

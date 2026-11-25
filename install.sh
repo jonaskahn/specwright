@@ -8,6 +8,8 @@
 # No Node and no Python. Agent directories match `npx skills add`
 # (vercel-labs/skills agents.ts). Every public skill is installed; there is
 # no skill picker. The agent table below is the copy this script ships with.
+# Each destination also gets the `sw-*` command wrappers from commands/, in the
+# sibling `commands/` folder, rewritten to load the skills by absolute path.
 set -eu
 
 REPO="${SPECWRIGHT_REPO:-jonaskahn/specwright}"
@@ -245,6 +247,7 @@ TARGET="${SPECWRIGHT_TARGET:-}"
 AGENT_ARGS=""
 LIST_ONLY=0
 INTERACTIVE=0
+COMMANDS_SRC=""
 OS=""
 STAT_BSD=0
 
@@ -263,6 +266,7 @@ Usage: install.sh [options]
   --help            this text
 
 Every public skill is installed: ${SKILLS}.
+The sw-* command wrappers in commands/ are installed beside them.
 
 Environment: SPECWRIGHT_REPO, SPECWRIGHT_REF, SPECWRIGHT_URL, SPECWRIGHT_ROOT,
 SPECWRIGHT_TARGET, SPECWRIGHT_INSTALL_YES, NO_COLOR.
@@ -743,6 +747,20 @@ require_skills() {
 	done
 }
 
+# Commands ship beside the skills. A checkout without them still installs; the
+# wrappers are a convenience, the skill folders are the product.
+find_commands() {
+	if [ -d "$1/commands" ] && [ -n "$(find "$1/commands" -maxdepth 1 -name 'sw-*.md' -print 2>/dev/null | head -n 1)" ]; then
+		printf '%s\n' "$1/commands"
+		return 0
+	fi
+	return 1
+}
+
+command_files() {
+	find "$1" -maxdepth 1 -name 'sw-*.md' -print | sort
+}
+
 # --------------------------------------------------------------- install ----
 
 detect_platform() {
@@ -987,6 +1005,20 @@ is_ours() {
 	grep -q "^name: ${_skill}$" "$_dir/SKILL.md"
 }
 
+is_our_command() {
+	# A wrapper we wrote is front matter named for the file plus a load line that
+	# points at a Specwright skill — `sw-continue` loads sw-start, so the stem and
+	# the loaded skill need not match.
+	_name="$1"
+	_path="$2"
+	_stem="${_name%.md}"
+	[ -f "$_path" ] || return 1
+	grep -qx "name: ${_stem}" "$_path" || return 1
+	# Both the plugin form (`${CLAUDE_PLUGIN_ROOT}/skills/…`) and the rewritten
+	# absolute form contain `/skills/sw-*/SKILL.md`.
+	grep -Eq '/skills/sw-[a-z0-9-]+/SKILL\.md' "$_path"
+}
+
 replace_existing() {
 	: >"$TMP_DIR/old"
 	while IFS= read -r _dest; do
@@ -1008,10 +1040,24 @@ replace_existing() {
 			fi
 			printf '%s\n' "$_path" >>"$TMP_DIR/old"
 		done
+		_cmd_dir="$(commands_dir "$_dest")"
+		[ -d "$_cmd_dir" ] || continue
+		while IFS= read -r _file; do
+			[ -n "$_file" ] || continue
+			_name="${_file##*/}"
+			if ! is_our_command "$_name" "$_file"; then
+				die "refusing to replace a command that is not a Specwright wrapper" \
+					"$_file" \
+					"That file does not load a Specwright skill."
+			fi
+			printf '%s\n' "$_file" >>"$TMP_DIR/old"
+		done <<EOF
+$(command_files "$_cmd_dir")
+EOF
 	done <"$TMP_DIR/dests"
 	[ -s "$TMP_DIR/old" ] || return 0
 	_n="$(wc -l <"$TMP_DIR/old" | tr -d ' ')"
-	note "Replacing $_n existing Specwright skill folder(s)"
+	note "Replacing $_n existing Specwright file(s)"
 	while IFS= read -r _path; do
 		rm -rf "$_path"
 	done <"$TMP_DIR/old"
@@ -1076,6 +1122,39 @@ clear_new_links() {
 	done
 }
 
+# Commands sit beside the skills root: `<config>/skills` gets `<config>/commands`,
+# which is where Claude Code discovers slash commands (`~/.claude/commands/`).
+# Wrappers are copied, never linked, because each one is rewritten to the absolute
+# skill path of its own destination and two agents can end up on different disks.
+commands_dir() {
+	printf '%s\n' "$(dirname "${1%/}")/commands"
+}
+
+rewrite_command() {
+	_base="$(printf '%s' "$2" | sed 's/[\\&|]/\\&/g')"
+	sed "s|\${CLAUDE_PLUGIN_ROOT}/skills/|$_base/skills/|g" "$1"
+}
+
+install_commands() {
+	_src="$1"
+	_dest="$2"
+	[ -n "$_src" ] || return 0
+	_out="$(commands_dir "$_dest")"
+	_base="$(dirname "${_dest%/}")"
+	mkdir -p "$_out"
+	_n=0
+	while IFS= read -r _file; do
+		[ -n "$_file" ] || continue
+		_name="${_file##*/}"
+		rewrite_command "$_file" "$_base" >"$_out/$_name" ||
+			die "could not write $_out/$_name"
+		_n=$((_n + 1))
+	done <<EOF
+$(command_files "$_src")
+EOF
+	done_ "Copied $_n command(s) into $_out"
+}
+
 pick_canonical() {
 	_canon=""
 	while IFS= read -r _dest; do
@@ -1094,6 +1173,7 @@ install_skills() {
 	step "Installing into $_canon"
 	copy_skills "$_canon"
 	done_ "Copied 8 skills into $_canon"
+	install_commands "${COMMANDS_SRC:-}" "$_canon"
 	while IFS= read -r _dest; do
 		[ "$_dest" = "$_canon" ] && continue
 		mkdir -p "$_dest"
@@ -1104,6 +1184,7 @@ install_skills() {
 			copy_skills "$_dest"
 			done_ "Copied 8 skills into $_dest"
 		fi
+		install_commands "${COMMANDS_SRC:-}" "$_dest"
 	done <"$TMP_DIR/dests"
 }
 
@@ -1115,14 +1196,17 @@ summary() {
 	row ""
 	row "  ${MID}Scope${OFF}    $SCOPE"
 	row "  ${MID}Skills${OFF}   8 skills in $_places location(s)"
+	[ -z "$COMMANDS_SRC" ] || row "  ${MID}Commands${OFF} $(command_files "$COMMANDS_SRC" | wc -l | tr -d ' ') /sw-* wrappers beside them"
 	row ""
 	while IFS= read -r _dest; do
 		row "  ${MID}·${OFF} $_dest"
+		[ -z "$COMMANDS_SRC" ] || row "  ${MID} ${OFF} $(commands_dir "$_dest")"
 	done <"$TMP_DIR/dests"
 	row ""
 	row "  ${BOLD}Your next step${OFF}"
 	row "  Open the project in your agent and say what you want:"
 	row "    start a spec for the refunds flow"
+	row "    or use /sw-start and /sw-continue"
 	row ""
 	runtime_notes
 	note "To update, run this installer again."
@@ -1175,6 +1259,7 @@ main() {
 
 	section "Install Specwright"
 	SKILL_ROOT=""
+	COMMANDS_SRC=""
 	if [ -n "${SPECWRIGHT_ROOT:-}" ]; then
 		is_root "$SPECWRIGHT_ROOT" || die "SPECWRIGHT_ROOT is not a Specwright checkout" "$SPECWRIGHT_ROOT"
 		SKILL_ROOT="$SPECWRIGHT_ROOT"
@@ -1189,6 +1274,12 @@ main() {
 		SKILL_ROOT="$(cat "$TMP_DIR/skill-root")"
 	fi
 	require_skills "$SKILL_ROOT"
+	COMMANDS_SRC="$(find_commands "$SKILL_ROOT" || true)"
+	if [ -n "$COMMANDS_SRC" ]; then
+		note "Commands: $(command_files "$COMMANDS_SRC" | wc -l | tr -d ' ') wrappers from $COMMANDS_SRC"
+	else
+		note "No commands/ in the source; installing skills only"
+	fi
 	resolve_dests
 	replace_existing
 	install_skills

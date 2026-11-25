@@ -27,7 +27,7 @@ Useful flags: `--agent` / `-Agent` (repeatable or comma-separated), `--target` /
 
 macOS and Linux need `curl` or `wget`, plus `tar`. Windows needs PowerShell and `tar`. When the script file itself sits inside a Specwright checkout, that checkout is the source. A piped download uses GitHub `main` unless the variables above say otherwise.
 
-On macOS and Linux, one destination is a real copy (preferring `.agents/skills` when it is selected) and other destinations on the same disk become relative symlinks. Windows always copies. The installer writes skill folders only. It does not write `AGENTS.md`, `CLAUDE.md` or plugin files.
+On macOS and Linux, one destination is a real copy (preferring `.agents/skills` when it is selected) and other destinations on the same disk become relative symlinks. Windows always copies. Each destination also gets the `sw-*` command wrappers from `commands/`, written into the sibling `commands/` folder (`~/.claude/commands/`, `<project>/.claude/commands/`, …) with `${CLAUDE_PLUGIN_ROOT}/skills/` rewritten to the absolute path of that destination's skills, so `/sw-start`, `/sw-continue` and the rest work outside the plugin. Wrappers are always copies, never symlinks, and a wrapper your own file replaced is refused rather than overwritten. The installer writes skill folders and command wrappers only. It does not write `AGENTS.md`, `CLAUDE.md` or plugin files.
 
 If a selected destination already has a Specwright `sw-*` skill, that folder is removed and the new copy is installed. A same-named folder that is not a Specwright skill stops the install. Run the installer again to update.
 
@@ -57,10 +57,12 @@ generated `_shared/` copy, so installing a skill on its own works. They always c
 `extended` set of 20 diagram types (`skills/sw-spec` holds core and extended; only
 `extras/` is left out). Only `workshop/tools/package.py` defaults to the 10-type core profile.
 
-The plugin manifests declare all eight public skills and eight command wrappers. Commands
-carry Claude-specific `${CLAUDE_PLUGIN_ROOT}` paths; skill folders themselves remain
-host-neutral. Installation writes only skill files and client metadata. It never writes
-to Jira, Confluence or a Specwright workspace.
+The plugin manifests declare all eight public skills and nine command wrappers (the eight
+skills plus `sw-continue`). Commands carry Claude-specific `${CLAUDE_PLUGIN_ROOT}` paths;
+skill folders themselves remain host-neutral. A local install rewrites those paths to
+absolute ones, so the same wrappers work without the plugin — see above. Installation writes
+skill files, command wrappers and client metadata. It never writes to Jira, Confluence or a
+Specwright workspace.
 
 A workspace may live at the repository root (docs-only) or under `.specwright/` inside a code
 repository (embedded), for one project or a program of several. See the Layouts section of

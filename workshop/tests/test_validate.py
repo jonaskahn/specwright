@@ -286,6 +286,26 @@ class ReleaseSurfaceTests(unittest.TestCase):
         path.write_text(text)
         self.assertIn("V094", self.check(lambda r: validate._check_commands(self.root, r)))
 
+    def test_extra_wrapper_may_load_another_public_skill(self):
+        (self.root / "commands/sw-continue.md").write_text(
+            "---\nname: sw-continue\ndescription: Continue.\n---\n\n"
+            "Load ${CLAUDE_PLUGIN_ROOT}/skills/sw-start/SKILL.md\n"
+        )
+        self.assertEqual(self.check(lambda r: validate._check_commands(self.root, r)), set())
+
+    def test_extra_wrapper_must_load_a_public_skill(self):
+        (self.root / "commands/sw-bogus.md").write_text(
+            "---\nname: sw-bogus\ndescription: Bogus.\n---\n\n"
+            "Load ${CLAUDE_PLUGIN_ROOT}/skills/sw-nope/SKILL.md\n"
+        )
+        self.assertIn("V091", self.check(lambda r: validate._check_commands(self.root, r)))
+
+    def test_extra_wrapper_must_load_something(self):
+        (self.root / "commands/sw-empty.md").write_text(
+            "---\nname: sw-empty\ndescription: Empty.\n---\n\nNothing.\n"
+        )
+        self.assertIn("V095", self.check(lambda r: validate._check_commands(self.root, r)))
+
     def test_shared_tree_must_not_be_a_registered_skill(self):
         (self.root / "skills/_shared" / "SKILL.md").write_text("# shared\n")
         self.assertIn("V100", self.check(lambda r: validate._check_source_tree(self.root, r)))

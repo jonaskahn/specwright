@@ -1,10 +1,10 @@
 # Bounded completion maintenance
 
-Bounded means the nine steps below once, plus at most one repair pass (see Repair), and
-never the next station. Finish the requested action, run the maintenance below, then report. Never advance a
-stage without the user's confirmation: under `flow: guided` one plain yes to "Continue to
-<next station>?" is that confirmation for a local station (`governance.md`); under
-`flow: step` stop at the next human decision. Never recurse into a handoff unasked.
+Bounded means the steps below once per station, plus at most one repair pass (see Repair).
+Maintenance itself never does the next station's work; the hand-off in step 9 does, by
+`handoff.md`: under `flow: auto` the next skill starts at once with no question, under
+`flow: guided` after one plain yes, under `flow: step` when the user names it. A blocker or a
+human decision always stops the chain.
 
 ## Order
 
@@ -17,9 +17,12 @@ stage without the user's confirmation: under `flow: guided` one plain yes to "Co
    matches the station (exit 0 clean; 10, 20 or 30 means blocking findings) and, where shipped,
    `_shared/scripts/status.py`.
 7. Refresh the data files you own (`data-format.md`), after the graph and lint.
-8. Checkpoint: `checkpoint.py commit` once, last (`checkpoint.md`): the project's spec files are
-   committed and, when a remote is set up, pushed. Report its line with the results.
-9. Report results and the next human decision.
+8. Checkpoint: `checkpoint.py commit` once, after every write of the station (`checkpoint.md`):
+   the project's spec files are committed and, when a remote is set up, pushed. Report its line
+   with the results.
+9. Hand off: `_shared/scripts/handoff.py next --cwd <project> --done <skill>` (`handoff.md`).
+   Print its one-line `say`; on `continue` start the next skill now; on `stop` or `done`
+   report the results gathered since the last stop and the human decision.
 
 ## Triggers
 
@@ -38,7 +41,7 @@ stage without the user's confirmation: under `flow: guided` one plain yes to "Co
 | Ingestion suggests changed logic | Save a quoted proposed impact. Back up the artifact only immediately before an accepted real edit; no revision increment before then. |
 | Status-only rollback | Keep content hashes and historical sign-offs; invalidate active approval through the lifecycle decision. Do not call unchanged tasks content-stale. |
 | Exact remote plan confirmed | Apply only through sw-publish. A changed plan, scope or hash needs new confirmation; a plain yes counts only for the exact dry-run just shown. |
-| Command finished | One git checkpoint, last, by the lead only. Not a station change and not approval. |
+| Command finished | One git checkpoint, last, by the lead only. Not a station change and not approval. Then the hand-off. |
 | Nothing relevant changed | Skip maintenance and state why; the checkpoint reports `nothing`. |
 
 ## Repair

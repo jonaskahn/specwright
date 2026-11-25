@@ -802,8 +802,6 @@ def _check_commands(root: Path, report: Report) -> None:
     actual = {path.stem for path in command_dir.glob("sw-*.md")} if command_dir.is_dir() else set()
     for name in sorted(EXPECTED_SKILLS - actual):
         report.add(command_dir / f"{name}.md", 1, "V090", f"missing command wrapper for {name}")
-    for name in sorted(actual - EXPECTED_SKILLS):
-        report.add(command_dir / f"{name}.md", 1, "V091", f"unexpected command wrapper {name}")
     for name in sorted(EXPECTED_SKILLS & actual):
         wrapper = command_dir / f"{name}.md"
         skill_md = root / "skills" / name / "SKILL.md"
@@ -825,6 +823,29 @@ def _check_commands(root: Path, report: Report) -> None:
         expected = f"${{CLAUDE_PLUGIN_ROOT}}/skills/{name}/SKILL.md"
         if expected not in body:
             report.add(wrapper, 1, "V095", f"command must load {expected}")
+    for name in sorted(actual - EXPECTED_SKILLS):
+        # An extra wrapper is allowed only when it is a real entry point into a
+        # public skill, such as sw-continue loading sw-start. A wrapper that
+        # loads nothing, or loads a folder that is not a public skill, is a typo.
+        wrapper = command_dir / f"{name}.md"
+        parsed = frontmatter.parse(wrapper.read_text(encoding="utf-8"))
+        if parsed.error or parsed.fm is None:
+            report.add(wrapper, 1, "V092", "command wrapper needs front matter")
+            continue
+        if set(parsed.fm) != ALLOWED_KEYS:
+            report.add(
+                wrapper, 1, "V093", "command front matter must hold only name and description"
+            )
+        if parsed.fm.get("name") != name:
+            report.add(wrapper, 1, "V091", f"command name must be '{name}'")
+        loaded = re.findall(r"\$\{CLAUDE_PLUGIN_ROOT\}/skills/([a-z0-9-]+)/SKILL\.md", parsed.body)
+        if not loaded:
+            report.add(
+                wrapper, 1, "V095", "command must load ${CLAUDE_PLUGIN_ROOT}/skills/<skill>/SKILL.md"
+            )
+        for skill in loaded:
+            if skill not in EXPECTED_SKILLS:
+                report.add(wrapper, 1, "V091", f"command loads an unknown skill: {skill}")
 
 
 DATA_ROW = re.compile(r"^\| `(\w+)\.json` \| ([^|]+) \|", re.M)

@@ -40,8 +40,9 @@ scope and the host can run sub-agents. It gives speed without shared-write races
    its own worker (once), then to the user; passing siblings are kept.
 7. **Smallest capable model** for workers. Run maintenance and lint once at the end, not
    per worker.
-8. **Never advance a station.** The batch finishes the local station; the next transition
-   still needs the user's confirmation. Under `flow: guided` one plain yes covers the batch.
+8. **Workers never advance a station.** The batch finishes the local station; the lead then
+   hands the whole batch off once by `handoff.md` (`flow: auto`: at once; `guided`: one plain
+   yes covers the batch). A worker never transitions, approves or calls the next skill.
 
 ## Report
 

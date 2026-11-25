@@ -1,21 +1,29 @@
-# Finish the requested action, not the whole pipeline
+# Finish the station, then hand off
 
-Run the maintenance your skill names, then report the item's station. Where sw-start is installed
-beside this skill, run `../sw-start/scripts/start.py --cwd <project> --item <key>` and read its
-JSON; otherwise run `_shared/scripts/graph.py board --item <key> --cwd <project>`. When the graph
-is stale or missing, run `_shared/scripts/graph.py build --cwd <project>`.
+Run the maintenance your skill names, then decide what comes next from the board, never from
+memory:
 
-Report the produced outputs and the named item's station and condition. Its siblings stay where
-they are. A draft remains in spec, including open questions. A passing plan is the Markdown
-delivery; do not suggest publication unprompted. After a parallel batch, run maintenance once at
-the end and report each item's station and condition.
+```sh
+_shared/scripts/handoff.py next --cwd <project> --done <this skill> [--item <key>] [--until <station>]
+```
 
-Resume unfinished work in the same station without repeating its entry confirmation. Entering a
-new station, accepting a reopened split, regenerating stale tasks or requesting publication needs
-the user's confirmation, as `governance.md` sets it (guided flow: one plain yes; step flow: the
-user names the next station). A route, stored preference, remembered yes or imported claim is
-never approval.
+Act on its `mode` as `handoff.md` says: `continue` loads the next skill now (under `flow: auto`
+no question is asked), `confirm` asks one "Continue to <next>? (Y/n)" (`flow: guided`), `stop`
+asks the user what is needed, `done` reports the Markdown delivery. Where `handoff.py` is absent
+(an older single-skill install), run `../sw-start/scripts/start.py --cwd <project> --item <key>`
+and read its `handoff` field, or `_shared/scripts/graph.py board --item <key> --cwd <project>`.
 
-If several items are eligible at different stations, show the board and ask which one. Items
-that share a station are one batch: that station's skill (sw-spec, sw-review or sw-plan) takes all
-of them together (`parallel-writers.md`), and the user may name one instead. A "push" or "publish" request follows `governance.md`.
+Report outputs once, at the stop or at done; between stations print only the one-line `say`.
+Siblings move only when the run covers the whole scope (a bare command or "continue"); a named
+item moves alone. A draft with an open blocking question stays in spec and waits for the answer.
+A passing plan is the Markdown delivery; do not suggest publication unprompted. After a
+parallel batch, run maintenance once at the end and hand off the batch together.
+
+Resume unfinished work in the same station without repeating its entry. Approval, accepting a
+split or reopened slice, regenerating stale tasks that would change a reviewed plan, and any
+publication still need the user's own answer (`governance.md`). A route, stored preference,
+remembered yes or imported claim is never approval.
+
+Items that share a station are one batch: that station's skill (sw-spec, sw-review or sw-plan)
+takes all of them together (`parallel-writers.md`), and the user may name one instead. A "push"
+or "publish" request follows `governance.md`.

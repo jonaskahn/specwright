@@ -116,9 +116,12 @@ set up, pushes; report its one line. Rules and failures: `_shared/references/che
 
 Fuzzy objectives → sw-shape; clear features → sw-spec; open questions → the responsible
 PO. Pass SRC ids, evidence lines, scanner results, conversion limits and Q ids. Import
-implies no approval. If ingestion supported an explicitly requested shape conversation,
-resume it; otherwise report the item's station and proposed impacts per
-_shared/references/next-step.md. The skill that later applies an accepted edit first runs
+implies no approval. If ingestion supported an explicitly requested shape or spec
+conversation, resume it. Otherwise hand off per _shared/references/handoff.md
+(`handoff.py next --done sw-ingest`): under `flow: auto` the run continues to the station it
+names (an empty board re-routes through sw-start: shape for a new idea, the existing-baseline
+flow for a register). Proposed impacts on accepted or published stories are a decision for
+the user: report them at the stop, never apply them on the way. The skill that later applies an accepted edit first runs
 `_shared/scripts/record.py backup <project-relative path>` on the artifact.
 
 After an import or snapshot, refresh the data you own:
@@ -145,4 +148,4 @@ without repeating sensitive values.
 - Kit overview and terms: _shared/references/context.md. Graph: _shared/references/capabilities/knowledge.md.
 - Blocking choices: _shared/references/stop-and-ask.md.
 - Untrusted content: _shared/references/untrusted-content.md.
-- Finishing a step: _shared/references/next-step.md.
+- Finishing a step: _shared/references/next-step.md. Hand-off to the next station: _shared/references/handoff.md.

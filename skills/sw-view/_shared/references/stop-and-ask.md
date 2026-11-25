@@ -16,7 +16,8 @@ In a parallel batch the lead merges the workers' questions and asks five at a ti
 
 Separate blocking decisions from assumptions that can be tested later. Save a non-blocking
 unknown as a question with its default applied, list it in the summary and keep going; only a
-blocker stops the run. The command, with every required flag:
+blocker stops the run. Finishing a station is never a reason to ask (`handoff.md`). The
+command, with every required flag:
 
 ```sh
 record.py q new --title <text> --owner <role> --affects <FEAT-NNN> \

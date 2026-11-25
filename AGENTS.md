@@ -43,8 +43,11 @@
 - Markdown is the default output. On a push or publish request, go to sw-publish when
   Jira is configured; otherwise report that Markdown is delivered. A stored answer never
   authorizes a Jira write.
-- Never advance a station without the user's confirmation. Under the guided flow one
-  plain yes continues a local station; blockers always stop the run.
+- Stations hand off on their own (`flow: auto`, the default): when one finishes cleanly, start
+  the next in the same turn without asking. Stop only for a human decision (split or story
+  acceptance, sign-off), a blocker or a missing input, and ask everything at once. `guided`
+  asks one plain yes per station; `step` waits for the user to name it. A hand-off is never
+  approval and never enters publication (`handoff.md`).
 - Create questions, decisions, reservations, splits and registry rows only with the shared
   scripts. They validate, log each write and honour column ownership.
 - Give every artifact a title and aliases, and cite evidence as `SRC-NNNN:Lnn#hash` copied

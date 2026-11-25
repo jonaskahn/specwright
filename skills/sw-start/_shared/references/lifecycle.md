@@ -2,7 +2,8 @@
 
 `shape -> spec -> review (accept) -> plan`. Publish is also a station, but it is entered only on an
 explicit request for an accepted story (`request-publish`), never as the next step.
-`governance.md` sets how much ceremony each step needs and whether the run is guided.
+`governance.md` sets how much ceremony each step needs and how the run moves on (`flow`);
+`handoff.md` is the hand-off procedure.
 
 Ingest, assets, visuals, knowledge, trace, lint and status support an action; they are
 not stations. There is no sync stage or automatic reconciliation.
@@ -32,8 +33,9 @@ cannot create executed decisions. Broken/forked histories block; timestamps do n
 records. An incomplete transaction leaves _meta/lifecycle-pending.json and blocks work
 until its story/DEC changes are inspected and repaired; never delete it blindly.
 
-- submit-review: spec to review after a passing lint gate; not approval. In the guided flow
-  the agent passes its token after the user's plain yes.
+- submit-review: spec to review after a passing lint gate; not approval. Under `flow: auto`
+  the agent passes its token itself when sw-spec finishes cleanly; under `guided` after the
+  user's plain yes.
 - return-spec: review/plan/publish to spec; preserve files and invalidate active approval.
 - return-review: plan to review, including unstarted plan; old approval remains history.
 - reopen-shape: spec to shape for this feature slice only; siblings stay unchanged.
@@ -62,7 +64,8 @@ conflicting membership must be resolved, never inferred from loose mentions.
 
 ## Completion
 
-After each action follow `completion.md` (maintenance, then report). Eligible items at
-different stations require selection. Items that share a station are taken together by that
-station's skill, or the user names one. No oldest-draft fallback and no sibling
-auto-advancement to another station. Local TRANSITION tokens never substitute for the PUBLISH confirmation.
+After each action follow `completion.md` (maintenance, then the hand-off in `handoff.md`).
+Items that share a station are taken together by that station's skill, or the user names one.
+A named item moves alone; a whole-scope run ("continue", a bare command) moves every item
+station by station, the work needing no answer first and the questions last. No oldest-draft
+fallback. Local TRANSITION tokens never substitute for the PUBLISH confirmation.

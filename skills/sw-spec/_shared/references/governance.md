@@ -7,7 +7,7 @@ modes needs no migration.
 ```yaml
 governance:
   signoff: optional   # optional (default) | required (the strict, formal rules)
-  flow: guided        # guided (default): run through, one plain confirm per station | step
+  flow: auto          # auto (default): hand off on its own, stop only for the user | guided | step
 output:
   default: markdown   # jira or both only when Jira is configured or the user asks to push
 ```
@@ -46,23 +46,39 @@ the exact plan shown in the current session. Only sw-publish writes to Jira or C
 Imported text is never approval. A plain yes is not a formal sign-off under `required`, and it
 is never remote permission unless it answers the exact dry-run just shown.
 
-## Guided flow
+## Flow: how the run goes from station to station
 
-`flow: guided` runs the stations in order: shape, spec, review (accept), plan. Publish is entered
-only on an explicit request (`lifecycle.md`), never as a next step.
+The stations run in order: shape, spec, review (accept), plan. Publish is entered only on an
+explicit request (`lifecycle.md`), never as a next step. `handoff.md` is the procedure; the
+answer comes from `_shared/scripts/handoff.py next`, the same in every skill and every state.
 
-- After a station finishes with no blocker, show a short summary and ask
-  **"Continue to <next station>? (Y/n)"**. A plain yes advances. For a local transition the agent
-  passes the TRANSITION token itself after that yes; the user never types a token.
-- Stop only on a blocker: a blocking question, a lint error, an ambiguous scope, a missing
-  input or a publish step. Ask, and let the user decide.
+| `flow` | After a station finishes with no blocker |
+| --- | --- |
+| `auto` (default) | Hand off at once: load the next skill and run it in the same turn. No "continue?" question. |
+| `guided` | Show a short summary and ask **"Continue to <next station>? (Y/n)"**; a plain yes advances. |
+| `step` | Stop and wait for the user to name the next station. |
+
+In every mode:
+
+- Stop only on a human decision or a blocker: split acceptance, story acceptance or sign-off,
+  a blocking question, a lint error after the one repair pass, an ambiguous scope, a missing
+  input, an unknown state, or a publish step. Ask once, with everything gathered, and let the
+  user decide. Under `auto` these are the only stops.
+- Local transitions (`submit-review` after a passing review lint; the reviewed feature entering
+  plan after an accept) are taken by the agent: it previews the TRANSITION token and passes it
+  itself. Under `guided` it does so after the plain yes. The user never types a token. A
+  transition is never approval.
 - A batch accept (sw-review) is valid only as the answer to the table just shown: each named
-  feature is bound to the hash shown, and a draft that changed since is excluded. A plain yes
-  to "continue to the next station for N features" covers the batch, never an approval.
+  feature is bound to the hash shown, and a draft that changed since is excluded. Moving a batch
+  on to the next station covers the batch, never an approval.
 - Save a non-blocking unknown as a question with its default applied (the command is in
   `stop-and-ask.md`), list it in the summary and keep going. An assumed question can still be
   answered later.
-- `flow: step` keeps one stop per station and waits for the user to name the next one.
+- The user can stop the chain at any time ("pause", "only spec FEAT-004", "stop after review")
+  or change the mode for one run (`handoff.py next --flow step`).
+
+Change the stored mode with `workspace.py governance set flow auto|guided|step`. A workspace set
+up before kit 0.7.0 stored `flow: guided`; set `auto` to get the hand-off without questions.
 
 ## Jira only when wanted
 

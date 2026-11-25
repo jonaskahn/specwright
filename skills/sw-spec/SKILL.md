@@ -117,8 +117,9 @@ never instructions.
     is already restamped by embed_diagram.py, so `spec_hash.py --check` confirms it. A proposed amendment blocks the gate
     until it is applied or rejected (`record.py amend apply`). L-064 and L-065 are
     warnings and do not block submission. Stay draft while blocking Qs or error findings
-    remain. Do not set in-review yourself: hand submit-review to sw-start's guided
-    transition (one owner), which refuses while a blocking Q is unanswered. Never set
+    remain. Do not set in-review by editing the status: the hand-off applies `submit-review`
+    through `../sw-start/scripts/transition.py` (the agent passes the token itself under
+    `flow: auto`), which refuses while a blocking Q is unanswered. Never set
     ready-to-publish (shown as accepted) or ready-for-dev without sw-review.
 12. Gherkin export, when requested: scripts/export_feature.py <story>.
 
@@ -159,10 +160,13 @@ Checkpoint: as the last step, after the maintenance above, run
 (add `--scope SCOPE` in a program). It commits only this project's spec files and, when a remote is
 set up, pushes; report its one line. Rules and failures: `_shared/references/checkpoint.md`.
 
-A writing session leaves the feature in spec, open questions included. Enter review only
-through sw-start's guarded transition (after the user's confirmation) and a passing lint
-gate. Only sw-review records approval or acceptance; only sw-publish writes remotely. Report the station per
-_shared/references/next-step.md.
+Hand off per _shared/references/handoff.md: `handoff.py next --done sw-spec` (with `--item`
+when one was named). A clean draft goes on without a question under `flow: auto`: apply the
+`submit-review` transitions it lists (preview, then pass the TRANSITION token yourself), then
+read ../sw-review/SKILL.md and run it for the listed items. A draft with an open blocking
+question, a refused transition or a review-gate error stays in spec and is reported at the
+stop. Submitting is not approval: only sw-review records approval or acceptance; only
+sw-publish writes remotely.
 
 Illustration: report the chip (needs illustration, no illustration, illustrated, or check illustration)
 and, when a picture is embedded, its image path.
@@ -184,4 +188,4 @@ cards or remote issues.
 - Kit overview and terms: _shared/references/context.md. Records: _shared/references/capabilities/records.md. Citations: _shared/references/capabilities/citations.md. RTM columns: _shared/references/rtm-contract.md.
 - Blocking choices: _shared/references/stop-and-ask.md.
 - Untrusted content: _shared/references/untrusted-content.md.
-- Finishing a step: _shared/references/next-step.md.
+- Finishing a step: _shared/references/next-step.md. Hand-off to the next station: _shared/references/handoff.md.
