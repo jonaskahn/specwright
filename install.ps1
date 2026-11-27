@@ -16,6 +16,8 @@ param(
 	[switch] $Global,
 	[switch] $Project,
 	[string] $Target = $env:SPECWRIGHT_TARGET,
+	[string] $Version = $env:SPECWRIGHT_VERSION,
+	[switch] $Latest,
 	[switch] $Yes,
 	[switch] $ListAgents,
 	[switch] $Help
@@ -27,6 +29,8 @@ $ProgressPreference = 'SilentlyContinue'
 
 $Repo = if ($env:SPECWRIGHT_REPO) { $env:SPECWRIGHT_REPO } else { 'jonaskahn/specwright' }
 $Ref = if ($env:SPECWRIGHT_REF) { $env:SPECWRIGHT_REF } else { 'main' }
+if ($Latest) { $Version = 'latest' }
+$VersionPinned = $false
 $Skills = @('sw-start', 'sw-analyze', 'sw-shape', 'sw-ingest', 'sw-spec', 'sw-plan', 'sw-review', 'sw-publish', 'sw-view')
 if ($env:SPECWRIGHT_INSTALL_YES -eq '1') { $Yes = $true }
 
@@ -299,6 +303,9 @@ Usage: install.ps1 [options]
   -Global           install for all projects (the default)
   -Project          install into this project only
   -Target <path>    project directory (default: the current directory)
+  -Version <v>      install a released version, such as 0.9.0 or v0.9.0
+                    (latest, the default, installs the main branch)
+  -Latest           the same as -Version latest
   -Yes              use the selected settings without prompting
   -ListAgents       print agent ids and skill directories, then exit
   -Help             this text
@@ -306,8 +313,8 @@ Usage: install.ps1 [options]
 Every public skill is installed: $($Skills -join ' ').
 The sw-* command wrappers in commands/ are installed beside them.
 
-Environment: SPECWRIGHT_REPO, SPECWRIGHT_REF, SPECWRIGHT_URL, SPECWRIGHT_ROOT,
-SPECWRIGHT_TARGET, SPECWRIGHT_INSTALL_YES, NO_COLOR.
+Environment: SPECWRIGHT_REPO, SPECWRIGHT_VERSION, SPECWRIGHT_REF, SPECWRIGHT_URL,
+SPECWRIGHT_ROOT, SPECWRIGHT_TARGET, SPECWRIGHT_INSTALL_YES, NO_COLOR.
 "@ | Write-Host
 	exit 0
 }
@@ -315,6 +322,22 @@ SPECWRIGHT_TARGET, SPECWRIGHT_INSTALL_YES, NO_COLOR.
 if ($Global -and $Project) { Fail 'choose either -Global or -Project' @() }
 if ($Project) { $script:Scope = 'project' }
 if ($Global) { $script:Scope = 'global' }
+
+# A version names a release tag: 0.9.0 and v0.9.0 both mean v0.9.0.
+# `latest` is the main branch, exactly what a plain install already does,
+# checkout reuse included.
+if ($Version) {
+	if ($Version -eq 'latest' -or $Version -eq 'main') {
+		$Ref = 'main'
+	} else {
+		$bare = $Version -replace '^v', ''
+		if ($bare -notmatch '^[0-9]+\.[0-9]+\.[0-9]+' -or $bare -match '[^0-9A-Za-z.+-]') {
+			Fail "bad version: $Version" @('Use a release such as 0.9.0 or v0.9.0, or latest.')
+		}
+		$Ref = "v$bare"
+		$VersionPinned = $true
+	}
+}
 
 # --------------------------------------------------------------- agents ----
 # Paths track vercel-labs/skills agents.ts. Keep this table in step with install.sh.
@@ -573,17 +596,44 @@ function Test-SpecwrightCommand([string] $Path) {
 function Save-Archive {
 	$tar = Get-Command tar -ErrorAction SilentlyContinue
 	if (-not $tar) { Fail 'tar is required to install Specwright' @('Install tar, then run this installer again.') }
-	$url = if ($env:SPECWRIGHT_URL) { $env:SPECWRIGHT_URL } else { "https://github.com/$Repo/archive/refs/heads/$Ref.tar.gz" }
 	$temp = Join-Path ([System.IO.Path]::GetTempPath()) ("specwright-install." + [guid]::NewGuid().ToString('N').Substring(0, 8))
 	New-Item -ItemType Directory -Path $temp -Force | Out-Null
 	$bundle = Join-Path $temp 'src.tar.gz'
 	$unpack = Join-Path $temp 'unpack'
 	New-Item -ItemType Directory -Path $unpack -Force | Out-Null
 	Write-Step "Downloading $Repo@$Ref"
-	try {
-		Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $bundle -TimeoutSec 60
-	} catch {
-		Fail 'download failed' @($url)
+	$saved = $false
+	if ($env:SPECWRIGHT_URL) {
+		$url = $env:SPECWRIGHT_URL
+		try {
+			Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $bundle -TimeoutSec 60
+			$saved = $true
+		} catch {
+			Fail 'download failed' @($url)
+		}
+	} else {
+		# A version names a tag, but a branch of the same name still resolves.
+		# Try the tag first so -Version 0.9.0 cannot land on a stale branch.
+		$kind = if ($VersionPinned) { 'tags' } else { 'heads' }
+		$url = "https://github.com/$Repo/archive/refs/$kind/$Ref.tar.gz"
+		try {
+			Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $bundle -TimeoutSec 60
+			$saved = $true
+		} catch {
+			if ($VersionPinned) {
+				$branchUrl = "https://github.com/$Repo/archive/refs/heads/$Ref.tar.gz"
+				try {
+					Invoke-WebRequest -UseBasicParsing -Uri $branchUrl -OutFile $bundle -TimeoutSec 60
+					$saved = $true
+				} catch { }
+			}
+			if (-not $saved) {
+				if ($VersionPinned) {
+					Fail "no release $Version" @("There is no tag $Ref on $Repo.", "List the releases at https://github.com/$Repo/tags")
+				}
+				Fail 'download failed' @($url)
+			}
+		}
 	}
 	Write-OK "Downloaded $Repo@$Ref"
 	Write-Lead 'Unpacking the source archive'
@@ -814,18 +864,25 @@ Write-Section 'Install Specwright'
 $scriptDir = ''
 if ($PSCommandPath) { $scriptDir = Split-Path $PSCommandPath -Parent }
 elseif ($PSScriptRoot) { $scriptDir = $PSScriptRoot }
-if ($env:SPECWRIGHT_ROOT) {
-	if (-not (Test-Root $env:SPECWRIGHT_ROOT)) { Fail 'SPECWRIGHT_ROOT is not a Specwright checkout' @($env:SPECWRIGHT_ROOT) }
-	$script:SkillRoot = $env:SPECWRIGHT_ROOT
-} elseif ($scriptDir) {
-	$found = Find-Root $scriptDir
-	if ($found) { $script:SkillRoot = $found }
-}
-if ($script:SkillRoot) {
-	Write-Note "Using the checkout at $($script:SkillRoot)"
-} else {
-	Write-Note "No local checkout; downloading $Repo@$Ref"
+if ($VersionPinned) {
+	# A named release wins over the checkout around this script: the point of
+	# -Version is that this machine's tree must not decide what lands.
+	Write-Note "Installing release $Ref"
 	$script:SkillRoot = Save-Archive
+} else {
+	if ($env:SPECWRIGHT_ROOT) {
+		if (-not (Test-Root $env:SPECWRIGHT_ROOT)) { Fail 'SPECWRIGHT_ROOT is not a Specwright checkout' @($env:SPECWRIGHT_ROOT) }
+		$script:SkillRoot = $env:SPECWRIGHT_ROOT
+	} elseif ($scriptDir) {
+		$found = Find-Root $scriptDir
+		if ($found) { $script:SkillRoot = $found }
+	}
+	if ($script:SkillRoot) {
+		Write-Note "Using the checkout at $($script:SkillRoot)"
+	} else {
+		Write-Note "No local checkout; downloading $Repo@$Ref"
+		$script:SkillRoot = Save-Archive
+	}
 }
 foreach ($skill in $Skills) {
 	$path = Join-Rel $script:SkillRoot "skills/$skill/SKILL.md"

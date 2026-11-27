@@ -15,17 +15,27 @@ each shipped folder, so an uploaded ZIP is self-contained and never depends on a
 curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh
 curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh -s -- --project
 curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh -s -- --agent cursor --agent claude-code -y
+curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh -s -- --version 0.9.0
 ```
 
 ```powershell
 irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1 | iex
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1))) -Project
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1))) -Agent cursor,claude-code -Yes
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1))) -Version 0.9.0 -Yes
 ```
 
-Useful flags: `--agent` / `-Agent` (repeatable or comma-separated), `--target` / `-Target` for the project directory, `--list-agents` / `-ListAgents`. `SPECWRIGHT_REPO`, `SPECWRIGHT_REF`, `SPECWRIGHT_URL` and `SPECWRIGHT_ROOT` choose the source tree. `SPECWRIGHT_INSTALL_YES=1` is the same as `-y` / `-Yes`. `NO_COLOR` turns the framed screen off.
+Useful flags: `--agent` / `-Agent` (repeatable or comma-separated), `--target` / `-Target` for the project directory, `--version` / `-Version` for a release, `--latest` / `-Latest` for the main branch, `--list-agents` / `-ListAgents`. `SPECWRIGHT_REPO`, `SPECWRIGHT_VERSION`, `SPECWRIGHT_REF`, `SPECWRIGHT_URL` and `SPECWRIGHT_ROOT` choose the source tree. `SPECWRIGHT_INSTALL_YES=1` is the same as `-y` / `-Yes`. `NO_COLOR` turns the framed screen off.
 
-macOS and Linux need `curl` or `wget`, plus `tar`. Windows needs PowerShell and `tar`. When the script file itself sits inside a Specwright checkout, that checkout is the source. A piped download uses GitHub `main` unless the variables above say otherwise.
+### Installing a version
+
+`--version <v>` installs a released tag. `0.9.0`, `v0.9.0` and `SPECWRIGHT_VERSION=v0.9.0` all mean the tag `v0.9.0`; a tag is tried first, and a branch of the same name is the fallback. A version that does not exist stops the install with `no release <v>` and the tags URL, before anything is unpacked.
+
+A named version always downloads, even when the script runs from inside a checkout — the tag decides what lands, not this machine's tree. `--version latest` (or `--latest` / `-Latest`) is the same as passing no version: the main branch, which a run from inside a checkout takes from that checkout. `SPECWRIGHT_REF` still selects an arbitrary branch or tag for a plain, unpinned install.
+
+Tags pushed after the release commit only exist when they are pushed: check `https://github.com/<repo>/tags` if a version is reported missing.
+
+macOS and Linux need `curl` or `wget`, plus `tar`. Windows needs PowerShell and `tar`. When the script file itself sits inside a Specwright checkout, that checkout is the source. A piped download uses GitHub `main` unless `--version`, `SPECWRIGHT_VERSION` or the variables above say otherwise.
 
 On macOS and Linux, one destination is a real copy (preferring `.agents/skills` when it is selected) and other destinations on the same disk become relative symlinks. Windows always copies. Each destination also gets the `sw-*` command wrappers from `commands/`, written into the sibling `commands/` folder (`~/.claude/commands/`, `<project>/.claude/commands/`, …) with `${CLAUDE_PLUGIN_ROOT}/skills/` rewritten to the absolute path of that destination's skills, so `/sw-start`, `/sw-continue` and the rest work outside the plugin. Wrappers are always copies, never symlinks, and a wrapper your own file replaced is refused rather than overwritten. The installer writes skill folders and command wrappers only. It does not write `AGENTS.md`, `CLAUDE.md` or plugin files.
 
