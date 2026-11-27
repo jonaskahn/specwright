@@ -1,0 +1,42 @@
+{
+  "type": "nested",
+  "title": "Refund example \u00b7 nested",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ]
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "parent": "n1"
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "parent": "n1"
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": [],
+      "parent": "n2"
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": [],
+      "parent": "n2"
+    }
+  ],
+  "edges": []
+}

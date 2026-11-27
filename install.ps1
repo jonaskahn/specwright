@@ -1,4 +1,4 @@
-# Specwright installer for Windows: all nine skills, into the agents you choose.
+# Specwright installer for Windows: all five skills, into the agents you choose.
 #
 #   irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1 | iex
 #
@@ -27,7 +27,7 @@ $ProgressPreference = 'SilentlyContinue'
 
 $Repo = if ($env:SPECWRIGHT_REPO) { $env:SPECWRIGHT_REPO } else { 'jonaskahn/specwright' }
 $Ref = if ($env:SPECWRIGHT_REF) { $env:SPECWRIGHT_REF } else { 'main' }
-$Skills = @('sw-start', 'sw-analyze', 'sw-shape', 'sw-ingest', 'sw-spec', 'sw-plan', 'sw-review', 'sw-publish', 'sw-view')
+$Skills = @('sw-start', 'sw-craft', 'sw-forge', 'sw-ship', 'sw-view')
 if ($env:SPECWRIGHT_INSTALL_YES -eq '1') { $Yes = $true }
 
 $script:Inner = 76
@@ -250,7 +250,7 @@ function Write-ScreenOpen {
 	Write-Row ''
 	Write-Center 'I N S T A L L E R' 'bright'
 	Write-Row ''
-	Write-Center "nine skills $($script:Dot) $Ref" 'rose'
+	Write-Center "five skills $($script:Dot) $Ref" 'rose'
 	Write-Row ''
 	Write-Separator ([string][char]0x251C) ([string][char]0x2524)
 }
@@ -517,7 +517,7 @@ function Add-Agent([string] $Id) {
 # --------------------------------------------------------------- source ----
 
 function Test-Root([string] $Path) {
-	return (Test-Path (Join-Rel $Path 'skills/sw-start/SKILL.md')) -and (Test-Path (Join-Rel $Path 'skills/sw-publish/SKILL.md'))
+	return (Test-Path (Join-Rel $Path 'skills/sw-start/SKILL.md')) -and (Test-Path (Join-Rel $Path 'skills/sw-ship/SKILL.md'))
 }
 function Find-Root([string] $Start) {
 	$dir = $Start
@@ -760,7 +760,7 @@ if ($Agent) {
 Write-ScreenOpen
 if ($interactive) {
 	Write-Section 'Make it yours'
-	Write-Row '  All nine skills install together. Pick a scope and the agents.'
+	Write-Row '  All five skills install together. Pick a scope and the agents.'
 	Write-Row ("  " + (Paint "Project: $script:Target" 'mid'))
 	Write-Row ''
 	if ($Global -or $Project) {
@@ -918,7 +918,7 @@ foreach ($dest in $script:Destinations) {
 	foreach ($skill in $Skills) {
 		Copy-Item -Recurse -Path (Join-Rel $script:SkillRoot "skills/$skill") -Destination (Join-Path $dest $skill)
 	}
-	Write-OK "Copied 9 skills into $dest"
+	Write-OK "Copied 5 skills into $dest"
 	if ($script:CommandsRoot) {
 		$count = Install-Commands $script:CommandsRoot $dest
 		Write-OK "Copied $count command(s) into $(Join-Path (Split-Path $dest -Parent) 'commands')"
@@ -929,7 +929,7 @@ Write-Rule
 Write-OK (Paint 'Specwright is installed.' 'bold')
 Write-Row ''
 Write-Row ("  " + (Paint 'Scope' 'mid') + "    $($script:Scope)")
-Write-Row ("  " + (Paint 'Skills' 'mid') + "   9 skills in $($script:Destinations.Count) location(s)")
+Write-Row ("  " + (Paint 'Skills' 'mid') + "   5 skills in $($script:Destinations.Count) location(s)")
 if ($script:CommandsRoot) {
 	Write-Row ("  " + (Paint 'Commands' 'mid') + "  $(@(Get-CommandFiles $script:CommandsRoot).Count) /sw-* wrappers beside them")
 }

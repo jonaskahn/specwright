@@ -16,12 +16,12 @@ export interface Column {
 }
 
 export const COLUMNS: Column[] = [
-  { id: 'shape', title: 'Shape', skill: 'sw-spec', hint: 'Reserved; sw-spec writes the story' },
-  { id: 'spec', title: 'Spec', skill: 'sw-review', hint: 'Being written; then sw-review' },
-  { id: 'review', title: 'Review', skill: 'sw-review', hint: 'Waiting for accept or sign-off' },
-  { id: 'plan', title: 'Plan', skill: 'sw-plan', hint: 'Accepted; sw-plan breaks it into tasks' },
+  { id: 'shape', title: 'Shape', skill: 'sw-craft', hint: 'Reserved; sw-craft writes the story' },
+  { id: 'spec', title: 'Spec', skill: 'sw-craft', hint: 'Being written; the review runs in sw-craft' },
+  { id: 'review', title: 'Review', skill: 'sw-craft', hint: 'Waiting for accept or sign-off' },
+  { id: 'plan', title: 'Plan', skill: 'sw-forge', hint: 'Accepted; sw-forge breaks it into tasks' },
   { id: 'dev', title: 'Ready for dev', skill: null, hint: 'Planned; the team can build' },
-  { id: 'publish', title: 'Publish', skill: 'sw-publish', hint: 'Publication requested' },
+  { id: 'publish', title: 'Publish', skill: 'sw-ship', hint: 'Publication requested' },
   { id: 'inactive', title: 'Inactive', skill: null, hint: 'Withdrawn or superseded' },
   { id: 'other', title: 'Not placed', skill: null, hint: 'No station in the data' },
 ];
@@ -52,7 +52,7 @@ export interface Card {
   idle: number | null;
   epics: { key: string; title: string }[];
   layers: [string, number][];
-  /** What to type to move it on, e.g. `/sw-review ORD:FEAT-001`; null when nothing is left to run. */
+  /** What to type to move it on, e.g. `/sw-craft ORD:FEAT-001`; null when nothing is left to run. */
   command: string | null;
 }
 

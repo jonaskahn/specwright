@@ -423,7 +423,7 @@ def board(store: Store, target: str | None = None, station: str | None = None) -
                         "station": shard.get("station", "shape"),
                         "condition": "complete" if node["status"] == "approved" else "in-progress",
                         "blockers": [],
-                        "available": ["sw-shape"],
+                        "available": ["sw-craft"],
                     }
                 )
         if node["kind"] != "feat":

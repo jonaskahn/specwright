@@ -1,0 +1,87 @@
+{
+  "type": "db-schema",
+  "title": "Refund example \u00b7 db-schema",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "columns": [
+        "refund_id UUID PK",
+        "status TEXT NOT NULL"
+      ]
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "columns": [
+        "refund_id UUID PK",
+        "status TEXT NOT NULL"
+      ]
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "columns": [
+        "refund_id UUID PK",
+        "status TEXT NOT NULL"
+      ]
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": [],
+      "columns": [
+        "refund_id UUID PK",
+        "status TEXT NOT NULL"
+      ]
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": [],
+      "columns": [
+        "refund_id UUID PK",
+        "status TEXT NOT NULL"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "n1",
+      "to": "n2",
+      "label": "supplies evidence",
+      "from_card": "1",
+      "to_card": "N"
+    },
+    {
+      "from": "n2",
+      "to": "n3",
+      "label": "supplies evidence",
+      "from_card": "1",
+      "to_card": "N"
+    },
+    {
+      "from": "n3",
+      "to": "n4",
+      "label": "supplies evidence",
+      "from_card": "1",
+      "to_card": "N"
+    },
+    {
+      "from": "n4",
+      "to": "n5",
+      "label": "supplies evidence",
+      "from_card": "1",
+      "to_card": "N"
+    }
+  ]
+}

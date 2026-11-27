@@ -16,7 +16,7 @@ from unittest.mock import patch
 from kitlib import frontmatter, hashing, ids, scanlog, schema, tables
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS = ROOT / "skills/sw-ingest/scripts"
+SCRIPTS = ROOT / "skills/sw-craft/scripts"
 sys.path.insert(0, str(SCRIPTS))
 spec = importlib.util.spec_from_file_location("ingest_conversion", SCRIPTS / "to_md.py")
 mod = importlib.util.module_from_spec(spec)
@@ -84,7 +84,7 @@ class IngestConversionTests(unittest.TestCase):
         registry = tables.parse((self.out.parent / "_meta/id-registry.md").read_text()).table
         self.assertEqual(registry.get("REF:SRC-0001", "Source ref"), "page-12")
         log = (self.out.parent / "_meta/write-log.md").read_text()
-        self.assertIn("sw-ingest | import | REF:SRC-0001", log)
+        self.assertIn("sw-craft | import | REF:SRC-0001", log)
         self.assertIn("file=00-inbox/SRC-0001--refund-policy.md@", log)
 
     def test_untitled_text_takes_its_file_name(self):

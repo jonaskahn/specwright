@@ -94,6 +94,16 @@ def bundle_skill(root: Path, source: Path, destination: Path, profile: str = "ex
         raise FileExistsError(f"destination exists: {destination}")
     skip = bundle.excluded_files(bundle.load_map(root), source.name, profile)
     shutil.copytree(source, destination, ignore=_ignore(source, skip))
+    # extras/ types extend a package: a core build ships only the core set, a full build
+    # ships the parked types too so every named reference resolves.
+    extras = root / "extras" / source.name
+    if profile == "extended" and extras.is_dir():
+        for path in sorted(extras.rglob("*")):
+            if not path.is_file() or bundle.is_junk(path.relative_to(extras)):
+                continue
+            target = destination / path.relative_to(extras)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(path, target)
     _prune_picker(destination, skip)
     shared = shared_folder(root)
     for rel in bundle.shared_list(root, source.name):

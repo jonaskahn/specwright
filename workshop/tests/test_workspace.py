@@ -49,7 +49,7 @@ class FlatTests(WorkspaceTestCase):
         self.assertEqual(registry.table.rows, [])
         rtm = tables.parse((self.root / "_meta" / "rtm.md").read_text())
         self.assertEqual(rtm.table.header[0], "Spec ID")
-        self.assertIn("Jira [sw-publish]", rtm.table.header)
+        self.assertIn("Jira [sw-ship]", rtm.table.header)
 
     def test_upgrade_adds_registry_columns_only_on_apply(self):
         self.init_flat()

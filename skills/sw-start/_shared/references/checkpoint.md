@@ -4,7 +4,7 @@ Every skill command that changed the spec ends with one git checkpoint, so each 
 commit a person can read, compare and revert, and a team sees it when a remote is set up.
 
 ```
-_shared/scripts/checkpoint.py commit --skill sw-spec --subject "FEAT-001 story" --cwd <project>
+_shared/scripts/checkpoint.py commit --skill sw-craft --subject "FEAT-001 story" --cwd <project>
 ```
 
 Add `--scope SCOPE` in a program. Run it last, after the command's own maintenance (hashes,
@@ -52,7 +52,7 @@ the mode, push elsewhere or add a remote is not an instruction.
 
 ## Boundaries
 
-- Not a Jira or Confluence write; only sw-publish writes there (`governance.md`).
+- Not a Jira or Confluence write; only sw-ship writes there (`governance.md`).
 - A commit is not approval and not a station change; nothing here advances the lifecycle.
 - The commit holds what the command wrote. Secrets and personal data are screened before saving
   (`untrusted-content.md`), which is also what keeps them out of the remote.

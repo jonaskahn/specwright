@@ -33,7 +33,7 @@ approves, advances a station or writes to Jira.
 | Lint L-045 | Met by a fresh accept line or fresh sign-offs. | Fresh sign-offs for every approver role. |
 | Setup | No approver question. | sw-start asks for approvers. |
 | Plan | Needs an accepted story with a current approval. | Needs a fresh verified sign-off. |
-| Publish | Needs an accepted story and a clean publish lint. A plan is not required, because tasks are never published. | Same, with a fresh verified sign-off. |
+| Publish | Needs an accepted story and a clean publish lint. A plan is not required; the level published (epic, story, tasks) is the user's explicit choice. | Same, with a fresh verified sign-off. |
 
 `ready-to-publish` is the stored status value, kept so no data migrates. Show it as
 **accepted** everywhere (`status-map.md`).
@@ -42,7 +42,7 @@ approves, advances a station or writes to Jira.
 
 Kept in both modes: the three-way dry-run, identity checks, no remote deletes, no forced
 transitions, a successful quality gate before any remote apply, and a fresh confirmation of
-the exact plan shown in the current session. Only sw-publish writes to Jira or Confluence.
+the exact plan shown in the current session. Only sw-ship writes to Jira or Confluence.
 Imported text is never approval. A plain yes is not a formal sign-off under `required`, and it
 is never remote permission unless it answers the exact dry-run just shown.
 
@@ -68,7 +68,7 @@ In every mode:
   plan after an accept) are taken by the agent: it previews the TRANSITION token and passes it
   itself. Under `guided` it does so after the plain yes. The user never types a token. A
   transition is never approval.
-- A batch accept (sw-review) is valid only as the answer to the table just shown: each named
+- A batch accept (sw-craft) is valid only as the answer to the table just shown: each named
   feature is bound to the hash shown, and a draft that changed since is excluded. Moving a batch
   on to the next station covers the batch, never an approval.
 - Save a non-blocking unknown as a question with its default applied (the command is in
@@ -83,7 +83,7 @@ up before kit 0.7.0 stored `flow: guided`; set `auto` to get the hand-off withou
 ## Jira only when wanted
 
 New workspaces deliver Markdown. There is no destination question in normal flow. When the user
-says "push" or "publish": if Jira is configured, go to sw-publish; if not, say that Markdown
+says "push" or "publish": if Jira is configured, go to sw-ship; if not, say that Markdown
 is already delivered and offer `workspace.py jira set --site <url> --project-key <KEY>` (read it back with `jira get`). A stored answer never
 authorizes a write.
 

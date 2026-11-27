@@ -39,7 +39,7 @@ class StatusTests(unittest.TestCase):
         text = status.render(report)
         self.assertIn(
             "REF:FEAT-001 | in-review | lint review: pass | Jira: — | Q-001 open | "
-            "next: sw-review (PO)",
+            "next: sw-craft (PO)",
             text,
         )
         self.assertIn("illustration: needs illustration", text)
@@ -91,7 +91,7 @@ class StatusTests(unittest.TestCase):
     def test_ready_for_dev_first_drift_and_snapshot_age(self):
         path = self.root / "02-drafts/FEAT-002.story.md"
         path.write_text(frontmatter.update(path.read_text(), {"status": "ready-for-dev"}))
-        rtm.set_cell(self.root, "REF", "FEAT-002", "Drift", "content-edited", "sw-publish")
+        rtm.set_cell(self.root, "REF", "FEAT-002", "Drift", "content-edited", "sw-ship")
         snap = self.root / "snapshots/jira/PROJ-14.md"
         snap.write_text(
             frontmatter.render(
@@ -103,7 +103,7 @@ class StatusTests(unittest.TestCase):
             self.root / "_meta/id-registry.md",
             "REF:FEAT-002",
             {"Last snapshot": "snapshots/jira/PROJ-14.md"},
-            "sw-publish",
+            "sw-ship",
         )
         item = status.build_report(self.root, today=date(2026, 11, 10))["features"][0]
         self.assertEqual(item["id"], "REF:FEAT-002")
@@ -130,7 +130,7 @@ class StatusTests(unittest.TestCase):
             self.root / "_meta/id-registry.md",
             "REF:FEAT-001",
             {"Last snapshot": "../../outside.md"},
-            "sw-publish",
+            "sw-ship",
         )
         result = self.run_cli("--cwd", str(self.root))
         self.assertEqual(result.returncode, 2)

@@ -898,7 +898,13 @@ def lint_document(doc, ctx):
         if fm.get("jira_status") and expected and fm["jira_status"] != expected:
             emit("L-044", f"Jira status differs from mapped repository status ({expected})")
     if fm["type"] == "feature" and not doc.card:
-        if fm["status"] in {"ready-to-publish", "published", "ready-for-dev"}:
+        if fm["status"] in {
+            "ready-to-publish",
+            "published",
+            "ready-for-dev",
+            "in-development",
+            "done",
+        }:
             valid_roles = set()
             digest = hashing.draft_hash(doc.raw)
             for entry in sequence(fm.get("signoffs")):
@@ -1016,8 +1022,8 @@ def discover(base, ignore=()):
         "console",
         "node_modules",
         "03-plan",
-        "as-is",  # analysis files: checked by sw-analyze (analyze.py check)
-        "review",  # review packs and debate records: checked by sw-review
+        "as-is",  # analysis files: checked by sw-craft (analyze.py check)
+        "review",  # review packs and debate records: checked by sw-craft
         *(str(i).strip("/") for i in ignore),
     }
     docs = []
@@ -1107,7 +1113,7 @@ def registry_findings(ctx):
         for doc in ctx.docs:
             if (
                 doc.fm.get("type") == "feature"
-                and doc.fm.get("status") in {"published", "ready-for-dev"}
+                and doc.fm.get("status") in {"published", "ready-for-dev", "in-development", "done"}
                 and doc.spec_id not in by_feature
             ):
                 out.append(

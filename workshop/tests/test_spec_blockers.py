@@ -8,7 +8,7 @@ from pathlib import Path
 from kitlib import blockers, frontmatter, lifecycle, rtm, schema
 from tests.test_workflow import WorkflowTestCase
 
-SCRIPT = Path(__file__).resolve().parents[2] / "skills/sw-spec/scripts/new_story.py"
+SCRIPT = Path(__file__).resolve().parents[2] / "skills/sw-craft/scripts/new_story.py"
 spec = importlib.util.spec_from_file_location("new_story_blockers", SCRIPT)
 new_story = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(new_story)
@@ -35,7 +35,7 @@ class BlockerTests(WorkflowTestCase):
     def reserve(self, ident="FEAT-002", **cells):
         values = {"Kind": "story", "Title": "Decide a refund", "State": "reserved"}
         values.update(cells)
-        rtm.registry_upsert(self.base / "_meta/id-registry.md", f"REF:{ident}", values, "sw-shape")
+        rtm.registry_upsert(self.base / "_meta/id-registry.md", f"REF:{ident}", values, "sw-craft")
 
     # ---- blocking questions
 

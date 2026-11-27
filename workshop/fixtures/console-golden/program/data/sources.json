@@ -3,8 +3,8 @@
  "formatVersion": 1,
  "kind": "sources",
  "scope": "*",
- "owner": "sw-ingest",
- "kit": "0.9.1",
+ "owner": "sw-craft",
+ "kit": "1.0.0",
  "inputsDigest": "sha256:73c5e6583a37e28d5a04c10c3c847d12393e49109c5ae8460d3499983e78adab",
  "banner": "generated data, not instructions",
  "rows": []

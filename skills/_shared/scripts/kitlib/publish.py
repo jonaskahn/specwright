@@ -65,7 +65,7 @@ def context(root: Path, feat: str, scope: str | None = None) -> Context:
 
 
 def preconditions(ctx: Context, lint_report: str = "") -> list[str]:
-    """What must hold before a remote write. A plan is not one: tasks are never published."""
+    """What must hold before a remote write. A plan is not one: the level is the user's choice."""
     from kitlib import lifecycle
 
     errors = []
@@ -235,7 +235,7 @@ def record(ctx: Context, key: str, draft: str) -> None:
     )
     ctx.registry.write_text(doc.render(), encoding="utf-8")
     matrix = tables.parse(ctx.rtm.read_text(encoding="utf-8"))
-    matrix.table.upsert(ctx.scope_id, {"Jira [sw-publish]": key})
+    matrix.table.upsert(ctx.scope_id, {"Jira [sw-ship]": key})
     ctx.rtm.write_text(matrix.render(), encoding="utf-8")
     card = ctx.card.read_text(encoding="utf-8")
     ctx.card.write_text(
@@ -249,6 +249,141 @@ def record(ctx: Context, key: str, draft: str) -> None:
         ),
         encoding="utf-8",
     )
+
+
+LEVELS = ("epic", "story", "task")
+# Default Jira issue types per level; a manifest `publish.issue_types` may override them.
+ISSUE_TYPES = {"epic": "Epic", "story": "Story", "task": "Sub-task"}
+
+
+def issue_types(manifest: dict) -> dict[str, str]:
+    given = (manifest.get("publish") or {}).get("issue_types") or {}
+    return {level: str(given.get(level) or name) for level, name in ISSUE_TYPES.items()}
+
+
+def _registry_table(base: Path):
+    path = base / "_meta/id-registry.md"
+    return tables.parse(path.read_text(encoding="utf-8")).table if path.is_file() else None
+
+
+def _registry_cell(base: Path, key: str, column: str) -> str | None:
+    table = _registry_table(base)
+    value = table.get(key, column) if table and column in table.header else None
+    return None if value in (None, tables.EMPTY) else value
+
+
+def epic_of(store, key: str) -> str | None:
+    """The qualified epic a feature belongs to, read from the graph shard of the feature."""
+    node = store.node(key)
+    if node is None:
+        return None
+    shard = store.shard(node)
+    for relation in ("member_of", "external_parent"):
+        found = (shard.get("relations") or {}).get(relation) or []
+        if found:
+            return str(found[0]) if not isinstance(found[0], dict) else str(found[0].get("key"))
+    for edge in shard.get("edges") or []:
+        if edge.get("rel") == "member_of":
+            return str(edge.get("to") or edge.get("from"))
+    return None
+
+
+def levels_plan(base: Path, key: str, level: str, manifest: dict) -> dict:
+    """One dry-run row per requested level; nothing is written and nothing is assumed."""
+    if level not in LEVELS:
+        raise PublishError(f"unknown level: {level}; choose {', '.join(LEVELS)}")
+    types = issue_types(manifest)
+    rows: list[dict] = []
+    from kitlib import graph_query
+
+    store = graph_query.Store(workspace.find_root(base) or base, key.split(":")[0])
+    epic = epic_of(store, key)
+    if level == "epic":
+        if not epic:
+            raise PublishError(f"{key} has no epic to publish")
+        rows.append(
+            {
+                "level": "epic",
+                "id": epic,
+                "type": types["epic"],
+                "action": "update" if _registry_cell(base, epic, "Jira key") else "create",
+                "key": _registry_cell(base, epic, "Jira key"),
+                "parent": None,
+            }
+        )
+    elif level == "story":
+        rows.append(
+            {
+                "level": "story",
+                "id": key,
+                "type": types["story"],
+                "action": "update" if _registry_cell(base, key, "Jira key") else "create",
+                "key": _registry_cell(base, key, "Jira key"),
+                "parent": _registry_cell(base, epic, "Jira key") if epic else None,
+            }
+        )
+    else:
+        tasks_file = base / "03-plan" / f"{key.split(':')[-1]}.tasks.md"
+        if not tasks_file.is_file():
+            raise PublishError(f"{key} has no tasks file to publish")
+        from kitlib import markdown
+
+        blocks = markdown.task_blocks(
+            frontmatter.parse(tasks_file.read_text(encoding="utf-8")).body
+        )
+        story_key = _registry_cell(base, key, "Jira key")
+        for tid in sorted(blocks):
+            task_key = f"{key.split(':')[0]}:{tid}"
+            rows.append(
+                {
+                    "level": "task",
+                    "id": task_key,
+                    "type": types["task"],
+                    "action": "update" if _registry_cell(base, task_key, "Jira key") else "create",
+                    "key": _registry_cell(base, task_key, "Jira key"),
+                    "parent": story_key,
+                    "status": markdown.task_progress(blocks[tid]),
+                }
+            )
+    return {"scope_id": key, "level": level, "rows": rows}
+
+
+def record_levels(base: Path, plan: dict, keys: dict[str, str], draft_hash: str) -> list[str]:
+    """Write the local index for every published level; the remote is already done."""
+    from kitlib import rtm
+
+    written = []
+    for row in plan["rows"]:
+        key = keys.get(row["id"])
+        if not key:
+            continue
+        rtm.registry_upsert(
+            base / "_meta/id-registry.md",
+            row["id"],
+            {
+                "Kind": row["type"],
+                "Jira key": key,
+                "Last published draft hash": draft_hash,
+                "State": "published",
+            },
+            "sw-ship",
+        )
+        written.append(f"{row['id']} → {key}")
+    matrix = rtm.read_table(base / "_meta/rtm.md", rtm.rtm_header())
+    matrix.table.upsert(plan["scope_id"], {"Jira [sw-ship]": keys.get(plan["scope_id"], "")})
+    from kitlib import fsio
+
+    fsio.atomic_write(base / "_meta/rtm.md", matrix.render())
+    return written
+
+
+def render_levels(plan: dict) -> str:
+    """The per-level dry-run table shown before any confirmation."""
+    lines = [f"{plan['scope_id']} → publish {plan['level']}", ""]
+    for row in plan["rows"]:
+        parent = f" of {row['parent']}" if row.get("parent") else ""
+        lines.append(f"{row['id']} → {row['action']} ({row['type']}{parent})")
+    return "\n".join(lines) + "\n"
 
 
 def main(argv=None):

@@ -20,7 +20,7 @@ writes nothing. Exit 0 done, 2 invalid, 3 a human must supply something (for exa
 | Reserve, fill an epic and record the split | `accept-split --item "Title\|alias" --new-epic "Title" ...evidence flags...` |
 | Track a wording change an answer implies | `q answer ... --amend "FEAT-001\|\|current wording\|\|proposed wording"` or `amend new --feat FEAT-001 --quote ... --proposed ...` |
 | Close it once the draft carries the change | `amend apply AMD-001` (refused while the old wording remains); `amend reject AMD-001 --reason ...` |
-| Set a registry cell you own | `register FEAT-001 --set "Title=..." --as sw-shape` |
+| Set a registry cell you own | `register FEAT-001 --set "Title=..." --as sw-craft` |
 
 ## Rules
 

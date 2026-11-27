@@ -8,7 +8,7 @@ from pathlib import Path
 from kitlib import frontmatter, graph, graph_query, ids, miniyaml, rtm, schema
 from tests.test_workflow import WorkflowTestCase
 
-SCRIPT = Path(__file__).resolve().parents[2] / "skills/sw-ingest/scripts/bulk_import.py"
+SCRIPT = Path(__file__).resolve().parents[2] / "skills/sw-craft/scripts/bulk_import.py"
 ELIGIBLE = (
     "# Eligibility\n\nAn order is eligible when it was delivered within 14 days and the goods are "
     "unused, unopened and returned in their original packaging by the customer.\n"

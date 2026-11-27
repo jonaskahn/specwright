@@ -39,8 +39,8 @@ def load(name, path):
     return module
 
 
-wiki_pull = load("acceptance_wiki_pull", SKILLS / "sw-ingest/scripts/wiki_pull.py")
-to_md = load("acceptance_to_md", SKILLS / "sw-ingest/scripts/to_md.py")
+wiki_pull = load("acceptance_wiki_pull", SKILLS / "sw-craft/scripts/wiki_pull.py")
+to_md = load("acceptance_to_md", SKILLS / "sw-craft/scripts/to_md.py")
 
 
 class Fake:
@@ -125,7 +125,7 @@ class BaselineAcceptance(unittest.TestCase):
         assert code == 0
         cls.pull = cls.base / "_meta/work/pull-pull1"
         cls.first = run(
-            SKILLS / "sw-ingest/scripts/bulk_import.py",
+            SKILLS / "sw-craft/scripts/bulk_import.py",
             "--batch-id",
             "b1",
             "--list-file",
@@ -155,7 +155,7 @@ class BaselineAcceptance(unittest.TestCase):
             "\n".join([rows[0], *[r for r in rows[1:] if "\t101\t" in r]]) + "\n"
         )
         cls.second = run(
-            SKILLS / "sw-ingest/scripts/bulk_import.py",
+            SKILLS / "sw-craft/scripts/bulk_import.py",
             "--batch-id",
             "b2",
             "--list-file",
@@ -165,7 +165,7 @@ class BaselineAcceptance(unittest.TestCase):
             cwd=cls.root,
         )
         # 3. the legacy register, one reserved feature per legacy item, the graph
-        shell = SKILLS / "sw-shape/scripts/baseline.py"
+        shell = SKILLS / "sw-craft/scripts/baseline.py"
         run(
             shell,
             "import-register",
@@ -185,9 +185,9 @@ class BaselineAcceptance(unittest.TestCase):
             )
         }
         # 4. candidates: one worker reads every page; two claims disagree
-        run(SKILLS / "sw-ingest/scripts/candidates.py", "assign", cwd=cls.root)
+        run(SKILLS / "sw-craft/scripts/candidates.py", "assign", cwd=cls.root)
         cls.fill_candidates()
-        cls.conflict = run(SKILLS / "sw-ingest/scripts/candidates.py", "conflicts", cwd=cls.root)
+        cls.conflict = run(SKILLS / "sw-craft/scripts/candidates.py", "conflicts", cwd=cls.root)
         record = SKILLS / "_shared/scripts/record.py"
         cls.asked = run(
             record,
@@ -215,7 +215,7 @@ class BaselineAcceptance(unittest.TestCase):
         cls.board_open = {r["id"]: r for r in graph_query.board(graph_query.Store(cls.root, "REF"))}
         # 5. specify FEAT-002, answer in a meeting, track the wording change
         story = run(
-            SKILLS / "sw-spec/scripts/new_story.py",
+            SKILLS / "sw-craft/scripts/new_story.py",
             "--reserved",
             "FEAT-002",
             "--scope-root",

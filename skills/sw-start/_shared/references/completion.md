@@ -37,13 +37,13 @@ human decision always stops the chain.
 | Plan saved or revised; other content changed; graph stale | Build or update the graph and query it after asset and visual work. Verify freshness on a no-op. |
 | Spec, plan, source, record or registry content changed | Refresh only the data files your skill owns, with `data.py export <kind> --as <skill>`. Never write another skill's file. |
 | Before any hand-off | Lint the applicable scope. Report a failure; never waive it silently. |
-| Drawing requested, missing or stale | Ask sw-spec for its illustration_check script (`illustration_check.py FEAT-NNN`; only sw-spec ships it) and report the chip. Render only when the chip says a picture is needed. |
-| Accepted draft ready for review | Prepare findings. Record approval only through sw-review: the owner's accept, or a verified sign-off under required. |
+| Drawing requested, missing or stale | Ask sw-craft for its illustration_check script (`illustration_check.py FEAT-NNN`; only sw-craft ships it) and report the chip. Render only when the chip says a picture is needed. |
+| Accepted draft ready for review | Prepare findings. Record approval only through sw-craft: the owner's accept, or a verified sign-off under required. |
 | Published requirement amendment | Validate the user-supplied current baseline and require a CR; if unverifiable, stop. No sync, guessed baseline, overwritten snapshot or Jira edit. |
 | Review passes | The feature is accepted and eligible for plan, and for publication on request. A passing plan is Markdown delivery; publication stays a separate explicit decision. |
 | Ingestion suggests changed logic | Save a quoted proposed impact. Back up the artifact only immediately before an accepted real edit; no revision increment before then. |
 | Status-only rollback | Keep content hashes and historical sign-offs; invalidate active approval through the lifecycle decision. Do not call unchanged tasks content-stale. |
-| Exact remote plan confirmed | Apply only through sw-publish. A changed plan, scope or hash needs new confirmation; a plain yes counts only for the exact dry-run just shown. |
+| Exact remote plan confirmed | Apply only through sw-ship. A changed plan, scope or hash needs new confirmation; a plain yes counts only for the exact dry-run just shown. |
 | Command finished | One git checkpoint, last, by the lead only. Not a station change and not approval. Then the hand-off. |
 | Nothing relevant changed | Skip maintenance and state why; the checkpoint reports `nothing`. |
 

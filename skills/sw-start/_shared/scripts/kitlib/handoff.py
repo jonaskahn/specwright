@@ -22,11 +22,26 @@ from pathlib import Path
 from kitlib import blockers, frontmatter, schema, workspace
 
 STATION_ORDER = ("shape", "spec", "review", "plan", "publish")
-# Skills whose run ends at a human decision (split acceptance, story acceptance). They go last,
-# so every piece of work that needs no answer is finished before the run asks anything.
-GATED = {"sw-shape", "sw-review"}
-FREE_ORDER = ("sw-spec", "sw-plan")
-GATED_ORDER = ("sw-shape", "sw-review")
+# Which skill owns each station. The BA skill holds shape, spec and review; the Dev skill plans;
+# publishing is optional and never runs on its own.
+STATION_SKILL = {
+    "shape": "sw-craft",
+    "spec": "sw-craft",
+    "review": "sw-craft",
+    "plan": "sw-forge",
+    "publish": "sw-ship",
+}
+# Skills whose run can end at a human decision (split acceptance, story acceptance). They go
+# last, so every piece of work that needs no answer is finished before the run asks anything.
+# Skills whose run ends at a human decision (split acceptance, story acceptance) go last, so
+# every piece of work that needs no answer is finished before the run asks anything.
+GATED = {"sw-craft"}
+# sw-forge needs no answer inside itself, so it runs before the BA line, which ends at the
+# owner's finalize. Crossing from craft into forge is the user's explicit request; a run
+# never enters forge on its own.
+FREE_ORDER = ("sw-forge",)
+GATED_ORDER = ("sw-craft",)
+BATCHABLE = {"spec": "sw-craft", "review": "sw-craft", "plan": "sw-forge"}
 
 
 def annotate(root: Path, scope: str, rows: list[dict]) -> list[dict]:
@@ -67,63 +82,73 @@ def _row_next(row: dict, done: str | None, signoff: str) -> dict:
         return {"item": rid, "wait": "blocked", "why": "; ".join(blockers) or "unknown state"}
     if kind == "epic":
         # Once the split is accepted the epic's work continues in its features; it is not a
-        # station of its own any more, so it neither waits nor reruns sw-shape.
+        # station of its own any more, so it neither waits nor reruns sw-craft.
         if cond == "complete" or row.get("split_accepted"):
             return {"item": rid, "complete": True}
-        if done == "sw-shape":
+        if done == STATION_SKILL["shape"]:
             return {"item": rid, "wait": "decision", "why": "owner accepts or revises the split"}
-        return {"item": rid, "skill": "sw-shape"}
+        return {"item": rid, "skill": STATION_SKILL["shape"]}
     if station == "shape":
-        if done == "sw-shape":
+        if done == STATION_SKILL["shape"]:
             return {"item": rid, "wait": "decision", "why": "owner accepts the reopened slice"}
-        return {"item": rid, "skill": "sw-shape"}
+        return {"item": rid, "skill": STATION_SKILL["shape"]}
     if station == "spec":
         if cond == "not-started":
-            if done == "sw-spec":
-                return {"item": rid, "wait": "blocked", "why": "sw-spec finished without a story"}
-            return {"item": rid, "skill": "sw-spec"}
+            # A draft with no story yet is work, not a failure: only a run that just wrote
+            # stories and left none is a stop.
+            if done == STATION_SKILL["spec"] and row.get("story_written"):
+                return {
+                    "item": rid,
+                    "wait": "blocked",
+                    "why": "the story step finished without a story",
+                }
+            return {"item": rid, "skill": STATION_SKILL["spec"]}
         if row.get("questions"):
             return {
                 "item": rid,
                 "wait": "input",
                 "why": "answer blocking question " + "; ".join(row["questions"][:3]),
             }
-        if done == "sw-spec":
+        if done == STATION_SKILL["spec"]:
             # A finished draft goes to review on its own; submit-review is not approval and the
             # transition refuses while a blocking question is open or the review lint fails.
-            return {"item": rid, "skill": "sw-review", "transition": "submit-review"}
-        return {"item": rid, "skill": "sw-spec"}
+            return {"item": rid, "skill": STATION_SKILL["review"], "transition": "submit-review"}
+        return {"item": rid, "skill": STATION_SKILL["spec"]}
     if station == "review":
-        if done == "sw-review":
+        if done == STATION_SKILL["review"]:
             why = (
                 "a configured approver's sign-off evidence"
                 if signoff == "required"
                 else "the owner's finalize of the review pack just shown"
             )
             return {"item": rid, "wait": "decision", "why": why}
-        return {"item": rid, "skill": "sw-review"}
+        return {"item": rid, "skill": STATION_SKILL["review"]}
     if station == "plan":
         # Version 1 of an existing feature is already built: finalizing it ends its pipeline.
         if cond == "complete" or row.get("origin") == "as-is":
             return {"item": rid, "complete": True}
-        if done == "sw-plan":
+        if done == STATION_SKILL["plan"]:
             why = "; ".join(blockers) or "the task check still fails"
             return {"item": rid, "wait": "blocked", "why": why}
-        return {"item": rid, "skill": "sw-plan"}
+        return {"item": rid, "skill": STATION_SKILL["plan"]}
     if station == "publish":
         return {
             "item": rid,
             "wait": "decision",
-            "why": "publication runs only in sw-publish after a fresh yes to its dry-run",
+            "why": "publication runs only in sw-ship, after the user asks and confirms its dry-run",
         }
     return {"item": rid, "wait": "blocked", "why": f"unknown station {station}"}
 
 
-def _beyond(skill: str, until: str | None) -> bool:
-    """True when running skill would pass the station the user asked to stop after."""
+def _beyond(row: dict, plan: dict, until: str | None) -> bool:
+    """True when the next station lies beyond the one the user asked to stop after.
+
+    A transition names the station it moves into (submit-review leaves spec), so the limit is
+    applied to where the work goes next, not where it stands now.
+    """
     if not until:
         return False
-    station = skill.removeprefix("sw-")
+    station = plan.get("transition") and "review" or row.get("station")
     if station not in STATION_ORDER or until not in STATION_ORDER:
         return False
     return STATION_ORDER.index(station) > STATION_ORDER.index(until)
@@ -141,7 +166,7 @@ def decide(
     """Pick the next step for the board rows of one item (named) or one scope.
 
     fallback is the routed skill (from sw-start) to continue with when the board is empty, for
-    example sw-shape for a draft idea that has no features yet.
+    example sw-craft for a draft idea that has no features yet.
     """
     plans = [_row_next(r, done, signoff) for r in rows]
     complete = [p["item"] for p in plans if p.get("complete")]
@@ -149,8 +174,9 @@ def decide(
         {"item": p["item"], "kind": p["wait"], "why": p["why"]} for p in plans if "wait" in p
     ]
     runnable = [p for p in plans if "skill" in p]
-    held = [p for p in runnable if _beyond(p["skill"], until)]
-    runnable = [p for p in runnable if not _beyond(p["skill"], until)]
+    by_item = {r["id"]: r for r in rows}
+    held = [p for p in runnable if _beyond(by_item.get(p["item"], {}), p, until)]
+    runnable = [p for p in runnable if not _beyond(by_item.get(p["item"], {}), p, until)]
 
     answer = {
         "flow": flow,
@@ -167,9 +193,6 @@ def decide(
         if fallback and fallback.startswith("sw-") and fallback != done:
             answer.update(mode="continue", next_skill=fallback, reason=f"{fallback}: routed")
             return _apply_flow(answer)
-        if done == "sw-ingest":
-            answer.update(mode="continue", next_skill="sw-start", reason="sources saved; re-route")
-            return _apply_flow(answer)
         answer.update(mode="stop", reason="nothing on the board to advance; route with sw-start")
         return answer
     if not runnable:
@@ -177,6 +200,21 @@ def decide(
             answer.update(mode="stop", reason="waiting for the user: " + _summary(waiting))
         elif held:
             answer.update(mode="stop", reason=f"stopped after {until}, as asked")
+        elif done == "sw-craft":
+            # The BA role is over. The Dev role is a separate request, never a next station.
+            forge = sorted({p["item"] for p in plans if p.get("skill") == "sw-forge"})
+            answer.update(
+                mode="done",
+                reason="BA line finished: accepted stories, tasks and prompts are the delivery",
+                say=(
+                    f"Accepted: {', '.join(forge)}. Say **forge** to plan "
+                    + (", ".join(forge) if forge else "a story")
+                    + "."
+                    if forge
+                    else "Accepted. Nothing is left in the BA line."
+                ),
+                plan_next=forge,
+            )
         else:
             answer.update(
                 mode="done",
@@ -185,11 +223,16 @@ def decide(
         return answer
 
     # Work that needs no answer first, in lifecycle order; stations that end in a question last.
+    # sw-forge is the only skill that needs no answer inside itself, so it runs before the BA
+    # line, which ends in the owner's finalize.
     order = [s for s in FREE_ORDER + GATED_ORDER]
     chosen = min(runnable, key=lambda p: order.index(p["skill"]) if p["skill"] in order else 99)
     skill = chosen["skill"]
     batch = [p for p in runnable if p["skill"] == skill]
-    if done and done == skill and not any(p.get("transition") for p in batch):
+    # A finished BA run hands its accepted stories over instead of looping: its remaining
+    # items all need the review step again, so the hand-off is the stop, not a failure.
+    hand_over = done == skill and done != "sw-craft"
+    if hand_over and not any(p.get("transition") for p in batch):
         answer.update(
             mode="stop",
             reason=f"no progress: {skill} just ran and the same items still need it; inspect",
@@ -208,7 +251,9 @@ def decide(
     )
     later = [p for p in runnable if p["skill"] != skill]
     if later:
-        answer["after"] = sorted({p["skill"] for p in later}, key=order.index)
+        answer["after"] = sorted(
+            {p["skill"] for p in later}, key=lambda s: order.index(s) if s in order else 99
+        )
     return _apply_flow(answer)
 
 
@@ -234,11 +279,10 @@ def _summary(waiting: list[dict]) -> str:
 def _reason(skill: str, batch: list[dict], named: bool) -> str:
     ids = ", ".join(p["item"] for p in batch)
     what = {
-        "sw-shape": "shape, then ask the owner to accept the split",
-        "sw-spec": "write or resume the story drafts",
-        "sw-review": "check the drafts, then ask the owner to accept them",
-        "sw-plan": "write the plan and tasks",
+        "sw-craft": "the BA line: satisfy its gates, then ask the owner to accept",
+        "sw-forge": "write the detailed plan, set the task statuses and generate the prompts",
+        "sw-ship": "publish only after the user asks",
     }.get(skill, "run the station")
     if any(p.get("transition") for p in batch):
-        what = "submit the finished drafts (not approval), " + what
+        what = "submit the finished drafts (not approval), then " + what
     return f"{skill} for {ids}: {what}" + ("" if named else " (whole scope, station by station)")

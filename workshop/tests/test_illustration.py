@@ -16,7 +16,7 @@ DRAW = (FIXTURES / "lint/illustration-draw.md").read_text()
 PROSE = (FIXTURES / "lint/illustration-prose.md").read_text()
 UNSURE = (FIXTURES / "lint/illustration-unsure.md").read_text()
 GOOD = (FIXTURES / "lint/good-story.md").read_text()
-SCRIPT = ROOT / "skills/sw-spec/scripts/illustration_check.py"
+SCRIPT = ROOT / "skills/sw-craft/scripts/illustration_check.py"
 CURRENT = FIXTURES / "refund/illustration/current.json"
 STALE = FIXTURES / "refund/illustration/stale.json"
 
@@ -55,7 +55,7 @@ class SignalTests(unittest.TestCase):
         self.assertEqual(illustration.verdict(signals), illustration.UNSURE)
 
     def test_the_reference_lists_the_words_the_counter_uses(self):
-        text = (ROOT / "skills/sw-spec/references/illustration-need.md").read_text()
+        text = (ROOT / "skills/sw-craft/references/illustration-need.md").read_text()
         for word in (
             *illustration.ROLES,
             *illustration.BRANCH_WORDS,

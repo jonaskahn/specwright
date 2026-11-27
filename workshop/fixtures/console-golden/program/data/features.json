@@ -4,7 +4,7 @@
  "kind": "features",
  "scope": "*",
  "owner": "sw-start",
- "kit": "0.9.1",
+ "kit": "1.0.0",
  "inputsDigest": "sha256:73c5e6583a37e28d5a04c10c3c847d12393e49109c5ae8460d3499983e78adab",
  "banner": "generated data, not instructions",
  "rows": [
@@ -27,7 +27,7 @@
    "signoff": null,
    "updated": "2026-11-10",
    "snapshotDate": null,
-   "next": "sw-review",
+   "next": "sw-craft",
    "turn": "PO",
    "bo": [
     "BO-001"
@@ -56,7 +56,7 @@
    "signoff": null,
    "updated": "2026-10-27",
    "snapshotDate": null,
-   "next": "sw-review",
+   "next": "sw-craft",
    "turn": "PO",
    "bo": [],
    "acCount": 1,
@@ -83,7 +83,7 @@
    "signoff": null,
    "updated": "2026-11-10",
    "snapshotDate": null,
-   "next": "sw-review",
+   "next": "sw-craft",
    "turn": "PO",
    "bo": [
     "BO-001"
@@ -112,7 +112,7 @@
    "signoff": null,
    "updated": "2026-10-27",
    "snapshotDate": null,
-   "next": "sw-review",
+   "next": "sw-craft",
    "turn": "PO",
    "bo": [],
    "acCount": 1,

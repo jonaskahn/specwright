@@ -13,7 +13,7 @@ from unittest.mock import MagicMock
 from kitlib import wiki_rest
 from tests.test_workflow import WorkflowTestCase
 
-SCRIPTS = Path(__file__).resolve().parents[2] / "skills/sw-ingest/scripts"
+SCRIPTS = Path(__file__).resolve().parents[2] / "skills/sw-craft/scripts"
 spec = importlib.util.spec_from_file_location("wiki_pull_under_test", SCRIPTS / "wiki_pull.py")
 wiki_pull = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(wiki_pull)

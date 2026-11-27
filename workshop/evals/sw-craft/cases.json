@@ -1,0 +1,21 @@
+{
+ "cases": [
+  {
+   "id": "craft-001",
+   "prompt": "Shape or slice an idea for the refunds epic.",
+   "assertions": [
+    "runs sw-craft for that request",
+    "writes only the artifacts this skill owns"
+   ]
+  },
+  {
+   "id": "craft-002",
+   "prompt": "Plan feat-001 in detail for implementation.",
+   "assertions": [
+    "does not run this skill",
+    "points to the owning skill"
+   ],
+   "near_miss_of": "sw-forge"
+  }
+ ]
+}

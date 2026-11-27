@@ -8,7 +8,7 @@ from pathlib import Path
 from kitlib import baseline, frontmatter, graph, graph_query, invest, recordops, workspace
 from tests.test_workflow import WorkflowTestCase
 
-SCRIPT = Path(__file__).resolve().parents[2] / "skills/sw-shape/scripts/baseline.py"
+SCRIPT = Path(__file__).resolve().parents[2] / "skills/sw-craft/scripts/baseline.py"
 RECORD = Path(__file__).resolve().parents[2] / "skills/_shared/scripts/record.py"
 REGISTER = (
     "ID,Name,Module,Page\n"
@@ -125,14 +125,14 @@ class BaselineTests(WorkflowTestCase):
         self.register()
         self.baseline_cli("reserve", "--item", "LEG-200")
         withdraw = self.run_cli(
-            RECORD, "register", "REF:FEAT-002", "--set", "State=withdrawn", "--as", "sw-shape"
+            RECORD, "register", "REF:FEAT-002", "--set", "State=withdrawn", "--as", "sw-craft"
         )
         self.assertEqual(withdraw.returncode, 0, withdraw.stderr)
-        owners = recordops.alias_owners(recordops.Ctx(self.root, "REF", "sw-shape"))
+        owners = recordops.alias_owners(recordops.Ctx(self.root, "REF", "sw-craft"))
         self.assertNotIn("leg-200", owners)
         # the FEAT number stays a tombstone, so the same legacy item reserves a fresh number
         self.assertEqual(self.baseline_cli("reserve", "--item", "LEG-200").returncode, 0)
-        owners = recordops.alias_owners(recordops.Ctx(self.root, "REF", "sw-shape"))
+        owners = recordops.alias_owners(recordops.Ctx(self.root, "REF", "sw-craft"))
         self.assertNotIn("FEAT-002", owners["leg-200"])
 
     # ---- brief

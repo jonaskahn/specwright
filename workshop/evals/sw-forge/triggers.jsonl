@@ -1,0 +1,18 @@
+{"query": "plan FEAT-001 in detail", "should_trigger": true}
+{"query": "name the files and tests for each task of FEAT-004", "should_trigger": true}
+{"query": "generate the prompts for FEAT-004", "should_trigger": true}
+{"query": "mark the tasks of FEAT-004 planned", "should_trigger": true}
+{"query": "record TASK-004-1 as done with its test result", "should_trigger": true}
+{"query": "check the locked stack for the tasks", "should_trigger": true}
+{"query": "write the acceptance criteria for FEAT-004", "should_trigger": false}
+{"query": "split the refunds epic into stories", "should_trigger": false}
+{"query": "write the code for TASK-004-1", "should_trigger": false}
+{"query": "publish the tasks of FEAT-001 to Jira", "should_trigger": false}
+{"query": "prepare FEAT-004 for the coding agent", "should_trigger": true}
+{"query": "what order should the tasks of FEAT-004 be done in", "should_trigger": true}
+{"query": "keep the task states current with the code", "should_trigger": true}
+{"query": "make the plan prettier", "should_trigger": false}
+{"query": "review FEAT-004 with the owner", "should_trigger": false}
+{"query": "add an acceptance criterion for the refund window", "should_trigger": false}
+{"query": "open the board console", "should_trigger": false}
+{"query": "explain Kubernetes autoscaling", "should_trigger": false}

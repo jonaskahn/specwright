@@ -35,7 +35,7 @@ class IndexTests(WorkflowTestCase):
             self.base / "_meta/id-registry.md",
             "REF:FEAT-003",
             {"Kind": "story", "Title": "Payout", "Aliases": "LEG-300"},
-            "sw-shape",
+            "sw-craft",
         )
         graph.build(self.root, "REF")
 
@@ -86,7 +86,7 @@ class IndexTests(WorkflowTestCase):
 
     def test_an_untitled_reservation_is_flagged_never_given_a_placeholder(self):
         rtm.registry_upsert(
-            self.base / "_meta/id-registry.md", "REF:FEAT-004", {"Kind": "story"}, "sw-spec"
+            self.base / "_meta/id-registry.md", "REF:FEAT-004", {"Kind": "story"}, "sw-craft"
         )
         graph.build(self.root, "REF")
         row = {r["key"]: r for r in self.table("index.tsv")}["REF:FEAT-004"]

@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 # Only these skills write outside the project; only their lines mean "may not have landed".
-REMOTE_SKILLS = frozenset({"sw-publish"})
+REMOTE_SKILLS = frozenset({"sw-ship"})
 
 
 def utc_stamp(now: datetime | None = None) -> str:

@@ -65,7 +65,7 @@ is drawn from a small reader that never produces HTML: raw HTML in a document st
 `http`, `https` and `mailto` links are followed. Documents come from the server's `/doc/` route, so
 file contents need `view.py serve`.
 
-A diagram that sw-spec drew is an SVG, embedded in its story as an image under UI/UX: it shows
+A diagram that sw-craft drew is an SVG, embedded in its story as an image under UI/UX: it shows
 inline in the story's preview, and clicking it opens the file at full width. A feature's Details
 tab lists its pictures, so one that is drawn but not yet embedded (an approved story) is still one
 click away. An HTML diagram is not previewed; only Markdown, PDF and images open.

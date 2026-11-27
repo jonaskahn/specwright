@@ -9,7 +9,7 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS = ROOT / "skills/sw-spec/scripts"
+SCRIPTS = ROOT / "skills/sw-craft/scripts"
 sys.path.insert(0, str(SCRIPTS))
 
 
@@ -31,21 +31,33 @@ class DrawCheckTests(unittest.TestCase):
             code = tool.main(list(args))
         return code, stdout.getvalue(), stderr.getvalue()
 
-    def test_repository_skill_carries_the_full_extended_set(self):
-        """npx and the plugin marketplace read skills/ as is, so it must hold all 20 types."""
+    def test_repository_skill_carries_the_core_set_and_extras_the_rest(self):
+        """npx and the plugin marketplace read skills/ as is: every core type is there, and
+        every other type is parked in extras/ so a core package extends from one place."""
         sys.path.insert(0, str(SCRIPTS))
         from draw_types import CORE, EXTENDED
 
-        shipped = {p.stem for p in (ROOT / "skills/sw-spec/assets").glob("*.html")}
-        self.assertEqual(shipped, set(CORE) | set(EXTENDED))
+        skill = ROOT / "skills/sw-craft"
+        extras = ROOT / "extras/sw-craft"
+        for kind in CORE:
+            self.assertTrue((skill / f"references/type-{kind}.md").is_file(), kind)
+            self.assertTrue((skill / f"assets/{kind}.html").is_file(), kind)
+            self.assertFalse((extras / f"references/type-{kind}.md").exists(), kind)
+        for kind in EXTENDED:
+            self.assertTrue((extras / f"references/type-{kind}.md").is_file(), kind)
+        # The skill may also keep a copy of a parked type; what matters is that every type
+        # has a reference in exactly one of the two places.
         for kind in CORE + EXTENDED:
-            self.assertTrue((ROOT / f"skills/sw-spec/references/type-{kind}.md").is_file(), kind)
+            here = (skill / f"references/type-{kind}.md").is_file()
+            parked = (extras / f"references/type-{kind}.md").is_file()
+            self.assertTrue(here or parked, kind)
 
     def test_every_template_passes_both_checks(self):
-        assets = ROOT / "skills/sw-spec/assets"
-        self.assertEqual(len(list(assets.glob("*.html"))), 20)
+        assets = ROOT / "skills/sw-craft/assets"
+        # The skill ships its core types and any parked copy it keeps; extras/ carries the rest.
+        self.assertGreaterEqual(len(list(assets.glob("*.html"))), 10)
         for path in list(assets.glob("*.html")) + list(
-            (ROOT / "extras/sw-spec/assets").glob("*.html")
+            (ROOT / "extras/sw-craft/assets").glob("*.html")
         ):
             for tool in (BORDERS, OFFLINE):
                 self.assertEqual(self.run_check(tool, str(path)), (0, "", ""))

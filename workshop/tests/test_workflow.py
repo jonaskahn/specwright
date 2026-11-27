@@ -175,7 +175,7 @@ class ReviewTests(WorkflowTestCase):
         import subprocess
         import sys
 
-        script = ROOT / "skills/sw-review/scripts/review.py"
+        script = ROOT / "skills/sw-craft/scripts/review.py"
         base = [
             sys.executable,
             str(script),
@@ -343,6 +343,6 @@ class PublishTests(WorkflowTestCase):
         registry = tables.parse(ctx.registry.read_text()).table
         self.assertEqual(registry.get("REF:FEAT-001", "Jira key"), "PROJ-14")
         matrix = tables.parse(ctx.rtm.read_text()).table
-        self.assertEqual(matrix.get("REF:FEAT-001", "Jira [sw-publish]"), "PROJ-14")
+        self.assertEqual(matrix.get("REF:FEAT-001", "Jira [sw-ship]"), "PROJ-14")
         card, _ = frontmatter.split(ctx.card.read_text())
         self.assertEqual(card["status"], "published")

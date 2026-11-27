@@ -27,7 +27,7 @@ from kitlib import dataformat, ingest_impact, recordops, rtm, schema, workspace 
 COMMON = {
     "--cwd": {"default": "."},
     "--scope": {"help": "project scope; needed in a program"},
-    "--as": {"dest": "skill", "default": "sw-shape", "help": "skill that owns this write"},
+    "--as": {"dest": "skill", "default": "sw-craft", "help": "skill that owns this write"},
     "--format": {"choices": ["text", "json"], "default": "text"},
 }
 

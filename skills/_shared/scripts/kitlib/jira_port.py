@@ -196,7 +196,7 @@ def apply_plan(
                     writelog_path,
                     run_id,
                     serial,
-                    "sw-publish",
+                    "sw-ship",
                     op.kind,
                     op.payload.get("key", scope_id),
                     f"plan={log_hash}",

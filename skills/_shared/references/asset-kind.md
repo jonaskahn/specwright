@@ -15,6 +15,6 @@ Choose exactly one kind per asset.
 Rules:
 
 - A link is never fetched; store it as ASSET-NNN.url.
-- Business documents that need text extraction go to sw-ingest, not here.
+- Business documents that need text extraction go to sw-craft, not here.
 - Raw ideas stay verbatim and are never promoted to requirements by the assets capability.
 - Keep file names lower-case, short, and free of paths; ASSET ids come from the registry.

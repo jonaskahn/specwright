@@ -5,10 +5,10 @@ tool provides the capability. Never improvise credentials and never print a toke
 
 | Capability | Meaning | Used by | When absent |
 | --- | --- | --- | --- |
-| `jira-read` | Read one Jira issue: fields, update timestamp, links. | sw-ingest, sw-spec, sw-publish | Ask for pasted issue data; mark unread fields UNKNOWN. |
-| `jira-search` | Search issues by JQL or label, only when a read is not enough. | sw-ingest, sw-spec, sw-publish | Ask for a pasted list. |
-| `wiki-read` | Read a Confluence page or page tree. | sw-ingest | Ask for an export; mark unread fields UNKNOWN. |
-| `jira-write` | Execute a confirmed publish plan. | sw-publish only | Stop after the dry-run; write nothing. |
+| `jira-read` | Read one Jira issue: fields, update timestamp, links. | sw-craft, sw-craft, sw-ship | Ask for pasted issue data; mark unread fields UNKNOWN. |
+| `jira-search` | Search issues by JQL or label, only when a read is not enough. | sw-craft, sw-craft, sw-ship | Ask for a pasted list. |
+| `wiki-read` | Read a Confluence page or page tree. | sw-craft | Ask for an export; mark unread fields UNKNOWN. |
+| `jira-write` | Execute a confirmed publish plan. | sw-ship only | Stop after the dry-run; write nothing. |
 
 ## No shipped fallback for Jira
 
@@ -19,7 +19,7 @@ session tool supplies `jira-write`, nothing can be written: stop after the dry-r
 
 ## Wiki fallback
 
-sw-ingest ships a read-only wiki puller (its `wiki_pull` script). It needs `SPECWRIGHT_WIKI_SITE`,
+sw-craft ships a read-only wiki puller (its `wiki_pull` script). It needs `SPECWRIGHT_WIKI_SITE`,
 `SPECWRIGHT_WIKI_EMAIL` and `SPECWRIGHT_WIKI_TOKEN`; check that they are set (names only, never the
 values). Exit 4 means the pull is incomplete: never import it as whole. If they are unset, ask for an
 export instead.

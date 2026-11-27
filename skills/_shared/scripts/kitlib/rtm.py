@@ -136,6 +136,8 @@ def _scan_tasks(path: Path, scope: str, entities: dict[str, Entity], findings: l
             details["touches"] = block.field_line("Touches")
             details["visuals"] = block.field_line("Visuals")
             details["layer"] = markdown.task_layer(block.title) or ""
+            details["progress"] = markdown.task_progress(block)
+            details["evidence"] = block.field_line("Evidence")
             refs |= {qualify(str(r), scope) for r in ids.find_refs(details["traces"])}
         refs.discard(key)
         entities[key] = Entity(key, "task", path, details, "", refs, task in removed, parent)
@@ -202,10 +204,8 @@ def set_cell(root: Path, scope: str, key: str, column: str, value: str, skill: s
 
 REGISTRY_OWNERS = {
     "shared-trace": {"Kind"},
-    "sw-spec": {"Kind", "State"},
-    "sw-shape": {"Kind", "State", "Title", "Aliases"},
-    "sw-ingest": {"Kind", "State", "Last snapshot", "Source ref"},
-    "sw-publish": {
+    "sw-craft": {"Kind", "State", "Title", "Aliases", "Last snapshot", "Source ref"},
+    "sw-ship": {
         "Jira key",
         "Confluence id",
         "Label",

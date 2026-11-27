@@ -1,0 +1,87 @@
+---
+id: FEAT-NNN
+type: feature
+scope: <SCOPE>
+status: draft
+jira_summary: <verb-first summary>
+jira_issuetype: Story
+jira_parent: None
+jira_labels: []
+bo: []
+br: []
+nfr: []
+sources: []
+assets: []
+links: []
+---
+
+## Goal
+
+As a <role>, I want <capability>, so that <outcome>. Business objective: <BO-ID>.
+
+## Context
+
+<Required content or None with reason.>
+
+## Acceptance criteria
+
+### AC-NNN-1 — <title>
+
+- **Given** <state>
+- **When** <event>
+- **Then** <result>
+
+### AC-NNN-2 — <title>
+
+- **Given** <state>
+- **When** <event>
+- **Then** <result>
+
+## Business rules
+
+- <BR-ID> <rule with key numbers>. Example: <worked calculation>.
+
+## Edge cases and error behavior
+
+<Required content or None with reason.>
+
+## Non-functional
+
+- <NFR-ID>: <metric, threshold, conditions and method>.
+
+## UI/UX
+
+<Four UI states (default, empty, loading, error) or None with a reason.>
+
+Visuals: <one line per mockup, Figma link, screenshot or diagram, or None — no visual supplied>
+- <ASSET-NNN> (<kind>) — <screen or state it shows, AC-NNN-n> — <assets/ASSET-NNN.png | URL | diagrams/FEAT-NNN.flow.svg>
+![<what the picture shows, AC-NNN-n>](../diagrams/FEAT-NNN.flow.svg)
+
+## Out of scope
+
+<Required content or None with reason.>
+
+## Dependencies and relations
+
+<Required content or None with reason.>
+
+## Open questions
+
+None
+
+## DoR checklist
+
+- [ ] Goal links a BO.
+- [ ] At least two concrete G/W/T criteria, each written as a bulleted list with bold keywords.
+- [ ] BR examples and measurable NFRs.
+- [ ] UI states and exclusions with reasons; every mockup, link or diagram is in `assets:` and the UI/UX Visuals list, and each drawn diagram is embedded as an image.
+- [ ] No unresolved questions or markers.
+- [ ] Dev and QA checks pass for each AC.
+- [ ] Approval recorded through sw-craft (accept, or sign-off under `required`).
+
+## Identity
+
+Spec ID: <SCOPE>:FEAT-NNN · Project: <SCOPE> · Repo card: FEAT-NNN.card.md · Draft hash: <sha256:…> · Managed by
+specwright
+Dev consumer check: <per-AC result and reason>.
+QA consumer check: <per-AC result and reason>.

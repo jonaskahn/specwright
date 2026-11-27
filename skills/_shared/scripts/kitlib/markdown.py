@@ -13,9 +13,13 @@ _TASK_HEADING = re.compile(r"^### +(TASK-\d{3}-\d+)\b\s*(?:[—–-]+\s*(.*))?$"
 _TASK_TOMBSTONE = re.compile(r"~~(TASK-\d{3}-\d+)~~")
 _TASK_FIELD = re.compile(
     r"^\s*(?:[-*]\s+)?"
-    r"(Traces to|Stack|Touches|Depends on|Done when|Stop and ask if|Visuals)"
+    r"(Traces to|Stack|Touches|Depends on|Done when|Stop and ask if|Visuals"
+    r"|Status|Evidence|Blocked because)"
     r"\s*:\s*(.*)$"
 )
+# A task without a Status line predates per-task status; it reads as not started.
+TASK_PROGRESS = ("not-started", "planned", "in-progress", "done", "blocked", "withdrawn")
+DEFAULT_PROGRESS = "not-started"
 
 
 @dataclass
@@ -144,6 +148,13 @@ def task_layer(title: str) -> str | None:
     """The lower-case word in a leading '[layer]' title prefix, or None when there is none."""
     match = _LAYER_PREFIX.match(title.strip())
     return match.group(1).lower() if match else None
+
+
+def task_progress(block: TaskBlock) -> str:
+    """The task's status word, or not-started when it has none or an unknown one."""
+    raw = block.field_line("Status") or ""
+    word = raw.strip().lower().split()[0] if raw.strip() else ""
+    return word if word in TASK_PROGRESS else DEFAULT_PROGRESS
 
 
 def task_tombstones(body: str) -> list[str]:

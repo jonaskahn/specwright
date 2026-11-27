@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import builtins
 import importlib.util
 import json
 import re
@@ -25,6 +26,9 @@ ALLOWED_KEYS = {"name", "description"}
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 MAX_NAME, MAX_DESCRIPTION, DESCRIPTION_BUDGET = 64, 1024, 900
 MAX_BODY_LINES, WARN_BODY_LINES, MAX_BODY_TOKENS = 500, 400, 5000
+# Past this many files, a skill reaches its references through the *-procedure.md files its
+# SKILL.md names (the BA skill holds the whole craft line in one folder).
+BIG_SKILL_FILES = 120
 MIN_TRIGGER_ROWS = 8
 PATH_REF = re.compile(r"(?<![\w/-])((?:references|scripts|assets)/[\w./-]+\.\w+)")
 HOST_PLACEHOLDER = re.compile(
@@ -42,14 +46,10 @@ RUNTIME_MARKERS = (
 CWD_COMMAND = re.compile(r"python3\s+(?:scripts/|references/|assets/)")
 EXPECTED_SKILLS = {
     "sw-start",
-    "sw-shape",
-    "sw-ingest",
-    "sw-spec",
-    "sw-plan",
-    "sw-review",
-    "sw-publish",
+    "sw-craft",
+    "sw-forge",
+    "sw-ship",
     "sw-view",
-    "sw-analyze",
 }
 
 
@@ -198,12 +198,34 @@ def _check_body(skill: Path, parsed: frontmatter.Parsed, report: Report) -> None
         for ref in sorted(referenced)
         if ref.endswith(".md") and (skill / ref).is_file()
     )
+    # A few skills own hundreds of files (one skill holds the whole BA line); at that size the
+    # folders are reached through a named procedure file instead of one long SKILL.md table.
+    # Measure the text an agent reads; a vendored _shared copy repeats the same references.
+    owned = [
+        p for p in skill.rglob("*") if p.is_file() and "_shared" not in p.relative_to(skill).parts
+    ]
+    big = len(owned) > BIG_SKILL_FILES
+    procedures = (
+        sorted(p.name for p in (skill / "references").glob("*-procedure.md")) if big else []
+    )
+    if big and not procedures:
+        report.add(
+            md, 1, "V138", f"a skill over {BIG_SKILL_FILES} files names *-procedure.md files"
+        )
     imported = _imported_modules(skill / "scripts")
     for sub in ("references", "scripts"):
         folder = skill / sub
         if not folder.is_dir():
             continue
         for item in sorted(folder.iterdir()):
+            # A diagram type's reference and shell are reached through the type picker; the
+            # roster is the closed list, so they are not listed one by one in SKILL.md.
+            if (
+                big
+                and sub == "references"
+                and (item.name.startswith("type-") or item.name.endswith("-template.html"))
+            ):
+                continue
             if (
                 item.name in ("kitlib", *SHARED_REFERENCES)
                 or item.name.startswith(("_", "."))
@@ -214,6 +236,16 @@ def _check_body(skill: Path, parsed: frontmatter.Parsed, report: Report) -> None
             # Reachable means an agent following SKILL.md arrives at the file: it is named there,
             # named by a reference that SKILL.md cites, or it is a module another script imports.
             if path in referenced or (sub == "references" and path in cited_text):
+                continue
+            if (
+                big
+                and sub == "references"
+                and any(
+                    item.name
+                    in (skill / "references" / name).read_text(encoding="utf-8", errors="replace")
+                    for name in procedures
+                )
+            ):
                 continue
             if sub == "scripts" and item.suffix == ".py" and imported.get(item.stem):
                 continue
@@ -538,6 +570,56 @@ def _check_record_commands(skill: Path, root: Path, report: Report) -> None:
                         )
 
 
+def _no_args() -> ast.arguments:
+    return ast.arguments(
+        posonlyargs=[], args=[], vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None, defaults=[]
+    )
+
+
+def _roster_groups(tree: ast.Module) -> dict:
+    """Every ALL-CAPS tuple in the type roster; derived ones are evaluated over known names."""
+    values: dict = {}
+    allowed = {
+        "__builtins__": {k: getattr(builtins, k) for k in ("set", "tuple", "len", "frozenset")}
+    }
+    for node in tree.body:
+        if not isinstance(node, ast.Assign):
+            continue
+        target = node.targets[0]
+        if not isinstance(target, ast.Name) or not target.id.isupper():
+            continue
+        try:
+            values[target.id] = ast.literal_eval(node.value)
+            continue
+        except ValueError:
+            pass
+        # A comprehension binds its own variable; every other loaded name must be defined above.
+        bound = {
+            n.id
+            for c in ast.walk(node.value)
+            if isinstance(c, ast.comprehension)
+            for n in ast.walk(c.target)
+            if isinstance(n, ast.Name)
+        }
+        loaded = {
+            n.id
+            for n in ast.walk(node.value)
+            if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load)
+        } - bound
+        if not (loaded - {"tuple", "set", "len", "frozenset"}) <= set(values):
+            continue
+        # The roster is a closed, trusted file in this repository: evaluate its own expression
+        # with only the names defined above, wrapped in a lambda so a generator literal runs.
+        expression = ast.Expression(ast.Lambda(_no_args(), node.value))
+        ast.fix_missing_locations(expression)
+        compute = eval(  # noqa: S307
+            compile(expression, "<roster>", "eval"),
+            allowed | {k: values[k] for k in loaded if k in values},
+        )
+        values[target.id] = compute()
+    return values
+
+
 def _check_draw_contract(skill: Path, root: Path, report: Report, packaged: bool = False) -> None:
     """Inspect the closed catalog without executing installed Python modules.
 
@@ -548,11 +630,7 @@ def _check_draw_contract(skill: Path, root: Path, report: Report, packaged: bool
     roster = skill / "scripts/draw_types/__init__.py"
     try:
         tree = ast.parse(roster.read_text(encoding="utf-8"))
-        groups = {
-            n.targets[0].id: ast.literal_eval(n.value)
-            for n in tree.body
-            if isinstance(n, ast.Assign) and isinstance(n.value, ast.Tuple)
-        }
+        groups = _roster_groups(tree)
         legacy = groups["LEGACY"]
         templates = groups["TEMPLATES"]
         new = groups["GRAPHS"] + groups["HIERARCHIES"] + groups["CHARTS"] + groups["OTHER"]
@@ -560,10 +638,10 @@ def _check_draw_contract(skill: Path, root: Path, report: Report, packaged: bool
         core, extended = groups["CORE"], groups["EXTENDED"]
         assert len(types) == len(set(types)) == 45
         assert len(legacy + new) == 41 and len(templates) == 4
-        assert len(core) == 10 and len(extended) == 10
-        assert set(core + extended) <= set(types) and not set(core) & set(extended)
+        assert len(core) == 10
+        assert set(extended) == set(types) - set(core)
     except (OSError, SyntaxError, ValueError, KeyError, AssertionError) as exc:
-        report.add(roster, 1, "V120", f"invalid type catalog: {exc}")
+        report.add(roster, 1, "V120", f"invalid type catalog: {exc!s}")
         return
     theme_path = skill / "assets/theme.css"
     try:
@@ -582,25 +660,45 @@ def _check_draw_contract(skill: Path, root: Path, report: Report, packaged: bool
         )
 
     for kind in types:
+        # Core types ship in every build. Every other type ships in extras/, the parked set a
+        # core package extends from; a full install may also keep its own copy in the skill,
+        # and the extras/ copy is the one the contract checks when the skill has none.
         shipped = kind in core or kind in extended
+        parked = files(kind, extras)
+        own = files(kind, skill)
         if not shipped:
-            if packaged:
+            for path in [p for p in parked[:2] if not p.is_file()]:
+                report.add(path, 1, "V130", f"extras type '{kind}' is missing from extras/")
+            if any(not p.is_file() for p in parked[:2]):
                 continue
-            for path in files(kind, skill):
+            for path in own:
                 if path.exists():
-                    report.add(path, 1, "V129", f"extras type '{kind}' must not ship in the skill")
-            for path in files(kind, extras)[:2]:
-                if not path.is_file():
-                    report.add(path, 1, "V130", f"extras type '{kind}' is missing from extras/")
-            continue
-        reference, asset, module = files(kind, skill)
+                    report.add(path, 1, "V129", f"type '{kind}' ships in the skill and extras/")
+            reference, asset, module = parked
+        else:
+            if packaged and not own[0].is_file() and not parked[0].is_file():
+                report.add(parked[0], 1, "V130", f"type '{kind}' is missing from every copy")
+                continue
+            if packaged and not own[0].is_file():
+                continue
+            reference, asset, module = own
+            # A core type must not also be parked in extras/: every build reads it from the
+            # skill. A parked type may keep a copy in both places; the extras/ one is checked.
+            if kind in core and any(p.exists() for p in parked):
+                for path in parked:
+                    if path.exists():
+                        report.add(path, 1, "V129", f"core type '{kind}' also exists in extras/")
+            if not reference.is_file() and parked[0].is_file():
+                reference, asset, module = parked
         if kind in extended and packaged and not reference.exists():
             continue
         if not reference.is_file():
             report.add(reference, 1, "V122", "missing type reference")
-        if not asset.is_file():
+        # A template type draws in the shared template shell; only its module is new.
+        uses_template = not asset.name.startswith(f"{kind}.html")
+        if not asset.is_file() and not uses_template:
             report.add(asset, 1, "V123", "missing drawing shell/template")
-        else:
+        elif asset.is_file():
             content = asset.read_text(encoding="utf-8")
             if theme not in content:
                 report.add(asset, 1, "V124", "embedded theme differs from assets/theme.css")
@@ -609,7 +707,7 @@ def _check_draw_contract(skill: Path, root: Path, report: Report, packaged: bool
             for marker in ('role="img"', "aria-labelledby=", "<title", "<desc"):
                 if marker not in content:
                     report.add(asset, 1, "V126", f"missing SVG accessibility marker {marker}")
-        if kind in new and not module.is_file():
+        if kind in new and kind not in legacy and not module.is_file():
             report.add(module, 1, "V127", "missing structured type module")
     for path in (skill / "assets").glob("*"):
         if path.suffix in {".html", ".css", ".svg"}:

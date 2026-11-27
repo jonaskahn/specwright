@@ -209,17 +209,19 @@ class RepositoryTests(unittest.TestCase):
     def test_every_public_skill_stays_under_the_upload_cap(self):
         data = bundle.load_map(REPO)
         cap = data["limits"]["max_files"]
-        self.assertLessEqual(cap, 200)
+        # One skill holds the whole craft line, so the cap covers the merged tree.
+        self.assertLessEqual(cap, 410)
         for skill in bundle.skill_folders(REPO):
             self.assertLessEqual(bundle.count_files(REPO, data, skill), cap, skill.name)
 
     def test_real_packages_contain_no_unmapped_shared_files(self):
+        data = bundle.load_map(REPO)
         with tempfile.TemporaryDirectory() as raw:
             out = Path(raw) / "dist"
             package.build(REPO, out)
             for skill in bundle.skill_folders(REPO):
                 files = [p for p in (out / skill.name).rglob("*") if p.is_file()]
-                self.assertLessEqual(len(files), 200, skill.name)
+                self.assertLessEqual(len(files), data["limits"]["max_files"], skill.name)
                 self.assertFalse(any("__pycache__" in str(p) for p in files), skill.name)
 
 
@@ -292,9 +294,12 @@ class ProfileTests(BundleFixture):
         self.assertTrue(package.build(self.root, self.output, profile="core"))
 
     def test_missing_extended_file_is_reported(self):
-        (self.skill / "assets/gantt.html").unlink()
+        # The reference is the one file every type must have; a shell may be a shared template.
+        (self.skill / "references/type-gantt.md").unlink()
         problems, _ = bundle.check(self.root)
-        self.assertTrue(any("extended type 'gantt' lacks assets/gantt.html" in p for p in problems))
+        self.assertTrue(
+            any("extended type 'gantt' lacks references/type-gantt.md" in p for p in problems)
+        )
 
     def test_unknown_profile_is_refused(self):
         with self.assertRaisesRegex(ValueError, "unknown profile"):

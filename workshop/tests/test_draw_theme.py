@@ -4,7 +4,7 @@ import re
 import unittest
 from pathlib import Path
 
-CSS = Path(__file__).resolve().parents[2] / "skills/sw-spec/assets/theme.css"
+CSS = Path(__file__).resolve().parents[2] / "skills/sw-craft/assets/theme.css"
 
 
 def luminance(color):

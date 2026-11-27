@@ -26,17 +26,19 @@ A rough idea goes in. A story, a plan, and a task list come out. Product, engine
 - Work is saved in files, so the next chat can pick up where this one stopped.
 - IDs stay put. A withdrawn ID becomes a tombstone and is never reused.
 
+Two roles, five skills. The BA turns an idea into accepted stories and tasks; the Dev turns
+those into a very detailed plan. One person may play both — then one confirm switches over.
+
 | You ask for | Skill | You get |
 | --- | --- | --- |
 | Start or resume | `sw-start` | A board for one item, and a guarded next step |
-| Analyse what exists | `sw-analyze` | A gap table of what a feature should do against what code and tests do today, with `CODE:` citations |
-| Ingest evidence | `sw-ingest` | A frozen snapshot, plus quoted impacts. The story stays as it is |
-| Shape | `sw-shape` | A problem-led brief, an accepted split, and reserved features |
-| Specify | `sw-spec` | Requirements and acceptance criteria you can observe. Diagrams when they help |
-| Review | `sw-review` | Your plain-words accept, bound to a content hash; formal sign-off when you require it |
-| Plan | `sw-plan` | An approach, layered tasks bound to the locked tech stack, and one ready prompt per task for an implementing agent |
-| Publish | `sw-publish` | A delivery you asked for, including a guarded Jira write |
+| Craft (the BA line) | `sw-craft` | Sources as frozen snapshots; a gap table of what a feature should do against what code and tests do today, with `CODE:` citations; a problem-led brief, an accepted INVEST split and reserved features; requirements and acceptance criteria you can observe, with diagrams; the task breakdown; then your plain-words accept, bound to a content hash (formal sign-off when you require it) |
+| Forge (the Dev plan) | `sw-forge` | A very detailed plan: exact files per task, the change itself, the test that proves it and the command that runs it; one ready prompt per task; and real task status (`planned`, `in-progress`, `done` with evidence, `blocked`) |
+| Ship (optional) | `sw-ship` | A delivery you asked for: epic, story or tasks to Jira, behind a scope question, a dry-run and a fresh yes |
 | View | `sw-view` | A local, read-only web console: overview, metrics, features, tasks, a kanban board, and the knowledge graph (trace, network, table, outline) with queries |
+
+Craft ends at the finalize and says "Say **forge** to plan FEAT-001". It never crosses into the
+Dev role on its own; the code is written elsewhere, from the prompts forge generates.
 
 ### See it
 
@@ -48,7 +50,7 @@ A rough idea goes in. A story, a plan, and a task list come out. Product, engine
   <img src="docs/assets/graph.webp" alt="The Specwright console on the Graph page: an outline on the left, coverage measures on top, and the trace from business objective to epic, feature, acceptance criteria and tasks, with the chosen feature open and the others folded" width="920" />
 </p>
 
-**The story, with its picture.** Choose any item and its file opens in a panel on the right: the story with the criterion lines marked, and the flow diagram that `sw-spec` drew, embedded in the story as an SVG.
+**The story, with its picture.** Choose any item and its file opens in a panel on the right: the story with the criterion lines marked, and the flow diagram that `sw-craft` drew, embedded in the story as an SVG.
 
 <p align="center">
   <img src="docs/assets/feature.webp" alt="The Features page with a preview panel open on a draft story, showing its Visuals list and an embedded swimlane diagram of the invite, activate and remind flow" width="920" />
@@ -83,7 +85,7 @@ It detects the target kind, refuses a folder that is not Specwright, and never d
 ### Command-line installer
 
 > [!TIP]
-> The easy door. All nine skills, for the agents you pick. All projects is the default.
+> The easy door. All five skills, for the agents you pick. All projects is the default.
 
 All projects:
 
@@ -130,7 +132,7 @@ Windows, named agents, no questions:
 ### Skills CLI
 
 > [!NOTE]
-> Same nine skills, through `npx`. Node comes along for the ride.
+> Same five skills, through `npx`. Node comes along for the ride.
 
 All projects:
 
@@ -225,7 +227,7 @@ Install the kit at any point in a project's life. The kit adapts to what it find
 
 - **Code inside or beside the docs.** It detects the repository it sits in and neighbouring repos with build files (`../shop-api`, `../shop-web`), and registers them after one yes. No code is fine too.
 - **Light inventory.** Endpoints, screens, entities, tests and doc headings, grouped into candidate features: names and pointers only, cheap on any repo size.
-- **Gap table per feature.** `sw-analyze` compares what a feature should do (docs, Jira, another system, the owner) with what code and tests do today, criterion by criterion: done, partial, missing, divergent or unknown, each with a `CODE:` citation that goes stale when the code changes. Code and documents weigh the same; disagreements become questions.
+- **Gap table per feature.** `sw-craft` compares what a feature should do (docs, Jira, another system, the owner) with what code and tests do today, criterion by criterion: done, partial, missing, divergent or unknown, each with a `CODE:` citation that goes stale when the code changes. Code and documents weigh the same; disagreements become questions.
 - **The shape decides the next step.** Nothing built → a new story. All done → the feature's version 1. Some gaps → version 1 plus a completion change. Code wrong → a fix.
 
 ### Changes, fixes and finalize
@@ -245,7 +247,7 @@ After the stack step, a new project gets one story before any feature: project s
 
 - `sw-start` reads your build files (Maven, Gradle, npm, Python, Go, Flutter, .NET, compose, Terraform) and proposes a stack profile. You lock it once; the lock is bound to the profile's hash.
 - Stories stay technology-free. Every code task carries a `Stack:` line, and a task that names a technology outside the lock stops the run.
-- `sw-plan` writes `03-plan/prompts/FEAT-NNN/TASK-…md`: goal, Done when, the criteria word for word, the rules, the stack line, inputs, the test command and when to stop. Hand them to Claude Code or another agent, one task per session.
+- `sw-forge` writes `03-plan/prompts/FEAT-NNN/TASK-…md`: goal, Done when, the criteria word for word, the rules, the task's own plan section, the stack line, inputs, the test command and when to stop. Hand them to Claude Code or another agent, one task per session.
 - Artifacts are written for agents: concrete values, no hedges, no filler. A style check flags the rest.
 
 ### Back from files, not from memory
@@ -266,9 +268,9 @@ The board is rebuilt from saved files: station, condition, blockers, and what yo
 > Traceable changes. Explicit reviews. Deliberate publishing.
 
 - **Published text wins.** Jira is the authority after publication. Local work uses frozen snapshots.
-- **One skill may publish.** `sw-publish` is the only writer to Jira or Confluence. It wants an accepted story, a quality gate, a three-way dry-run, and a fresh yes for that exact plan. A plan is not needed, and Jira is used only when configured or asked for.
+- **One skill may publish.** `sw-ship` is the only writer to Jira or Confluence. It wants an accepted story, a quality gate, a three-way dry-run, and a fresh yes for that exact plan. A plan is not needed, and Jira is used only when configured or asked for.
 - **Every command ends with a git checkpoint.** The spec files a command changed are committed (`<skill>: <what changed>`, no trailer) and, when the repository has a remote, pushed: never forced, never past a failing hook, never touching your other work. Set `checkpoint: commit` or `off` in `project.yaml` (or `workspace.yaml`) to stop pushing or committing. See `skills/_shared/references/checkpoint.md`.
-- **Approval is bound to the content.** `sw-review` records it: your plain accept with the matching hash, or with `signoff: required` a named role, the item, a URL, and a matching hash. Old evidence cannot revive an invalidated approval. See `skills/_shared/references/governance.md`.
+- **Approval is bound to the content.** `sw-craft` records it: your plain accept with the matching hash, or with `signoff: required` a named role, the item, a URL, and a matching hash. Old evidence cannot revive an invalidated approval. See `skills/_shared/references/governance.md`.
 - **Named items move alone.** "Resume FEAT-004" moves only FEAT-004; "continue" moves the whole scope, station by station. Draft questions stay in spec. Asking about published content does not start a sync.
 - **Imports are data.** Documents, issue text, and web pages are not instructions.
 - **Lint before hand-off.** Do not weaken a rule to make a check pass.

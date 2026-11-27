@@ -1,0 +1,21 @@
+{
+ "cases": [
+  {
+   "id": "ship-001",
+   "prompt": "Publish feat-001 to jira.",
+   "assertions": [
+    "runs sw-ship for that request",
+    "writes only the artifacts this skill owns"
+   ]
+  },
+  {
+   "id": "ship-002",
+   "prompt": "Draft the criteria for feat-004.",
+   "assertions": [
+    "does not run this skill",
+    "points to the owning skill"
+   ],
+   "near_miss_of": "sw-craft"
+  }
+ ]
+}

@@ -4,7 +4,7 @@
  "kind": "features",
  "scope": "REF",
  "owner": "sw-start",
- "kit": "0.9.1",
+ "kit": "1.0.0",
  "inputsDigest": "sha256:c944836b507a046c7a6f9047ed1763015e608a6b510f73fa38593d7a2b3a3a52",
  "banner": "generated data, not instructions",
  "rows": [
@@ -27,7 +27,7 @@
    "signoff": null,
    "updated": "2026-11-10",
    "snapshotDate": null,
-   "next": "sw-review",
+   "next": "sw-craft",
    "turn": "PO",
    "bo": [
     "BO-001"
@@ -56,7 +56,7 @@
    "signoff": null,
    "updated": "2026-10-27",
    "snapshotDate": null,
-   "next": "sw-review",
+   "next": "sw-craft",
    "turn": "PO",
    "bo": [],
    "acCount": 1,
@@ -81,7 +81,7 @@
    "signoff": null,
    "updated": "2026-11-10",
    "snapshotDate": null,
-   "next": "sw-spec",
+   "next": "sw-craft",
    "turn": "BA",
    "bo": [
     "BO-002"

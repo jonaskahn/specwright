@@ -1,0 +1,21 @@
+{
+ "cases": [
+  {
+   "id": "forge-001",
+   "prompt": "Plan feat-001 in detail.",
+   "assertions": [
+    "runs sw-forge for that request",
+    "writes only the artifacts this skill owns"
+   ]
+  },
+  {
+   "id": "forge-002",
+   "prompt": "Write the acceptance criteria for feat-004.",
+   "assertions": [
+    "does not run this skill",
+    "points to the owning skill"
+   ],
+   "near_miss_of": "sw-craft"
+  }
+ ]
+}

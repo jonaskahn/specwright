@@ -112,11 +112,11 @@ export function resolutionWords(res: string | null): string {
 }
 
 const STATIONS: Record<string, string> = {
-  shape: 'Shape',
-  spec: 'Specification',
-  review: 'Review',
-  plan: 'Plan',
-  publish: 'Publish',
+  shape: 'Shape (craft)',
+  spec: 'Specification (craft)',
+  review: 'Review (craft)',
+  plan: 'Plan (forge)',
+  publish: 'Publish (ship)',
   dev: 'Development',
   inactive: 'Inactive',
 };

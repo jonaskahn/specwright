@@ -464,7 +464,7 @@ class CommandTests(unittest.TestCase):
         (self.docs / "_meta/data/tasks.json").unlink()
         done = self.view("doctor", "--format", "json")
         self.assertEqual(done.returncode, 4, done.stderr)
-        self.assertTrue(any("sw-plan owns it" in line for line in json.loads(done.stdout)["data"]))
+        self.assertTrue(any("sw-forge owns it" in line for line in json.loads(done.stdout)["data"]))
 
     def test_doctor_flags_a_tracked_generated_folder(self):
         self.node_present()

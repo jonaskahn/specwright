@@ -10,7 +10,7 @@ from kitlib import epics, frontmatter
 
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
-    "new_epic", ROOT / "skills/sw-shape/scripts/new_epic.py"
+    "new_epic", ROOT / "skills/sw-craft/scripts/new_epic.py"
 )
 new_epic = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = new_epic

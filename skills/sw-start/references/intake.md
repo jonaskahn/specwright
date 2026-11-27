@@ -4,7 +4,7 @@
 `start.py` returns `intake`: at most three questions with options and a default, prefilled
 from what it detected. Ask them in one message. Never ask what the scan answered.
 
-1. Starting point: idea / documents / register or Jira → routes to sw-shape, sw-ingest, or the
+1. Starting point: idea / documents / register or Jira → routes to sw-craft, sw-craft, or the
    existing-baseline flow.
 2. How far: spec / review / plan → pass as `--until spec|review|plan` to every `finish.py` call
    of this run. Default: plan (stories, accepts, tasks, agent prompts).

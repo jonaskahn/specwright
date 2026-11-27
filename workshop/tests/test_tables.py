@@ -6,7 +6,7 @@ TEXT = """# RTM
 
 Intro text.
 
-| Spec ID | BO [sw-spec] | Jira [sw-publish] |
+| Spec ID | BO [sw-craft] | Jira [sw-ship] |
 |---|---|---|
 | REF:FEAT-001 | BO-001 | PROJ-14 |
 | REF:FEAT-002 | BO-002 |
@@ -29,13 +29,13 @@ class TableTests(unittest.TestCase):
 
     def test_upsert_sets_only_named_cells(self):
         table = tables.parse(TEXT).table
-        self.assertFalse(table.upsert("REF:FEAT-001", {"Jira [sw-publish]": "PROJ-15"}))
-        self.assertEqual(table.get("REF:FEAT-001", "BO [sw-spec]"), "BO-001")
-        self.assertEqual(table.get("REF:FEAT-001", "Jira [sw-publish]"), "PROJ-15")
+        self.assertFalse(table.upsert("REF:FEAT-001", {"Jira [sw-ship]": "PROJ-15"}))
+        self.assertEqual(table.get("REF:FEAT-001", "BO [sw-craft]"), "BO-001")
+        self.assertEqual(table.get("REF:FEAT-001", "Jira [sw-ship]"), "PROJ-15")
 
     def test_upsert_creates_missing_rows_with_placeholders(self):
         table = tables.parse(TEXT).table
-        self.assertTrue(table.upsert("REF:FEAT-003", {"BO [sw-spec]": "BO-003"}))
+        self.assertTrue(table.upsert("REF:FEAT-003", {"BO [sw-craft]": "BO-003"}))
         self.assertEqual(table.find("REF:FEAT-003"), ["REF:FEAT-003", "BO-003", tables.EMPTY])
 
     def test_pipes_in_cells_are_escaped(self):

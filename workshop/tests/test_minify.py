@@ -8,8 +8,15 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 TOOLS = REPO / "workshop/tools"
-ASSETS = REPO / "skills/sw-spec/assets"
-PAGES = sorted(ASSETS.glob("*.html")) + sorted((REPO / "extras/sw-spec/assets").glob("*.html"))
+ASSETS = REPO / "skills/sw-craft/assets"
+# One page per type: the skill's own copy when it ships one, the parked copy otherwise.
+PAGES = sorted(
+    {
+        p.name: p
+        for p in [*ASSETS.glob("*.html"), *(REPO / "extras/sw-craft/assets").glob("*.html")]
+    }.values(),
+    key=lambda p: p.name,
+)
 sys.path.insert(0, str(TOOLS))
 sys.path.insert(0, str(REPO / "skills/_shared/scripts"))
 
@@ -160,7 +167,7 @@ class PackagingTests(unittest.TestCase):
             out = Path(raw) / "dist"
             package.build(REPO, out)
             for source, content in before.items():
-                shipped = out / "sw-spec/assets" / source.name
+                shipped = out / "sw-craft/assets" / source.name
                 self.assertLess(shipped.stat().st_size, len(content), source.name)
         self.assertEqual({p: p.read_bytes() for p in ASSETS.glob("*.html")}, before)
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 SKILL_PREFIX = "sw-"
 KIT_NAME = "specwright"
 # Mirrors pyproject.toml (tools/validate.py checks it) so a running skill can name its version.
-KIT_VERSION = "0.9.1"
+KIT_VERSION = "1.0.0"
 
 STORY_SECTIONS = [
     "Goal",
@@ -31,6 +31,8 @@ STATUSES = {
         "ready-to-publish",
         "published",
         "ready-for-dev",
+        "in-development",
+        "done",
         "superseded",
         "withdrawn",
     ],
@@ -44,7 +46,7 @@ STATUSES = {
     "dec": ["accepted", "superseded"],
     "idea": ["draft", "accepted", "withdrawn"],
     "epic": ["draft", "approved", "superseded", "withdrawn"],
-    "task": ["draft", "ready", "withdrawn"],
+    "task": ["not-started", "planned", "in-progress", "done", "blocked", "withdrawn"],
     "bo": _CARD_STATUSES,
     "br": _CARD_STATUSES,
     "fr": _CARD_STATUSES,
@@ -77,14 +79,14 @@ DEFAULT_STATUS_MAP = {
 # writes only the one column assigned to it.
 RTM_ID_COLUMN = "Spec ID"
 RTM_COLUMNS = [
-    ("BO", "sw-spec"),
-    ("BR/NFR", "sw-spec"),
-    ("Story draft", "sw-spec"),
-    ("Jira", "sw-publish"),
-    ("Jira status", "sw-publish"),
-    ("Sign-off", "sw-review"),
-    ("Drift", "sw-publish"),
-    ("Test ref", "qa"),
+    ("BO", "sw-craft"),
+    ("BR/NFR", "sw-craft"),
+    ("Story draft", "sw-craft"),
+    ("Jira", "sw-ship"),
+    ("Jira status", "sw-ship"),
+    ("Sign-off", "sw-craft"),
+    ("Drift", "sw-ship"),
+    ("Test ref", "sw-forge"),
 ]
 
 # Delivery layers a task may carry as a title prefix: `### TASK-001-1 — [backend] Title`.

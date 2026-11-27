@@ -1,7 +1,7 @@
 """Load workshop/tools/draw_shells.py once so drawing tests render against the merged full tree.
 
 The shipped skill carries only the core and extended diagram types; the rest live under
-``extras/sw-spec``. ``draw_shells`` lays the two over each other in a temporary directory so
+``extras/sw-craft``. ``draw_shells`` lays the two over each other in a temporary directory so
 the whole closed roster stays rendered, checked and tested.
 """
 

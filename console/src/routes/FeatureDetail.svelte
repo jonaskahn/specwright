@@ -29,6 +29,7 @@
     { id: 'task', label: 'Task', value: (t) => t.id, sortable: true },
     { id: 'layer', label: 'Layer', value: (t) => t.layer, sortable: true, facet: true },
     { id: 'status', label: 'Status', value: (t) => t.status, facet: true },
+    { id: 'progress', label: 'Progress', value: (t) => t.progress, facet: true },
   ];
   const recordCols: Col<Rec>[] = [
     { id: 'record', label: 'Record', value: (r) => r.id, sortable: true },
@@ -95,10 +96,10 @@
       <section class="span-6">
         <div class="sec-h"><h2>Tasks</h2><span class="sub">{tasks.length}</span></div>
         {#if tasks.length}
-          <DataTable id="ftasks" rows={tasks} cols={taskCols} rowKey={(t) => t.id} title={(t) => shortKey(t.id)} sub={(t) => t.title} template="minmax(0,1fr) 6rem 7rem" keep onrow={(t) => preview.openKey(t.id)}>
-            {#snippet cells(t)}<span>{#if t.layer}<span class="chip">{t.layer}</span>{/if}</span><Pill look={wordLook(t.status)} />{/snippet}
+          <DataTable id="ftasks" rows={tasks} cols={taskCols} rowKey={(t) => t.id} title={(t) => shortKey(t.id)} sub={(t) => t.title} template="minmax(0,1fr) 6rem 7rem 7rem" keep onrow={(t) => preview.openKey(t.id)}>
+            {#snippet cells(t)}<span>{#if t.layer}<span class="chip">{t.layer}</span>{/if}</span><Pill look={wordLook(t.status)} /><Pill look={wordLook(t.progress)} />{/snippet}
           </DataTable>
-        {:else}<div class="empty"><p class="muted">No tasks yet. sw-plan owns tasks.</p></div>{/if}
+        {:else}<div class="empty"><p class="muted">No tasks yet. sw-craft writes tasks; sw-forge plans them.</p></div>{/if}
       </section>
     </div>
 

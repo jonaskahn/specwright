@@ -2,7 +2,7 @@
 
 The profile lives in ``stack.yaml`` beside a project's ``project.yaml``; a program may keep one
 at its root, inherited by every project (a project layer replaces the program layer of the same
-name). Stories never name technology (sw-shape's leakage rule); the stack binds plans, tasks
+name). Stories never name technology (sw-craft's leakage rule); the stack binds plans, tasks
 and the prompts given to implementing agents.
 
 A locked profile carries ``locked.hash``, the hash of its content. Locking needs that hash back

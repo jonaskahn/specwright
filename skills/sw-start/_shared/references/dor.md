@@ -13,7 +13,7 @@ Before requesting review, check:
 - Open questions are resolved for readiness, with decisions and evidence retained.
 - Dev and QA checks say yes per AC, with an explanation, or the draft stays blocked.
 - The card fits its limits and does not carry a second copy of acceptance criteria.
-- Review lint passes. Approval is later recorded only through sw-review: the owner's accept
+- Review lint passes. Approval is later recorded only through sw-craft: the owner's accept
   (`signoff: optional`) or, under `signoff: required`, a sign-off with role, name, date,
   evidence URL and the exact approved draft hash.
 

@@ -47,12 +47,9 @@ CONTROL = re.compile(r"[\x00-\x08\x0b-\x1f\x7f]")
 
 ALL_SKILLS = (
     "sw-start",
-    "sw-shape",
-    "sw-ingest",
-    "sw-spec",
-    "sw-plan",
-    "sw-review",
-    "sw-publish",
+    "sw-craft",
+    "sw-forge",
+    "sw-ship",
 )
 
 
@@ -163,8 +160,8 @@ KINDS: dict[str, Kind] = {
         ),
         Kind(
             "tasks",
-            "sw-plan",
-            ("sw-plan",),
+            "sw-forge",
+            ("sw-forge",),
             {
                 "rows": {
                     "id": "str",
@@ -172,6 +169,8 @@ KINDS: dict[str, Kind] = {
                     "scope": "str",
                     "title": "str",
                     "status": _enum(("active", "withdrawn")),
+                    "progress": _enum(("not-started", "planned", "in-progress", "done", "blocked")),
+                    "evidence": "str?",
                     "traces": "[str]",
                     "layer": "str?",
                     "touches": "str?",
@@ -183,8 +182,8 @@ KINDS: dict[str, Kind] = {
         ),
         Kind(
             "records",
-            "sw-shape",
-            ("sw-shape", "sw-spec", "sw-review"),
+            "sw-craft",
+            ("sw-craft",),
             {
                 "rows": {
                     "id": "str",
@@ -201,8 +200,8 @@ KINDS: dict[str, Kind] = {
         ),
         Kind(
             "sources",
-            "sw-ingest",
-            ("sw-ingest",),
+            "sw-craft",
+            ("sw-craft",),
             {
                 "rows": {
                     "id": "str",
@@ -217,8 +216,8 @@ KINDS: dict[str, Kind] = {
         ),
         Kind(
             "registry",
-            "sw-spec",
-            ("sw-spec", "sw-publish"),
+            "sw-craft",
+            ("sw-craft", "sw-ship"),
             {
                 "rows": {
                     "id": "str",
@@ -237,8 +236,8 @@ KINDS: dict[str, Kind] = {
         ),
         Kind(
             "quality",
-            "sw-review",
-            ("sw-review", "sw-publish"),
+            "sw-craft",
+            ("sw-craft", "sw-ship"),
             {
                 "results": {"scope": "str", "id": "str", "result": "str?"},
                 "findings": {
@@ -255,8 +254,8 @@ KINDS: dict[str, Kind] = {
         ),
         Kind(
             "rtm",
-            "sw-plan",
-            ("sw-plan", "sw-publish"),
+            "sw-forge",
+            ("sw-forge", "sw-ship"),
             {
                 "rows": {
                     "id": "str",

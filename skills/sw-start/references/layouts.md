@@ -15,11 +15,11 @@ folders is read as evidence; `graph build` and the quality gate report any other
 
 | Folder | Holds | Owner |
 | --- | --- | --- |
-| `00-inbox/` | `SRC-NNNN--slug.md` snapshots (immutable), `raw/` original bytes, `imports/<batch>/manifest.json` per import batch | sw-ingest |
-| `01-analysis/` | `ideas/`, `epics/`, `candidates/` (worker files and `assignment.tsv`), `baseline/` (the legacy register) | sw-shape, sw-ingest |
-| `02-drafts/` | story drafts and cards | sw-spec |
-| `03-plan/` | plans and tasks | sw-plan |
-| `records/` | questions, decisions, change requests, amendments | `record.py`, sw-ingest, sw-shape |
+| `00-inbox/` | `SRC-NNNN--slug.md` snapshots (immutable), `raw/` original bytes, `imports/<batch>/manifest.json` per import batch | sw-craft |
+| `01-analysis/` | `ideas/`, `epics/`, `candidates/` (worker files and `assignment.tsv`), `baseline/` (the legacy register) | sw-craft, sw-craft |
+| `02-drafts/` | story drafts and cards | sw-craft |
+| `03-plan/` | plans and tasks | sw-forge |
+| `records/` | questions, decisions, change requests, amendments | `record.py`, sw-craft, sw-craft |
 | `diagrams/`, `assets/`, `snapshots/` | diagrams, user assets, remote snapshots | their capabilities |
 | `_meta/` | registry, RTM, write log, generated index and graph; `work/` is ephemeral, ignored by version control and the graph | shared scripts |
 

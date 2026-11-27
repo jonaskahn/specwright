@@ -29,7 +29,7 @@ anything else; every other step needs it.
    `action` as the one next step. For a named item run start.py --item <key> --pack and
    read the listed files in order, with the blocking questions first. When several items
    are active, show `ranking` (top three with reasons) as advice and let the user choose.
-   When the route is `batch sw-spec`, `batch sw-review` or `batch sw-plan` (two or more items of the scope, all
+   When the route is `batch sw-craft`, `batch sw-craft` or `batch sw-forge` (two or more items of the scope, all
    in that station), take all of them in parallel (the default; the user may name one); the routed skill fans
    out per _shared/references/parallel-writers.md. "continue", "next", "go on" or "resume" with no item, and
    items spread over several stations, follow `handoff` instead of a choice: under `flow: auto` start
@@ -42,7 +42,7 @@ anything else; every other step needs it.
    add) only when `signoff` is `required` and `setup` is not empty. Never ask what the
    script answered. Never infer approval, scope or a publish destination.
 6. Delivery is Markdown; no destination question. On "push" or "publish": Jira configured
-   -> sw-publish; not configured -> report that Markdown is delivered and offer
+   -> sw-ship; not configured -> report that Markdown is delivered and offer
    `scripts/workspace.py jira set --site <url> --project-key <KEY>`. A stored value never authorizes a Jira write.
 7. Runtimes: use the step 0 output (`runtime` in the start.py JSON agrees). Python is required:
    if it is missing, show `runtime.sh plan python` and ask once; after a yes run
@@ -67,7 +67,7 @@ questions at routing time). Never choose a program default for a write.
 ## Gotchas
 
 - Detection is read-only; writing starts in the routed skill.
-- A route is not approval; only sw-review records approval.
+- A route is not approval; only sw-craft records approval.
 - STORY and FEAT are the same item. Write FEAT; say STORY only when echoing the user.
 - A stored output default of jira is neither a publish request nor confirmation.
 - In a code repository, never write outside `.specwright/` unless asked.

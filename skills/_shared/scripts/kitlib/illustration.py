@@ -1,7 +1,7 @@
 """Decide whether a feature needs a picture, from the story text and diagram citations.
 
 The counter is deterministic: it never calls a model and never invents an actor, a state or an
-ID. The word lists are the ones the sw-spec illustration note publishes, so the two stay aligned.
+ID. The word lists are the ones the sw-craft illustration note publishes, so the two stay aligned.
 A dismissal lives in front matter, which the draft hash ignores, so recording one does not
 touch approval. Diagram paths are not stored; citations come from a fresh graph's illustrates
 edges, or from diagrams/*.json through the same spec-id walk the graph uses.

@@ -17,7 +17,7 @@ class GraphModelTests(WorkflowTestCase):
             "# Refunds\n",
         )
         rtm.registry_upsert(
-            self.base / "_meta/id-registry.md", "REF:FEAT-002", {"Kind": "story"}, "sw-spec"
+            self.base / "_meta/id-registry.md", "REF:FEAT-002", {"Kind": "story"}, "sw-craft"
         )
         fm = {
             "id": "DEC-001",

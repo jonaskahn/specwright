@@ -31,7 +31,7 @@ class RecordTests(WorkflowTestCase):
     def setUp(self):
         super().setUp()
         (self.base / "00-inbox/SRC-0001.md").write_text(SNAPSHOT)
-        self.ctx = recordops.Ctx(self.root, "REF", "sw-shape", today="2026-11-12")
+        self.ctx = recordops.Ctx(self.root, "REF", "sw-craft", today="2026-11-12")
 
     def edit_manifest(self, change):
         path = self.base / "project.yaml"
@@ -258,9 +258,9 @@ class RecordTests(WorkflowTestCase):
             recordops.accept_split(self.ctx, ["A"], [], ["EPIC-009"], "", who)
 
     def test_register_follows_column_ownership(self):
-        ok = self.cli("register", "FEAT-001", "--set", "Jira key=PROJ-9", "--as", "sw-publish")
+        ok = self.cli("register", "FEAT-001", "--set", "Jira key=PROJ-9", "--as", "sw-ship")
         self.assertEqual(ok.returncode, 0, ok.stderr)
-        denied = self.cli("register", "FEAT-001", "--set", "Jira key=PROJ-8", "--as", "sw-shape")
+        denied = self.cli("register", "FEAT-001", "--set", "Jira key=PROJ-8", "--as", "sw-craft")
         self.assertEqual(denied.returncode, 4)
         unknown = self.cli("register", "FEAT-001", "--set", "Colour=red")
         self.assertEqual(unknown.returncode, 2)

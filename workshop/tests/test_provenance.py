@@ -11,7 +11,7 @@ from kitlib import frontmatter, graph, graph_query, ids, provenance, writelog
 from tests.test_workflow import WorkflowTestCase
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS = ROOT / "skills/sw-ingest/scripts"
+SCRIPTS = ROOT / "skills/sw-craft/scripts"
 sys.path.insert(0, str(SCRIPTS))
 spec = importlib.util.spec_from_file_location("ingest_for_provenance", SCRIPTS / "to_md.py")
 to_md = importlib.util.module_from_spec(spec)

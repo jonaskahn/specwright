@@ -1,0 +1,17 @@
+{"query": "publish FEAT-001 to Jira", "should_trigger": true}
+{"query": "ship the refunds epic and its story", "should_trigger": true}
+{"query": "push CR-001 to Jira", "should_trigger": true}
+{"query": "sync the Jira status of FEAT-001", "should_trigger": true}
+{"query": "publish the tasks of FEAT-001", "should_trigger": true}
+{"query": "draft the criteria for FEAT-004", "should_trigger": false}
+{"query": "plan FEAT-001 in detail", "should_trigger": false}
+{"query": "bulk edit every Jira issue in the project", "should_trigger": false}
+{"query": "review and finalize FEAT-001", "should_trigger": false}
+{"query": "create the Jira sub-tasks for FEAT-001", "should_trigger": true}
+{"query": "publish the epic for the refunds feature", "should_trigger": true}
+{"query": "what does the Jira export look like", "should_trigger": true}
+{"query": "reopen the shipped Jira issue for FEAT-001", "should_trigger": false}
+{"query": "reorder the backlog by hand", "should_trigger": false}
+{"query": "write the story for FEAT-001", "should_trigger": false}
+{"query": "plan the detailed tasks for FEAT-001", "should_trigger": false}
+{"query": "delete every issue in the project", "should_trigger": false}

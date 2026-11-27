@@ -96,18 +96,18 @@ def baseline_step(state):
         return None
     if b["register_items"] is not None:
         return (
-            "sw-shape",
+            "sw-craft",
             f"a legacy register of {b['register_items']} item(s) is imported and not yet shaped",
             "baseline.py propose-grouping, then reserve and brief for each group",
         )
     if b["snapshots"]:
         return (
-            "sw-shape",
+            "sw-craft",
             f"{b['snapshots']} snapshot(s) exist and no legacy register is imported",
             "baseline.py import-register <legacy register file> --dry-run",
         )
     return (
-        "sw-ingest",
+        "sw-craft",
         f"{b['sources_registered']} source(s) are registered and nothing is imported",
         "bulk_import.py --batch-id <id> --list-file <list> --dry-run",
     )
@@ -239,7 +239,7 @@ def graph_command(root, scope):
     return f"python3 {script} build --cwd {root} --scope {scope}"
 
 
-BATCH_STATIONS = ("spec", "review", "plan")
+BATCH_STATIONS = tuple(handoff.BATCHABLE)
 
 
 def batch_station(board):
@@ -273,41 +273,45 @@ def route(state):
         if station:
             names = ", ".join(r["id"] for r in board)
             return (
-                f"batch sw-{station}",
+                f"batch {handoff.STATION_SKILL[station]}",
                 f"{len(board)} features are all in {station}: {names}; take them together{hint}",
             )
         return ("choose item", "several active features; select a qualified item" + hint)
     if len(board) == 1:
         item = board[0]
         station = item["station"]
+        skill = handoff.STATION_SKILL.get(station, "shared status")
         return (
-            "sw-" + station if item["condition"] != "unknown" else "shared status",
+            skill if item["condition"] != "unknown" else "shared status",
             f"{item['id']} remains in {station} ({item['condition']})",
         )
     feats, ideas = state["feats"], state["ideas"]
     needs_tasks = [f for f in state["feat_ids"] if f not in state["with_tasks"]]
     if feats.get("draft"):
-        return ("sw-spec", "drafts remain in specification")
+        return ("sw-craft", "drafts remain in specification")
     if feats.get("in-review"):
-        return ("sw-review", "a feature was submitted to review")
+        return ("sw-craft", "a feature was submitted to review")
     if feats.get("ready-to-publish"):
-        return ("sw-plan", "reviewed requirements need a local implementation plan")
+        return (
+            "sw-forge",
+            "reviewed requirements have no implementation plan yet; forge plans one story",
+        )
     if (feats.get("published") or feats.get("ready-for-dev")) and needs_tasks:
-        return ("sw-plan", "approved features have no tasks file: " + ", ".join(needs_tasks))
+        return ("sw-forge", "approved features have no plan or tasks: " + ", ".join(needs_tasks))
     if ideas.get("accepted") and not feats:
-        return ("sw-spec", "an accepted idea has no feature drafts")
+        return ("sw-craft", "an accepted idea has no feature drafts")
     code = state.get("code") or {}
     if not feats and not ideas and (code.get("registered") or code.get("detected")):
         if not code.get("inventory"):
             return (
-                "sw-analyze",
+                "sw-craft",
                 "existing code and no specs: adopt it (code roots, light inventory)",
             )
-        return ("sw-analyze", "inventory exists; choose a candidate feature to analyse in depth")
+        return ("sw-craft", "inventory exists; choose a candidate feature to analyse in depth")
     if ideas.get("draft") and not feats:
-        return ("sw-shape", "an idea is still a draft")
+        return ("sw-craft", "an idea is still a draft")
     if not state["sources"] and not ideas and not feats:
-        return ("sw-ingest", "the project has no sources, ideas or features")
+        return ("sw-craft", "the project has no sources, ideas or features; import or shape one")
     return ("shared status", "no single next step is evident; read the full report")
 
 

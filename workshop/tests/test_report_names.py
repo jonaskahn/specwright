@@ -9,8 +9,8 @@ from tests import test_workflow
 from tests.test_workflow import WorkflowTestCase
 
 ROOT = Path(__file__).resolve().parents[2]
-PLAN = ROOT / "skills/sw-plan/scripts/check_tasks.py"
-PUBLISH = ROOT / "skills/sw-publish/scripts/publish.py"
+PLAN = ROOT / "skills/sw-forge/scripts/tasks.py"
+PUBLISH = ROOT / "skills/sw-ship/scripts/publish.py"
 
 
 class ReportNameTests(WorkflowTestCase):
@@ -23,7 +23,7 @@ class ReportNameTests(WorkflowTestCase):
             self.base / "_meta/id-registry.md",
             "REF:FEAT-001",
             {"Kind": "story", "Aliases": "LEG-100|refund-flow"},
-            "sw-shape",
+            "sw-craft",
         )
 
     def test_label_joins_id_name_and_aliases(self):

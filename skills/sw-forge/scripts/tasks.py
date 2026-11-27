@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+"""Check task coverage and the detailed plan; --mark-ready records coverage, never approval.
+
+Exit codes: 0 pass, 1 findings, 2 usage or unreadable data.
+"""
+
+import argparse
+import sys
+from pathlib import Path
+
+_here = Path(__file__).resolve().parent
+_source_shared = _here.parent.parent / "_shared" / "scripts"
+_local_shared = _here.parent / "_shared" / "scripts"
+_shared = _local_shared if _local_shared.is_dir() else _source_shared
+if not (_shared / "kitlib").is_dir():
+    sys.exit(
+        f"error: shared library missing at {_shared}/kitlib; "
+        "reinstall this skill from a zip that includes its _shared folder"
+    )
+if str(_shared) not in sys.path:
+    sys.path.insert(0, str(_shared))
+
+from kitlib import frontmatter, fsio, ids, task_validation, workspace  # noqa: E402
+
+APPROVED = task_validation.APPROVED
+check = task_validation.check
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--cwd", default=".")
+    parser.add_argument("--scope")
+    parser.add_argument("--feat", required=True)
+    parser.add_argument("--mark-ready", action="store_true")
+    args = parser.parse_args(argv)
+    try:
+        cwd = Path(args.cwd).resolve()
+        root = workspace.find_root(cwd)
+        if root is None:
+            raise ValueError("no workspace; run the sw-start workspace setup first")
+        feat = ids.story_alias(args.feat).split(":")[-1]
+        if not ids.matches_type("feature", feat):
+            raise ValueError(f"not a feature id: {args.feat}")
+        scope = workspace.resolve(root, args.scope, args.feat, cwd, args.mark_ready)
+        base = workspace.scope_dir(root, scope)
+        path, findings, parsed = check(base, feat)
+        print(task_validation.label(base, feat))
+        plan = (
+            task_validation.plan_findings(base, feat)
+            if (base / "03-plan" / f"{feat}.plan.md").is_file()
+            else []
+        )
+        for line in findings:
+            print(line)
+        if findings:
+            return 1
+        if args.mark_ready:
+            parsed.fm["status"] = "ready"
+            fsio.atomic_write(path, frontmatter.render(parsed.fm, parsed.body))
+            print(f"{feat}: tasks marked ready (coverage only; not human approval)")
+        else:
+            # sw-forge owns the detailed plan: an existing plan must cover every active task.
+            for line in plan:
+                print(line)
+            if plan:
+                return 1
+            print(f"{feat}: tasks cover every criterion")
+        return 0
+    except (OSError, ValueError, workspace.WorkspaceError, workspace.AskUser) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -49,20 +49,20 @@ class BaselineRoutingTests(unittest.TestCase):
 
     def test_a_project_with_nothing_still_starts_at_ingest(self):
         item = self.scope()
-        self.assertEqual(item["next"][0], "sw-ingest")
+        self.assertEqual(item["next"][0], "sw-craft")
         self.assertIn("no sources", item["next"][1])
 
     def test_each_baseline_step_names_a_concrete_action(self):
         workspace.add_source(self.root, "REF", "wiki", "confluence", "S/Home", "2026-11-01", 4)
         item = self.scope()
-        self.assertEqual(item["next"][0], "sw-ingest")
+        self.assertEqual(item["next"][0], "sw-craft")
         self.assertTrue(item["next"][1].startswith("existing baseline"))
         self.assertIn("bulk_import.py", item["action"])
         (self.root / "00-inbox/SRC-0001.md").write_text(
             frontmatter.render({"id": "SRC-0001", "type": "snapshot", "status": "raw"}, "text\n")
         )
         item = self.scope()
-        self.assertEqual(item["next"][0], "sw-shape")
+        self.assertEqual(item["next"][0], "sw-craft")
         self.assertIn("import-register", item["action"])
         register = self.root / baseline.REGISTER
         register.parent.mkdir(parents=True, exist_ok=True)
@@ -81,7 +81,7 @@ class BaselineRoutingTests(unittest.TestCase):
             )
         )
         item = self.scope()
-        self.assertEqual(item["next"][0], "sw-shape")
+        self.assertEqual(item["next"][0], "sw-craft")
         self.assertFalse(item["next"][1].startswith("existing baseline"))
 
     def test_missing_approvers_are_the_first_action(self):
@@ -174,7 +174,7 @@ class RankingAndPackTests(WorkflowTestCase):
 
     def test_several_items_in_one_station_route_to_a_batch_with_the_ranking_as_advice(self):
         item = self.item()
-        self.assertEqual(item["next"][0], "batch sw-spec")
+        self.assertEqual(item["next"][0], "batch sw-craft")
         self.assertIn("most ready: REF:FEAT-002", item["next"][1])
         for feature in ("REF:FEAT-001", "REF:FEAT-002", "REF:FEAT-003"):
             self.assertIn(feature, item["next"][1])

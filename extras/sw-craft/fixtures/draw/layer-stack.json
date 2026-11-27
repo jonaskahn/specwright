@@ -1,0 +1,43 @@
+{
+  "type": "layer-stack",
+  "title": "Refund example \u00b7 layer-stack",
+  "actors": [
+    "Customer",
+    "Reviewer"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Request",
+      "spec_ids": [
+        "BR-001"
+      ],
+      "responsibility": "Record evidence"
+    },
+    {
+      "id": "n2",
+      "label": "Policy",
+      "spec_ids": [],
+      "responsibility": "Record evidence"
+    },
+    {
+      "id": "n3",
+      "label": "Decision",
+      "spec_ids": [],
+      "responsibility": "Record evidence"
+    },
+    {
+      "id": "n4",
+      "label": "Settlement",
+      "spec_ids": [],
+      "responsibility": "Record evidence"
+    },
+    {
+      "id": "n5",
+      "label": "Notice",
+      "spec_ids": [],
+      "responsibility": "Record evidence"
+    }
+  ],
+  "edges": []
+}

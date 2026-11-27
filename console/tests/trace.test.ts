@@ -64,10 +64,10 @@ describe('the trace map lays the chain out from why to how', () => {
       'task:REF:AC-003-2',
     ]);
     const epic = model.nodes.find((n) => n.id === 'gap:epic:REF:FEAT-003')!;
-    expect([epic.title, epic.next, epic.level]).toEqual(['No epic yet', 'sw-shape', 1]);
-    expect(model.nodes.find((n) => n.id === 'gap:task:REF:AC-003-2')!.next).toBe('sw-plan');
+    expect([epic.title, epic.next, epic.level]).toEqual(['No epic yet', 'sw-craft', 1]);
+    expect(model.nodes.find((n) => n.id === 'gap:task:REF:AC-003-2')!.next).toBe('sw-forge');
     const bare = model.nodes.find((n) => n.id === 'gap:epic-bo:REF:EPIC-002')!;
-    expect([bare.title, bare.next, bare.level]).toEqual(['No business objective', 'sw-shape', 0]);
+    expect([bare.title, bare.next, bare.level]).toEqual(['No business objective', 'sw-craft', 0]);
   });
 
   it('lists a reference to something nobody defined', () => {

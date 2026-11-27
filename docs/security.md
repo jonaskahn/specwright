@@ -8,7 +8,7 @@ Before a real sandbox trial, use a project-limited service account with no delet
 permission and review the complete planned calls. Production remains a separate
 human decision after sandbox validation. Dashboard integration is not included.
 
-Only sw-publish may request writes. It must verify scope, fresh human approval,
+Only sw-ship may request writes. It must verify scope, fresh human approval,
 the current remote state, a conflict-free plan and the exact confirmation token.
 The intent log is durable before each request. An ambiguous create is never retried;
 reconcile identity and stop, including when a follow-up search returns no results.
@@ -44,7 +44,7 @@ Scan before sharing, review false negatives, and redact personal data. Do not co
 raw sensitive originals. Securely remove copies and rotate credentials if exposed.
 Environment variables used by REST must never appear in snapshots or error messages.
 
-The wiki reader (`sw-ingest` `wiki_pull.py`) is the second network seam and is read-only: GET
+The wiki reader (`sw-craft` `wiki_pull.py`) is the second network seam and is read-only: GET
 requests to one HTTPS origin, no redirects, no path outside `/wiki/`, a next link that leaves
 the origin is refused, and a page, depth or request limit is reported as an incomplete pull. Its
 credentials come from `SPECWRIGHT_WIKI_SITE`, `SPECWRIGHT_WIKI_EMAIL` and `SPECWRIGHT_WIKI_TOKEN`

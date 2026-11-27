@@ -2,7 +2,7 @@
 """Finish a station in one command: graph, lint gate, stack and style checks, task prompts,
 data export, git checkpoint, then the hand-off decision.
 
-    finish.py --skill sw-spec --subject "FEAT-004 story" [--cwd <project>] [--scope S]
+    finish.py --skill sw-craft --subject "FEAT-004 story" [--cwd <project>] [--scope S]
               [--item FEAT-004]... [--until review] [--repaired] [--no-checkpoint]
 
 Prints one JSON object. Read `handoff.mode` and act on it (handoff.md). When `lint.blocked` is
@@ -25,15 +25,25 @@ import subprocess  # noqa: E402
 
 from kitlib import workspace  # noqa: E402
 
+# One row per public skill. sw-craft runs the BA line, so it takes the union of every phase
+# gate: the narrowest gate that still lets its automatic review pass. Its `analyze` flag runs
+# the gap-table check for the items it was given, and its `status` flag saves the board.
 CONF = {
     "sw-start": {"gate": "draft", "data": ["scopes"], "status": True, "style": []},
-    "sw-ingest": {"gate": "draft", "data": ["sources"], "style": []},
-    "sw-analyze": {"gate": "draft", "data": [], "style": ["01-analysis/as-is/"], "analyze": True},
-    "sw-shape": {"gate": "draft", "data": [], "style": ["01-analysis/"]},
-    "sw-spec": {"gate": "review", "data": ["registry"], "style": ["02-drafts/"]},
-    "sw-review": {"gate": "review", "data": ["quality"], "style": []},
-    "sw-plan": {"gate": "review", "data": ["tasks"], "style": ["03-plan/"], "plan": True},
-    "sw-publish": {"gate": "publish", "data": ["registry", "quality"], "style": []},
+    "sw-craft": {
+        "gate": "review",
+        "data": ["sources", "registry", "quality"],
+        "style": ["01-analysis/", "02-drafts/"],
+        "status": True,
+        "analyze": True,
+    },
+    "sw-forge": {
+        "gate": "review",
+        "data": ["tasks", "registry"],
+        "style": ["03-plan/"],
+        "plan": True,
+    },
+    "sw-ship": {"gate": "publish", "data": ["registry", "quality"], "style": []},
 }
 LINT_BLOCKED = {10, 20, 30}
 
@@ -172,7 +182,7 @@ def main(argv=None):
             ],
             base,
         )
-    else:  # a skill that ships no lint (sw-ingest): nothing to gate here
+    else:  # a skill that ships no lint: nothing to gate here
         lint = subprocess.CompletedProcess([], 0, "lint not shipped with this skill; skipped", "")
     blocked = lint.returncode in LINT_BLOCKED
     report["lint"] = {
@@ -220,8 +230,9 @@ def main(argv=None):
         )
         report["checkpoint"] = _tail(cp.stdout + cp.stderr, 2)
 
-    # sw-analyze: the gap table, not the board, decides what comes next.
-    if conf.get("analyze"):
+    # sw-craft: the gap table for the named items, not the board, decides what comes next.
+    # No item was given, so the phase gates alone decide; fall through to the text hand-off.
+    if conf.get("analyze") and a.item:
         scripts = _skill_scripts(a.skill)
         results = {}
         for item in a.item:
@@ -233,9 +244,7 @@ def main(argv=None):
         report["analysis"] = results
         findings = [f"{i}: {f}" for i, r in results.items() for f in r.get("findings", [])]
         asks = [{"item": i, **q} for i, r in results.items() for q in r.get("ask", [])]
-        if not a.item:
-            handoff = {"mode": "stop", "reason": "choose a candidate to analyse (inventory.md)"}
-        elif findings and not a.repaired:
+        if findings and not a.repaired:
             handoff = {"mode": "repair", "reason": "; ".join(findings[:4])}
         elif findings:
             handoff = {
@@ -251,12 +260,12 @@ def main(argv=None):
         else:
             handoff = {
                 "mode": "continue",
-                "next_skill": "sw-spec",
+                "next_skill": "sw-craft",
                 "items": a.item,
                 "reason": "; ".join(f"{i}: {r['recommend']}" for i, r in results.items()),
             }
         handoff["say"] = (
-            f"→ sw-spec for {', '.join(a.item)}"
+            f"→ sw-craft for {', '.join(a.item)}"
             if handoff["mode"] == "continue"
             else "Paused: " + handoff["reason"]
         )

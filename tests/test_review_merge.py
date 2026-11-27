@@ -1,4 +1,4 @@
-"""Debate record check (sw-review) and change merge checks (sw-spec)."""
+"""Debate record check (sw-craft) and change merge checks (sw-craft)."""
 
 import shutil
 import subprocess
@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "skills" / "_shared" / "scripts"))
-sys.path.insert(0, str(ROOT / "skills" / "sw-review" / "scripts"))
+sys.path.insert(0, str(ROOT / "skills" / "sw-craft" / "scripts"))
 
 import debate  # noqa: E402
 
@@ -77,7 +77,7 @@ class Debate(unittest.TestCase):
 class MergeCli(unittest.TestCase):
     def test_help_runs(self):
         done = subprocess.run(
-            [sys.executable, str(ROOT / "skills/sw-spec/scripts/merge.py"), "--help"],
+            [sys.executable, str(ROOT / "skills/sw-craft/scripts/merge.py"), "--help"],
             capture_output=True,
             text=True,
         )

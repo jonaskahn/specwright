@@ -16,11 +16,12 @@ publication evidence. Drafts, including open questions, stay in spec. A reviewed
 needs current task coverage and a plan before it is complete in plan. Published items
 without tasks remain incomplete. A Jira mapping alone does not prove publication.
 
-Request publication explicitly once the story is accepted; a plan is not required,
-because tasks are never published. A stored Jira preference is neither a publication
+Request publication explicitly once the story is accepted; a plan is not required. sw-ship
+asks which levels to publish (epic, story, tasks, or a combination) and publishes nothing
+at a level the user did not choose. A stored Jira preference is neither a publication
 request nor remote permission. Deferral is a durable decision, so rebuilding the graph
 cannot undo it. Markdown is the default for new workspaces and there is no destination
-question: a publish request goes to sw-publish when Jira is configured, otherwise the
+question: a publish request goes to sw-ship when Jira is configured, otherwise the
 Markdown is the delivery and Jira setup is offered.
 
 ## Guarded decisions
@@ -34,7 +35,7 @@ records. An incomplete transaction leaves _meta/lifecycle-pending.json and block
 until its story/DEC changes are inspected and repaired; never delete it blindly.
 
 - submit-review: spec to review after a passing lint gate; not approval. Under `flow: auto`
-  the agent passes its token itself when sw-spec finishes cleanly; under `guided` after the
+  the agent passes its token itself when sw-craft finishes cleanly; under `guided` after the
   user's plain yes.
 - return-spec: review/plan/publish to spec; preserve files and invalidate active approval.
 - return-review: plan to review, including unstarted plan; old approval remains history.
@@ -49,7 +50,7 @@ promotes forward, withdraws an ID, deletes an artifact or bypasses approval.
 
 Metadata-only rollback preserves the story hash. Tasks are blocked by lifecycle state,
 not falsely content-stale. A real requirement change makes spec_hash stale. Only
-sw-review can restore active approval after invalidation: a fresh accept, or fresh
+sw-craft can restore active approval after invalidation: a fresh accept, or fresh
 evidence under required sign-off. Published
 text cannot rewind: supply a current immutable baseline and use the CR amendment path.
 Task-only repair remains in plan.

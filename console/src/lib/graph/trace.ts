@@ -17,12 +17,12 @@ const RETIRED = new Set(['withdrawn', 'superseded']);
 export type GapKind = 'epic' | 'bo' | 'epic-bo' | 'ac' | 'task' | 'task-criterion';
 
 const GAP_WORDS: Record<GapKind, { title: string; next: string; level: number; kind: string }> = {
-  epic: { title: 'No epic yet', next: 'sw-shape', level: 1, kind: 'epic' },
-  bo: { title: 'No business objective', next: 'sw-shape', level: 0, kind: 'bo' },
-  'epic-bo': { title: 'No business objective', next: 'sw-shape', level: 0, kind: 'bo' },
-  ac: { title: 'No acceptance criterion', next: 'sw-spec', level: 3, kind: 'ac' },
-  task: { title: 'No task covers this criterion', next: 'sw-plan', level: 4, kind: 'task' },
-  'task-criterion': { title: 'Not tied to an acceptance criterion', next: 'sw-plan', level: 3, kind: 'ac' },
+  epic: { title: 'No epic yet', next: 'sw-craft', level: 1, kind: 'epic' },
+  bo: { title: 'No business objective', next: 'sw-craft', level: 0, kind: 'bo' },
+  'epic-bo': { title: 'No business objective', next: 'sw-craft', level: 0, kind: 'bo' },
+  ac: { title: 'No acceptance criterion', next: 'sw-craft', level: 3, kind: 'ac' },
+  task: { title: 'No task covers this criterion', next: 'sw-forge', level: 4, kind: 'task' },
+  'task-criterion': { title: 'Not tied to an acceptance criterion', next: 'sw-forge', level: 3, kind: 'ac' },
 };
 
 export interface TraceNode {

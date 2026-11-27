@@ -16,21 +16,21 @@ class WriteLogTests(unittest.TestCase):
 
     def test_intent_and_result_lines(self):
         writelog.intent(
-            self.path, "7f3a", 1, "sw-publish", "create", "REF:FEAT-001", "jira:PROJ", now=NOW
+            self.path, "7f3a", 1, "sw-ship", "create", "REF:FEAT-001", "jira:PROJ", now=NOW
         )
         writelog.result(self.path, "7f3a", 1, "ok", "PROJ-14", now=NOW)
         lines = self.path.read_text().splitlines()
         expected = (
-            "2026-11-10T03:11:58Z | INTENT | run=7f3a | op=1 | sw-publish | create"
+            "2026-11-10T03:11:58Z | INTENT | run=7f3a | op=1 | sw-ship | create"
             " | REF:FEAT-001 | jira:PROJ"
         )
         self.assertEqual(lines[0], expected)
         self.assertEqual(lines[1], "2026-11-10T03:11:58Z | RESULT | run=7f3a | op=1 | ok | PROJ-14")
 
     def test_unfinished_reports_intents_without_result(self):
-        writelog.intent(self.path, "a", 1, "sw-publish", "create", "X")
+        writelog.intent(self.path, "a", 1, "sw-ship", "create", "X")
         writelog.result(self.path, "a", 1, "ok")
-        writelog.intent(self.path, "a", 2, "sw-publish", "edit", "Y")
+        writelog.intent(self.path, "a", 2, "sw-ship", "edit", "Y")
         pending = writelog.unfinished(self.path)
         self.assertEqual([(e.run, e.op) for e in pending], [("a", 2)])
 
@@ -68,12 +68,12 @@ class OperationTests(unittest.TestCase):
 
     def test_an_operation_logs_intent_then_ok_with_file_hashes(self):
         note = self.base / "records/Q-001.md"
-        with writelog.operation(self.log, "sw-shape", "q-new", "REF:Q-001") as op:
+        with writelog.operation(self.log, "sw-craft", "q-new", "REF:Q-001") as op:
             note.write_text("question\n")
             op.wrote(note)
         entries = writelog.read(self.log)
         self.assertEqual([e.kind for e in entries], ["INTENT", "RESULT"])
-        self.assertEqual(entries[0].fields[:3], ["sw-shape", "q-new", "REF:Q-001"])
+        self.assertEqual(entries[0].fields[:3], ["sw-craft", "q-new", "REF:Q-001"])
         self.assertEqual(entries[1].fields[0], "ok")
         self.assertEqual(entries[1].fields[1], f"file=records/Q-001.md@{writelog.file_hash(note)}")
         self.assertEqual(writelog.unfinished(self.log), [])
@@ -81,7 +81,7 @@ class OperationTests(unittest.TestCase):
     def test_a_failure_is_logged_as_an_error_and_reraised(self):
         with (
             self.assertRaises(RuntimeError),
-            writelog.operation(self.log, "sw-shape", "q-new", "X"),
+            writelog.operation(self.log, "sw-craft", "q-new", "X"),
         ):
             raise RuntimeError("disk full")
         entries = writelog.read(self.log)
@@ -91,11 +91,11 @@ class OperationTests(unittest.TestCase):
     def test_only_remote_uncertainty_needs_recovery(self):
         with (
             self.assertRaises(RuntimeError),
-            writelog.operation(self.log, "sw-shape", "q-new", "X"),
+            writelog.operation(self.log, "sw-craft", "q-new", "X"),
         ):
             raise RuntimeError("local failure")
         self.assertEqual(writelog.uncertain(self.log), [])
-        writelog.intent(self.log, "ab12", 1, "sw-publish", "create", "REF:FEAT-001")
+        writelog.intent(self.log, "ab12", 1, "sw-ship", "create", "REF:FEAT-001")
         self.assertEqual(len(writelog.uncertain(self.log)), 1)
         writelog.result(self.log, "ab12", 1, "error", "timeout")
         self.assertEqual(len(writelog.uncertain(self.log)), 1)
@@ -104,7 +104,7 @@ class OperationTests(unittest.TestCase):
         note = self.base / "records/Q-001.md"
         other = self.base / "records/Q-002.md"
         other.write_text("never logged\n")
-        with writelog.operation(self.log, "sw-shape", "q-new", "REF:Q-001") as op:
+        with writelog.operation(self.log, "sw-craft", "q-new", "REF:Q-001") as op:
             note.write_text("v1\n")
             op.wrote(note)
         self.assertEqual(writelog.drift(self.log), [])
@@ -113,7 +113,7 @@ class OperationTests(unittest.TestCase):
         self.assertEqual(
             writelog.drift(self.log), ["records/Q-001.md changed outside a logged write"]
         )
-        with writelog.operation(self.log, "sw-shape", "q-answer", "REF:Q-001") as op:
+        with writelog.operation(self.log, "sw-craft", "q-answer", "REF:Q-001") as op:
             op.wrote(note)
         self.assertEqual(writelog.drift(self.log), [])
         note.unlink()
@@ -127,7 +127,7 @@ class OperationTests(unittest.TestCase):
             self.base / "_meta/id-registry.md",
             self.base / "01-analysis/candidates/CAND-001--x.md",
         ]
-        with writelog.operation(self.log, "sw-shape", "x", "X") as op:
+        with writelog.operation(self.log, "sw-craft", "x", "X") as op:
             for f in files:
                 f.write_text("one\n")
                 op.wrote(f)
@@ -137,7 +137,7 @@ class OperationTests(unittest.TestCase):
 
     def test_line_ending_conversion_is_not_drift(self):
         note = self.base / "records/Q-001.md"
-        with writelog.operation(self.log, "sw-shape", "q-new", "X") as op:
+        with writelog.operation(self.log, "sw-craft", "q-new", "X") as op:
             note.write_bytes(b"a\nb\n")
             op.wrote(note)
         note.write_bytes(b"a\r\nb\r\n")

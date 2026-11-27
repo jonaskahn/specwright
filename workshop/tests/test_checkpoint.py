@@ -59,7 +59,7 @@ class CheckpointTests(unittest.TestCase):
         return path
 
     def run_commit(self, **kwargs):
-        return checkpoint.commit(self.root, "REF", "sw-spec", "FEAT-001 story draft", **kwargs)
+        return checkpoint.commit(self.root, "REF", "sw-craft", "FEAT-001 story draft", **kwargs)
 
     def test_commits_the_spec_files_and_nothing_else(self):
         self.draft()
@@ -67,7 +67,7 @@ class CheckpointTests(unittest.TestCase):
         result = self.run_commit()
         self.assertEqual((result.status, result.pushed), ("committed", None))
         self.assertEqual(
-            git(self.repo, "log", "-1", "--format=%s"), "sw-spec: FEAT-001 story draft"
+            git(self.repo, "log", "-1", "--format=%s"), "sw-craft: FEAT-001 story draft"
         )
         self.assertEqual(git(self.repo, "log", "-1", "--format=%b"), "")
         files = git(self.repo, "show", "--name-only", "--format=", "HEAD").splitlines()
@@ -136,7 +136,7 @@ class CheckpointTests(unittest.TestCase):
         self.assertEqual(result.exit_code, 4)
         self.assertIn("push failed", result.line())
         self.assertEqual(
-            git(self.repo, "log", "-1", "--format=%s"), "sw-spec: FEAT-001 story draft"
+            git(self.repo, "log", "-1", "--format=%s"), "sw-craft: FEAT-001 story draft"
         )
 
     def test_never_forces_a_rejected_push(self):
@@ -180,7 +180,7 @@ class CheckpointTests(unittest.TestCase):
 
     def test_long_subjects_are_cut(self):
         self.draft()
-        checkpoint.commit(self.root, "REF", "sw-spec", "x" * 200)
+        checkpoint.commit(self.root, "REF", "sw-craft", "x" * 200)
         self.assertLessEqual(
             len(git(self.repo, "log", "-1", "--format=%s")), checkpoint.SUBJECT_MAX
         )
@@ -228,7 +228,7 @@ class ModeTests(unittest.TestCase):
                     "--scope",
                     "REF",
                     "--skill",
-                    "sw-spec",
+                    "sw-craft",
                     "--subject",
                     "x",
                 ]

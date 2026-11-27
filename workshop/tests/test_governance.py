@@ -29,7 +29,7 @@ from tests.test_lint_rules import GOOD, doc, lint, update
 from tests.test_workflow import FakePort, WorkflowTestCase
 
 ROOT = Path(__file__).resolve().parents[2]
-REVIEW_SCRIPT = ROOT / "skills/sw-review/scripts/review.py"
+REVIEW_SCRIPT = ROOT / "skills/sw-craft/scripts/review.py"
 RECORD_SCRIPT = ROOT / "skills/_shared/scripts/record.py"
 
 
@@ -344,7 +344,7 @@ class RecordTests(SoloTestCase):
     def setUp(self):
         super().setUp()
         (self.base / "00-inbox/SRC-0001.md").write_text(SNAPSHOT)
-        self.ctx = recordops.Ctx(self.root, "REF", "sw-shape", today="2026-11-12")
+        self.ctx = recordops.Ctx(self.root, "REF", "sw-craft", today="2026-11-12")
 
     def cli(self, *args):
         return subprocess.run(
@@ -506,12 +506,12 @@ class StatusTests(SoloTestCase):
         feature = self.status.build_report(self.root)["features"][0]
         self.assertEqual(feature["signoff"], "accepted")
         self.assertEqual(feature["state_label"], "accepted")
-        self.assertEqual(feature["next"], "sw-plan")
+        self.assertEqual(feature["next"], "sw-forge")
         self.set_mode("required")
         graph.build(self.root, "REF")
         feature = self.status.build_report(self.root)["features"][0]
         self.assertEqual(feature["signoff"], "needs-signoff")
-        self.assertEqual(feature["next"], "sw-review")
+        self.assertEqual(feature["next"], "sw-craft")
 
 
 if __name__ == "__main__":

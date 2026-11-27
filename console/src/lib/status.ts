@@ -17,6 +17,12 @@ const LABELS: Record<string, string> = {
   'ready-to-publish': 'Accepted',
   published: 'Published',
   'ready-for-dev': 'Ready for development',
+  'in-development': 'In development',
+  done: 'Done',
+  'not-started': 'Not started',
+  planned: 'Planned',
+  'in-progress': 'In progress',
+  blocked: 'Blocked',
   superseded: 'Superseded',
   withdrawn: 'Withdrawn',
 };
@@ -61,10 +67,20 @@ export function wordLook(value: string | null): Look {
     case 'approved':
     case 'active':
     case 'ready':
+    case 'done':
     case 'published':
     case 'resolved':
     case 'pass':
       return { shape: 'check', tone: 'ok', label: text };
+    case 'planned':
+      return { shape: 'circle', tone: 'accent', label: text };
+    case 'in-progress':
+    case 'in-development':
+      return { shape: 'diamond', tone: 'warn', label: text };
+    case 'blocked':
+      return { shape: 'triangle', tone: 'danger', label: text };
+    case 'not-started':
+      return { shape: 'hollow', tone: 'neutral', label: text };
     case 'withdrawn':
     case 'superseded':
     case 'rejected':
@@ -84,6 +100,10 @@ export type RungStep = 'done' | 'current' | 'blocked' | 'todo' | 'off';
 /** Where each rung stands for a feature in `state`. */
 export function rungSteps(state: string, condition: string | null): RungStep[] {
   if (state === 'superseded' || state === 'withdrawn') return RUNGS.map(() => 'off' as const);
+  if (state === 'in-development' || state === 'done') {
+    // Past the rungs: the story follows its tasks, and its checklist is the criteria.
+    return RUNGS.map((_, i) => (state === 'done' ? 'done' : i < 2 ? 'done' : 'current'));
+  }
   const at = RUNGS.indexOf(state as (typeof RUNGS)[number]);
   return RUNGS.map((_, i) => {
     if (at < 0) return 'todo';

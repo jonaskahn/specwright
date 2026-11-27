@@ -1,6 +1,6 @@
 # Requirements traceability matrix
 
-| Spec ID | BO [sw-spec] | BR/NFR [sw-spec] | Story draft [sw-spec] | Jira [sw-publish] | Jira status [sw-publish] | Sign-off [sw-review] | Drift [sw-publish] | Test ref [qa] |
+| Spec ID | BO [sw-craft] | BR/NFR [sw-craft] | Story draft [sw-craft] | Jira [sw-ship] | Jira status [sw-ship] | Sign-off [sw-craft] | Drift [sw-ship] | Test ref [sw-forge] |
 |---|---|---|---|---|---|---|---|---|
 | REF:AC-001-1 | — | — | — | — | — | — | — | — |
 | REF:AC-001-2 | — | — | — | — | — | — | — | — |

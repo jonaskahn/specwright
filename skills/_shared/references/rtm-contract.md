@@ -7,13 +7,13 @@ Enforced in kitlib/rtm.py.
 
 | Column | Owner |
 | --- | --- |
-| BO | sw-spec |
-| BR/NFR | sw-spec |
-| Story draft | sw-spec |
-| Jira | sw-publish |
-| Jira status | sw-publish |
-| Sign-off | sw-review |
-| Drift | sw-publish |
+| BO | sw-craft |
+| BR/NFR | sw-craft |
+| Story draft | sw-craft |
+| Jira | sw-ship |
+| Jira status | sw-ship |
+| Sign-off | sw-craft |
+| Drift | sw-ship |
 | Test ref | qa |
 
 `_shared/scripts/trace.py set <id> --column <name> --as <skill>` refuses a column the skill does
@@ -33,10 +33,10 @@ upgrade.
 | Writer | May set |
 | --- | --- |
 | trace capability | Kind |
-| sw-spec | Kind, State |
-| sw-shape | Kind, State, Title, Aliases |
-| sw-ingest | Kind, State, Last snapshot, Source ref |
-| sw-publish | Jira key, Confluence id, Label, Entity property, Last published draft hash, Last snapshot, State |
+| sw-craft | Kind, State |
+| sw-craft | Kind, State, Title, Aliases |
+| sw-craft | Kind, State, Last snapshot, Source ref |
+| sw-ship | Jira key, Confluence id, Label, Entity property, Last published draft hash, Last snapshot, State |
 
 ## Qualified references
 

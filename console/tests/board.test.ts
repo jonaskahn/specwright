@@ -23,12 +23,12 @@ describe('the board', async () => {
 
   it('knows what skill moves each column on, and that the last ones have none', () => {
     const skill = Object.fromEntries(COLUMNS.map((c) => [c.id, c.skill]));
-    expect(skill).toMatchObject({ shape: 'sw-spec', spec: 'sw-review', review: 'sw-review', plan: 'sw-plan', publish: 'sw-publish', dev: null, inactive: null });
+    expect(skill).toMatchObject({ shape: 'sw-craft', spec: 'sw-craft', review: 'sw-craft', plan: 'sw-forge', publish: 'sw-ship', dev: null, inactive: null });
   });
 
   it('gives the command to run, with the project only when several are in view', () => {
-    expect(byId('REF:FEAT-001').command).toBe('/sw-review FEAT-001');
-    expect(buildCards(program, today, true).find((c) => c.feature.id === 'ORD:FEAT-001')!.command).toBe('/sw-review ORD:FEAT-001');
+    expect(byId('REF:FEAT-001').command).toBe('/sw-craft FEAT-001');
+    expect(buildCards(program, today, true).find((c) => c.feature.id === 'ORD:FEAT-001')!.command).toBe('/sw-craft ORD:FEAT-001');
     expect(buildCards({ ...trace, data: { ...trace.data, features: { ...trace.data.features!, rows: [{ ...trace.data.features!.rows[0], station: 'dev', condition: 'complete' }] } } }, today, false)[0].command).toBeNull();
   });
 

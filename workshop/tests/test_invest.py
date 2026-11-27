@@ -9,7 +9,7 @@ from pathlib import Path
 from kitlib import frontmatter, invest
 from tests.test_workflow import WorkflowTestCase
 
-SCRIPT = Path(__file__).resolve().parents[2] / "skills/sw-shape/scripts/invest.py"
+SCRIPT = Path(__file__).resolve().parents[2] / "skills/sw-craft/scripts/invest.py"
 HEAD = "| Feature | I | N | V | E | S | T | Reason |\n|---|---|---|---|---|---|---|---|\n"
 ROW1 = "| Request a refund | pass | pass | pass | unknown | pass | pass | Delivery-day rule |\n"
 ROW2 = "| Decide a refund | Pass | PASS | pass | pass | pass | pass | — |\n"

@@ -20,6 +20,7 @@ from kitlib import (  # noqa: E402
     dataformat,
     fsio,
     graph,
+    handoff,
     hashing,
     ids,
     illustration,
@@ -31,6 +32,7 @@ from kitlib import (  # noqa: E402
 )
 
 UNKNOWN = "unknown"
+STATION_SKILL = handoff.STATION_SKILL
 
 
 def age_days(value, today):
@@ -110,28 +112,28 @@ def recommend(state, lint, drift, signoff, questions, changes):
     if drift not in (UNKNOWN, "none", "—", "clean"):
         return "review", "BA then PO"
     if changes:
-        return "sw-review", "PO"
+        return "sw-craft", "PO"
     if state == "draft":
-        return "sw-spec", "BA"
+        return "sw-craft", "BA"
     if questions and state == "in-review":
-        return "sw-review", "PO"
+        return "sw-craft", "PO"
     if signoff in ("stale", "needs-signoff"):
-        return "sw-review", "PO"
+        return "sw-craft", "PO"
     if state in ("withdrawn", "superseded"):
         return "trace capability", "BA"
     if state == "ready-for-dev":
         return "implementation", "Dev and QA"
     if state == "ready-to-publish":
-        return (
-            ("sw-publish", "BA (after PO OK)") if signoff in FRESH_LABELS else ("sw-review", "PO")
-        )
+        return ("sw-ship", "BA (after PO OK)") if signoff in FRESH_LABELS else ("sw-craft", "PO")
     if state == "in-review":
-        return "sw-review", "PO"
+        return "sw-craft", "PO"
     if state == "published":
         return "review", "BA"
     if state == "draft":
         return (
-            ("sw-spec", "BA") if re.search(r"fail|error", lint, re.I) else ("lint capability", "BA")
+            ("sw-craft", "BA")
+            if re.search(r"fail|error", lint, re.I)
+            else ("lint capability", "BA")
         )
     return UNKNOWN, UNKNOWN
 
@@ -151,7 +153,7 @@ def build_report(root: Path, scopes=None, today=None):
                 continue
             state = str(entity.fm.get("status") or UNKNOWN)
             lint = report_cell(base, "lint-report.md", key)
-            drift = matrix.get(key, "Drift [sw-publish]")
+            drift = matrix.get(key, "Drift [sw-ship]")
             if drift in (None, "", "—"):
                 drift = report_cell(base, "drift-report.md", key)
             related = {key} | {e.key for e in entities.values() if e.parent == key}
@@ -193,7 +195,7 @@ def build_report(root: Path, scopes=None, today=None):
                 and drift in (UNKNOWN, "none", "—", "clean")
             ):
                 next_skill = (
-                    "sw-" + board_item["station"]
+                    STATION_SKILL.get(board_item["station"], "status capability")
                     if board_item["condition"] != "unknown"
                     else "status capability"
                 )

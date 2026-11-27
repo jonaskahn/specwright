@@ -224,8 +224,21 @@ def derive(root: Path, data: dict, skill: Path) -> tuple[list[str], list[str]]:
 
 
 def count_files(root: Path, data: dict, skill: Path, profile: str = "extended") -> int:
+    """Files one profile ships: the skill's own files, its shared list and its extras/ files."""
     skip = excluded_files(data, skill.name, profile)
-    return len(own_files(skill, skip)) + len(data["skills"].get(skill.name, {}).get("shared", []))
+    extras = root / "extras" / skill.name
+    extra_files = [
+        p
+        for p in extras.rglob("*")
+        if p.is_file()
+        and not is_junk(p.relative_to(extras))
+        and not (skill / p.relative_to(extras)).exists()
+    ]
+    return (
+        len(own_files(skill, skip))
+        + len(data["skills"].get(skill.name, {}).get("shared", []))
+        + len(extra_files)
+    )
 
 
 def shared_list(root: Path, skill_name: str) -> list[str]:
@@ -286,10 +299,14 @@ def check(root: Path) -> tuple[list[str], list[str]]:
         kinds = extended_types(data, skill.name)
         if len(kinds) != len(set(kinds)):
             problems.append(f"{skill.name}: tiers.extended lists a type twice")
+        extras = root / "extras" / skill.name
         for kind in kinds:
             for rel in type_files(kind):
-                # Legacy types render from shared code, so their own module is optional.
-                if not rel.startswith("scripts/") and not (skill / rel).is_file():
+                # A type's reference must exist in the skill or be parked in extras/; its
+                # shell may be a shared template and its module optional.
+                if not rel.startswith("references/"):
+                    continue
+                if not (skill / rel).is_file() and not (extras / rel).is_file():
                     problems.append(f"{skill.name}: extended type '{kind}' lacks {rel}")
         for profile in PROFILES if kinds else ("extended",):
             total = count_files(root, data, skill, profile)
@@ -334,6 +351,13 @@ def report(root: Path) -> str:
         tiered = bool(extended_types(data, skill.name))
         for profile in PROFILES if tiered else ("extended",):
             files = own_files(skill, excluded_files(data, skill.name, profile))
+            extras = root / "extras" / skill.name
+            if extras.is_dir():
+                files = files + [
+                    p
+                    for p in extras.rglob("*")
+                    if p.is_file() and not is_junk(p.relative_to(extras))
+                ]
             size = sum(p.stat().st_size for p in files)
             size += sum((shared / rel).stat().st_size for rel in stored if (shared / rel).is_file())
             label = f"{skill.name} ({profile})" if tiered else skill.name

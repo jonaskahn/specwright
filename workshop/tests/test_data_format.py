@@ -76,13 +76,13 @@ class DataTests(unittest.TestCase):
 
     def test_a_skill_cannot_write_another_skills_kind(self):
         with self.assertRaises(dataformat.DataError):
-            dataformat.write_kind(self.root, "tasks", "sw-spec", "REF")
-        code, _, err = self.cli("export", "tasks", "--as", "sw-ingest")
+            dataformat.write_kind(self.root, "tasks", "sw-craft", "REF")
+        code, _, err = self.cli("export", "tasks", "--as", "sw-craft")
         self.assertEqual(code, 2)
-        self.assertIn("owned by sw-plan", err)
+        self.assertIn("owned by sw-forge", err)
 
     def test_export_all_writes_only_what_the_skill_may_write(self):
-        code, out, _ = self.cli("export", "all", "--as", "sw-plan")
+        code, out, _ = self.cli("export", "all", "--as", "sw-forge")
         self.assertEqual(code, 0, out)
         names = {p.name for p in (self.root / "_meta/data").glob("*.json")}
         self.assertEqual(names, {"index.json", "graph.json", "tasks.json", "rtm.json"})
@@ -106,11 +106,11 @@ class DataTests(unittest.TestCase):
         )
         found = {f["kind"]: f for f in dataformat.check(self.root, "REF")}
         self.assertEqual(found["tasks"]["status"], "missing")
-        self.assertEqual(found["tasks"]["owner"], "sw-plan")
+        self.assertEqual(found["tasks"]["owner"], "sw-forge")
         self.assertEqual(found["records"]["status"], "stale")
         code, out, _ = self.cli("check")
         self.assertEqual(code, 4)
-        self.assertIn("sw-plan owns it", out)
+        self.assertIn("sw-forge owns it", out)
 
     def test_graph_export_refuses_a_stale_graph(self):
         (self.root / "02-drafts/FEAT-002.story.md").write_text(
@@ -197,7 +197,7 @@ class GitHygieneTests(unittest.TestCase):
 
     def test_an_existing_folder_keeps_its_own_gitignore(self):
         (self.root / "_meta/data/.gitignore").unlink()
-        dataformat.write_kind(self.root, "tasks", "sw-plan", "REF")
+        dataformat.write_kind(self.root, "tasks", "sw-forge", "REF")
         self.assertFalse((self.root / "_meta/data/.gitignore").exists())
 
     def test_check_warns_and_never_runs_git_changes(self):

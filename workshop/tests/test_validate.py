@@ -170,7 +170,7 @@ class ValidateTests(unittest.TestCase):
         self.bundle(["scripts/trace.py"])
         (self.root / "skills/_shared/scripts/trace.py").write_text("pass\n")
         (self.skill / "references" / "guide.md").write_text(
-            "Run scripts/trace.py set, or read skills/sw-spec/SKILL.md.\n"
+            "Run scripts/trace.py set, or read skills/sw-craft/SKILL.md.\n"
         )
         self.assertEqual(self.codes(self.run_validate()), {"V104", "V105"})
         (self.skill / "references" / "guide.md").write_text("Run _shared/scripts/trace.py set.\n")
@@ -263,8 +263,8 @@ class ReleaseSurfaceTests(unittest.TestCase):
         self.addCleanup(sys.path.remove, str(tools))
         spec.loader.exec_module(package)
         with tempfile.TemporaryDirectory() as tmp:
-            built = Path(tmp) / "sw-spec"
-            package.bundle_skill(repo, repo / "skills" / "sw-spec", built)
+            built = Path(tmp) / "sw-craft"
+            package.bundle_skill(repo, repo / "skills" / "sw-craft", built)
             report = validate.Report(Path(tmp))
             validate._check_draw_contract(built, repo, report, packaged=True)
         self.assertNotIn("V124", {finding.code for finding in report.errors})

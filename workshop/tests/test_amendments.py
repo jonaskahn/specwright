@@ -10,7 +10,7 @@ NEW = "days 8-14 yield 25%"
 class AmendmentTests(WorkflowTestCase):
     def setUp(self):
         super().setUp()
-        self.ctx = recordops.Ctx(self.root, "REF", "sw-shape", today="2026-11-12")
+        self.ctx = recordops.Ctx(self.root, "REF", "sw-craft", today="2026-11-12")
 
     def run_plan(self, plan, action="x"):
         return recordops.execute(self.ctx, plan, action, "REF")
@@ -96,7 +96,7 @@ class AmendmentTests(WorkflowTestCase):
             self.base / "_meta/id-registry.md",
             "REF:FEAT-001",
             {"State": "published", "Jira key": "PROJ-14"},
-            "sw-publish",
+            "sw-ship",
         )
         fm, body = self.record(self.amend())
         self.assertTrue(fm["requires_cr"])

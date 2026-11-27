@@ -266,7 +266,7 @@ class CatalogTests(unittest.TestCase):
         from tests.test_validate import validate
 
         with tempfile.TemporaryDirectory() as directory:
-            skill = Path(directory) / "sw-spec"
+            skill = Path(directory) / "sw-craft"
             shutil.copytree(
                 SHELLS.SKILL, skill, ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
             )
@@ -278,16 +278,16 @@ class CatalogTests(unittest.TestCase):
 
             self.assertEqual(codes(), set())
             for relative, code in (
-                ("references/type-tree.md", "V122"),
-                ("assets/kanban.html", "V123"),
-                ("scripts/draw_types/gantt.py", "V127"),
+                ("references/type-architecture-delta.md", "V122"),
+                ("assets/data-flow.html", "V123"),
+                ("scripts/draw_types/data_flow.py", "V127"),
             ):
                 target = skill / relative
                 content = target.read_text()
                 target.unlink()
                 self.assertIn(code, codes())
                 target.write_text(content)
-            target = skill / "assets/kanban.html"
+            target = skill / "assets/data-flow.html"
             target.write_text(target.read_text().replace("--sw-bg: #f3f4f7", "--sw-bg: #eeeeee"))
             self.assertIn("V124", codes())
 
@@ -297,26 +297,42 @@ class CatalogTests(unittest.TestCase):
         from tests.test_validate import validate
 
         with tempfile.TemporaryDirectory() as directory:
-            skill = Path(directory) / "sw-spec"
+            # The contract reads extras/ through `root`, so point it at a private copy: the
+            # real tree is read-only in the Docker test run and must never be mutated.
+            root = Path(directory) / "root"
+            skill = root / "skills" / "sw-craft"
             shutil.copytree(
                 SHELLS.SKILL, skill, ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
             )
-            parked = skill / "assets/bar.html"
-            shutil.copy(SHELLS.EXTRAS / "assets/bar.html", parked)
+            shutil.copytree(
+                SHELLS.EXTRAS,
+                root / "extras" / "sw-craft",
+                ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+            )
+            # A CORE type must never be parked in extras/: every build reads it from the skill.
+            extra = root / "extras" / "sw-craft" / "assets/swimlane.html"
+            extra.parent.mkdir(parents=True, exist_ok=True)
+            extra.write_bytes((skill / "assets/swimlane.html").read_bytes())
             report = validate.Report(skill)
-            validate._check_draw_contract(skill, ROOT, report)
+            validate._check_draw_contract(skill, root, report)
             self.assertIn("V129", {f.code for f in report.errors})
-            parked.unlink()
+            extra.unlink()
+            # A core build omits every non-core type from the skill and reads them from extras/.
             for kind in EXTENDED:
-                (skill / f"assets/{kind}.html").unlink()
-                (skill / f"references/type-{kind}.md").unlink()
+                (skill / f"assets/{kind}.html").unlink(missing_ok=True)
+                (skill / f"references/type-{kind}.md").unlink(missing_ok=True)
                 (skill / f"scripts/draw_types/{kind.replace('-', '_')}.py").unlink(missing_ok=True)
             report = validate.Report(skill)
-            validate._check_draw_contract(skill, ROOT, report, True)
+            validate._check_draw_contract(skill, root, report, True)
             self.assertEqual([f.code for f in report.errors], [])
+            # A parked type missing its reference is reported: extras/ is the contract.
+            missing = root / "extras" / "sw-craft" / "references/type-bar.md"
+            held = missing.read_bytes()
+            missing.unlink()
             report = validate.Report(skill)
-            validate._check_draw_contract(skill, ROOT, report)
+            validate._check_draw_contract(skill, root, report)
             self.assertIn("V122", {f.code for f in report.errors})
+            missing.write_bytes(held)
 
     def test_markers_retain_their_own_viewbox(self):
         for kind in DRAW.STRUCTURED:

@@ -10,7 +10,7 @@ from pathlib import Path
 from kitlib import frontmatter, hashing, illustration
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS = ROOT / "skills/sw-spec/scripts"
+SCRIPTS = ROOT / "skills/sw-craft/scripts"
 spec = importlib.util.spec_from_file_location("embed_diagram", SCRIPTS / "embed_diagram.py")
 embed = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = embed

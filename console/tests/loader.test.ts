@@ -31,7 +31,7 @@ describe('loadAll', () => {
     delete index.files['tasks.json'];
     const loaded = await loadAll('./data/', serve('flat', { 'index.json': JSON.stringify(index) }));
     expect(loaded.status).toBe('ready');
-    expect(loaded.missing).toEqual({ tasks: 'sw-plan' });
+    expect(loaded.missing).toEqual({ tasks: 'sw-forge' });
   });
 
   it('rejects a file whose checksum differs from the index', async () => {

@@ -7,7 +7,7 @@ from pathlib import Path
 from kitlib import candidates, cite, frontmatter, recordops, tables, writelog
 from tests.test_workflow import WorkflowTestCase
 
-SCRIPT = Path(__file__).resolve().parents[2] / "skills/sw-ingest/scripts/candidates.py"
+SCRIPT = Path(__file__).resolve().parents[2] / "skills/sw-craft/scripts/candidates.py"
 
 
 class CandidateTests(WorkflowTestCase):
@@ -213,7 +213,7 @@ class CandidateTests(WorkflowTestCase):
         self.fill(
             "CAND-001", [("rule", "refund window", "Refunds close after 14 days", cited, "raw", "")]
         )
-        ctx = recordops.Ctx(self.root, "REF", "sw-ingest", today=self.date)
+        ctx = recordops.Ctx(self.root, "REF", "sw-craft", today=self.date)
         plan = recordops.question_new(
             ctx, "Which window applies", ["FEAT-001"], "PO", raised_from=["CAND-001.1"]
         )

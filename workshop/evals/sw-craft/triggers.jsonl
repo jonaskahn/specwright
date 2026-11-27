@@ -1,0 +1,20 @@
+{"query": "shape or slice an idea for the refunds epic", "should_trigger": true}
+{"query": "import these policy documents as sources", "should_trigger": true}
+{"query": "analyse how refunds work today in the code", "should_trigger": true}
+{"query": "write the criteria for FEAT-004", "should_trigger": true}
+{"query": "draw a sequence diagram for FEAT-004", "should_trigger": true}
+{"query": "break FEAT-004 into tasks", "should_trigger": true}
+{"query": "review and finalize FEAT-001", "should_trigger": true}
+{"query": "accept the split for the refunds epic", "should_trigger": true}
+{"query": "plan FEAT-001 in detail for implementation", "should_trigger": false}
+{"query": "publish FEAT-001 to Jira", "should_trigger": false}
+{"query": "write the code for TASK-004-1", "should_trigger": false}
+{"query": "open the console dashboard", "should_trigger": false}
+{"query": "open the idea template for a new brief", "should_trigger": true}
+{"query": "finalize FEAT-004 after the reviewers answered", "should_trigger": true}
+{"query": "change a published story through a change request", "should_trigger": true}
+{"query": "rework the ergonomic spec", "should_trigger": false}
+{"query": "implement the refund service in Java", "should_trigger": false}
+{"query": "what is the weather in Hanoi", "should_trigger": false}
+{"query": "generate the implementation prompt for TASK-004-1", "should_trigger": false}
+{"query": "archive the Jira sprint", "should_trigger": false}

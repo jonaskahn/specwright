@@ -30,7 +30,7 @@ scopes: [<SCOPE>]
 
 ## Jira
 
-<Existing Jira key if the ID registry maps one, else None. Epics are never published.>
+<Existing Jira key if the ID registry maps one, else None. Only a shipped epic is published.>
 """
 
 

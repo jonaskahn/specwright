@@ -1,6 +1,6 @@
 ---
 name: sw-start
-description: Specwright's single entry. Briefs what the kit can do, detects the workspace, its state and the code's tech stack, asks a short prefilled intake on first run, routes to the right public skill (sw-shape, sw-ingest, sw-spec, sw-plan, sw-review, sw-publish, sw-view), and keeps the run going from station to station, stopping only for a human decision or a blocker. Use when starting Specwright, for help or what can you do, for continue, next, go on or resume, to set or lock the tech stack, when unsure which sw- skill applies, or for any Specwright request that names no sw- skill. Do NOT use for writing requirements, recording approval or remote writes; those stay inside their owning skills.
+description: Specwright's single entry. Briefs what the kit can do, detects the workspace, its state and the code's tech stack, asks a short prefilled intake on first run, routes to the right role skill (sw-craft for shaping, sources, analysis, stories, tasks and review; sw-forge for the detailed implementation plan; sw-ship for Jira; sw-view for the console), and keeps the run going from station to station, stopping only for a human decision or a blocker and never crossing from the BA role to the Dev role on its own. Use when starting Specwright, for help or a capability tour, for continue, next, go on or resume, to set or lock the tech stack, when unsure which sw- skill applies, or for any Specwright request that names no sw- skill. Do NOT use for writing requirements, recording approval or remote writes; those stay inside their owning skills.
 ---
 
 # sw-start
@@ -20,15 +20,16 @@ Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
    defaults; `references/intake.md`). Read back one line ("I will: …"), then
    `scripts/workspace.py init` with the layout and answers. Map "how far" to `--until`.
 4. Existing code or an existing feature (`code.registered`/`code.detected`, a request to analyse,
-   change, fix or complete something that exists) → `../sw-analyze/SKILL.md`. Gap shape decides
-   what sw-spec writes. No code at all is fine: analysis then shows every criterion as missing.
+   change, fix or complete something that exists) → load `../sw-craft/SKILL.md` at its as-is
+   phase. Gap shape decides what the story writes. No code at all is fine: analysis then shows
+   every criterion as missing.
 5. Stack (`stack.status`): `missing` with code → `_shared/scripts/stack.py detect --write`, show
    the layers, ask lock/edit; `proposed` → show and ask once; on yes run
    `stack.py lock --confirm <hash shown>`. Docs-only and no answer → leave it; plan reports it.
 6. Foundation (new codebase: no code roots, `foundation.suggest` true): offer the foundation
    story once (`_shared/references/foundation.md`): check current tool guidance, ask
    `_shared/scripts/foundation.py questions` in one message, save answers (`foundation.py set`),
-   reserve and draft it, continue to sw-spec. Declined → never offer again in this scope.
+   reserve and draft it, continue in sw-craft. Declined → never offer again in this scope.
 7. Route by `handoff` (`references/routing.md`): `continue` → load `../<next_skill>/SKILL.md` for
    `items` now; "continue", "next", "resume" with no item → whole scope, station by station;
    a named item → `start.py --item <key> --pack`, read the listed files, run its station.
@@ -36,7 +37,7 @@ Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
 8. Runtimes: Python missing → show `runtime.sh plan python`, install only after a yes. Node is
    only for sw-view; ask once (`_shared/references/runtime.md`).
 9. Old graph schema → show `workspace.py upgrade` dry-run; `--apply` after a yes.
-10. Push/publish request: Jira configured → sw-publish; else say Markdown is delivered and offer
+10. Push/publish request, or "ship" / "forge" by name: Jira configured → sw-ship; else say\n    Markdown is delivered and offer
    `workspace.py jira set --site <url> --project-key <KEY>`.
 
 ## Stop when
@@ -58,11 +59,11 @@ rerun with `--repaired`; `confirm` → ask once; `stop` → ask what `waiting` n
 | First-run questions, read-back, suggested replies | references/intake.md |
 | Route table, edge states | references/routing.md |
 | Register or legacy baseline present | references/brownfield.md |
-| Existing code or feature; gap shapes | ../sw-analyze/references/method.md |
+| Existing code or feature; gap shapes | ../sw-craft/references/method.md |
 | Foundation story: tooling questions, Makefile, AGENTS.md | _shared/references/foundation.md |
 | Layout choice; manifest fields | references/layouts.md; references/manifest-schema.md |
 | Step-back, reset, guarded transitions | _shared/references/lifecycle.md; scripts/transition.py --help |
 | Several items in one station | _shared/references/parallel-writers.md |
-| Hand-off details, stop rules | _shared/references/handoff.md |
+| Hand-off details, stop rules; role boundary | _shared/references/handoff.md |
 | Sign-off and flow settings | _shared/references/governance.md |
 | A step above is unclear or a script errors | references/procedure.md |

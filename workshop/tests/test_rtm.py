@@ -19,14 +19,14 @@ class RtmTests(unittest.TestCase):
         rtm.rebuild(self.root, "REF")
         self.assertIn("REF:FEAT-002 orphan: no BO (L-005)", rtm.check(self.root))
         doc = rtm.read_table(self.root / "_meta/rtm.md", rtm.rtm_header())
-        self.assertEqual(doc.table.get("REF:FEAT-002", "BO [sw-spec]"), "—")
+        self.assertEqual(doc.table.get("REF:FEAT-002", "BO [sw-craft]"), "—")
         self.assertIsNotNone(doc.table.find("REF:AC-002-1"))
 
     def test_rebuild_preserves_every_cell_and_registry_evidence(self):
-        rtm.set_cell(self.root, "REF", "FEAT-001", "Jira", "PROJ-14", "sw-publish")
+        rtm.set_cell(self.root, "REF", "FEAT-001", "Jira", "PROJ-14", "sw-ship")
         path = self.root / "_meta/id-registry.md"
         rtm.registry_upsert(
-            path, "REF:FEAT-001", {"Jira key": "PROJ-14", "State": "published"}, "sw-publish"
+            path, "REF:FEAT-001", {"Jira key": "PROJ-14", "State": "published"}, "sw-ship"
         )
         before = (self.root / "_meta/rtm.md").read_bytes(), path.read_bytes()
         rtm.rebuild(self.root, "REF")
@@ -43,7 +43,7 @@ class RtmTests(unittest.TestCase):
                 self.root / "_meta/id-registry.md",
                 "REF:FEAT-001",
                 {"Jira key": "PROJ-14"},
-                "sw-spec",
+                "sw-craft",
             )
         with self.assertRaises(ValueError):
             rtm.set_cell(self.root, "REF", "FEAT-001", "missing", "x", "qa")
@@ -58,7 +58,7 @@ class RtmTests(unittest.TestCase):
                 self.root / "_meta/id-registry.md",
                 "REF:" + feat,
                 {"Jira key": "PROJ-14"},
-                "sw-publish",
+                "sw-ship",
             )
         path.write_text(
             path.read_text().replace("### AC-001-2 — Duplicate request", "~~AC-001-2~~ withdrawn")
@@ -77,7 +77,7 @@ class RtmTests(unittest.TestCase):
             self.root / "_meta/id-registry.md",
             "REF:FEAT-001",
             {"Jira key": "PROJ-14"},
-            "sw-publish",
+            "sw-ship",
         )
         result = rtm.impact(self.root, "BO-001", "REF")
         self.assertEqual(result["features"], ["REF:FEAT-001"])
@@ -161,10 +161,10 @@ class RegistryColumnTests(unittest.TestCase):
             self.path,
             "REF:FEAT-002",
             {"Kind": "story", "Title": "Reset password", "Aliases": "LEG-12"},
-            "sw-shape",
+            "sw-craft",
         )
         with self.assertRaises(rtm.OwnershipError):
-            rtm.registry_upsert(self.path, "REF:FEAT-002", {"Jira key": "PROJ-1"}, "sw-shape")
+            rtm.registry_upsert(self.path, "REF:FEAT-002", {"Jira key": "PROJ-1"}, "sw-craft")
         doc = rtm.read_table(self.path, list(schema.REGISTRY_COLUMNS))
         self.assertEqual(doc.table.value("REF:FEAT-002", "Aliases"), "LEG-12")
 
@@ -174,6 +174,6 @@ class RegistryColumnTests(unittest.TestCase):
             "Last snapshot": "00-inbox/SRC-0001.md",
             "Source ref": "wiki:12",
         }
-        rtm.registry_upsert(self.path, "REF:SRC-0001", cells, "sw-ingest")
+        rtm.registry_upsert(self.path, "REF:SRC-0001", cells, "sw-craft")
         with self.assertRaises(rtm.OwnershipError):
-            rtm.registry_upsert(self.path, "REF:SRC-0001", {"Confluence id": "9"}, "sw-ingest")
+            rtm.registry_upsert(self.path, "REF:SRC-0001", {"Confluence id": "9"}, "sw-craft")

@@ -125,7 +125,7 @@ does not by itself require a fresh approval.
 
 the visuals capability names 45 primary types in a closed roster, in three tiers: 10 core types
 ship in every build, 10 extended types ship only in a full install, and the other 25 are parked
-under `extras/sw-spec` and ship nowhere. `make package` builds the core profile for upload;
+under `extras/sw-craft` and ship nowhere. `make package` builds the core profile for upload;
 `workshop/tools/install.py` installs the extended profile. The skill text never assumes which types are
 present: `references/type-picker.md` lists only the shipped ones and
 `scripts/render_diagram.py --list-types` prints the same set. The type picker chooses one grammar from saved evidence;

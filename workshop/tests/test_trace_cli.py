@@ -39,8 +39,8 @@ class TraceCliTests(unittest.TestCase):
             "--value",
             "PROJ-14",
         )
-        self.assertEqual(self.run_cli(*args, "--as", "sw-spec").returncode, 4)
-        self.assertEqual(self.run_cli(*args, "--as", "sw-publish").returncode, 0)
+        self.assertEqual(self.run_cli(*args, "--as", "sw-craft").returncode, 4)
+        self.assertEqual(self.run_cli(*args, "--as", "sw-ship").returncode, 0)
         result = self.run_cli("impact", "BO-001", "--cwd", str(self.root))
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(json.loads(result.stdout)["features"], ["REF:FEAT-001"])

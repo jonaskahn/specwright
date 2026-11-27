@@ -1,21 +1,19 @@
 # Shared context
 
-Specwright turns a software idea into implementation-ready work through eight public
-skills. A story (BA/PO word) and a feature (Dev/QA word) are the same item, written
+Specwright turns a software idea into implementation-ready work through five public skills
+in two roles: sw-craft (BA) and sw-forge (Dev), with sw-start routing, sw-ship publishing and
+sw-view reading. A story (BA/PO word) and a feature (Dev/QA word) are the same item, written
 FEAT-NNN; never create a STORY identifier.
 
 ## Skills and owners
 
-| Skill | Owns |
-| --- | --- |
-| sw-start | Detection, routing, workspace setup, guarded transitions, completion maintenance. |
-| sw-ingest | Source snapshots, assets, candidate facts, conflicts. |
-| sw-shape | Idea brief, INVEST feature split, FEAT reservation. |
-| sw-spec | Story drafts, cards, diagrams, RTM draft columns. |
-| sw-review | The only recorder of approval: the owner's accept, or a formal sign-off. |
-| sw-plan | Implementation plan and tasks. |
-| sw-publish | The only writer to Jira or Confluence. |
-| sw-view | A read-only local web console over the workspace data; never advances an item. |
+| Skill | Role | Owns |
+| --- | --- | --- |
+| sw-start | — | Detection, routing, workspace setup, guarded transitions, completion maintenance. |
+| sw-craft | BA | Source snapshots, assets, candidate facts and conflicts; as-is analysis; the idea brief, INVEST split and FEAT reservation; story drafts, cards, diagrams, RTM draft columns and the task breakdown; the only recorder of approval (the owner's accept, or a formal sign-off). |
+| sw-forge | Dev | The detailed implementation plan, task statuses and evidence, and the derived prompts. |
+| sw-ship | — | The only writer to Jira or Confluence, at the level the user chooses. |
+| sw-view | — | A read-only local web console over the workspace data; never advances an item. |
 
 Knowledge, trace, lint, status, assets, visuals, data, citations and records are shared
 capabilities; they are not stations.
@@ -41,7 +39,7 @@ external key mappings in the ID registry. Use qualified IDs (`SCOPE:FEAT-NNN`) a
 | --- | --- |
 | Station | Where an item sits: `shape`, `spec`, `review`, `plan`, `publish`, or `inactive` (withdrawn or superseded). |
 | Condition | The state inside a station: `not-started`, `in-progress`, `blocked`, `complete` or `unknown`. |
-| Chip | A feature's illustration status: `needs illustration`, `no illustration`, `illustrated` or `check illustration`. sw-spec's illustration_check script prints it. |
+| Chip | A feature's illustration status: `needs illustration`, `no illustration`, `illustrated` or `check illustration`. sw-craft's illustration_check script prints it. |
 | Spec root | The folder holding `project.yaml` (flat) or `workspace.yaml` (program). |
 | Flat / program | Flat: one project at the spec root. Program: several projects under `projects/<SCOPE>/` that share a workspace. |
 | Scope | The short name of one project, for example `REF`. Pass it as `--scope`; a program needs it for every write. |
@@ -55,4 +53,4 @@ external key mappings in the ID registry. Use qualified IDs (`SCOPE:FEAT-NNN`) a
 | Visual reference | A mockup, Figma link, screenshot or diagram (asset kinds figma, mockup, image, diagram, or a drawing in `diagrams/`) that shows what to build. The story lists it in `assets:` and UI/UX; UI tasks cite it in `Visuals:`. |
 | Layer | The delivery area of a task, written as a title prefix: backend, frontend, mobile, devops, data, qa, design or docs. One layer per task. |
 | TRANSITION token | `TRANSITION <SCOPE>:FEAT-NNN <action> <digest>`, printed by sw-start's transition script preview. After the user's plain yes the agent passes it; the user never types it. |
-| PUBLISH token | `PUBLISH <SCOPE>:FEAT-NNN <short-hash>`, printed by sw-publish's `publish.py plan`. |
+| PUBLISH token | `PUBLISH <SCOPE>:FEAT-NNN <short-hash>`, printed by sw-ship's `publish.py plan`. |

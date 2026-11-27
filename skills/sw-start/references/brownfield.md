@@ -7,9 +7,9 @@ No step approves anything by default.
 | Step | Do | Human decision |
 | --- | --- | --- |
 | 1. Register the source | `workspace.py source add --id --system --root --snapshot-date --expected-count [--legacy-id-pattern]` | Who owns the source and how many items it should hold. |
-| 2. Import | sw-ingest: `wiki_pull.py` or an export, then `bulk_import.py --dry-run`, then the real batch; scan and redaction decisions; counts reconciled | Consent to retain sensitive originals; which redactions stand. |
-| 3. Build the crosswalk | sw-shape: `baseline.py import-register <legacy register>`; `graph.py build` writes `_meta/CROSSWALK.tsv` and lists items unmatched on both sides | Whether an unmatched item is out of scope or a missing page. |
-| 4. Extract candidates | sw-ingest: `candidates.py assign`, workers write `01-analysis/candidates/`, `candidates.py check` | Which accepted claims a person has reviewed. |
+| 2. Import | sw-craft: `wiki_pull.py` or an export, then `bulk_import.py --dry-run`, then the real batch; scan and redaction decisions; counts reconciled | Consent to retain sensitive originals; which redactions stand. |
+| 3. Build the crosswalk | sw-craft: `baseline.py import-register <legacy register>`; `graph.py build` writes `_meta/CROSSWALK.tsv` and lists items unmatched on both sides | Whether an unmatched item is out of scope or a missing page. |
+| 4. Extract candidates | sw-craft: `candidates.py assign`, workers write `01-analysis/candidates/`, `candidates.py check` | Which accepted claims a person has reviewed. |
 | 5. Verify | `cite.py verify`, `candidates.py check`, `bulk_import` counts | None; fix what fails. |
 | 6. Record conflicts | `candidates.py conflicts`, then `record.py q new --raised-from CAND-...` with `affects`, ranked by items blocked | Who owns each question. |
 | 7. Shape | `baseline.py propose-grouping`, per group `reserve` and `brief`; ask: keep each legacy item as one feature or re-split by INVEST | The PO's split decision, with evidence. |

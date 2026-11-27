@@ -488,7 +488,7 @@ def jira_of(root: Path, scope: str) -> dict[str, str]:
 def set_jira(
     root: Path, scope: str, site: str, project_key: str, epic: str | None
 ) -> dict[str, str]:
-    """Record where Jira lives. It configures sw-publish; it never permits a remote write."""
+    """Record where Jira lives. It configures sw-ship; it never permits a remote write."""
     site, project_key = site.strip(), project_key.strip()
     if not site or not project_key or "TBD" in (site, project_key):
         raise WorkspaceError("jira set needs a real --site and --project-key")

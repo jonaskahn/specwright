@@ -367,6 +367,7 @@ def _add_task(graph: Graph, entity: rtm.Entity, root: Path, rel: str) -> None:
     for target in sorted(entity.refs - {owner}):
         graph.edges.append(Edge(entity.key, "implements", target, "declared", rel, line))
     graph.nodes[entity.key].extra["layer"] = str(details.get("layer", ""))
+    graph.nodes[entity.key].extra["progress"] = str(details.get("progress") or "not-started")
     for ref in _qualified_refs(details.get("visuals", ""), scope):
         graph.edges.append(Edge(entity.key, "uses_asset", ref, "declared", rel, line))
     touches = [t.strip() for t in str(details.get("touches", "")).split(",") if t.strip()]

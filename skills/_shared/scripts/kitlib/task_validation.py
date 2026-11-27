@@ -4,7 +4,7 @@ from pathlib import Path
 
 from kitlib import frontmatter, hashing, ids, markdown, rtm, schema
 
-APPROVED = ("ready-to-publish", "published", "ready-for-dev")
+APPROVED = ("ready-to-publish", "published", "ready-for-dev", "in-development", "done")
 
 
 def asset_rows(base: Path) -> dict[str, tuple[str, str]]:
@@ -60,7 +60,7 @@ def check(base: Path, feat: str):
         return None, [f"{feat}: invalid story front matter"], None
     status = str(parsed.fm.get("status", "unknown"))
     if status not in APPROVED:
-        findings.append(f"{feat}: status is {status}; review it with sw-review before planning")
+        findings.append(f"{feat}: status is {status}; the review step in sw-craft finalizes it")
     # Imports are local to avoid a dependency cycle with the board evaluator.
     from kitlib.lifecycle import approval_state
 
@@ -108,6 +108,8 @@ def check(base: Path, feat: str):
                     findings.append(f"{tid}: traces to {ref}, which is not an active criterion")
         if not block.field_line("Done when"):
             findings.append(f"{tid}: Done when is empty")
+        if markdown.task_progress(block) == "done" and not block.field_line("Evidence"):
+            findings.append(f"{tid}: done needs an Evidence line (how it was proven)")
     for ac in sorted(acs - covered):
         findings.append(f"{ac}: no task covers this criterion")
     number = ids.feat_number(feat)
@@ -125,6 +127,48 @@ def planning(base: Path, feat: str) -> dict:
     if not path.is_file() or not frontmatter.parse(path.read_text(encoding="utf-8")).body.strip():
         findings.append(f"{feat}: implementation plan is missing or empty")
     return {"passing": not findings, "findings": findings}
+
+
+PLAN_SECTIONS = (
+    "Approach",
+    "Visual references",
+    "Constraints",
+    "Dependencies",
+    "Evidence from the codebase",
+    "Open Dev questions",
+)
+PLAN_TASK_FIELDS = ("Files", "Change", "Test")
+
+
+def plan_findings(base: Path, feat: str) -> list[str]:
+    """Every active task needs a detailed plan section; a gone task's section is stale."""
+    path = base / "03-plan" / f"{feat}.plan.md"
+    parsed = frontmatter.parse(path.read_text(encoding="utf-8"))
+    if parsed.error:
+        return [f"{feat}: plan front matter: {parsed.error}"]
+    found = markdown.sections(parsed.body)
+    out = [
+        f"{feat}: plan section '{name}' is missing" for name in PLAN_SECTIONS if name not in found
+    ]
+    sections = markdown.sections(parsed.body, level=3)
+    tasks_path = base / "03-plan" / f"{feat}.tasks.md"
+    blocks = {}
+    if tasks_path.is_file():
+        blocks = markdown.task_blocks(
+            frontmatter.parse(tasks_path.read_text(encoding="utf-8")).body
+        )
+    for tid in sorted(blocks):
+        section = sections.get(tid)
+        if section is None:
+            out.append(f"{tid}: plan section is missing")
+            continue
+        for field in PLAN_TASK_FIELDS:
+            if not any(line.strip().startswith(f"{field}:") for _, line in section.lines):
+                out.append(f"{tid}: plan section has no {field}: line")
+    for name in sorted(set(sections) - set(blocks)):
+        if name.startswith("TASK-"):
+            out.append(f"{name}: plan section names no active task")
+    return out
 
 
 def label(base: Path, feat: str) -> str:

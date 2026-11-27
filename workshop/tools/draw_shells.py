@@ -3,11 +3,11 @@
 
 Every structured type has one example page, rendered from ``workshop/fixtures/draw/<type>.json``
 (business-analysis types from ``workshop/fixtures/refund/diagrams``). Core and extended types keep
-theirs in ``skills/sw-spec/assets/<type>.html``; the types parked under ``extras/sw-spec``
+theirs in ``skills/sw-craft/assets/<type>.html``; the types parked under ``extras/sw-craft``
 keep theirs, their fixtures and the four hand-edited template pages there. Templates keep
 their own drawing and only take the current theme. ``--check`` reports drift without writing.
 
-Rendering always runs against a merged copy of the skill and ``extras/sw-spec`` so every
+Rendering always runs against a merged copy of the skill and ``extras/sw-craft`` so every
 type in the closed roster is available, whatever the shipped skill carries.
 """
 
@@ -23,18 +23,18 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-SKILL = ROOT / "skills" / "sw-spec"
-EXTRAS = ROOT / "extras" / "sw-spec"
+SKILL = ROOT / "skills" / "sw-craft"
+EXTRAS = ROOT / "extras" / "sw-craft"
 ASSETS = SKILL / "assets"
 
 
 def full_tree() -> Path:
-    """A temporary copy of the skill with ``extras/sw-spec`` laid over it."""
+    """A temporary copy of the skill with ``extras/sw-craft`` laid over it."""
     tmp = Path(tempfile.mkdtemp(prefix="specwright-full-"))
     atexit.register(shutil.rmtree, tmp, True)
     skills = tmp / "skills"
     skills.mkdir()
-    full = skills / "sw-spec"
+    full = skills / "sw-craft"
     shutil.copytree(SKILL, full, ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"))
     for part in ("assets", "references", "scripts"):
         shutil.copytree(EXTRAS / part, full / part, dirs_exist_ok=True)

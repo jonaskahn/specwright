@@ -18,9 +18,9 @@ def load(name, path):
     return module
 
 
-leakage = load("leakage", SCRIPTS / "sw-shape/scripts/leakage.py")
-card_gen = load("card_gen", SCRIPTS / "sw-spec/scripts/card_gen.py")
-new_story = load("new_story", SCRIPTS / "sw-spec/scripts/new_story.py")
+leakage = load("leakage", SCRIPTS / "sw-craft/scripts/leakage.py")
+card_gen = load("card_gen", SCRIPTS / "sw-craft/scripts/card_gen.py")
+new_story = load("new_story", SCRIPTS / "sw-craft/scripts/new_story.py")
 
 BEFORE = """---
 id: IDEA-refunds
@@ -125,9 +125,9 @@ class StoryAllocationTests(unittest.TestCase):
 
     def test_help_is_available(self):
         for script in (
-            SCRIPTS / "sw-shape/scripts/leakage.py",
-            SCRIPTS / "sw-spec/scripts/card_gen.py",
-            SCRIPTS / "sw-spec/scripts/new_story.py",
+            SCRIPTS / "sw-craft/scripts/leakage.py",
+            SCRIPTS / "sw-craft/scripts/card_gen.py",
+            SCRIPTS / "sw-craft/scripts/new_story.py",
         ):
             result = subprocess.run(
                 [sys.executable, str(script), "--help"],
@@ -143,13 +143,13 @@ class TemplateTests(unittest.TestCase):
     def test_story_template_sections_match_the_library(self):
         from kitlib import frontmatter, markdown, schema
 
-        text = (ROOT / "skills/sw-spec/assets/jira-story.md").read_text()
+        text = (ROOT / "skills/sw-craft/assets/jira-story.md").read_text()
         fm, body = frontmatter.split(text)
         self.assertEqual(fm["type"], "feature")
         self.assertEqual([s.name for s in markdown.iter_sections(body)], schema.STORY_SECTIONS)
 
     def test_card_template_is_compact(self):
-        text = (ROOT / "skills/sw-spec/assets/summary-card.md").read_text()
+        text = (ROOT / "skills/sw-craft/assets/summary-card.md").read_text()
         self.assertLessEqual(len(text.splitlines()), 80)
 
 

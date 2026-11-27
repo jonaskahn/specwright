@@ -125,7 +125,7 @@ class LifecycleTests(WorkflowTestCase):
         from kitlib import rtm
 
         rtm.registry_upsert(
-            self.base / "_meta/id-registry.md", "REF:FEAT-002", {"Kind": "story"}, "sw-spec"
+            self.base / "_meta/id-registry.md", "REF:FEAT-002", {"Kind": "story"}, "sw-craft"
         )
         graph.build(self.root, "REF")
         rows = graph_query.board(graph_query.Store(self.root, "REF"))
@@ -185,10 +185,10 @@ class LifecycleTests(WorkflowTestCase):
         self.assertEqual(report["scopes_state"][0]["next"][0], "choose item")
         before = other.read_bytes()
         report = module.report(self.root, "REF:FEAT-001")
-        self.assertEqual(report["scopes_state"][0]["next"][0], "sw-plan")
+        self.assertEqual(report["scopes_state"][0]["next"][0], "sw-forge")
         self.assertEqual(other.read_bytes(), before)
         self.assertEqual(
-            module.report(self.root, "FEAT-002")["scopes_state"][0]["next"][0], "sw-spec"
+            module.report(self.root, "FEAT-002")["scopes_state"][0]["next"][0], "sw-craft"
         )
 
     def test_accepted_split_keeps_reserved_membership_visible(self):
@@ -202,7 +202,7 @@ class LifecycleTests(WorkflowTestCase):
             )
         )
         rtm.registry_upsert(
-            self.base / "_meta/id-registry.md", "REF:FEAT-002", {"Kind": "story"}, "sw-spec"
+            self.base / "_meta/id-registry.md", "REF:FEAT-002", {"Kind": "story"}, "sw-craft"
         )
         (self.base / "records/DEC-001.md").write_text(
             frontmatter.render(
@@ -227,7 +227,7 @@ class LifecycleTests(WorkflowTestCase):
         from kitlib import writelog
 
         writelog.intent(
-            self.base / "_meta/write-log.md", "abcd", 1, "sw-publish", "create", "REF:FEAT-001"
+            self.base / "_meta/write-log.md", "abcd", 1, "sw-ship", "create", "REF:FEAT-001"
         )
         with self.assertRaisesRegex(ValueError, "recovery"):
             lifecycle.transition(self.base, "REF:FEAT-001", "return-spec")
@@ -276,5 +276,5 @@ class LifecycleTests(WorkflowTestCase):
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         self.assertEqual(
-            module.recommend("draft", "pass", "clean", "unknown", ["Q-001"], [])[0], "sw-spec"
+            module.recommend("draft", "pass", "clean", "unknown", ["Q-001"], [])[0], "sw-craft"
         )

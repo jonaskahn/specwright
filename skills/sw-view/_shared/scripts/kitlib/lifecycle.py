@@ -151,29 +151,43 @@ def feature(base: Path, key: str, status: str = "reserved") -> dict:
         if action == "reopen-shape":
             result.update(station="shape", condition="in-progress", available=["accept-slice"])
         elif not text:
-            result["available"] = ["sw-spec"]
+            result["available"] = ["sw-craft"]
         elif status == "draft":
-            result.update(condition="in-progress", available=["sw-spec", "submit-review"])
+            result.update(condition="in-progress", available=["sw-craft", "submit-review"])
         elif status == "in-review" or result["approval"] in ("stale", "invalidated"):
-            result.update(station="review", condition="in-progress", available=["sw-review"])
-        elif status in ("ready-to-publish", "published", "ready-for-dev"):
+            result.update(station="review", condition="in-progress", available=["sw-craft"])
+        elif status == "done":
+            # Every task carries evidence: the work is finished. No further station runs, so a
+            # missing plan file cannot hold a completed story back.
+            result.update(station="plan", condition="complete", available=[])
+            if not result["publication"]["published"]:
+                result["available"].append("request-publish")
+                if action == "request-publish":
+                    result.update(station="publish", condition="in-progress", available=["sw-ship"])
+        elif status in ("ready-to-publish", "published", "ready-for-dev", "in-development"):
             from kitlib import task_validation
 
             planning = task_validation.planning(base, feat)
             result["planning"] = planning
+            # `in-development` comes from sw-forge's task ledger: the story is accepted and
+            # the tasks decide whether planning has finished.
             result.update(
                 station="plan",
-                condition="complete" if planning["passing"] else "blocked",
+                condition=(
+                    "in-progress"
+                    if status == "in-development"
+                    else "complete"
+                    if planning["passing"]
+                    else "blocked"
+                ),
                 blockers=planning["findings"],
-                available=["sw-plan"],
+                available=["sw-forge"],
             )
-            # Publishing needs an accepted story, not a finished plan: tasks are never published.
+            # Publishing needs an accepted story, not a plan; the level is the user's choice.
             if not result["publication"]["published"]:
                 result["available"].append("request-publish")
                 if action == "request-publish":
-                    result.update(
-                        station="publish", condition="in-progress", available=["sw-publish"]
-                    )
+                    result.update(station="publish", condition="in-progress", available=["sw-ship"])
         else:
             raise ValueError(f"unknown feature status: {status}")
         if status in ("published", "ready-for-dev") and not result["publication"]["published"]:

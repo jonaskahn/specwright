@@ -25,18 +25,27 @@ person can make. Each stop asks one batch of questions, never a bare "continue?"
 
 | Just finished | No blocker → next, automatically | Human gate inside the next step |
 | --- | --- | --- |
-| sw-ingest | Re-route with sw-start (shape for a new idea, spec for clear features) | Proposed impacts on accepted or published stories wait for a decision |
-| sw-shape writing | — | Owner accepts or revises the split (`accept-split`) |
-| Split accepted | sw-spec for every reserved feature (parallel batch) | — |
-| sw-spec | `submit-review` (agent passes the token itself), then sw-review | Independent reviewers debate first (no stop); then the owner finalizes the review pack (`signoff: optional`), or sign-off evidence (`required`) |
-| Accept recorded | sw-plan for every accepted feature | — |
-| sw-plan, check passes | Done: Markdown delivery | — |
-| Any station, publish | Never automatic | sw-publish dry-run and a fresh yes to it |
+| sw-craft | Re-route with sw-start (shape for a new idea, spec for clear features) | Proposed impacts on accepted or published stories wait for a decision |
+| sw-craft writing | — | Owner accepts or revises the split (`accept-split`) |
+| Split accepted | sw-craft for every reserved feature (parallel batch) | — |
+| sw-craft | `submit-review` (agent passes the token itself), then sw-craft | Independent reviewers debate first (no stop); then the owner finalizes the review pack (`signoff: optional`), or sign-off evidence (`required`) |
+| Accept recorded | Done for the BA role: the run stops and lists the accepted stories | — |
+| The user says forge | sw-forge for the named feature | The code is written elsewhere, from the prompts |
+| sw-forge, check passes | Done: Markdown delivery | — |
+| Any station, publish | Never automatic | sw-ship dry-run and a fresh yes to it |
 
 `submit-review` moves a draft to review; it is not approval. The transition refuses on its own
 while a blocking question is open or the review lint fails, so the agent may pass the token
-without asking. Approval stays human: only sw-review records it, from the owner's answer to
+without asking. Approval stays human: only sw-craft records it, from the owner's answer to
 the table it just showed.
+
+## The role boundary
+
+sw-craft ends at the finalize. It never loads sw-forge by itself: the BA may be a different
+person from the Dev, and the Dev may write code in another repository. When the last story of
+a run is accepted, the hand-off is `done` with one line — "Say **forge** to plan FEAT-001" —
+not a `continue` into sw-forge. A user who plays both roles says forge, and one confirm
+switches over.
 
 ## When the run stops
 
@@ -73,7 +82,7 @@ A non-blocking unknown is never a stop: save it as an assumed question with its 
    for "continue" or a bare command (the whole scope, station by station). The decision alone,
    without maintenance: `_shared/scripts/handoff.py next --cwd <project> --done <skill>`.
 3. Act on `handoff.mode`:
-   - `continue`: print `say` as one line (for example `→ sw-review for REF:FEAT-001, REF:FEAT-002`),
+   - `continue`: print `say` as one line (for example `→ sw-craft for REF:FEAT-001, REF:FEAT-002`),
      apply each entry in `transitions` with `../sw-start/scripts/transition.py <action> --item <key>`
      (preview, then `--confirm` with the token it printed), then read `../<next_skill>/SKILL.md`
      and run it for `items` at once. If that skill is not installed, name it and stop.
@@ -98,7 +107,7 @@ assumed questions, checkpoint lines) comes once, at the stop or at done.
 
 The board, not the conversation, says where work stands, so a run can start anywhere:
 
-- **A skill invoked by name** (`/sw-spec FEAT-004`) checks its own prerequisites, does its
+- **A skill invoked by name** (`/sw-craft FEAT-004`) checks its own prerequisites, does its
   work, then hands off by this procedure like any other station.
 - **"continue", "go on", "next", "resume"** with no item: run `handoff.py next` (no `--done`)
   and start the skill it names for the whole scope. sw-start does this when it is loaded.
@@ -124,7 +133,7 @@ checkpoint, and stop with "Say continue to pick up at <next skill>". The files c
 ## What a hand-off never does
 
 - Approve, sign off or accept a split. Those come from the user's answer to what was shown.
-- Publish, write to Jira or Confluence, or enter sw-publish. A stored Jira preference is no
+- Publish, write to Jira or Confluence, or enter sw-ship. A stored Jira preference is no
   request.
 - Install a runtime or upgrade a workspace without the exact command confirmed this session.
 - Skip lint, DoR or the task check, or retry past the one repair pass.
@@ -136,9 +145,9 @@ checkpoint, and stop with "Say continue to pick up at <next skill>". The files c
 User: "spec the refunds epic". The split is already accepted with three reserved features.
 
 ```text
-→ sw-spec for REF:FEAT-001, REF:FEAT-002, REF:FEAT-003      (parallel, one worker each)
+→ sw-craft for REF:FEAT-001, REF:FEAT-002, REF:FEAT-003      (parallel, one worker each)
   2 assumed questions saved (Q-004, Q-005); FEAT-002 waits on blocking Q-003
-→ sw-review for REF:FEAT-001, REF:FEAT-003                  (submitting drafts first; not approval)
+→ sw-craft for REF:FEAT-001, REF:FEAT-003                  (submitting drafts first; not approval)
 
 | Feature  | Verdict | Hash         | Blocks |
 | FEAT-001 | pass    | sha256:1a2b… |        |
@@ -154,11 +163,11 @@ User: "yes, and B". The agent records the answer to Q-003 and both accepts, runs
 `handoff.py next`, and goes on without asking:
 
 ```text
-→ sw-spec for REF:FEAT-002     (applying the answer to Q-003)
-→ sw-plan for REF:FEAT-001, REF:FEAT-003
-→ sw-review for REF:FEAT-002   (submitting the draft first; not approval)
+→ sw-craft for REF:FEAT-002     (applying the answer to Q-003)
+→ sw-forge for REF:FEAT-001, REF:FEAT-003
+→ sw-craft for REF:FEAT-002   (submitting the draft first; not approval)
 Accept FEAT-002 (sha256:77c1…)?
 ```
 
-Two stops in the whole run, each one a real decision. After the last yes, sw-plan runs for
+Two stops in the whole run, each one a real decision. After the last yes, sw-forge runs for
 FEAT-002 and the run ends with the Markdown delivery.

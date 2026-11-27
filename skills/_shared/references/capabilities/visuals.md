@@ -1,11 +1,11 @@
 # Visuals capability
 
 Produces offline diagrams and illustration templates when a picture is justified, and
-checks existing visuals before calling them current. It is bundled inside `sw-spec`.
+checks existing visuals before calling them current. It is bundled inside `sw-craft`.
 
 ## Need check
 
-Read sw-spec's references/illustration-need.md before drawing. A current illustration is
+Read sw-craft's references/illustration-need.md before drawing. A current illustration is
 a no-op. Fewer than five items and one actor means use a paragraph; do not invent
 actors to bypass the gate. No diagram creates policy or approval.
 
@@ -23,10 +23,10 @@ actors to bypass the gate. No diagram creates policy or approval.
 
 ## Rendering
 
-Select a type with sw-spec's references/type-picker.md and the matching
-references/type-*.md entry. Run sw-spec's scripts/render_diagram.py with absolute JSON
+Select a type with sw-craft's references/type-picker.md and the matching
+references/type-*.md entry. Run sw-craft's scripts/render_diagram.py with absolute JSON
 and approved output paths. Draw .svg by default and embed it in the story with
-sw-spec's scripts/embed_diagram.py; .html is an optional companion for the exact data
-table and local navigation, never the only file. Run sw-spec's scripts/check_borders.py and
+sw-craft's scripts/embed_diagram.py; .html is an optional companion for the exact data
+table and local navigation, never the only file. Run sw-craft's scripts/check_borders.py and
 scripts/check_offline.py on every artifact. Escape external text before putting it in
 HTML. Generated diagrams are offline with full borders, outlines, tints or shadows.

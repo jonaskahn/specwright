@@ -171,16 +171,16 @@ def check(path: Path, roots: dict[str, Path]) -> dict[str, Any]:
     else:
         shape = "mixed"
     recommend = {
-        "new": "sw-spec: a new story (nothing is built yet)",
-        "as-is": "sw-spec: confirmed behaviour becomes version 1; a change follows if wanted",
-        "complete": "sw-spec: version 1 from done rows, then a completion change for the gaps",
+        "new": "sw-craft: a new story (nothing is built yet)",
+        "as-is": "sw-craft: confirmed behaviour becomes version 1; a change follows if wanted",
+        "complete": "sw-craft: version 1 from done rows, then a completion change for the gaps",
         "fix": "answer the divergences: code wrong → a fix; spec wrong → a correction",
         "mixed": "answer the questions first; then version 1 plus a completion change",
         "empty": "fill the Criteria table",
     }[shape]
     if verifies:
         recommend = (
-            f"sw-spec: ship and merge {verifies} (merge.py ship, then finish)"
+            f"sw-craft: ship and merge {verifies} (merge.py ship, then finish)"
             if verified
             else f"{verifies} is not fully in the code: implement the gaps, or ship with "
             "--accept-gaps and the owner's reason"

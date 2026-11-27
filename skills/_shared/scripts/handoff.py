@@ -3,7 +3,7 @@
 
 Run it as the last step of every station, after maintenance and the checkpoint:
 
-    handoff.py next --cwd <project> [--item FEAT-001] [--done sw-spec] [--until review]
+    handoff.py next --cwd <project> [--item FEAT-001] [--done sw-craft] [--until review]
 
 The answer is JSON read from saved files (the lifecycle board), so any skill in any state gets
 the same answer. It rebuilds a stale graph (bounded maintenance) and otherwise writes nothing:
@@ -27,13 +27,13 @@ from kitlib import graph, graph_query, handoff, workspace  # noqa: E402
 
 SKILLS = (
     "sw-start",
-    "sw-analyze",
-    "sw-ingest",
-    "sw-shape",
-    "sw-spec",
-    "sw-review",
-    "sw-plan",
-    "sw-publish",
+    "sw-craft",
+    "sw-craft",
+    "sw-craft",
+    "sw-craft",
+    "sw-craft",
+    "sw-forge",
+    "sw-ship",
 )
 
 
@@ -46,7 +46,9 @@ def _say(answer: dict) -> str:
     if mode == "confirm":
         return answer["ask"]
     if mode == "done":
-        return "Done: story, plan, tasks and agent prompts are delivered as Markdown."
+        return answer.get("say") or (
+            "Done: story, plan, tasks and agent prompts are delivered as Markdown."
+        )
     return "Paused: " + answer["reason"]
 
 

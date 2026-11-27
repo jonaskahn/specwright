@@ -9,7 +9,7 @@ from pathlib import Path
 from kitlib import illustration
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS = ROOT / "skills/sw-spec/scripts"
+SCRIPTS = ROOT / "skills/sw-craft/scripts"
 
 
 def load(name):

@@ -1,4 +1,4 @@
-"""Pre-ship verification rows (kitlib.analysis) and Jira status sync planning (sw-publish)."""
+"""Pre-ship verification rows (kitlib.analysis) and Jira status sync planning (sw-ship)."""
 
 import sys
 import tempfile
@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "skills" / "_shared" / "scripts"))
-sys.path.insert(0, str(ROOT / "skills" / "sw-publish" / "scripts"))
+sys.path.insert(0, str(ROOT / "skills" / "sw-ship" / "scripts"))
 
 # kitlib must be imported before status_sync: status_sync prepends its own _shared on import.
 from kitlib import analysis  # noqa: E402,I001

@@ -1,6 +1,6 @@
 ---
 name: sw-view
-description: Opens a local, read-only web console over the workspace data: projects, metrics, features, tasks, a kanban board, the knowledge graph with its outline and queries, records, sources and quality. Use when asked to show a dashboard, open the console, see the graph, browse features or tasks, or view metrics for the whole workspace. Do NOT use to write or change requirements (use sw-spec), record approval (use sw-review) or publish (use sw-publish).
+description: Opens a local, read-only web console over the workspace data: projects, metrics, features, tasks, a kanban board, the knowledge graph with its outline and queries, records, sources and quality. Use when asked to show a dashboard, open the console, see the graph, browse features or tasks, or view metrics for the whole workspace. Do NOT use to write or change requirements (use sw-craft), record approval (use sw-craft) or publish (use sw-ship).
 ---
 
 # sw-view

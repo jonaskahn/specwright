@@ -35,6 +35,7 @@ PLACEHOLDERS = "{<*"
 def dangling_references(skill: Path) -> list[str]:
     """``file -> reference`` lines for every named file the skill folder does not hold."""
     problems: list[str] = []
+    optional = optional_references(skill)
     for path in sorted(skill.rglob("*")):
         if not path.is_file() or path.suffix not in TEXT_SUFFIXES:
             continue
@@ -46,8 +47,23 @@ def dangling_references(skill: Path) -> list[str]:
             if not any(
                 c.exists() for c in (skill / rel, skill / "_shared" / rel, path.parent / rel)
             ):
+                if rel in optional:
+                    continue
                 problems.append(f"{path.relative_to(skill).as_posix()}: names missing {rel}")
     return problems
+
+
+def optional_references(skill: Path) -> set[str]:
+    """Named files a core build may leave out: every parked type's copy under extras/.
+
+    The source tree is the authority here (the package itself is what is being checked), so
+    a reference to a parked type is satisfied by extras/ and not by a missing file.
+    """
+    canonical = Path(__file__).resolve().parents[2]
+    extras = canonical / "extras" / skill.name
+    if not extras.is_dir():
+        return set()
+    return {p.relative_to(extras).as_posix() for p in extras.rglob("*") if p.is_file()}
 
 
 def broken_scripts(skill: Path) -> list[str]:
