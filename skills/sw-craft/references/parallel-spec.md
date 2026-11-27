@@ -8,7 +8,8 @@ content stay serial.
 ## Lead
 
 1. Resolve scope and list the batch from the registry and graph board (reserved, accepted,
-   no `02-drafts/FEAT-NNN.story.md`). Show it in one line and start; under `flow: auto` there is no
+   no `02-drafts/FEAT-NNN.story.md`), keeping only features with no unfinished `depends_on`
+   (`graph.py ready --kind feat`; `references/layered-writing.md`). Show it in one line and start; under `flow: auto` there is no
    entry question (`_shared/references/handoff.md`), under `flow: guided` one yes covers the batch.
 2. For each item run `_shared/scripts/graph.py context`; read its answered questions,
    decisions and cited sources. Reserve new BR/NFR/FR IDs the items need. Record any

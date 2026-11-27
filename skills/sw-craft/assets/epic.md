@@ -6,6 +6,7 @@ title: <outcome-led title>
 status: draft
 bo: []           # one or more business objectives this epic serves, e.g. [BO-001]
 scopes: [<SCOPE>]
+depends_on: []   # epics that must be done first, e.g. [EPIC-001]
 ---
 
 ## Outcome

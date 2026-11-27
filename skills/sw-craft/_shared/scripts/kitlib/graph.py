@@ -950,6 +950,27 @@ def scopes_for(root: Path, scope: str | None) -> list[str]:
     return [scope] if scope else workspace.list_scopes(root)
 
 
+def _dependency_cycles(graph: Graph) -> list[str]:
+    """One finding per item that waits, directly or not, on itself."""
+    deps: dict[str, list[str]] = {}
+    for e in graph.edges:
+        if e.rel == "depends_on" and e.res != "unresolved":
+            deps.setdefault(e.src, []).append(e.dst)
+    out = []
+    for start in sorted(deps):
+        seen: set[str] = set()
+        stack = list(deps[start])
+        while stack:
+            key = stack.pop()
+            if key == start:
+                out.append(f"{start}: depends_on forms a cycle")
+                break
+            if key not in seen:
+                seen.add(key)
+                stack.extend(deps.get(key, []))
+    return out
+
+
 def check(root: Path, scope: str | None = None) -> list[str]:
     """Drift and link problems; mentioned-only links are notes, not failures."""
     root = root.resolve()
@@ -982,6 +1003,7 @@ def check(root: Path, scope: str | None = None) -> list[str]:
                 findings.append(
                     f"{e.src} -{e.rel}-> {e.dst} references a tombstone ({e.file}:{e.line})"
                 )
+        findings += _dependency_cycles(graph)
         jira: dict[str, str] = {}
         for e in graph.edges:
             if e.rel == "published_as" and ":FEAT-" in e.src:

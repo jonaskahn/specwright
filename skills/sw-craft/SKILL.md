@@ -112,6 +112,7 @@ On `done`: Report accepted stories and tasks. Say "Say **forge** to plan FEAT-00
 | Empty epic before acceptance; legacy register | scripts/new_epic.py --help; scripts/baseline.py --help; assets/epic.md |
 | Importing: converter routes, limits, exit codes | references/router.md; scripts/wiki_pull.py --help |
 | Candidates, conflicts, multiple snapshots | references/extraction-checklist.md; references/parallel-work.md; references/candidate-contract.md; scripts/candidates.py --help |
+| More than one epic or feature; what can run in parallel | references/layered-writing.md |
 | Secrets or personal data | references/pii-policy.md |
 | Mockups, links, images in a batch | _shared/references/capabilities/assets.md |
 | Remote read tools | _shared/references/capabilities/remote.md |

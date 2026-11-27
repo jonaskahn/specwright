@@ -143,6 +143,15 @@ class ReadinessTests(unittest.TestCase):
         report = json.loads(done.stdout)
         self.assertIn("REF:TASK-001-2", report["newly_ready"])
 
+    def test_a_dependency_cycle_is_a_finding(self):
+        (self.drafts / "FEAT-001.story.md").write_text(
+            story("FEAT-001", "First", epic="EPIC-001", depends_on=["FEAT-002"])
+        )
+        graph.build(self.root, "REF")
+        findings = graph.check(self.root, "REF")
+        self.assertIn("REF:FEAT-001: depends_on forms a cycle", findings)
+        self.assertIn("REF:FEAT-002: depends_on forms a cycle", findings)
+
 
 if __name__ == "__main__":
     unittest.main()
