@@ -598,3 +598,14 @@ def read_map(store: Store, epic: str | None) -> str:
 
 
 _ = schema
+
+
+def ready(store: Store, kind: str | None = None) -> list[dict]:
+    """Rows of the generated ready file: status, whether the item is ready, what blocks it."""
+    out = []
+    for row in meta_rows(store, "ready.tsv"):
+        if kind and row["kind"] != kind:
+            continue
+        row["blocked_by"] = [b for b in row["blocked_by"].split(",") if b]
+        out.append(row)
+    return out

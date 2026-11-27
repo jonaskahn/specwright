@@ -45,7 +45,8 @@ RELATED = {"q", "dec", "snapshot", "feat", "cr", "amendment"}
 STRUCTURAL = {"mentions", "has_ac", "has_task", "published_as", "last_snapshot", "external_parent"}
 REGISTER = "01-analysis/baseline/register.tsv"
 REGISTER_COLUMNS = ["legacy_id", "title", "group", "source_ref"]
-FILES = ("INDEX.md", "index.tsv", "CROSSWALK.tsv", "READ-FIRST.md")
+FILES = ("INDEX.md", "index.tsv", "CROSSWALK.tsv", "READ-FIRST.md", "ready.tsv")
+READY_COLUMNS = ["key", "kind", "status", "ready", "blocked_by"]
 
 
 def cell(value: object) -> str:
@@ -306,7 +307,16 @@ def render(graph: Graph, root: Path, scopes: list[str], label: str) -> dict[str,
     cross_tsv = (
         "\n".join([f"# {BANNER}", "# " + "\t".join(CROSSWALK_COLUMNS), *map(_line, cross)]) + "\n"
     )
+    from kitlib import readiness
+
+    state = readiness.compute(graph)
+    ready_rows = [
+        _line([k, v["kind"], v["status"], "yes" if v["ready"] else "no", ",".join(v["blocked_by"])])
+        for k, v in state.items()
+    ]
+    ready_tsv = "\n".join([f"# {BANNER}", "# " + "\t".join(READY_COLUMNS), *ready_rows]) + "\n"
     return {
+        "ready.tsv": ready_tsv,
         "INDEX.md": index_md(data, label),
         "index.tsv": index_tsv,
         "CROSSWALK.tsv": cross_tsv,

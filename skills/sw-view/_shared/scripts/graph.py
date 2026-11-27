@@ -66,6 +66,9 @@ def _parser():
     fnd.add_argument("--epic")
     add("build", "rebuild the graph (the only command that writes)")
     add("check", "drift, unresolved links, tombstones, duplicate Jira keys")
+    rdy = add("ready", "items that can start now, and what blocks the others")
+    rdy.add_argument("--kind", choices=["epic", "feat", "task"])
+    rdy.add_argument("--all", action="store_true", help="include items that are not ready")
     add("stats", "counts")
     return parser
 
@@ -135,6 +138,15 @@ def main(argv=None):
             rows = graph_query.board(store, args.item, args.station)
             lines = [f"{r['id']}: {r['station']} ({r['condition']})" for r in rows]
             return _emit(args, store, lines, {"items": rows})
+        if args.command == "ready":
+            rows = graph_query.ready(store, args.kind)
+            shown = rows if args.all else [r for r in rows if r["ready"] == "yes"]
+            lines = [
+                f"{r['key']}\t{r['status']}"
+                + (f"\tblocked by {', '.join(r['blocked_by'])}" if r["blocked_by"] else "")
+                for r in shown
+            ]
+            return _emit(args, store, lines or ["nothing is ready"], {"items": shown})
         if args.command == "stats":
             return _emit(args, store, graph_query.stats(store))
         if args.command == "find":

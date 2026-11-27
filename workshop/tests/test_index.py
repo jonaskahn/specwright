@@ -65,7 +65,7 @@ class IndexTests(WorkflowTestCase):
         return [dict(zip(head, ln.split("\t"), strict=False)) for ln in lines[2:]]
 
     def test_every_generated_file_is_written(self):
-        for name in ("INDEX.md", "index.tsv", "CROSSWALK.tsv", "READ-FIRST.md"):
+        for name in ("INDEX.md", "index.tsv", "CROSSWALK.tsv", "READ-FIRST.md", "ready.tsv"):
             self.assertTrue((self.base / "_meta" / name).is_file(), name)
 
     def test_rows_carry_name_aliases_status_and_links(self):

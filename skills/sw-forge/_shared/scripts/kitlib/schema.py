@@ -159,7 +159,7 @@ STATE_LABELS = {"ready-to-publish": "accepted"}
 GRAPH_DIR = "_meta/graph"
 # Derived, git-ignored views of the spec for the console and any other reader (dataformat.py).
 DATA_DIR = "_meta/data"
-GRAPH_SCHEMA_VERSION = 3
+GRAPH_SCHEMA_VERSION = 4
 
 # The closed set of graph relations; a link outside this set is never recorded.
 RELATIONS = (
@@ -182,5 +182,6 @@ RELATIONS = (
     "last_snapshot",
     "external_parent",
     "blocks",
+    "depends_on",
     "mentions",
 )

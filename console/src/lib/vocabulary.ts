@@ -88,6 +88,7 @@ const RELATIONS: Record<string, [string, string]> = {
   published_as: ['is published as Jira issue', 'is the published form of'],
   last_snapshot: ['was last captured in snapshot', 'is the latest snapshot of'],
   external_parent: ['sits under Jira issue', 'is the parent of'],
+  depends_on: ['depends on', 'is needed by'],
   mentions: ['mentions', 'is mentioned by'],
 };
 
