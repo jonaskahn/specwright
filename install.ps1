@@ -1,4 +1,4 @@
-# Specwright installer for Windows: all five skills, into the agents you choose.
+# Specwright installer for Windows: every public skill, into the agents you choose.
 #
 #   irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1 | iex
 #
@@ -31,10 +31,11 @@ $ProgressPreference = 'SilentlyContinue'
 
 $Repo = if ($env:SPECWRIGHT_REPO) { $env:SPECWRIGHT_REPO } else { 'jonaskahn/specwright' }
 $Ref = if ($env:SPECWRIGHT_REF) { $env:SPECWRIGHT_REF } else { 'main' }
-if ($Latest) { $Branch = 'main' }
 $SourceSet = $false
 $SourceName = ''
 $RefKind = 'heads'
+# --latest is the default source: it pins nothing and conflicts with nothing.
+if ($Latest) { $Branch = ''; $Tag = ''; $Version = '' }
 $Skills = @('sw-start', 'sw-craft', 'sw-forge', 'sw-ship', 'sw-view')
 if ($env:SPECWRIGHT_INSTALL_YES -eq '1') { $Yes = $true }
 
@@ -258,7 +259,7 @@ function Write-ScreenOpen {
 	Write-Row ''
 	Write-Center 'I N S T A L L E R' 'bright'
 	Write-Row ''
-	Write-Center "five skills $($script:Dot) $Ref" 'rose'
+	Write-Center "skills $($script:Dot) $Ref" 'rose'
 	Write-Row ''
 	Write-Separator ([string][char]0x251C) ([string][char]0x2524)
 }
@@ -851,7 +852,7 @@ if ($Agent) {
 Write-ScreenOpen
 if ($interactive) {
 	Write-Section 'Make it yours'
-	Write-Row '  All five skills install together. Pick a scope and the agents.'
+	Write-Row '  All the skills install together. Pick a scope and the agents.'
 	Write-Row ("  " + (Paint "Project: $script:Target" 'mid'))
 	Write-Row ''
 	if ($Global -or $Project) {
@@ -976,20 +977,28 @@ function Test-SpecwrightSkill([string] $Path, [string] $Skill) {
 }
 $previous = @()
 foreach ($dest in $script:Destinations) {
-	foreach ($skill in $Skills) {
-		$path = Join-Path $dest $skill
-		if (-not (Test-Path -LiteralPath $path)) { continue }
+	# Every Specwright skill the destination already holds is replaced, not
+	# just the ones this source ships: installing an older ref over a newer one
+	# would otherwise leave both layouts side by side.
+	$existing = @(Get-ChildItem -LiteralPath $dest -Directory -Filter 'sw-*' -Force -ErrorAction SilentlyContinue)
+	foreach ($entry in ($existing | Sort-Object Name)) {
+		$skill = $entry.Name
+		$path = $entry.FullName
 		if (-not (Test-SpecwrightSkill $path $skill)) {
 			Fail 'refusing to replace a folder that is not a Specwright skill' @(
 				$path,
 				"That folder has no matching name: $skill in SKILL.md."
 			)
 		}
-		$item = Get-Item -LiteralPath $path -Force
 		$reparse = [IO.FileAttributes]::ReparsePoint
-		if (-not ($item.Attributes -band $reparse)) {
-			$source = (Resolve-Path -LiteralPath (Join-Rel $script:SkillRoot "skills/$skill")).Path
-			if ($item.FullName -eq $source) { Fail 'refusing to delete the skill source' @($path) }
+		if (-not ($entry.Attributes -band $reparse)) {
+			# A skill this source does not ship still gets removed; there is no
+			# source folder to compare against, and nothing to protect.
+			$sourcePath = Join-Rel $script:SkillRoot "skills/$skill"
+			if (Test-Path -LiteralPath $sourcePath) {
+				$source = (Resolve-Path -LiteralPath $sourcePath).Path
+				if ($entry.FullName -eq $source) { Fail 'refusing to delete the skill source' @($path) }
+			}
 		}
 		$previous += $path
 	}
@@ -1023,7 +1032,7 @@ foreach ($dest in $script:Destinations) {
 	foreach ($skill in $Skills) {
 		Copy-Item -Recurse -Path (Join-Rel $script:SkillRoot "skills/$skill") -Destination (Join-Path $dest $skill)
 	}
-	Write-OK "Copied 5 skills into $dest"
+	Write-OK "Copied $($Skills.Count) skills into $dest"
 	if ($script:CommandsRoot) {
 		$count = Install-Commands $script:CommandsRoot $dest
 		Write-OK "Copied $count command(s) into $(Join-Path (Split-Path $dest -Parent) 'commands')"
@@ -1034,7 +1043,7 @@ Write-Rule
 Write-OK (Paint 'Specwright is installed.' 'bold')
 Write-Row ''
 Write-Row ("  " + (Paint 'Scope' 'mid') + "    $($script:Scope)")
-Write-Row ("  " + (Paint 'Skills' 'mid') + "   5 skills in $($script:Destinations.Count) location(s)")
+Write-Row ("  " + (Paint 'Skills' 'mid') + "   $($Skills.Count) skills in $($script:Destinations.Count) location(s)")
 if ($script:CommandsRoot) {
 	Write-Row ("  " + (Paint 'Commands' 'mid') + "  $(@(Get-CommandFiles $script:CommandsRoot).Count) /sw-* wrappers beside them")
 }

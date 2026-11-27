@@ -1,5 +1,5 @@
 #!/bin/sh
-# Specwright installer: all five skills, into the agents you choose.
+# Specwright installer: every public skill, into the agents you choose.
 #
 #   curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh
 #   curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh -s -- --project
@@ -288,7 +288,7 @@ screen_open() {
 	row ''
 	center_row "${BRIGHT}I N S T A L L E R${OFF}"
 	row ''
-	center_row "${LIGHT}five skills · ${REF}${OFF}"
+	center_row "${LIGHT}skills · ${REF}${OFF}"
 	center_row "${LIGHT}$(printf '%s' "$OS" | tr '[:lower:]' '[:upper:]')${OFF}"
 	row ''
 	hline '├' '┤'
@@ -359,8 +359,11 @@ VERSION_SET=0
 [ -z "${SPECWRIGHT_VERSION:-}" ] || VERSION_SET=1
 BRANCH="${SPECWRIGHT_BRANCH:-}"
 BRANCH_SET=0
+[ -z "${SPECWRIGHT_BRANCH:-}" ] || BRANCH_SET=1
 TAG="${SPECWRIGHT_TAG:-}"
 TAG_SET=0
+[ -z "${SPECWRIGHT_TAG:-}" ] || TAG_SET=1
+LATEST_SET=0
 
 usage() {
 	cat <<EOF
@@ -407,7 +410,7 @@ while [ $# -gt 0 ]; do
 	--tag=*) TAG="${1#*=}"; TAG_SET=1; shift ;;
 	--version) VERSION="${2:?--version needs a value}"; VERSION_SET=1; shift 2 ;;
 	--version=*) VERSION="${1#*=}"; VERSION_SET=1; shift ;;
-	--latest) BRANCH="main"; BRANCH_SET=1; shift ;;
+	--latest) LATEST_SET=1; shift ;;
 	-y | --yes) ASSUME_YES=1; shift ;;
 	--list-agents) LIST_ONLY=1; shift ;;
 	-h | --help) usage; exit 0 ;;
@@ -442,6 +445,7 @@ tag_ref() {
 }
 
 # One source at a time. Refusing beats guessing which flag was meant.
+# --latest is the default source, so it conflicts with nothing and pins nothing.
 SOURCE_SET=0
 SOURCE_NAME=""
 _picked=0
@@ -450,6 +454,9 @@ _picked=0
 [ "$VERSION_SET" = 0 ] || _picked=$((_picked + 1))
 [ "$_picked" -le 1 ] || die "choose one of --branch, --tag or --version" "run install.sh --help"
 [ "$_picked" = 0 ] || SOURCE_SET=1
+if [ "$LATEST_SET" = 1 ] && [ "$_picked" -ge 1 ]; then
+	die "--latest cannot be combined with --branch, --tag or --version" "run install.sh --help"
+fi
 
 # REF_KIND says which namespace fetch_archive tries first: heads or tags.
 # Naming a branch or tag means that ref, so SOURCE_SET also stops a checkout
@@ -1127,7 +1134,7 @@ enter_ids() {
 
 options_screen() {
 	section "Make it yours"
-	row "  All five skills install together. Pick a scope and the agents."
+	row "  All the skills install together. Pick a scope and the agents."
 	row "  ${MID}Project: $TARGET${OFF}"
 	row ""
 
@@ -1252,9 +1259,12 @@ is_our_command() {
 replace_existing() {
 	: >"$TMP_DIR/old"
 	while IFS= read -r _dest; do
-		for _skill in $SKILLS; do
-			_path="$_dest/$_skill"
+		# Every Specwright skill the destination already holds is replaced, not
+		# just the ones this source ships: installing an older ref over a newer
+		# one would otherwise leave both layouts side by side.
+		for _path in "$_dest"/sw-*; do
 			[ -e "$_path" ] || [ -L "$_path" ] || continue
+			_skill="${_path##*/}"
 			if ! is_ours "$_skill" "$_path"; then
 				die "refusing to replace a folder that is not a Specwright skill" \
 					"$_path" \
@@ -1446,7 +1456,9 @@ summary() {
 	row "  ${BRIGHT}✓${OFF} ${BOLD}Specwright is installed.${OFF}"
 	row ""
 	row "  ${MID}Scope${OFF}    $SCOPE"
-	row "  ${MID}Skills${OFF}   5 skills in $_places location(s)"
+	_have=0
+	for _skill in $SKILLS; do _have=$((_have + 1)); done
+	row "  ${MID}Skills${OFF}   $_have skills in $_places location(s)"
 	[ -z "$COMMANDS_SRC" ] || row "  ${MID}Commands${OFF} $(command_files "$COMMANDS_SRC" | wc -l | tr -d ' ') /sw-* wrappers beside them"
 	row ""
 	while IFS= read -r _dest; do
