@@ -48,7 +48,7 @@
   "scripts/kitlib/view_build.py": "9062bd7d5c82",
   "scripts/kitlib/view_extract.py": "9fdcbd8a26dc",
   "scripts/kitlib/view_server.py": "fbb0da521e1f",
-  "scripts/kitlib/workspace.py": "01cebcbf6749",
+  "scripts/kitlib/workspace.py": "0dd05a5f5acd",
   "scripts/kitlib/writelog.py": "cd458649ee8f",
   "scripts/runtime-pins.tsv": "ce9b02898b76",
   "scripts/runtime.ps1": "771f91a98c4b",

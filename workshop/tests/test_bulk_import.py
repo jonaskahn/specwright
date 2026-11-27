@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from kitlib import frontmatter, graph, graph_query, ids, miniyaml, rtm, schema
+from kitlib import frontmatter, graph, graph_query, ids, rtm, schema
 from tests.test_workflow import WorkflowTestCase
 
 SCRIPT = Path(__file__).resolve().parents[2] / "skills/sw-craft/scripts/bulk_import.py"
@@ -114,18 +114,16 @@ class BulkImportTests(WorkflowTestCase):
         self.assertEqual(plan["items"][1]["source_version"], "v4")
         self.assertEqual(before, sorted(p.name for p in (self.base / "00-inbox").rglob("*")))
 
-    def test_a_batch_over_the_limit_needs_the_typed_count(self):
-        path = self.base / "project.yaml"
-        data = miniyaml.loads(path.read_text())
-        data["limits"]["max_pages"] = 2
-        path.write_text(miniyaml.dumps(data))
-        refused = self.run_batch()
-        self.assertEqual(refused.returncode, 3)
-        self.assertIn("--confirm-over-limit 3", refused.stderr)
-        self.assertFalse((self.base / "00-inbox/imports/b1").exists())
-        wrong = self.run_batch("--confirm-over-limit", "2")
-        self.assertEqual(wrong.returncode, 3)
-        self.assertEqual(self.run_batch("--confirm-over-limit", "3").returncode, 0)
+    def test_a_large_list_imports_in_sub_batches_without_a_cap(self):
+        result = self.run_batch("--batch-size", "2")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        data = self.batch_manifest()
+        self.assertEqual((data["batch_size"], data["batches"], data["received_count"]), (2, 2, 3))
+        self.assertEqual([i["sub_batch"] for i in data["items"]], [1, 1, 2])
+        self.assertNotIn("limit", data)
+
+    def test_a_batch_size_below_one_is_refused(self):
+        self.assertEqual(self.run_batch("--batch-size", "0").returncode, 2)
 
     def test_expected_and_received_counts_are_reconciled(self):
         result = self.run_batch("--expected", "4")

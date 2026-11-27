@@ -247,7 +247,7 @@ def project_manifest(
             "publish": {"transitions": False, "sandbox": True, "attach_diagrams": False},
             "output": {"default": output},
             "confluence": {"spaces": []},
-            "limits": {"child_depth": 2, "max_pages": 50},
+            "limits": {"child_depth": 2, "max_pages": 50, "batch_size": 50},
             "sources": [],
             "evidence": {"allowed_kinds": list(schema.DEFAULT_EVIDENCE_KINDS)},
             "ignore_folders": [],

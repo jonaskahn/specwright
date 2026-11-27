@@ -18,7 +18,8 @@ or the case is an edge case named below. SKILL.md is the default path; kernel ru
    page of headings and links is flagged `content_class: index-only`: it is a map, not
    evidence. For many files run scripts/bulk_import.py --batch-id <id> (--dry-run
    first): it imports parents first, writes a manifest with expected and received
-   counts, and needs --confirm-over-limit <count> above limits.max_pages. Exit 5 means the
+   counts, and imports every item in sub-batches of --batch-size (default limits.batch_size, else 50),
+   with no total cap. Exit 5 means the
    received count differs from the expected one: never use that batch as whole.
 3. Scan each snapshot: run scripts/secrets_scan.py <snapshot>; policy in
    references/pii-policy.md. Exit 1 (secrets) blocks hand-off: redact a copy with

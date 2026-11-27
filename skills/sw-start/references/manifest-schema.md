@@ -15,7 +15,7 @@ holds every field later skills resolve.
 | `publish` | `transitions` (must stay false), `sandbox`, `attach_diagrams`. |
 | `output` | `default`: `markdown` (default), `jira` or `both`; `ask` stays valid but is not the default. Jira only when configured or the user asks to push. |
 | `confluence` | `spaces`: mapped page spaces. |
-| `limits` | `child_depth`, `max_pages` for Confluence pulls; `max_pages` is also the largest batch an import runs without a typed confirmation. |
+| `limits` | `child_depth`, `max_pages` for Confluence pulls; `batch_size` (default 50) is the items per sub-batch of a bulk import, which has no total cap. |
 | `sources` | Registered import sources: `id`, `system`, `root`, `snapshot_date`, `expected_count` and an optional `legacy_id_pattern` (a regex for the project's old IDs). Add with `workspace.py source add`. |
 | `evidence` | `allowed_kinds` a decision may cite: `url`, `ticket`, `document`, `meeting`; add `chat` only when the project accepts it. `url` and `chat` references must be an `https://` permalink (chat outside the current session only). |
 | `ignore_folders` | Extra top-level folders the stray-folder report leaves alone. |

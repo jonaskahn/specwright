@@ -7,12 +7,13 @@ columns path, title, source, source_version, remote_id, parent_id, tracker_key, 
 batch writes 00-inbox/imports/<batch-id>/manifest.json with expected and received counts and one
 status per item.
 
-A batch larger than the project limit (limits.max_pages) runs only with
---confirm-over-limit <count>. --dry-run shows what would be created, including source and
-version, and writes nothing.
+There is no cap on the total. The list is imported in sub-batches of --batch-size items
+(default limits.batch_size, else 50), one after another, and the manifest records every
+sub-batch. --dry-run shows what would be created, including source and version, and writes
+nothing.
 
 Exit codes: 0 every item created or already present, 2 invalid request or unreadable input,
-3 confirmation needed or an item refused, 4 an item was degraded, 5 expected and received
+3 an item was refused, 4 an item was degraded, 5 expected and received
 counts differ.
 """
 
@@ -44,7 +45,7 @@ import to_md  # noqa: E402
 
 from kitlib import frontmatter, fsio, hashing, ids, provenance, schema, workspace, writelog  # noqa: E402
 
-DEFAULT_LIMIT = 50
+DEFAULT_BATCH_SIZE = 50
 BATCH_ID = re.compile(r"[a-z0-9][a-z0-9-]{0,40}")
 COLUMNS = (
     "path",
@@ -196,7 +197,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--scope")
     parser.add_argument("--source-id", help="a source registered in the manifest")
     parser.add_argument("--expected", type=int, help="items the source should hold")
-    parser.add_argument("--confirm-over-limit", type=int, metavar="COUNT")
+    parser.add_argument("--batch-size", type=int, help="items per sub-batch (default 50)")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
     try:
@@ -211,7 +212,14 @@ def main(argv: list[str] | None = None) -> int:
         out = base / "00-inbox"
         items = order_parents_first(read_items(args.input_dir, args.list_file))
         manifest = workspace.load(base / workspace.FLAT_MANIFEST)
-        limit = int((manifest.get("limits") or {}).get("max_pages", DEFAULT_LIMIT))
+        size = (
+            args.batch_size
+            if args.batch_size is not None
+            else int((manifest.get("limits") or {}).get("batch_size", DEFAULT_BATCH_SIZE))
+        )
+        if size < 1:
+            raise BatchError("batch size must be at least 1")
+        chunks = [items[i : i + size] for i in range(0, len(items), size)]
         registered = {s.get("id"): s for s in workspace.source_list(root, scope)}
         if args.source_id and args.source_id not in registered:
             raise BatchError(f"source {args.source_id} is not registered (workspace.py source add)")
@@ -220,17 +228,12 @@ def main(argv: list[str] | None = None) -> int:
         batch = out / "imports" / args.batch_id
         if batch.exists():
             raise BatchError(f"batch {args.batch_id} already exists; use a new batch id")
-        info = {"items": len(items), "limit": limit, "expected": expected}
-        if len(items) > limit and args.confirm_over_limit != len(items):
-            print(
-                json.dumps({**info, "needs": f"--confirm-over-limit {len(items)}"}), file=sys.stdout
-            )
-            print(
-                f"refused: {len(items)} items exceed the limit of {limit}; "
-                f"rerun with --confirm-over-limit {len(items)} to proceed",
-                file=sys.stderr,
-            )
-            return 3
+        info = {
+            "items": len(items),
+            "batch_size": size,
+            "batches": len(chunks),
+            "expected": expected,
+        }
         if args.dry_run:
             taken = ids.taken_ids(base)
             planned = []
@@ -244,11 +247,13 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         parents = known_remote_ids(out)
         records = []
-        for item in items:
-            record = run_item(item, out, scope, parents)
-            if item.get("remote_id") and record["src_id"]:
-                parents[item["remote_id"]] = record["src_id"]
-            records.append(record)
+        for number, chunk in enumerate(chunks, 1):
+            for item in chunk:
+                record = run_item(item, out, scope, parents)
+                record["sub_batch"] = number
+                if item.get("remote_id") and record["src_id"]:
+                    parents[item["remote_id"]] = record["src_id"]
+                records.append(record)
         counts: dict[str, int] = {}
         for record in records:
             counts[record["status"]] = counts.get(record["status"], 0) + 1
@@ -264,7 +269,8 @@ def main(argv: list[str] | None = None) -> int:
             "expected_count": expected,
             "received_count": len(items),
             "counts_match": not mismatch,
-            "limit": limit,
+            "batch_size": size,
+            "batches": len(chunks),
             "counts": dict(sorted(counts.items())),
             "items": records,
         }
