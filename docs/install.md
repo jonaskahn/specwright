@@ -16,6 +16,7 @@ curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.s
 curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh -s -- --project
 curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh -s -- --agent cursor --agent claude-code -y
 curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh -s -- --version 0.9.0
+curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh -s -- --branch v0.9
 ```
 
 ```powershell
@@ -23,19 +24,24 @@ irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1 | ie
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1))) -Project
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1))) -Agent cursor,claude-code -Yes
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1))) -Version 0.9.0 -Yes
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1))) -Branch v0.9 -Yes
 ```
 
-Useful flags: `--agent` / `-Agent` (repeatable or comma-separated), `--target` / `-Target` for the project directory, `--version` / `-Version` for a release, `--latest` / `-Latest` for the main branch, `--list-agents` / `-ListAgents`. `SPECWRIGHT_REPO`, `SPECWRIGHT_VERSION`, `SPECWRIGHT_REF`, `SPECWRIGHT_URL` and `SPECWRIGHT_ROOT` choose the source tree. `SPECWRIGHT_INSTALL_YES=1` is the same as `-y` / `-Yes`. `NO_COLOR` turns the framed screen off.
+Useful flags: `--agent` / `-Agent` (repeatable or comma-separated), `--target` / `-Target` for the project directory, `--branch` / `-Branch` for a branch, `--tag` / `-Tag` or `--version` / `-Version` for a release, `--latest` / `-Latest` for the main branch, `--list-agents` / `-ListAgents`. `SPECWRIGHT_REPO`, `SPECWRIGHT_BRANCH`, `SPECWRIGHT_TAG`, `SPECWRIGHT_VERSION`, `SPECWRIGHT_REF`, `SPECWRIGHT_URL` and `SPECWRIGHT_ROOT` choose the source tree. `SPECWRIGHT_INSTALL_YES=1` is the same as `-y` / `-Yes`. `NO_COLOR` turns the framed screen off.
 
-### Installing a version
+### Installing a branch or a version
 
-`--version <v>` installs a released tag. `0.9.0`, `v0.9.0` and `SPECWRIGHT_VERSION=v0.9.0` all mean the tag `v0.9.0`; a tag is tried first, and a branch of the same name is the fallback. A version that does not exist stops the install with `no release <v>` and the tags URL, before anything is unpacked.
+With no source flag the installer uses the `main` branch, and takes it from the checkout around the script when there is one.
 
-A named version always downloads, even when the script runs from inside a checkout — the tag decides what lands, not this machine's tree. It also installs the skills that release shipped, not this branch's list: `v0.9.0` ships nine skills, while `main` ships five (`sw-start`, `sw-craft`, `sw-forge`, `sw-ship`, `sw-view`), so pinning an older release gives you that release's layout. `--version latest` (or `--latest` / `-Latest`) is the same as passing no version: the main branch, which a run from inside a checkout takes from that checkout. `SPECWRIGHT_REF` still selects an arbitrary branch or tag for a plain, unpinned install.
+`--branch <name>` / `-b` installs any branch: `main`, `v0.9`, `dev`. `--tag <name>` / `-t`, and `--version <v>`, install a release tag. At most one of `--branch`, `--tag` and `--version` may be given; passing two stops the install before it asks anything.
+
+`0.9.0`, `v0.9.0` and `SPECWRIGHT_TAG=v0.9.0` all mean the tag `v0.9.0`. A tag is tried first when one was asked for, and a branch falls back to the tag namespace, since a branch can be named `v0.9`. A name that does not exist stops the install with `no branch or tag <name>` or `no tag <name>` plus the list URL, before anything is unpacked. A branch name is checked for URL safety first: a leading dash, a space, a shell metacharacter or a `..` segment is refused.
+
+A named branch or tag always downloads, even when the script runs from inside a checkout — that ref decides what lands, not this machine's tree. It also installs the skills that ref shipped, not this branch's list: `v0.9.0` ships nine skills, while `main` ships five (`sw-start`, `sw-craft`, `sw-forge`, `sw-ship`, `sw-view`), so pinning an older ref gives you that ref's layout. `--latest` / `-Latest` is the same as `--branch main`. `SPECWRIGHT_REF` still sets the ref for a plain, unpinned install.
 
 Tags pushed after the release commit only exist when they are pushed: check `https://github.com/<repo>/tags` if a version is reported missing.
 
-macOS and Linux need `curl` or `wget`, plus `tar`. Windows needs PowerShell and `tar`. When the script file itself sits inside a Specwright checkout, that checkout is the source. A piped download uses GitHub `main` unless `--version`, `SPECWRIGHT_VERSION` or the variables above say otherwise.
+macOS and Linux need `curl` or `wget`, plus `tar`. Windows needs PowerShell and `tar`. When the script file itself sits inside a Specwright checkout, that checkout is the source. A piped download uses GitHub `main` unless a source flag or the variables above say otherwise.
 
 On macOS and Linux, one destination is a real copy (preferring `.agents/skills` when it is selected) and other destinations on the same disk become relative symlinks. Windows always copies. Each destination also gets the `sw-*` command wrappers from `commands/`, written into the sibling `commands/` folder (`~/.claude/commands/`, `<project>/.claude/commands/`, …) with `${CLAUDE_PLUGIN_ROOT}/skills/` rewritten to the absolute path of that destination's skills, so `/sw-start`, `/sw-continue` and the rest work outside the plugin. Wrappers are always copies, never symlinks, and a wrapper your own file replaced is refused rather than overwritten. The installer writes skill folders and command wrappers only. It does not write `AGENTS.md`, `CLAUDE.md` or plugin files.
 

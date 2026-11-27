@@ -357,6 +357,10 @@ STAT_BSD=0
 VERSION="${SPECWRIGHT_VERSION:-latest}"
 VERSION_SET=0
 [ -z "${SPECWRIGHT_VERSION:-}" ] || VERSION_SET=1
+BRANCH="${SPECWRIGHT_BRANCH:-}"
+BRANCH_SET=0
+TAG="${SPECWRIGHT_TAG:-}"
+TAG_SET=0
 
 usage() {
 	cat <<EOF
@@ -368,8 +372,11 @@ Usage: install.sh [options]
   -g, --global      install for all projects (the default)
   --project         install into this project only
   --target <path>   project directory used when you pass --project
-  --version <v>     install a released version, such as 0.9.0 or v0.9.0
-                    (latest, the default, installs the main branch)
+  -b, --branch <n>  install a branch, such as main, v0.9 or dev
+                    (main, the default, is used when neither -b nor -t is given)
+  -t, --tag <n>     install a release tag, such as v0.9.0
+  --version <v>     the same as --tag, for a release such as 0.9.0 or v0.9.0
+  --latest          the same as --branch main
   -y, --yes         use the selected settings without prompting
   --list-agents     print agent ids and skill directories, then exit
   --help            this text
@@ -377,8 +384,9 @@ Usage: install.sh [options]
 Every public skill is installed: ${SKILLS}.
 The sw-* command wrappers in commands/ are installed beside them.
 
-Environment: SPECWRIGHT_REPO, SPECWRIGHT_VERSION, SPECWRIGHT_REF, SPECWRIGHT_URL,
-SPECWRIGHT_ROOT, SPECWRIGHT_TARGET, SPECWRIGHT_INSTALL_YES, NO_COLOR.
+Environment: SPECWRIGHT_REPO, SPECWRIGHT_BRANCH, SPECWRIGHT_TAG, SPECWRIGHT_VERSION,
+SPECWRIGHT_REF, SPECWRIGHT_URL, SPECWRIGHT_ROOT, SPECWRIGHT_TARGET,
+SPECWRIGHT_INSTALL_YES, NO_COLOR.
 EOF
 }
 
@@ -393,9 +401,13 @@ while [ $# -gt 0 ]; do
 	--project) SCOPE="project"; SCOPE_SET=1; shift ;;
 	--target) TARGET="${2:?--target needs a value}"; shift 2 ;;
 	--target=*) TARGET="${1#*=}"; shift ;;
+	-b | --branch) BRANCH="${2:?--branch needs a value}"; BRANCH_SET=1; shift 2 ;;
+	--branch=*) BRANCH="${1#*=}"; BRANCH_SET=1; shift ;;
+	-t | --tag) TAG="${2:?--tag needs a value}"; TAG_SET=1; shift 2 ;;
+	--tag=*) TAG="${1#*=}"; TAG_SET=1; shift ;;
 	--version) VERSION="${2:?--version needs a value}"; VERSION_SET=1; shift 2 ;;
 	--version=*) VERSION="${1#*=}"; VERSION_SET=1; shift ;;
-	--latest) VERSION="latest"; VERSION_SET=1; shift ;;
+	--latest) BRANCH="main"; BRANCH_SET=1; shift ;;
 	-y | --yes) ASSUME_YES=1; shift ;;
 	--list-agents) LIST_ONLY=1; shift ;;
 	-h | --help) usage; exit 0 ;;
@@ -403,31 +415,64 @@ while [ $# -gt 0 ]; do
 	esac
 done
 
-# A release version is a tag; `latest` is the main branch, the same thing an
-# install without --version fetches. Anything else is refused here, before a
-# download, so a typo cannot turn into a URL.
-version_ref() {
-	case "$1" in
-	latest | main | '') printf 'main'; return 0 ;;
+# A branch name goes into a URL, so it is checked before any request: a
+# leading dash, a space, a shell metacharacter or a `..` segment never
+# becomes a path.
+check_ref_name() {
+	# check_ref_name <what> <name>
+	case "$2" in
+	'' | -* | *[!A-Za-z0-9._/-]*) die "bad $1: $2" "Use a name such as main, v0.9 or dev." ;;
+	..*) die "bad $1: $2" "Use a name such as main, v0.9 or dev." ;;
+	*/../* | */..) die "bad $1: $2" "Use a name such as main, v0.9 or dev." ;;
 	esac
+}
+
+# `0.9.0`, `v0.9.0` and `latest` are the three spellings a version arrives in.
+# A tag keeps its v prefix; `latest` is the main branch.
+tag_ref() {
 	_v="${1#v}"
 	case "$_v" in
 	[0-9]*.[0-9]*.[0-9]*) ;;
-	*) die "bad version: $1" "Use a release such as 0.9.0 or v0.9.0, or latest." ;;
+	*) die "bad tag: $1" "Use a release such as 0.9.0 or v0.9.0." ;;
 	esac
 	case "$_v" in
-	*[!0-9A-Za-z.+-]*) die "bad version: $1" "Use a release such as 0.9.0 or v0.9.0, or latest." ;;
+	*[!0-9A-Za-z.+-]*) die "bad tag: $1" "Use a release such as 0.9.0 or v0.9.0." ;;
 	esac
 	printf 'v%s' "$_v"
 }
 
-REF_PINNED=0
-if [ "$VERSION_SET" = 1 ]; then
-	REF="$(version_ref "$VERSION")"
-	# A tag is its own source, so a checkout beside this script must not
-	# stand in for it. `latest` is the main branch, exactly what a plain
-	# install already does, checkout reuse included.
-	[ "$REF" = main ] || REF_PINNED=1
+# One source at a time. Refusing beats guessing which flag was meant.
+SOURCE_SET=0
+SOURCE_NAME=""
+_picked=0
+[ "$BRANCH_SET" = 0 ] || _picked=$((_picked + 1))
+[ "$TAG_SET" = 0 ] || _picked=$((_picked + 1))
+[ "$VERSION_SET" = 0 ] || _picked=$((_picked + 1))
+[ "$_picked" -le 1 ] || die "choose one of --branch, --tag or --version" "run install.sh --help"
+[ "$_picked" = 0 ] || SOURCE_SET=1
+
+# REF_KIND says which namespace fetch_archive tries first: heads or tags.
+# Naming a branch or tag means that ref, so SOURCE_SET also stops a checkout
+# beside this script from standing in: only a plain install reuses one.
+REF_KIND="heads"
+if [ "$BRANCH_SET" = 1 ]; then
+	check_ref_name branch "$BRANCH"
+	REF="$BRANCH"
+	SOURCE_NAME="$BRANCH"
+elif [ "$TAG_SET" = 1 ] || [ "$VERSION_SET" = 1 ]; then
+	_want="$TAG"
+	[ "$TAG_SET" = 1 ] || _want="$VERSION"
+	case "$_want" in
+	latest | main | '')
+		REF="main"
+		SOURCE_NAME="main"
+		;;
+	*)
+		REF="$(tag_ref "$_want")"
+		SOURCE_NAME="$REF"
+		REF_KIND="tags"
+		;;
+	esac
 fi
 
 if [ "$TERMINAL" = 1 ] && [ "$ASSUME_YES" = 0 ] && ( : </dev/tty ) 2>/dev/null; then
@@ -887,27 +932,29 @@ fetch_archive() {
 	_archive="$TMP_DIR/src.tar.gz"
 	step "Downloading $REPO@$REF"
 	if [ -n "${SPECWRIGHT_URL:-}" ]; then
-		# An explicit URL is the source, so it wins over the version's tag.
+		# An explicit URL is the source, so it wins over --branch and --tag.
 		_url="$SPECWRIGHT_URL"
 		download "$_url" "$_archive" || die "download failed" "$_url"
 	else
-		# A version names a tag, but a branch of the same name still resolves.
-		# Try the tag first so `--version 0.9.0` cannot land on a stale branch.
-		_try=""
-		if [ "$REF_PINNED" = 1 ]; then
-			_try="refs/tags"
+		# A tag is tried first when one was asked for, so `--tag 0.9.0`
+		# cannot land on a stale branch of the same name. A branch falls back
+		# to the tag namespace, since either can be named v0.9.
+		if [ "$REF_KIND" = tags ]; then
+			_first="refs/tags"
+			_second="refs/heads"
 		else
-			_try="refs/heads"
+			_first="refs/heads"
+			_second="refs/tags"
 		fi
-		_url="https://github.com/$REPO/archive/$_try/$REF.tar.gz"
+		_url="https://github.com/$REPO/archive/$_first/$REF.tar.gz"
 		if ! download "$_url" "$_archive"; then
-			if [ "$REF_PINNED" = 1 ] &&
-				download "https://github.com/$REPO/archive/refs/heads/$REF.tar.gz" "$_archive"; then
-				_url="https://github.com/$REPO/archive/refs/heads/$REF.tar.gz"
-			elif [ "$REF_PINNED" = 1 ]; then
-				die "no release $VERSION" "There is no tag $REF on $REPO." "List the releases at https://github.com/$REPO/tags"
+			_fallback="https://github.com/$REPO/archive/$_second/$REF.tar.gz"
+			if download "$_fallback" "$_archive"; then
+				_url="$_fallback"
+			elif [ "$REF_KIND" = tags ]; then
+				die "no tag $REF" "There is no tag $REF on $REPO." "List the tags at https://github.com/$REPO/tags"
 			else
-				die "download failed" "$_url"
+				die "no branch or tag $REF" "There is no branch or tag $REF on $REPO." "List the branches at https://github.com/$REPO/branches"
 			fi
 		fi
 	fi
@@ -1464,10 +1511,10 @@ main() {
 	section "Install Specwright"
 	SKILL_ROOT=""
 	COMMANDS_SRC=""
-	if [ "$REF_PINNED" = 1 ]; then
-		# A named release wins over the checkout around this script: the point
-		# of --version is that this machine's tree must not decide what lands.
-		note "Installing release $REF"
+	if [ "$SOURCE_SET" = 1 ]; then
+		# A named branch or tag is the source, so the checkout around this
+		# script must not stand in for it.
+		note "Installing $SOURCE_NAME"
 		fetch_archive
 		SKILL_ROOT="$(cat "$TMP_DIR/skill-root")"
 	else
@@ -1487,12 +1534,12 @@ main() {
 			SKILL_ROOT="$(cat "$TMP_DIR/skill-root")"
 		fi
 	fi
-	if [ "$REF_PINNED" = 1 ]; then
-		# The release decides its own skill list: an older tag predates this
+	if [ "$SOURCE_SET" = 1 ]; then
+		# A named source decides its own skill list: an older tag predates this
 		# branch's layout, and installing it must not demand today's names.
 		SKILLS="$(discover_skills "$SKILL_ROOT" | tr '\n' ' ')"
 		SKILLS="${SKILLS% }"
-		[ -n "$SKILLS" ] || die "no skills in release $REF" "The archive has no skills/sw-*/SKILL.md."
+		[ -n "$SKILLS" ] || die "no skills in $SOURCE_NAME" "The archive has no skills/sw-*/SKILL.md."
 	fi
 	require_skills "$SKILL_ROOT"
 	COMMANDS_SRC="$(find_commands "$SKILL_ROOT" || true)"

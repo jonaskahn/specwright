@@ -16,6 +16,8 @@ param(
 	[switch] $Global,
 	[switch] $Project,
 	[string] $Target = $env:SPECWRIGHT_TARGET,
+	[string] $Branch = $env:SPECWRIGHT_BRANCH,
+	[string] $Tag = $env:SPECWRIGHT_TAG,
 	[string] $Version = $env:SPECWRIGHT_VERSION,
 	[switch] $Latest,
 	[switch] $Yes,
@@ -29,8 +31,10 @@ $ProgressPreference = 'SilentlyContinue'
 
 $Repo = if ($env:SPECWRIGHT_REPO) { $env:SPECWRIGHT_REPO } else { 'jonaskahn/specwright' }
 $Ref = if ($env:SPECWRIGHT_REF) { $env:SPECWRIGHT_REF } else { 'main' }
-if ($Latest) { $Version = 'latest' }
-$VersionPinned = $false
+if ($Latest) { $Branch = 'main' }
+$SourceSet = $false
+$SourceName = ''
+$RefKind = 'heads'
 $Skills = @('sw-start', 'sw-craft', 'sw-forge', 'sw-ship', 'sw-view')
 if ($env:SPECWRIGHT_INSTALL_YES -eq '1') { $Yes = $true }
 
@@ -303,9 +307,11 @@ Usage: install.ps1 [options]
   -Global           install for all projects (the default)
   -Project          install into this project only
   -Target <path>    project directory (default: the current directory)
-  -Version <v>      install a released version, such as 0.9.0 or v0.9.0
-                    (latest, the default, installs the main branch)
-  -Latest           the same as -Version latest
+  -Branch <name>    install a branch, such as main, v0.9 or dev
+                    (main, the default, is used when neither -Branch nor -Tag is given)
+  -Tag <name>       install a release tag, such as v0.9.0
+  -Version <v>      the same as -Tag, for a release such as 0.9.0 or v0.9.0
+  -Latest           the same as -Branch main
   -Yes              use the selected settings without prompting
   -ListAgents       print agent ids and skill directories, then exit
   -Help             this text
@@ -313,8 +319,9 @@ Usage: install.ps1 [options]
 Every public skill is installed: $($Skills -join ' ').
 The sw-* command wrappers in commands/ are installed beside them.
 
-Environment: SPECWRIGHT_REPO, SPECWRIGHT_VERSION, SPECWRIGHT_REF, SPECWRIGHT_URL,
-SPECWRIGHT_ROOT, SPECWRIGHT_TARGET, SPECWRIGHT_INSTALL_YES, NO_COLOR.
+Environment: SPECWRIGHT_REPO, SPECWRIGHT_BRANCH, SPECWRIGHT_TAG, SPECWRIGHT_VERSION,
+SPECWRIGHT_REF, SPECWRIGHT_URL, SPECWRIGHT_ROOT, SPECWRIGHT_TARGET,
+SPECWRIGHT_INSTALL_YES, NO_COLOR.
 "@ | Write-Host
 	exit 0
 }
@@ -323,20 +330,40 @@ if ($Global -and $Project) { Fail 'choose either -Global or -Project' @() }
 if ($Project) { $script:Scope = 'project' }
 if ($Global) { $script:Scope = 'global' }
 
-# A version names a release tag: 0.9.0 and v0.9.0 both mean v0.9.0.
-# `latest` is the main branch, exactly what a plain install already does,
-# checkout reuse included.
-if ($Version) {
-	if ($Version -eq 'latest' -or $Version -eq 'main') {
+# One source at a time. Refusing beats guessing which flag was meant.
+$picked = @(@($Branch, $Tag, $Version) | Where-Object { $_ }).Count
+if ($picked -gt 1) { Fail 'choose one of -Branch, -Tag or -Version' @('run install.ps1 -Help') }
+
+function Assert-RefName([string] $What, [string] $Name) {
+	# A name goes into a URL, so a leading dash, a space, a shell metacharacter
+	# or a `..` segment is refused before any request.
+	if (-not $Name -or $Name -match '^-' -or $Name -match '[^A-Za-z0-9._/-]' -or $Name -match '\.\.') {
+		Fail "bad ${What}: $Name" @('Use a name such as main, v0.9 or dev.')
+	}
+}
+
+# A branch or tag is the source, so the checkout around this script must not
+# stand in for it: only a plain install reuses one.
+if ($Branch) {
+	Assert-RefName 'branch' $Branch
+	$Ref = $Branch
+	$SourceName = $Branch
+	$SourceSet = $true
+} elseif ($Tag -or $Version) {
+	$want = if ($Tag) { $Tag } else { $Version }
+	if ($want -eq 'latest' -or $want -eq 'main') {
 		$Ref = 'main'
+		$SourceName = 'main'
 	} else {
-		$bare = $Version -replace '^v', ''
+		$bare = $want -replace '^v', ''
 		if ($bare -notmatch '^[0-9]+\.[0-9]+\.[0-9]+' -or $bare -match '[^0-9A-Za-z.+-]') {
-			Fail "bad version: $Version" @('Use a release such as 0.9.0 or v0.9.0, or latest.')
+			Fail "bad tag: $want" @('Use a release such as 0.9.0 or v0.9.0.')
 		}
 		$Ref = "v$bare"
-		$VersionPinned = $true
+		$SourceName = $Ref
+		$RefKind = 'tags'
 	}
+	$SourceSet = $true
 }
 
 # --------------------------------------------------------------- agents ----
@@ -626,26 +653,26 @@ function Save-Archive {
 			Fail 'download failed' @($url)
 		}
 	} else {
-		# A version names a tag, but a branch of the same name still resolves.
-		# Try the tag first so -Version 0.9.0 cannot land on a stale branch.
-		$kind = if ($VersionPinned) { 'tags' } else { 'heads' }
-		$url = "https://github.com/$Repo/archive/refs/$kind/$Ref.tar.gz"
+		# A tag is tried first when one was asked for, so -Tag 0.9.0 cannot
+		# land on a stale branch of the same name. A branch falls back to the
+		# tag namespace, since either can be named v0.9.
+		$first = if ($RefKind -eq 'tags') { 'tags' } else { 'heads' }
+		$second = if ($RefKind -eq 'tags') { 'heads' } else { 'tags' }
+		$url = "https://github.com/$Repo/archive/refs/$first/$Ref.tar.gz"
 		try {
 			Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $bundle -TimeoutSec 60
 			$saved = $true
 		} catch {
-			if ($VersionPinned) {
-				$branchUrl = "https://github.com/$Repo/archive/refs/heads/$Ref.tar.gz"
-				try {
-					Invoke-WebRequest -UseBasicParsing -Uri $branchUrl -OutFile $bundle -TimeoutSec 60
-					$saved = $true
-				} catch { }
-			}
+			$fallbackUrl = "https://github.com/$Repo/archive/refs/$second/$Ref.tar.gz"
+			try {
+				Invoke-WebRequest -UseBasicParsing -Uri $fallbackUrl -OutFile $bundle -TimeoutSec 60
+				$saved = $true
+			} catch { }
 			if (-not $saved) {
-				if ($VersionPinned) {
-					Fail "no release $Version" @("There is no tag $Ref on $Repo.", "List the releases at https://github.com/$Repo/tags")
+				if ($RefKind -eq 'tags') {
+					Fail "no tag $Ref" @("There is no tag $Ref on $Repo.", "List the tags at https://github.com/$Repo/tags")
 				}
-				Fail 'download failed' @($url)
+				Fail "no branch or tag $Ref" @("There is no branch or tag $Ref on $Repo.", "List the branches at https://github.com/$Repo/branches")
 			}
 		}
 	}
@@ -878,10 +905,10 @@ Write-Section 'Install Specwright'
 $scriptDir = ''
 if ($PSCommandPath) { $scriptDir = Split-Path $PSCommandPath -Parent }
 elseif ($PSScriptRoot) { $scriptDir = $PSScriptRoot }
-if ($VersionPinned) {
-	# A named release wins over the checkout around this script: the point of
-	# -Version is that this machine's tree must not decide what lands.
-	Write-Note "Installing release $Ref"
+if ($SourceSet) {
+	# A named branch or tag is the source, so the checkout around this script
+	# must not stand in for it.
+	Write-Note "Installing $SourceName"
 	$script:SkillRoot = Save-Archive
 } else {
 	if ($env:SPECWRIGHT_ROOT) {
@@ -898,9 +925,11 @@ if ($VersionPinned) {
 		$script:SkillRoot = Save-Archive
 	}
 }
-if ($VersionPinned) {
+if ($SourceSet) {
+	# A named source decides its own skill list: an older tag predates this
+	# branch's layout, and installing it must not demand today's names.
 	$releaseSkills = @(Get-ReleaseSkills $script:SkillRoot)
-	if ($releaseSkills.Count -eq 0) { Fail "no skills in release $Ref" @('The archive has no skills/sw-*/SKILL.md.') }
+	if ($releaseSkills.Count -eq 0) { Fail "no skills in $SourceName" @('The archive has no skills/sw-*/SKILL.md.') }
 	$Skills = $releaseSkills
 }
 foreach ($skill in $Skills) {

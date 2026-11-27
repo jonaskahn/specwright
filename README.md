@@ -133,6 +133,16 @@ curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.s
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1))) -Version 0.9.0 -Yes
 ```
 
+A branch instead of the main branch:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh -s -- --branch v0.9
+```
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1))) -Branch v0.9 -Yes
+```
+
 - macOS and Linux need `curl` or `wget`, plus `tar`. Windows needs PowerShell and `tar`.
 - All projects is the default. `--project` / `-Project` installs into this project only.
 - Skip the questions with `-y` / `-Yes`. Detected agents are used. If none show up, Universal gets the skills.
