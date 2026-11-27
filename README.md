@@ -35,7 +35,7 @@ those into a very detailed plan. One person may play both — then one confirm s
 | Craft (the BA line) | `sw-craft` | Sources as frozen snapshots; a gap table of what a feature should do against what code and tests do today, with `CODE:` citations; a problem-led brief, an accepted INVEST split and reserved features; requirements and acceptance criteria you can observe, with diagrams; the task breakdown; then your plain-words accept, bound to a content hash (formal sign-off when you require it) |
 | Forge (the Dev plan) | `sw-forge` | A very detailed plan: exact files per task, the change itself, the test that proves it and the command that runs it; one ready prompt per task; and real task status (`planned`, `in-progress`, `done` with evidence, `blocked`) |
 | Ship (optional) | `sw-ship` | A delivery you asked for: epic, story or tasks to Jira, behind a scope question, a dry-run and a fresh yes |
-| View | `sw-view` | A local, read-only web console: overview, metrics, features, tasks, a kanban board, and the knowledge graph (trace, network, table, outline) with queries |
+| View | `sw-view` | A local, read-only web console: an overview of what needs a person, features, tasks, an epic swimlane board with each task's status, and the knowledge graph (trace, network, table, outline) |
 
 Craft ends at the finalize and says "Say **forge** to plan FEAT-001". It never crosses into the
 Dev role on its own; the code is written elsewhere, from the prompts forge generates.

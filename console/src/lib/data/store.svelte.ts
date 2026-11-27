@@ -17,12 +17,11 @@ class App {
   features = $derived(inScope(rows.features(this.loaded), this.scope));
   tasks = $derived(inScope(rows.tasks(this.loaded), this.scope));
   records = $derived(inScope(rows.records(this.loaded), this.scope));
-  sources = $derived(inScope(rows.sources(this.loaded), this.scope));
   registry = $derived(inScope(rows.registry(this.loaded), this.scope));
   results = $derived(inScope(rows.results(this.loaded), this.scope));
   findings = $derived(inScope(rows.findings(this.loaded), this.scope));
   graph = $derived(graphIndex(this.loaded));
-  metrics = $derived(computeMetrics(this.loaded, this.scope, this.today));
+  metrics = $derived(computeMetrics(this.loaded, this.scope));
 
   async reload(): Promise<void> {
     this.loaded = empty('loading');

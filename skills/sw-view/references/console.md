@@ -9,23 +9,32 @@ images, fonts and fetches from its own address only.
 
 | Group | Screen | Shows |
 | --- | --- | --- |
-| Workspace | Overview | Totals, items that need a person, state bar, lint gate. |
-| | Projects | One card per project with counts and gate. |
-| | Metrics | State, station, lint and objective measures worked out from the data. |
-| Specs | Features | Every feature with its place on the lifecycle; View reads the story. |
+| Workspace | Overview | What needs a person first (a story that is blocked, fails lint or waits on a question; a task marked blocked), then each project's progress bar over its tasks, then totals and the lint gate. |
+| | Features | Every feature with its place on the lifecycle; View reads the story. |
 | | Feature | Criteria, tasks, records, links, blockers, sign-off state and its own trace map. |
+| Plan | Board | One horizontal lane per epic. Each row is a story with its acceptance criteria and its tasks, and each task shows the status its plan records (not started, planned, in progress, done, blocked). Read-only: nothing is dragged, and a story shows the command that moves it on. |
 | | Tasks | Tasks by feature, with what each traces to. |
-| | Board | A kanban board: one column per station, one card per feature with its epics, criteria and tasks by layer, open questions, blockers, who is next and how long it has been idle. Filters, swimlanes by project, epic or turn. Read-only: a card shows the command that moves it on. |
 | Knowledge | Graph | One page: an outline beside the trace map (business objective, epic, feature, acceptance criterion, task, optionally code files), with coverage counts and placeholders for missing links; a network view; a table; the outline full width. A project select shows one project at a time, each project in turn, or only the links across projects. |
-| | Query | find, show, neighbors, up, down, path, impact over the graph. |
 | Governance | Records | Questions, decisions, change requests, amendments. |
-| | Sources | Imported material and its age. |
 | | Quality | Lint gate, results, findings and drift. |
-| | Registry | Issued identifiers; withdrawn identifiers stay listed. |
 
 Status is shown by a shape (circle with check, diamond, triangle, square, hollow circle) and
-a word, never by colour alone. `Ctrl/Cmd+K` opens a palette that jumps to a screen or item and
-runs queries. Theme, accent and density are kept in the browser (`specwright-*` keys).
+a word, never by colour alone. `Ctrl/Cmd+K` opens a palette that jumps to a screen or item. Theme, accent and density are kept in the browser (`specwright-*` keys).
+
+## The board
+
+A lane is an epic, drawn left to right as three cells per story: the story, its acceptance
+criteria, its tasks. A story in two epics appears in both lanes. Stories in no epic share a lane
+at the end, and a task that names a story no file lists has a lane of its own, so nothing is
+dropped. An epic with no story draws no lane.
+
+Gaps are said in words where they occur: a criterion no task implements reads "No task covers
+this criterion"; a task that implements no criterion reads "Not tied to an acceptance criterion";
+a task the graph knows but `tasks.json` does not reads "Status not recorded". Choosing a
+criterion lights the tasks that implement it and dims the rest. Retired (superseded or withdrawn)
+stories are hidden until "Show retired stories" is on; withdrawn tasks are never shown. The text
+filter, epic select, order (identifier, or blocked and waiting first), retired switch and the
+folded lanes are all kept in the address, so a reload or a pasted link returns to them.
 
 ## Trace map folding
 
@@ -108,13 +117,6 @@ the skill that fills it, because the console only reads. The strip above the map
 of gap; choose a measure to point at the items that miss the link. Code files that tasks say they
 change are hidden until you switch them on. Jira issue keys come from the identifier registry and
 show on the card of any item that has one; tasks never have one, because tasks stay in Markdown.
-
-## Queries
-
-`find <text> [kind:feat] [status:open] [jira:KEY] [epic:EPIC-1]`, `show <name>`,
-`neighbors <id> [in|out|both] [rel:has_ac] [declared]`, `up <id>`, `down <id> [depth:3]`,
-`path <id> <id>`, `impact <id>`. They follow `graph.py`; golden files in the kit's tests
-prove the two agree.
 
 ## Adapting it
 

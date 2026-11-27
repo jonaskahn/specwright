@@ -11,14 +11,9 @@
   import FeatureDetail from './routes/FeatureDetail.svelte';
   import Features from './routes/Features.svelte';
   import Graph from './routes/Graph.svelte';
-  import Metrics from './routes/Metrics.svelte';
   import Overview from './routes/Overview.svelte';
-  import Projects from './routes/Projects.svelte';
   import Quality from './routes/Quality.svelte';
-  import Query from './routes/Query.svelte';
   import Records from './routes/Records.svelte';
-  import Registry from './routes/Registry.svelte';
-  import Sources from './routes/Sources.svelte';
   import Tasks from './routes/Tasks.svelte';
 
   const name = $derived(app.route.name);
@@ -55,17 +50,12 @@
           <button class="btn primary" type="button" onclick={() => app.reload()}>Reload</button>
         </div>
       {:else if name === 'overview'}<Overview />
-      {:else if name === 'projects'}<Projects />
-      {:else if name === 'metrics'}<Metrics />
       {:else if name === 'features'}{#if app.route.param}<FeatureDetail id={app.route.param} />{:else}<Features />{/if}
       {:else if name === 'tasks'}<Tasks />
       {:else if name === 'board'}<Board />
       {:else if name === 'graph'}<Graph />
-      {:else if name === 'query'}<Query />
       {:else if name === 'records'}<Records />
-      {:else if name === 'sources'}<Sources />
       {:else if name === 'quality'}<Quality />
-      {:else if name === 'registry'}<Registry />
       {:else}
         <div class="empty"><h3>Nothing here</h3><a class="btn" href={href('overview')}>Back to the overview</a></div>
       {/if}

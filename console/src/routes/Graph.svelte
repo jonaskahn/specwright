@@ -12,7 +12,6 @@
   import { hue } from '../lib/graph/layout';
   import { LEVEL_KINDS } from '../lib/graph/trace';
   import { preview } from '../lib/preview.svelte';
-  import { href } from '../lib/router';
   import { wordLook } from '../lib/status';
   import type { Col } from '../lib/table';
   import { kindWords } from '../lib/vocabulary';
@@ -174,7 +173,7 @@
         {/if}
       </div>
     </div>
-    <p class="sub">Ask the graph a question in <a href={href('query')}><u>Query</u></a>. {chainCount} items in the chain.</p>
+    <p class="sub">Press Ctrl or Cmd with K to search for any item. {chainCount} items in the chain.</p>
   </div>
 {:else}
   <OwnerEmpty kind="graph" what="graph" />

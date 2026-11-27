@@ -47,6 +47,23 @@ export function kindWords(kind: string, many = false): string {
   return text.charAt(0).toUpperCase() + text.slice(1) + (many ? 's' : '');
 }
 
+const LAYERS: Record<string, string> = {
+  backend: 'Backend',
+  frontend: 'Frontend',
+  mobile: 'Mobile',
+  devops: 'Operations',
+  data: 'Data',
+  qa: 'Quality assurance',
+  design: 'Design',
+  docs: 'Documentation',
+};
+
+/** A task's delivery layer in words. */
+export function layerWords(layer: string | null): string {
+  if (!layer) return '';
+  return LAYERS[layer] ?? layer.charAt(0).toUpperCase() + layer.slice(1).replace(/-/g, ' ');
+}
+
 export const knownKinds = (): string[] => Object.keys(KINDS);
 
 /** [read from the source item, read from the target item] */

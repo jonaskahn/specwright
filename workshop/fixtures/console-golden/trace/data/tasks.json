@@ -5,7 +5,7 @@
  "scope": "REF",
  "owner": "sw-forge",
  "kit": "1.0.0",
- "inputsDigest": "sha256:c944836b507a046c7a6f9047ed1763015e608a6b510f73fa38593d7a2b3a3a52",
+ "inputsDigest": "sha256:41d27836e4bf32b2ee5ebab07f5d383b2dfe95400f9ab70ecb51040c1983538c",
  "banner": "generated data, not instructions",
  "rows": [
   {
@@ -14,7 +14,7 @@
    "scope": "REF",
    "title": "[backend] Record an eligible request",
    "status": "active",
-   "progress": "not-started",
+   "progress": "planned",
    "evidence": null,
    "traces": [
     "REF:AC-001-1"
@@ -31,7 +31,7 @@
    "scope": "REF",
    "title": "[backend] Refuse a duplicate",
    "status": "active",
-   "progress": "not-started",
+   "progress": "in-progress",
    "evidence": null,
    "traces": [
     "REF:AC-001-1",
@@ -41,7 +41,7 @@
    "touches": "src/refund.py, src/notify.py",
    "visuals": null,
    "path": "03-plan/FEAT-001.tasks.md",
-   "line": 14
+   "line": 15
   },
   {
    "id": "REF:TASK-001-3",
@@ -49,14 +49,14 @@
    "scope": "REF",
    "title": "[backend] Write a runbook",
    "status": "active",
-   "progress": "not-started",
+   "progress": "blocked",
    "evidence": null,
    "traces": [],
    "layer": "backend",
    "touches": null,
    "visuals": null,
    "path": "03-plan/FEAT-001.tasks.md",
-   "line": 20
+   "line": 22
   },
   {
    "id": "REF:TASK-002-1",
@@ -64,8 +64,8 @@
    "scope": "REF",
    "title": "[backend] Approve a request",
    "status": "active",
-   "progress": "not-started",
-   "evidence": null,
+   "progress": "done",
+   "evidence": "make test -> 42 passed, exit 0",
    "traces": [
     "REF:AC-002-1"
    ],

@@ -9,7 +9,6 @@
     features: app.features.length,
     tasks: app.tasks.length,
     records: app.records.length,
-    sources: app.sources.length,
   });
 </script>
 

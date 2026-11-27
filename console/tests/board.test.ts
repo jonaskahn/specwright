@@ -1,92 +1,114 @@
 import { describe, expect, it } from 'vitest';
-import { applyFilters, buildCards, columnOf, COLUMNS, conditionOf, idleTone, lanes, layerSplit, NO_FILTERS, sortCards, statsOf, summary } from '../src/lib/board';
-import { loadAll } from '../src/lib/data/loader';
+import { buildLanes, closedQuery, countsOf, filterLanes, LOOSE, NO_FILTERS, orderStories, parseClosed, storyProgress, UNPLACED } from '../src/lib/board';
+import { loadAll, type Loaded } from '../src/lib/data/loader';
 import { serve } from './golden';
 
-const today = new Date('2026-11-12T00:00:00Z');
-
-describe('the board', async () => {
+describe('the board lanes', async () => {
   const trace = await loadAll('./data/', serve('trace'));
+  const flat = await loadAll('./data/', serve('flat'));
   const program = await loadAll('./data/', serve('program'));
-  const cards = buildCards(trace, today, false);
-  const byId = (id: string) => cards.find((c) => c.feature.id === id)!;
+  const lanes = buildLanes(trace, '*');
+  const story = (id: string) => lanes.flatMap((l) => l.stories).find((s) => s.id === id)!;
+  const patch = (d: Loaded, kind: 'tasks' | 'features', fn: (rows: any[]) => any[]): Loaded => ({ ...d, data: { ...d.data, [kind]: { ...d.data[kind]!, rows: fn(d.data[kind]!.rows) } } });
 
-  it('puts a feature in the column of its station, and a planned one under ready for dev', () => {
-    expect(byId('REF:FEAT-001').column).toBe('review');
-    expect(byId('REF:FEAT-002').column).toBe('spec');
-    expect(columnOf({ station: 'plan', condition: 'in-progress' })).toBe('plan');
-    expect(columnOf({ station: 'plan', condition: 'complete' })).toBe('dev');
-    expect(columnOf({ station: 'inactive', condition: 'complete' })).toBe('inactive');
-    expect(columnOf({ station: null, condition: null })).toBe('other');
-    expect(columnOf({ station: 'somewhere', condition: null })).toBe('other');
+  it('draws one lane per epic that holds a story, and the stories in no epic last', () => {
+    expect(lanes.map((l) => l.key)).toEqual(['REF:EPIC-001', LOOSE]);
+    expect(lanes[0].title).toBe('Self-service refunds');
+    expect(lanes[0].stories.map((s) => s.id)).toEqual(['REF:FEAT-001', 'REF:FEAT-002']);
+    expect(lanes[1].title).toBe('Stories in no epic yet');
+    expect(lanes[1].stories.map((s) => s.id)).toEqual(['REF:FEAT-003']);
   });
 
-  it('knows what skill moves each column on, and that the last ones have none', () => {
-    const skill = Object.fromEntries(COLUMNS.map((c) => [c.id, c.skill]));
-    expect(skill).toMatchObject({ shape: 'sw-craft', spec: 'sw-craft', review: 'sw-craft', plan: 'sw-forge', publish: 'sw-ship', dev: null, inactive: null });
+  it('draws no lane for an epic with no story', () => {
+    expect(lanes.some((l) => l.key === 'REF:EPIC-002')).toBe(false);
   });
 
-  it('gives the command to run, with the project only when several are in view', () => {
-    expect(byId('REF:FEAT-001').command).toBe('/sw-craft FEAT-001');
-    expect(buildCards(program, today, true).find((c) => c.feature.id === 'ORD:FEAT-001')!.command).toBe('/sw-craft ORD:FEAT-001');
-    expect(buildCards({ ...trace, data: { ...trace.data, features: { ...trace.data.features!, rows: [{ ...trace.data.features!.rows[0], station: 'dev', condition: 'complete' }] } } }, today, false)[0].command).toBeNull();
+  it('lists a story\'s criteria and tasks in order, with the progress each plan records', () => {
+    const s = story('REF:FEAT-001');
+    expect(s.criteria.map((c) => c.key)).toEqual(['REF:AC-001-1', 'REF:AC-001-2']);
+    expect(s.criteria.every((c) => c.covered)).toBe(true);
+    expect(s.tasks.map((t) => [t.id, t.progress])).toEqual([['REF:TASK-001-1', 'planned'], ['REF:TASK-001-2', 'in-progress'], ['REF:TASK-001-3', 'blocked']]);
+    expect(s.tasks[0].title).toBe('Record an eligible request');
+    expect(s.tasks[0].layer).toBe('backend');
+    expect(story('REF:FEAT-002').tasks[0]).toMatchObject({ progress: 'done', evidence: 'make test -> 42 passed, exit 0' });
+    expect(story('REF:FEAT-003').tasks[0].progress).toBe('not-started');
   });
 
-  it('adds the epics of a feature, from the graph', () => {
-    expect(byId('REF:FEAT-001').epics).toEqual([{ key: 'REF:EPIC-001', title: 'Self-service refunds' }]);
-    expect(byId('REF:FEAT-003').epics).toEqual([]);
+  it('shows a criterion no task covers and a task tied to no criterion', () => {
+    expect(story('REF:FEAT-003').criteria.filter((c) => !c.covered).map((c) => c.key)).toEqual(['REF:AC-003-2']);
+    expect(story('REF:FEAT-001').tasks.filter((t) => t.traces.length === 0).map((t) => t.id)).toEqual(['REF:TASK-001-3']);
+    expect(story('REF:FEAT-001').tasks[1].traces).toEqual(['REF:AC-001-1', 'REF:AC-001-2']);
   });
 
-  it('splits a feature\'s tasks by layer', () => {
-    expect(byId('REF:FEAT-001').layers).toEqual([['backend', 3]]);
-    expect(layerSplit([['backend', 2], ['frontend', 1], ['qa', 1]])).toBe('BE 2 · FE 1 · QA 1');
+  it('counts a lane', () => {
+    expect(lanes[0].counts).toEqual({ stories: 2, tasks: 4, done: 1, blocked: 1, retired: 0 });
+    expect(storyProgress(story('REF:FEAT-001'))).toEqual({ done: 0, total: 3, blocked: 1 });
   });
 
-  it('measures how long a feature has been idle, and when that is too long', () => {
-    expect(byId('REF:FEAT-001').idle).toBe(2);
-    expect(byId('REF:FEAT-002').idle).toBe(16);
-    expect([idleTone(null), idleTone(14), idleTone(15), idleTone(30), idleTone(31)]).toEqual(['ok', 'ok', 'warn', 'warn', 'danger']);
+  it('flags what needs a person on each story, blocked task included', () => {
+    expect(story('REF:FEAT-001').attention).toBe('question');
+    expect(story('REF:FEAT-002').attention).toBe('lint');
+    expect(story('REF:FEAT-003').attention).toBeNull();
+    const only = patch(trace, 'features', (r) => r.map((f) => ({ ...f, openQuestions: [], openChanges: [], lint: 'review: pass' })));
+    expect(buildLanes(only, '*')[0].stories[0].attention).toBe('task');
   });
 
-  it('reads the condition, treating anything unknown as other', () => {
-    expect(conditionOf({ condition: 'blocked' })).toBe('blocked');
-    expect(conditionOf({ condition: null })).toBe('other');
+  it('puts every story of a project with no epic in one lane, with no status when no plan exists', () => {
+    const l = buildLanes(flat, '*');
+    expect(l.map((x) => [x.key, x.title, x.stories.length])).toEqual([[LOOSE, 'No epic yet', 2]]);
+    expect(l[0].stories.every((s) => s.tasks.length === 0)).toBe(true);
   });
 
-  it('filters by text, epic, condition, turn, project and idleness together', () => {
-    const ids = (f: Partial<typeof NO_FILTERS>) => applyFilters(cards, { ...NO_FILTERS, ...f }).map((c) => c.feature.id);
-    expect(ids({ text: 'self-service' })).toEqual(['REF:FEAT-001', 'REF:FEAT-002']);
-    expect(ids({ epic: 'REF:EPIC-001' })).toEqual(['REF:FEAT-001', 'REF:FEAT-002']);
-    expect(ids({ turn: 'BA' })).toEqual(['REF:FEAT-003']);
-    expect(ids({ stale: true })).toEqual(['REF:FEAT-002']);
-    expect(ids({ stale: true, turn: 'BA' })).toEqual([]);
-    expect(ids({ condition: 'blocked' })).toEqual([]);
-    expect(ids({ scope: 'ORD' })).toEqual([]);
-    expect(ids({})).toHaveLength(3);
+  it('lists a task the graph knows but tasks.json does not, with no progress', () => {
+    const noRows = patch(trace, 'tasks', (r) => r.filter((t) => t.id !== 'REF:TASK-001-1'));
+    const t = buildLanes(noRows, '*')[0].stories[0].tasks.find((x) => x.id === 'REF:TASK-001-1')!;
+    expect(t.progress).toBeNull();
+    expect(t.title).toBe('[backend] Record an eligible request'.replace(/^\[backend\]\s*/, ''));
   });
 
-  it('orders blocked first, then the longest idle, or by identifier', () => {
-    const blocked = { ...byId('REF:FEAT-003'), condition: 'blocked' as const };
-    const order = (by: 'rank' | 'id' | 'updated') => sortCards([byId('REF:FEAT-001'), byId('REF:FEAT-002'), blocked], by).map((c) => c.feature.id);
-    expect(order('rank')).toEqual(['REF:FEAT-003', 'REF:FEAT-002', 'REF:FEAT-001']);
-    expect(order('updated')).toEqual(['REF:FEAT-002', 'REF:FEAT-001', 'REF:FEAT-003']);
-    expect(order('id')).toEqual(['REF:FEAT-001', 'REF:FEAT-002', 'REF:FEAT-003']);
+  it('leaves out a withdrawn task and hides a retired story until asked', () => {
+    const gone = patch(trace, 'tasks', (r) => r.map((t) => (t.id === 'REF:TASK-001-1' ? { ...t, status: 'withdrawn' } : t)));
+    expect(buildLanes(gone, '*')[0].stories[0].tasks.map((t) => t.id)).toEqual(['REF:TASK-001-2', 'REF:TASK-001-3']);
+    const retired = buildLanes(patch(trace, 'features', (r) => r.map((f) => (f.id === 'REF:FEAT-003' ? { ...f, state: 'withdrawn' } : f))), '*');
+    const hidden = filterLanes(retired, NO_FILTERS);
+    expect(hidden.map((l) => [l.key, l.stories.length])).toEqual([['REF:EPIC-001', 2], [LOOSE, 0]]);
+    expect(hidden[1].counts.retired).toBe(1);
+    expect(filterLanes(retired, { ...NO_FILTERS, retired: true }).map((l) => l.key)).toEqual(['REF:EPIC-001', LOOSE]);
+    expect(retired[1].counts.retired).toBe(1);
   });
 
-  it('groups cards in swimlanes by project, epic or turn, putting the unplaced group last', () => {
-    expect(lanes(cards, 'none')).toHaveLength(1);
-    expect(lanes(cards, 'epic', (s) => s).map((l) => [l.title, l.cards.length])).toEqual([['Self-service refunds', 2], ['No epic yet', 1]]);
-    expect(lanes(cards, 'turn').map((l) => l.title)).toEqual(['BA', 'PO']);
-    const both = buildCards(program, today, true);
-    expect(lanes(both, 'project', (s) => `Project ${s}`).map((l) => [l.title, l.cards.length])).toEqual([['Project ORD', 2], ['Project REF', 2]]);
+  it('keeps a task that names no known story in a lane of its own', () => {
+    const stray = buildLanes(patch(trace, 'tasks', (r) => r.map((t) => (t.id === 'REF:TASK-003-1' ? { ...t, feature: 'REF:FEAT-099' } : t))), '*');
+    expect(stray.at(-1)!.key).toBe(UNPLACED);
+    expect(stray.at(-1)!.stories[0].tasks.map((t) => t.id)).toEqual(['REF:TASK-003-1']);
   });
 
-  it('counts a column and the whole board', () => {
-    expect(statsOf(cards)).toEqual({ total: 3, blocked: 0, inProgress: 3, complete: 0 });
-    const s = summary(cards);
-    expect(s.total).toBe(3);
-    expect(s.waiting).toEqual([['PO', 2], ['BA', 1]]);
-    expect(s.stale).toBe(1);
-    expect(summary([{ ...byId('REF:FEAT-001'), column: 'inactive' }]).total).toBe(0);
+  it('puts a story of another project in the epic that holds it, once', () => {
+    const l = buildLanes(program, '*');
+    expect(l.filter((x) => x.key === 'REF:EPIC-001')).toHaveLength(1);
+    expect(l.find((x) => x.key === 'REF:EPIC-001')!.stories.map((s) => s.id)).toEqual(['ORD:FEAT-001', 'REF:FEAT-001']);
+    const ord = buildLanes(program, 'ORD');
+    expect(ord.find((x) => x.key === 'REF:EPIC-001')).toMatchObject({ foreign: true });
+    expect(ord.find((x) => x.key === 'REF:EPIC-001')!.stories.map((s) => s.id)).toEqual(['ORD:FEAT-001']);
+  });
+
+  it('filters by text and epic, and drops a lane left with nothing', () => {
+    expect(filterLanes(lanes, { ...NO_FILTERS, text: 'duplicate' }).map((l) => l.stories.map((s) => s.id))).toEqual([['REF:FEAT-001']]);
+    expect(filterLanes(lanes, { ...NO_FILTERS, text: 'self-service' })[0].stories).toHaveLength(2);
+    expect(filterLanes(lanes, { ...NO_FILTERS, epic: LOOSE }).map((l) => l.key)).toEqual([LOOSE]);
+    expect(filterLanes(lanes, { ...NO_FILTERS, text: 'zzz' })).toEqual([]);
+  });
+
+  it('orders stories by identifier, or blocked and waiting first', () => {
+    const list = lanes[0].stories;
+    expect(orderStories(list, 'id').map((s) => s.id)).toEqual(['REF:FEAT-001', 'REF:FEAT-002']);
+    expect(orderStories(list, 'attention').map((s) => s.id)).toEqual(['REF:FEAT-002', 'REF:FEAT-001']);
+    expect(countsOf([]).stories).toBe(0);
+  });
+
+  it('keeps collapsed lanes in the address', () => {
+    expect(closedQuery(parseClosed('REF:EPIC-002,REF:EPIC-001'))).toBe('REF:EPIC-001,REF:EPIC-002');
+    expect(closedQuery(new Set())).toBeNull();
+    expect(parseClosed(null).size).toBe(0);
   });
 });
