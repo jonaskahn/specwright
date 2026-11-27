@@ -8,7 +8,7 @@ or the case is an edge case named below. SKILL.md is the default path; kernel ru
 
 Step 0, before any Python: run `sh _shared/scripts/runtime.sh check` (Windows: `powershell
 -NoProfile -File _shared/scripts/runtime.ps1 check`). It is a shell script because a Python
-check cannot report that Python is missing. If Python is missing, step 7 applies before
+check cannot report that Python is missing. If Python is missing, follow the Runtimes instructions below before
 anything else; every other step needs it.
 
 1. Run scripts/start.py --cwd <user project>. Read its JSON: kit version, layout, spec

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 536" role="img" aria-labelledby="chat-forge-title chat-forge-desc" id="chat-forge-root">
+<title id="chat-forge-title">sw-forge planning an accepted story</title>
+<desc id="chat-forge-desc">sw-forge asks for a stack lock, then writes a four-section plan and one prompt per task.</desc>
+<defs><style>
+  #chat-forge-root { --paper:#ffffff; --paper-2:#f7f5f6; --ink:#242129; --muted:#625c68; --accent:#ae0631; --tint:#fff0f3; --rule:#aca4ae; color-scheme:light; }
+  @media (prefers-color-scheme: dark) {
+    #chat-forge-root:not([data-theme="light"]) { --paper:#19171d; --paper-2:#221f27; --ink:#f8f3f5; --muted:#c0b4bf; --accent:#ff899c; --tint:#33212a; --rule:#938391; color-scheme:dark; }
+  }
+  #chat-forge-root[data-theme="dark"] { --paper:#19171d; --paper-2:#221f27; --ink:#f8f3f5; --muted:#c0b4bf; --accent:#ff899c; --tint:#33212a; --rule:#938391; color-scheme:dark; }
+  #chat-forge-root { --mono:ui-monospace,"SF Mono","IBM Plex Mono",Menlo,monospace; color:var(--ink); font-family:var(--mono); }
+  #chat-forge-root .canvas { fill:var(--paper); }
+  #chat-forge-root .eyebrow { font:500 12px var(--mono); letter-spacing:2.4px; fill:var(--muted); }
+  #chat-forge-root .note { font:400 13px var(--mono); fill:var(--muted); }
+  #chat-forge-root .b-skill { fill:var(--paper-2); stroke:var(--ink); stroke-width:2; }
+  #chat-forge-root .b-skill.accent { fill:var(--tint); stroke:var(--accent); }
+  #chat-forge-root .b-you { fill:var(--ink); stroke:var(--ink); stroke-width:2; }
+  #chat-forge-root .who { font:500 11px var(--mono); letter-spacing:1.6px; fill:var(--muted); }
+  #chat-forge-root .turn.right .who { fill:var(--paper); opacity:0.65; }
+  #chat-forge-root .b-skill.accent + .who, #chat-forge-root .turn .b-skill.accent ~ .who { fill:var(--accent); }
+  #chat-forge-root .say { font:400 13px var(--mono); fill:var(--ink); }
+  #chat-forge-root .turn.right .say { fill:var(--paper); }
+  #chat-forge-root .rule { stroke:var(--rule); stroke-width:1; }
+  #chat-forge-root .key-you { fill:var(--ink); }
+  #chat-forge-root .key-skill { fill:var(--paper-2); stroke:var(--ink); stroke-width:2; }
+  @media print { #chat-forge-root .canvas { fill:#ffffff; } }
+</style></defs>
+<rect class="canvas" x="0" y="0" width="960" height="536"/>
+<text class="eyebrow" x="40" y="44">SW-FORGE · THE DEV PLAN</text>
+<text class="note" x="40" y="68">No code is written here — the plan and prompts are the deliverable.</text>
+<rect class="rule" x="40" y="480" width="880" height="1"/>
+<rect class="key-you" x="40" y="498" width="12" height="12" shape-rendering="crispEdges"/>
+<text class="note" x="60" y="509">you</text>
+<rect class="key-skill" x="108" y="498" width="12" height="12" shape-rendering="crispEdges"/>
+<text class="note" x="128" y="509">skill</text>
+<text class="note" x="192" y="509">say what you mean · the run answers from the files</text>
+<g class="turn right">
+<rect class="b-you" x="776" y="96" width="144" height="65" shape-rendering="crispEdges"/>
+<text class="who" x="794" y="120">YOU</text>
+<text class="say" x="794" y="144">plan FEAT-004</text>
+</g>
+<g class="turn left">
+<rect class="b-skill" x="40" y="177" width="508" height="85" shape-rendering="crispEdges"/>
+<text class="who" x="58" y="201">SW-FORGE</text>
+<text class="say" x="58" y="225">stack: not locked (Maven + npm detected). Lock a profile so</text>
+<text class="say" x="58" y="245">every command is exact?</text>
+</g>
+<g class="turn right">
+<rect class="b-you" x="824" y="278" width="96" height="65" shape-rendering="crispEdges"/>
+<text class="who" x="842" y="302">YOU</text>
+<text class="say" x="842" y="326">lock it</text>
+</g>
+<g class="turn left">
+<rect class="b-skill accent" x="40" y="359" width="536" height="105" shape-rendering="crispEdges"/>
+<text class="who" x="58" y="383">SW-FORGE</text>
+<text class="say" x="58" y="407">FEAT-004.plan.md · 4 sections: exact files, the change, a test,</text>
+<text class="say" x="58" y="427">its command. Prompts written. Hand one task per session to a</text>
+<text class="say" x="58" y="447">coder.</text>
+</g>
+</svg>

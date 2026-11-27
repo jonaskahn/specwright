@@ -13,7 +13,7 @@ agent prompts must use only the locked stack.
 | Library rules | `stack.py lib allowed|forbidden|needs_approval <name> --reason "<why>"` |
 | Convention | `stack.py convention "<rule>"` |
 | Lock | `stack.py lock` (prints hash) → show it → on yes `stack.py lock --confirm <hash>` |
-| Check tasks | `stack.py check --feat FEAT-NNN` (finish.py runs it for sw-plan) |
+| Check tasks | `stack.py check --feat FEAT-NNN` (finish.py runs it for sw-forge) |
 
 Fields per layer: language, version, framework, framework_version, build, test, notes, evidence.
 Layers: backend, frontend, mobile, data, devops (code layers); qa, design, docs optional.

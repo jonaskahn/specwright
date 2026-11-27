@@ -35,7 +35,7 @@ Three inadequate alternatives:
 
 WCAG 2.2 AA means meeting every applicable A and AA success criterion, not a scanner score.
 
-- New in 2.2, AA: focus not obscured, minimum (2.4.11); dragging alternatives (2.5.7); target size, minimum (2.5.8, generally 24 by 24 CSS pixels, defined exceptions); accessible authentication, minimum (3.3.8).
+- New in 2.2, AA: focus not obscured, minimum (2.4.11); dragging alternatives (2.5.7); target size, minimum (2.5.8, 24 by 24 CSS pixels unless a criterion-defined exception applies); accessible authentication, minimum (3.3.8).
 - New in 2.2, A: consistent help (3.2.6); redundant entry (3.3.7).
 - Do not label AAA focus criteria as AA. Criterion 4.1.1 (Parsing) is not part of 2.2.
 - Contrast (1.4.3): ordinary text 4.5:1, large text 3:1.

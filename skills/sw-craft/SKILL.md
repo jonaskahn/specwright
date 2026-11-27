@@ -1,6 +1,6 @@
 ---
 name: sw-craft
-description: Turns an idea, a source or an existing system into accepted, reviewable work — sources and snapshots, as-is analysis, an idea brief and INVEST split, feature stories with concrete Given/When/Then criteria, measurable NFRs, diagrams and the task breakdown, then the independent review that finalizes them. With no station named it runs the whole line and stops before any implementation plan. Use when asked to shape an idea, import documents, analyse existing behaviour, write or amend a feature story, break a story into tasks, draw a story diagram, or review and finalize FEAT-001. Do NOT use for the detailed implementation plan (use sw-forge) or publishing to Jira (use sw-ship).
+description: Creates sources, as-is analysis, idea briefs, feature stories, diagrams and tasks, then reviews them for owner acceptance. Use when importing sources, analysing behaviour, shaping ideas, writing or changing stories, splitting tasks, drawing diagrams, or reviewing FEAT-001. Runs intake through review unless a station is named. Do NOT use for implementation plans (use sw-forge), Jira publishing (use sw-ship), or writing code.
 ---
 
 # sw-craft
@@ -25,7 +25,7 @@ Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
    → `_shared/scripts/stack.py detect --write`, show the layers and ask once, lock on yes
    (`_shared/scripts/stack.py lock --confirm <hash shown>`). The story step reads the same profile.
 1. **Intake** (idea text, or files/Jira/email). Resolve scope. Convert with
-   `scripts/to_md.py <file> --out <project>/00-inbox/`; many files → `scripts/bulk_import.py
+   `scripts/to_md.py <file> --out <project>/00-inbox/`; multiple files → `scripts/bulk_import.py
    --batch-id <id> --dry-run`, then run. Scan each snapshot: `scripts/secrets_scan.py
    <snapshot>`; exit 1 → redact a copy (`--redact --out`) and ingest it with
    `--redacted-from <sha256>`. Extract candidate facts and conflicts; a conflict becomes a Q
@@ -99,12 +99,9 @@ needs the owner's wording, an uncurrent CR. The hand-off to sw-forge is never au
 
 ## Finish
 
-Run `_shared/scripts/finish.py --skill sw-craft --subject "<what changed>" --cwd <project>`
-(add `--item` per named item, `--until <station>` if the user set a limit). Act on
-`handoff.mode`: `continue` → print `say`, apply `transitions`, load `../<next_skill>/SKILL.md`
-now; `repair` → fix lint once, rerun with `--repaired`; `confirm` → ask once; `stop` → ask
-what `waiting` needs; `done` → report the accepted stories, tasks and prompts, and say
-"Say **forge** to plan FEAT-001."
+Run `_shared/scripts/finish.py --skill sw-craft --subject "<what changed>" --cwd <project>`.
+Follow `_shared/references/handoff.md` for item selection, limits and every `handoff.mode`.
+On `done`: Report accepted stories and tasks. Say "Say **forge** to plan FEAT-001." Never load sw-forge automatically.
 
 ## Load only when
 
@@ -114,7 +111,7 @@ what `waiting` needs; `done` → report the accepted stories, tasks and prompts,
 | Leakage word list | references/leakage-words.md |
 | Empty epic before acceptance; legacy register | scripts/new_epic.py --help; scripts/baseline.py --help; assets/epic.md |
 | Importing: converter routes, limits, exit codes | references/router.md; scripts/wiki_pull.py --help |
-| Candidates, conflicts, many snapshots | references/extraction-checklist.md; references/parallel-work.md; references/candidate-contract.md; scripts/candidates.py --help |
+| Candidates, conflicts, multiple snapshots | references/extraction-checklist.md; references/parallel-work.md; references/candidate-contract.md; scripts/candidates.py --help |
 | Secrets or personal data | references/pii-policy.md |
 | Mockups, links, images in a batch | _shared/references/capabilities/assets.md |
 | Remote read tools | _shared/references/capabilities/remote.md |

@@ -28,6 +28,43 @@ prompt relies on `make check` and `AGENTS.md`.
    `AGENTS.md` and (agents+claude) `CLAUDE.md` with `@AGENTS.md`.
 4. Continue as any story: consumer checks, illustration check, hash, card, finish → review.
 
+## Rust tooling
+
+Rust profiles use Cargo, rustfmt and Clippy. Tests run through `cargo test`; the coverage
+step uses `cargo-llvm-cov` and enforces the chosen line-coverage floor. The implementing
+agent provisions rustfmt, Clippy, llvm-tools-preview and cargo-llvm-cov using reviewed
+current tooling versions; generating the foundation story does not install them.
+The Cargo workspace must have a committed lockfile before the generated `--locked` checks run.
+
+## Other language presets
+
+| Language | Build | Format / lint | Tests and coverage |
+| --- | --- | --- | --- |
+| C, C++ | CMake presets | clang-format / clang-tidy | CTest + gcovr |
+| PHP | Composer | PHP-CS-Fixer / PHPStan | PHPUnit + configured coverage script |
+| Ruby | Bundler | RuboCop | RSpec + SimpleCov |
+| Swift | Swift Package Manager | swift format / SwiftLint | swift test + llvm-cov |
+| Kotlin | Gradle | Spotless with ktlint / Detekt | JUnit 5 + Kover |
+| JavaScript | npm or pnpm | Prettier / ESLint | Vitest + V8 coverage |
+
+Java, TypeScript, Python, Go, Dart/Flutter, Rust and C# retain their presets.
+Aliases include C++, cpp, C#, c-sharp, golang, JS and TS (case-insensitive).
+JavaScript does not require TypeScript or a tsc check. Kotlin uses Kotlin-specific tasks.
+
+These are foundation contracts, not tool installations or complete build configurations.
+The implementing agent creates the referenced configuration before declaring the story done:
+- C/C++: dev, coverage and release configure/build presets, coverage test preset, format,
+  format-check and lint targets, and compiler coverage instrumentation. gcovr excludes tests.
+- PHP: PHPUnit coverage driver and Composer test:coverage script enforcing the chosen floor.
+- Ruby: RSpec, SimpleCov started before application code, minimum coverage, and rake build task.
+- Kotlin: Spotless, Detekt and Kover plugins with the chosen verification threshold.
+- Swift: implement coverage-check to export llvm-cov data for the target platform and enforce
+  the chosen floor. The generated target fails explicitly until configured; it never reports
+  coverage success without measuring it.
+- JavaScript: package build script, formatter/linter configuration and Vitest coverage floor.
+
+Do not pin tool versions from memory. Verify supported releases and setup before implementation.
+
 ## What the story guarantees
 `make setup | fmt | fmt-check | lint | typecheck | test | build | check`; coverage below the floor
 fails; CI runs `make check` and blocks merges; `AGENTS.md` holds the locked stack, commands,

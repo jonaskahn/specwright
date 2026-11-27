@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 516" role="img" aria-labelledby="chat-ship-title chat-ship-desc" id="chat-ship-root">
+<title id="chat-ship-title">sw-ship publishing behind a dry run</title>
+<desc id="chat-ship-desc">sw-ship asks which level to publish and requires a fresh yes to the exact dry-run plan.</desc>
+<defs><style>
+  #chat-ship-root { --paper:#ffffff; --paper-2:#f7f5f6; --ink:#242129; --muted:#625c68; --accent:#ae0631; --tint:#fff0f3; --rule:#aca4ae; color-scheme:light; }
+  @media (prefers-color-scheme: dark) {
+    #chat-ship-root:not([data-theme="light"]) { --paper:#19171d; --paper-2:#221f27; --ink:#f8f3f5; --muted:#c0b4bf; --accent:#ff899c; --tint:#33212a; --rule:#938391; color-scheme:dark; }
+  }
+  #chat-ship-root[data-theme="dark"] { --paper:#19171d; --paper-2:#221f27; --ink:#f8f3f5; --muted:#c0b4bf; --accent:#ff899c; --tint:#33212a; --rule:#938391; color-scheme:dark; }
+  #chat-ship-root { --mono:ui-monospace,"SF Mono","IBM Plex Mono",Menlo,monospace; color:var(--ink); font-family:var(--mono); }
+  #chat-ship-root .canvas { fill:var(--paper); }
+  #chat-ship-root .eyebrow { font:500 12px var(--mono); letter-spacing:2.4px; fill:var(--muted); }
+  #chat-ship-root .note { font:400 13px var(--mono); fill:var(--muted); }
+  #chat-ship-root .b-skill { fill:var(--paper-2); stroke:var(--ink); stroke-width:2; }
+  #chat-ship-root .b-skill.accent { fill:var(--tint); stroke:var(--accent); }
+  #chat-ship-root .b-you { fill:var(--ink); stroke:var(--ink); stroke-width:2; }
+  #chat-ship-root .who { font:500 11px var(--mono); letter-spacing:1.6px; fill:var(--muted); }
+  #chat-ship-root .turn.right .who { fill:var(--paper); opacity:0.65; }
+  #chat-ship-root .b-skill.accent + .who, #chat-ship-root .turn .b-skill.accent ~ .who { fill:var(--accent); }
+  #chat-ship-root .say { font:400 13px var(--mono); fill:var(--ink); }
+  #chat-ship-root .turn.right .say { fill:var(--paper); }
+  #chat-ship-root .rule { stroke:var(--rule); stroke-width:1; }
+  #chat-ship-root .key-you { fill:var(--ink); }
+  #chat-ship-root .key-skill { fill:var(--paper-2); stroke:var(--ink); stroke-width:2; }
+  @media print { #chat-ship-root .canvas { fill:#ffffff; } }
+</style></defs>
+<rect class="canvas" x="0" y="0" width="960" height="516"/>
+<text class="eyebrow" x="40" y="44">SW-SHIP · PUBLISH</text>
+<text class="note" x="40" y="68">The only skill that writes to Jira, and it never runs on its own.</text>
+<rect class="rule" x="40" y="460" width="880" height="1"/>
+<rect class="key-you" x="40" y="478" width="12" height="12" shape-rendering="crispEdges"/>
+<text class="note" x="60" y="489">you</text>
+<rect class="key-skill" x="108" y="478" width="12" height="12" shape-rendering="crispEdges"/>
+<text class="note" x="128" y="489">skill</text>
+<text class="note" x="192" y="489">say what you mean · the run answers from the files</text>
+<g class="turn right">
+<rect class="b-you" x="692" y="96" width="228" height="65" shape-rendering="crispEdges"/>
+<text class="who" x="710" y="120">YOU</text>
+<text class="say" x="710" y="144">publish FEAT-004 to Jira</text>
+</g>
+<g class="turn left">
+<rect class="b-skill" x="40" y="177" width="536" height="85" shape-rendering="crispEdges"/>
+<text class="who" x="58" y="201">SW-SHIP</text>
+<text class="say" x="58" y="225">FEAT-004 is accepted and the gate is clean. Which level — epic,</text>
+<text class="say" x="58" y="245">story, tasks, or all three?</text>
+</g>
+<g class="turn right">
+<rect class="b-you" x="760" y="278" width="160" height="65" shape-rendering="crispEdges"/>
+<text class="who" x="778" y="302">YOU</text>
+<text class="say" x="778" y="326">story and tasks</text>
+</g>
+<g class="turn left">
+<rect class="b-skill accent" x="40" y="359" width="544" height="85" shape-rendering="crispEdges"/>
+<text class="who" x="58" y="383">SW-SHIP</text>
+<text class="say" x="58" y="407">dry run below. Confirm this exact plan and I write; a remembered</text>
+<text class="say" x="58" y="427">yes is not a yes.</text>
+</g>
+</svg>

@@ -14,7 +14,7 @@ Area: <one line: actors, entry points>. Entry points: <CODE cites or None — no
 
 ## Sources
 
-- Intended: <SRC-NNNN, Jira keys, other system, owner> 
+- Intended: <SRC-NNNN, Jira keys, other system, owner>
 - Actual: <code roots and test folders read>
 
 ## Criteria

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 496" role="img" aria-labelledby="chat-start-title chat-start-desc" id="chat-start-root">
+<title id="chat-start-title">sw-start routing a resumed item</title>
+<desc id="chat-start-desc">The person resumes FEAT-004; sw-start reads the board, reports the two open items and moves only the named one.</desc>
+<defs><style>
+  #chat-start-root { --paper:#ffffff; --paper-2:#f7f5f6; --ink:#242129; --muted:#625c68; --accent:#ae0631; --tint:#fff0f3; --rule:#aca4ae; color-scheme:light; }
+  @media (prefers-color-scheme: dark) {
+    #chat-start-root:not([data-theme="light"]) { --paper:#19171d; --paper-2:#221f27; --ink:#f8f3f5; --muted:#c0b4bf; --accent:#ff899c; --tint:#33212a; --rule:#938391; color-scheme:dark; }
+  }
+  #chat-start-root[data-theme="dark"] { --paper:#19171d; --paper-2:#221f27; --ink:#f8f3f5; --muted:#c0b4bf; --accent:#ff899c; --tint:#33212a; --rule:#938391; color-scheme:dark; }
+  #chat-start-root { --mono:ui-monospace,"SF Mono","IBM Plex Mono",Menlo,monospace; color:var(--ink); font-family:var(--mono); }
+  #chat-start-root .canvas { fill:var(--paper); }
+  #chat-start-root .eyebrow { font:500 12px var(--mono); letter-spacing:2.4px; fill:var(--muted); }
+  #chat-start-root .note { font:400 13px var(--mono); fill:var(--muted); }
+  #chat-start-root .b-skill { fill:var(--paper-2); stroke:var(--ink); stroke-width:2; }
+  #chat-start-root .b-skill.accent { fill:var(--tint); stroke:var(--accent); }
+  #chat-start-root .b-you { fill:var(--ink); stroke:var(--ink); stroke-width:2; }
+  #chat-start-root .who { font:500 11px var(--mono); letter-spacing:1.6px; fill:var(--muted); }
+  #chat-start-root .turn.right .who { fill:var(--paper); opacity:0.65; }
+  #chat-start-root .b-skill.accent + .who, #chat-start-root .turn .b-skill.accent ~ .who { fill:var(--accent); }
+  #chat-start-root .say { font:400 13px var(--mono); fill:var(--ink); }
+  #chat-start-root .turn.right .say { fill:var(--paper); }
+  #chat-start-root .rule { stroke:var(--rule); stroke-width:1; }
+  #chat-start-root .key-you { fill:var(--ink); }
+  #chat-start-root .key-skill { fill:var(--paper-2); stroke:var(--ink); stroke-width:2; }
+  @media print { #chat-start-root .canvas { fill:#ffffff; } }
+</style></defs>
+<rect class="canvas" x="0" y="0" width="960" height="496"/>
+<text class="eyebrow" x="40" y="44">SW-START · THE DOOR</text>
+<text class="note" x="40" y="68">Reads the workspace, routes the request, moves only the item you name.</text>
+<rect class="rule" x="40" y="440" width="880" height="1"/>
+<rect class="key-you" x="40" y="458" width="12" height="12" shape-rendering="crispEdges"/>
+<text class="note" x="60" y="469">you</text>
+<rect class="key-skill" x="108" y="458" width="12" height="12" shape-rendering="crispEdges"/>
+<text class="note" x="128" y="469">skill</text>
+<text class="note" x="192" y="469">say what you mean · the run answers from the files</text>
+<g class="turn right">
+<rect class="b-you" x="728" y="96" width="192" height="65" shape-rendering="crispEdges"/>
+<text class="who" x="746" y="120">YOU</text>
+<text class="say" x="746" y="144">resume REF:FEAT-004</text>
+</g>
+<g class="turn left">
+<rect class="b-skill" x="40" y="177" width="536" height="85" shape-rendering="crispEdges"/>
+<text class="who" x="58" y="201">SW-START</text>
+<text class="say" x="58" y="225">FEAT-004 is in review, waiting on you. FEAT-002 is accepted, no</text>
+<text class="say" x="58" y="245">plan yet. Continue with both, or just FEAT-004?</text>
+</g>
+<g class="turn right">
+<rect class="b-you" x="776" y="278" width="144" height="65" shape-rendering="crispEdges"/>
+<text class="who" x="794" y="302">YOU</text>
+<text class="say" x="794" y="326">just FEAT-004</text>
+</g>
+<g class="turn left">
+<rect class="b-skill accent" x="40" y="359" width="420" height="65" shape-rendering="crispEdges"/>
+<text class="who" x="58" y="383">SW-START</text>
+<text class="say" x="58" y="407">ok — one item moves. Loading sw-craft at review.</text>
+</g>
+</svg>

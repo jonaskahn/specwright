@@ -32,7 +32,7 @@ explicitly degraded; its converter identifies the completed text pass.
 
 Input cap is 50 MiB. PDF pages must be verified by pdfinfo and be 1–300. Encryption
 markers and protected archive flags cause refusal; invalid modern Office
-containers are refused as possibly encrypted. Missing pdfinfo means degraded
+containers are refused because encryption cannot be ruled out. Missing pdfinfo means degraded
 provenance only, never unchecked conversion. Legacy Office is not sent to soffice:
 headless mode alone does not prove macros are disabled. Obtain a reviewed export.
 

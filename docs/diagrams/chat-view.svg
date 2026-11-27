@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 334" role="img" aria-labelledby="chat-view-title chat-view-desc" id="chat-view-root">
+<title id="chat-view-title">sw-view serving the read-only console</title>
+<desc id="chat-view-desc">sw-view checks Node and the data, then serves the console on loopback.</desc>
+<defs><style>
+  #chat-view-root { --paper:#ffffff; --paper-2:#f7f5f6; --ink:#242129; --muted:#625c68; --accent:#ae0631; --tint:#fff0f3; --rule:#aca4ae; color-scheme:light; }
+  @media (prefers-color-scheme: dark) {
+    #chat-view-root:not([data-theme="light"]) { --paper:#19171d; --paper-2:#221f27; --ink:#f8f3f5; --muted:#c0b4bf; --accent:#ff899c; --tint:#33212a; --rule:#938391; color-scheme:dark; }
+  }
+  #chat-view-root[data-theme="dark"] { --paper:#19171d; --paper-2:#221f27; --ink:#f8f3f5; --muted:#c0b4bf; --accent:#ff899c; --tint:#33212a; --rule:#938391; color-scheme:dark; }
+  #chat-view-root { --mono:ui-monospace,"SF Mono","IBM Plex Mono",Menlo,monospace; color:var(--ink); font-family:var(--mono); }
+  #chat-view-root .canvas { fill:var(--paper); }
+  #chat-view-root .eyebrow { font:500 12px var(--mono); letter-spacing:2.4px; fill:var(--muted); }
+  #chat-view-root .note { font:400 13px var(--mono); fill:var(--muted); }
+  #chat-view-root .b-skill { fill:var(--paper-2); stroke:var(--ink); stroke-width:2; }
+  #chat-view-root .b-skill.accent { fill:var(--tint); stroke:var(--accent); }
+  #chat-view-root .b-you { fill:var(--ink); stroke:var(--ink); stroke-width:2; }
+  #chat-view-root .who { font:500 11px var(--mono); letter-spacing:1.6px; fill:var(--muted); }
+  #chat-view-root .turn.right .who { fill:var(--paper); opacity:0.65; }
+  #chat-view-root .b-skill.accent + .who, #chat-view-root .turn .b-skill.accent ~ .who { fill:var(--accent); }
+  #chat-view-root .say { font:400 13px var(--mono); fill:var(--ink); }
+  #chat-view-root .turn.right .say { fill:var(--paper); }
+  #chat-view-root .rule { stroke:var(--rule); stroke-width:1; }
+  #chat-view-root .key-you { fill:var(--ink); }
+  #chat-view-root .key-skill { fill:var(--paper-2); stroke:var(--ink); stroke-width:2; }
+  @media print { #chat-view-root .canvas { fill:#ffffff; } }
+</style></defs>
+<rect class="canvas" x="0" y="0" width="960" height="334"/>
+<text class="eyebrow" x="40" y="44">SW-VIEW · SEE</text>
+<text class="note" x="40" y="68">A local, read-only console; it writes no spec file.</text>
+<rect class="rule" x="40" y="278" width="880" height="1"/>
+<rect class="key-you" x="40" y="296" width="12" height="12" shape-rendering="crispEdges"/>
+<text class="note" x="60" y="307">you</text>
+<rect class="key-skill" x="108" y="296" width="12" height="12" shape-rendering="crispEdges"/>
+<text class="note" x="128" y="307">skill</text>
+<text class="note" x="192" y="307">say what you mean · the run answers from the files</text>
+<g class="turn right">
+<rect class="b-you" x="752" y="96" width="168" height="65" shape-rendering="crispEdges"/>
+<text class="who" x="770" y="120">YOU</text>
+<text class="say" x="770" y="144">open the console</text>
+</g>
+<g class="turn left">
+<rect class="b-skill accent" x="40" y="177" width="452" height="85" shape-rendering="crispEdges"/>
+<text class="who" x="58" y="201">SW-VIEW</text>
+<text class="say" x="58" y="225">Node 24 is present and the data is fresh. Serving on</text>
+<text class="say" x="58" y="245">http://127.0.0.1:4173/ — read-only, Ctrl+C stops it.</text>
+</g>
+</svg>

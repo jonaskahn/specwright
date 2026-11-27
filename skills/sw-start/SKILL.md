@@ -1,6 +1,6 @@
 ---
 name: sw-start
-description: Specwright's single entry. Briefs what the kit can do, detects the workspace, its state and the code's tech stack, asks a short prefilled intake on first run, routes to the right role skill (sw-craft for shaping, sources, analysis, stories, tasks and review; sw-forge for the detailed implementation plan; sw-ship for Jira; sw-view for the console), and keeps the run going from station to station, stopping only for a human decision or a blocker and never crossing from the BA role to the Dev role on its own. Use when starting Specwright, for help or a capability tour, for continue, next, go on or resume, to set or lock the tech stack, when unsure which sw- skill applies, or for any Specwright request that names no sw- skill. Do NOT use for writing requirements, recording approval or remote writes; those stay inside their owning skills.
+description: Routes Specwright work from saved workspace state. Use when starting, requesting help, continuing or resuming, setting the stack, or naming no sw- skill. Handles setup and routes to sw-craft, sw-forge, sw-ship or sw-view; stops for decisions and blockers. Never crosses from BA to Dev without a request. Do NOT use for requirements or approval (use sw-craft), implementation plans (use sw-forge), or Jira writes (use sw-ship).
 ---
 
 # sw-start
@@ -12,7 +12,7 @@ Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
 
 ## Steps
 
-0. `sh _shared/scripts/runtime.sh check` (Windows: `runtime.ps1 check`). No Python → step 6.
+0. `sh _shared/scripts/runtime.sh check` (Windows: `runtime.ps1 check`). No Python → follow the Runtimes step before any Python command.
 1. `scripts/start.py --cwd <project>`. Begin the reply with `Specwright <kit_version>`.
    Exit 2 → print its reinstall command, stop. Exit 3 → list the choices, ask.
 2. First contact, "help" or "what can you do": print `start.py --brief` (≤ 10 lines).
@@ -37,7 +37,7 @@ Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
 8. Runtimes: Python missing → show `runtime.sh plan python`, install only after a yes. Node is
    only for sw-view; ask once (`_shared/references/runtime.md`).
 9. Old graph schema → show `workspace.py upgrade` dry-run; `--apply` after a yes.
-10. Push/publish request, or "ship" / "forge" by name: Jira configured → sw-ship; else say\n    Markdown is delivered and offer
+10. Push/publish request, or "ship" / "forge" by name: Jira configured → sw-ship; else report Markdown delivery and offer
    `workspace.py jira set --site <url> --project-key <KEY>`.
 
 ## Stop when
@@ -47,10 +47,9 @@ Choice of scope or spec root, setup answers, stack lock, runtime install, upgrad
 
 ## Finish
 
-Run `_shared/scripts/finish.py --skill sw-start --subject "<what changed>" --cwd <project>` (add `--item` per named
-item, `--until <station>` if the user set a limit). Act on `handoff.mode`: `continue` →
-print `say`, apply `transitions`, load `../<next_skill>/SKILL.md` now; `repair` → fix lint once,
-rerun with `--repaired`; `confirm` → ask once; `stop` → ask what `waiting` needs; `done` → report.
+Run `_shared/scripts/finish.py --skill sw-start --subject "<what changed>" --cwd <project>`.
+Follow `_shared/references/handoff.md` for item selection, limits and every `handoff.mode`.
+On `done`: Report the resulting state.
 
 ## Load only when
 

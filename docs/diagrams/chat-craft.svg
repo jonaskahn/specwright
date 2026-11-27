@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 536" role="img" aria-labelledby="chat-craft-title chat-craft-desc" id="chat-craft-root">
+<title id="chat-craft-title">sw-craft analysing existing behaviour</title>
+<desc id="chat-craft-desc">The person asks what refunds do today; sw-craft reports a gap table over four criteria and offers to write version 1 with a fix.</desc>
+<defs><style>
+  #chat-craft-root { --paper:#ffffff; --paper-2:#f7f5f6; --ink:#242129; --muted:#625c68; --accent:#ae0631; --tint:#fff0f3; --rule:#aca4ae; color-scheme:light; }
+  @media (prefers-color-scheme: dark) {
+    #chat-craft-root:not([data-theme="light"]) { --paper:#19171d; --paper-2:#221f27; --ink:#f8f3f5; --muted:#c0b4bf; --accent:#ff899c; --tint:#33212a; --rule:#938391; color-scheme:dark; }
+  }
+  #chat-craft-root[data-theme="dark"] { --paper:#19171d; --paper-2:#221f27; --ink:#f8f3f5; --muted:#c0b4bf; --accent:#ff899c; --tint:#33212a; --rule:#938391; color-scheme:dark; }
+  #chat-craft-root { --mono:ui-monospace,"SF Mono","IBM Plex Mono",Menlo,monospace; color:var(--ink); font-family:var(--mono); }
+  #chat-craft-root .canvas { fill:var(--paper); }
+  #chat-craft-root .eyebrow { font:500 12px var(--mono); letter-spacing:2.4px; fill:var(--muted); }
+  #chat-craft-root .note { font:400 13px var(--mono); fill:var(--muted); }
+  #chat-craft-root .b-skill { fill:var(--paper-2); stroke:var(--ink); stroke-width:2; }
+  #chat-craft-root .b-skill.accent { fill:var(--tint); stroke:var(--accent); }
+  #chat-craft-root .b-you { fill:var(--ink); stroke:var(--ink); stroke-width:2; }
+  #chat-craft-root .who { font:500 11px var(--mono); letter-spacing:1.6px; fill:var(--muted); }
+  #chat-craft-root .turn.right .who { fill:var(--paper); opacity:0.65; }
+  #chat-craft-root .b-skill.accent + .who, #chat-craft-root .turn .b-skill.accent ~ .who { fill:var(--accent); }
+  #chat-craft-root .say { font:400 13px var(--mono); fill:var(--ink); }
+  #chat-craft-root .turn.right .say { fill:var(--paper); }
+  #chat-craft-root .rule { stroke:var(--rule); stroke-width:1; }
+  #chat-craft-root .key-you { fill:var(--ink); }
+  #chat-craft-root .key-skill { fill:var(--paper-2); stroke:var(--ink); stroke-width:2; }
+  @media print { #chat-craft-root .canvas { fill:#ffffff; } }
+</style></defs>
+<rect class="canvas" x="0" y="0" width="960" height="536"/>
+<text class="eyebrow" x="40" y="44">SW-CRAFT · THE BA LINE</text>
+<text class="note" x="40" y="68">Idea, document or live system in; accepted story, criteria and tasks out.</text>
+<rect class="rule" x="40" y="480" width="880" height="1"/>
+<rect class="key-you" x="40" y="498" width="12" height="12" shape-rendering="crispEdges"/>
+<text class="note" x="60" y="509">you</text>
+<rect class="key-skill" x="108" y="498" width="12" height="12" shape-rendering="crispEdges"/>
+<text class="note" x="128" y="509">skill</text>
+<text class="note" x="192" y="509">say what you mean · the run answers from the files</text>
+<g class="turn right">
+<rect class="b-you" x="564" y="96" width="356" height="65" shape-rendering="crispEdges"/>
+<text class="who" x="582" y="120">YOU</text>
+<text class="say" x="582" y="144">analyse refunds: what is actually built?</text>
+</g>
+<g class="turn left">
+<rect class="b-skill" x="40" y="177" width="512" height="105" shape-rendering="crispEdges"/>
+<text class="who" x="58" y="201">SW-CRAFT</text>
+<text class="say" x="58" y="225">Read 6 files across api/ and web/. 4 criteria: 1 done, 1</text>
+<text class="say" x="58" y="245">partial, 1 missing, 1 divergent. Two questions opened. Write</text>
+<text class="say" x="58" y="265">this as version 1 plus a fix?</text>
+</g>
+<g class="turn right">
+<rect class="b-you" x="856" y="298" width="64" height="65" shape-rendering="crispEdges"/>
+<text class="who" x="874" y="322">YOU</text>
+<text class="say" x="874" y="346">yes</text>
+</g>
+<g class="turn left">
+<rect class="b-skill accent" x="40" y="379" width="536" height="85" shape-rendering="crispEdges"/>
+<text class="who" x="58" y="403">SW-CRAFT</text>
+<text class="say" x="58" y="427">FEAT-001 reserved. Say draw to add a swimlane, or review to run</text>
+<text class="say" x="58" y="447">the three reviewers and the pack.</text>
+</g>
+</svg>

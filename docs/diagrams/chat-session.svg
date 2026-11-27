@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 940" role="img" aria-labelledby="chat-session-title chat-session-desc" id="chat-session-root">
+<title id="chat-session-title">Specwright session: from idea to accepted story</title>
+<desc id="chat-session-desc">A chat thread where the person asks for a refunds spec and Specwright freezes the source, proposes two story slices, records acceptance and hands over to planning.</desc>
+<defs><style>
+  #chat-session-root { --paper:#ffffff; --paper-2:#f7f5f6; --ink:#242129; --muted:#625c68; --accent:#ae0631; --tint:#fff0f3; --rule:#aca4ae; color-scheme:light; }
+  @media (prefers-color-scheme: dark) {
+    #chat-session-root:not([data-theme="light"]) { --paper:#19171d; --paper-2:#221f27; --ink:#f8f3f5; --muted:#c0b4bf; --accent:#ff899c; --tint:#33212a; --rule:#938391; color-scheme:dark; }
+  }
+  #chat-session-root[data-theme="dark"] { --paper:#19171d; --paper-2:#221f27; --ink:#f8f3f5; --muted:#c0b4bf; --accent:#ff899c; --tint:#33212a; --rule:#938391; color-scheme:dark; }
+  #chat-session-root { --mono:ui-monospace,"SF Mono","IBM Plex Mono",Menlo,monospace; color:var(--ink); font-family:var(--mono); }
+  #chat-session-root .canvas { fill:var(--paper); }
+  #chat-session-root .eyebrow { font:500 12px var(--mono); letter-spacing:2.4px; fill:var(--muted); }
+  #chat-session-root .note { font:400 13px var(--mono); fill:var(--muted); }
+  #chat-session-root .b-skill { fill:var(--paper-2); stroke:var(--ink); stroke-width:2; }
+  #chat-session-root .b-skill.accent { fill:var(--tint); stroke:var(--accent); }
+  #chat-session-root .b-you { fill:var(--ink); stroke:var(--ink); stroke-width:2; }
+  #chat-session-root .who { font:500 11px var(--mono); letter-spacing:1.6px; fill:var(--muted); }
+  #chat-session-root .turn.right .who { fill:var(--paper); opacity:0.65; }
+  #chat-session-root .b-skill.accent + .who, #chat-session-root .turn .b-skill.accent ~ .who { fill:var(--accent); }
+  #chat-session-root .say { font:400 13px var(--mono); fill:var(--ink); }
+  #chat-session-root .turn.right .say { fill:var(--paper); }
+  #chat-session-root .rule { stroke:var(--rule); stroke-width:1; }
+  #chat-session-root .key-you { fill:var(--ink); }
+  #chat-session-root .key-skill { fill:var(--paper-2); stroke:var(--ink); stroke-width:2; }
+  @media print { #chat-session-root .canvas { fill:#ffffff; } }
+</style></defs>
+<rect class="canvas" x="0" y="0" width="960" height="940"/>
+<text class="eyebrow" x="40" y="44">ONE SESSION · SHAPE → ACCEPTED</text>
+<text class="note" x="40" y="68">Three prefilled questions on a first run, then the stations hand off on their own.</text>
+<rect class="rule" x="40" y="884" width="880" height="1"/>
+<rect class="key-you" x="40" y="902" width="12" height="12" shape-rendering="crispEdges"/>
+<text class="note" x="60" y="913">you</text>
+<rect class="key-skill" x="108" y="902" width="12" height="12" shape-rendering="crispEdges"/>
+<text class="note" x="128" y="913">skill</text>
+<text class="note" x="192" y="913">say what you mean · the run answers from the files</text>
+<g class="turn right">
+<rect class="b-you" x="620" y="96" width="300" height="65" shape-rendering="crispEdges"/>
+<text class="who" x="638" y="120">YOU</text>
+<text class="say" x="638" y="144">start a spec for the refunds flow</text>
+</g>
+<g class="turn left">
+<rect class="b-skill" x="40" y="177" width="508" height="105" shape-rendering="crispEdges"/>
+<text class="who" x="58" y="201">SW-START</text>
+<text class="say" x="58" y="225">docs/ · scope REF · nothing to resume. Three prefilled</text>
+<text class="say" x="58" y="245">questions, one message: what you have, how far to go, which</text>
+<text class="say" x="58" y="265">stack.</text>
+</g>
+<g class="turn right">
+<rect class="b-you" x="516" y="298" width="404" height="65" shape-rendering="crispEdges"/>
+<text class="who" x="534" y="322">YOU</text>
+<text class="say" x="534" y="346">a paragraph about refunds, plus the policy PDF</text>
+</g>
+<g class="turn left">
+<rect class="b-skill" x="40" y="379" width="544" height="105" shape-rendering="crispEdges"/>
+<text class="who" x="58" y="403">SW-CRAFT</text>
+<text class="say" x="58" y="427">SRC-0001 frozen · 14 candidates · 1 conflict → Q-001 (30 days vs</text>
+<text class="say" x="58" y="447">14). Two slices: FEAT-001 request a refund, FEAT-002 finance</text>
+<text class="say" x="58" y="467">approves the payout. Accept this split?</text>
+</g>
+<g class="turn right">
+<rect class="b-you" x="856" y="500" width="64" height="65" shape-rendering="crispEdges"/>
+<text class="who" x="874" y="524">YOU</text>
+<text class="say" x="874" y="548">yes</text>
+</g>
+<g class="turn left">
+<rect class="b-skill" x="40" y="581" width="536" height="105" shape-rendering="crispEdges"/>
+<text class="who" x="58" y="605">SW-CRAFT</text>
+<text class="say" x="58" y="629">FEAT-001 · 3 criteria · BR-001 · NFR-REF-001 · 4 tasks. review</text>
+<text class="say" x="58" y="649">lint ✓ DoR ✓ critic 1 · builder 2 · tester 1. Accept the story?</text>
+<text class="say" x="58" y="669">hash 7c1a9f3d2e41</text>
+</g>
+<g class="turn right">
+<rect class="b-you" x="856" y="702" width="64" height="65" shape-rendering="crispEdges"/>
+<text class="who" x="874" y="726">YOU</text>
+<text class="say" x="874" y="750">yes</text>
+</g>
+<g class="turn left">
+<rect class="b-skill accent" x="40" y="783" width="508" height="85" shape-rendering="crispEdges"/>
+<text class="who" x="58" y="807">SW-CRAFT</text>
+<text class="say" x="58" y="831">accepted · hash 7c1a9f3d2e41 · committed. Say forge to plan</text>
+<text class="say" x="58" y="851">FEAT-001.</text>
+</g>
+</svg>

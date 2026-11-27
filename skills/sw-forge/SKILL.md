@@ -1,6 +1,6 @@
 ---
 name: sw-forge
-description: Turns an accepted story and its tasks into a very detailed, ready-to-apply implementation plan — exact files per task, the change itself, the test that proves it and the command that runs it — then writes one self-contained prompt per task and moves every task from not-started to planned. With no feature named it plans every accepted feature still without a current plan. Use when asked to plan FEAT-001 in detail, prepare a story for implementation, generate agent prompts or task order, or record a task as in-progress, done or blocked. Do NOT use for writing criteria or tasks (use sw-craft) or writing code.
+description: Writes detailed implementation plans and task prompts from accepted stories and tasks. Use when planning FEAT-001, preparing implementation, generating task order or prompts, or recording task progress and evidence. With no feature named, plans all accepted features without a current plan. Do NOT use for stories or task definitions (use sw-craft), publishing (use sw-ship), or writing code.
 ---
 
 # sw-forge
@@ -60,12 +60,9 @@ the locked stack; a change request must be applied first.
 
 ## Finish
 
-Run `_shared/scripts/finish.py --skill sw-forge --subject "<FEAT-NNN> plan" --cwd <project>`
-(add `--item` per named item, `--until <station>` if the user set a limit). Act on
-`handoff.mode`: `continue` → print `say`, apply `transitions`, load `../<next_skill>/SKILL.md`
-now; `repair` → fix lint once, rerun with `--repaired`; `confirm` → ask once; `stop` → ask
-what `waiting` needs; `done` → report the code roots it targeted, the plan and the prompts,
-and say the code is written elsewhere from `03-plan/prompts/FEAT-NNN/_order.md`.
+Run `_shared/scripts/finish.py --skill sw-forge --subject "<FEAT-NNN> plan" --cwd <project>`.
+Follow `_shared/references/handoff.md` for item selection, limits and every `handoff.mode`.
+On `done`: Report the targeted code roots, plan and prompts. State that implementation runs elsewhere from `03-plan/prompts/FEAT-NNN/_order.md`.
 
 ## Load only when
 

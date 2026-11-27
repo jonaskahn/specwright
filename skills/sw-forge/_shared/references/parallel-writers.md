@@ -14,6 +14,15 @@ scope and the host can run sub-agents. It gives speed without shared-write races
 - Workers on items that share a decision wait until the lead has recorded it, so no two
   workers invent different rules.
 
+## Delegation environment
+
+Use shared-workspace workers with the file ownership and guard below. Do not request Git
+worktree isolation for a docs-only workspace. If isolation is needed, first verify that the
+target is a Git repository or that the host supports another isolation mechanism.
+A worktree-unavailable error means the worker did not start: do not retry the same call.
+Omit isolation if the host allows it; otherwise execute serially in the current workspace.
+Do not initialize Git or configure hooks solely to make delegation work.
+
 ## Rules
 
 1. **One writer per file.** A worker owns its item's files only (the skill names them).
@@ -38,8 +47,11 @@ scope and the host can run sub-agents. It gives speed without shared-write races
 6. **Verify before trust.** Worker output is unverified until the guard, the skill's
    hash/coverage check and the lint gate pass for that item. A failing item goes back to
    its own worker (once), then to the user; passing siblings are kept.
-7. **Smallest capable model** for workers. Run maintenance and lint once at the end, not
-   per worker.
+7. **Smallest capable model** for workers. Use a low-cost model for mechanical, bounded
+   writes; use a stronger model when the task needs cross-file reasoning. Choose from the
+   host's available models; never assume a provider or hard-code a model ID. Keep independent
+   reviewers at the session model unless the user selects another. Run maintenance and lint
+   once at the end, not per worker.
 8. **Workers never advance a station.** The batch finishes the local station; the lead then
    hands the whole batch off once by `handoff.md` (`flow: auto`: at once; `guided`: one plain
    yes covers the batch). A worker never transitions, approves or calls the next skill.

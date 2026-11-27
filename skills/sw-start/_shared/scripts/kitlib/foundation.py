@@ -39,7 +39,25 @@ CATALOG: dict[str, dict[str, Any]] = {
         },
         "structure": "src/main/java/<group>/<app>/{api,domain,infra}, src/test/java mirrors main",
     },
-    "kotlin": {"alias": "java"},
+    "kotlin": {
+        "build": ["gradle"],
+        "format": ["spotless (ktlint)"],
+        "lint": ["detekt"],
+        "test": ["junit5 + kover"],
+        "cmd": {
+            "gradle": {
+                "setup": "./gradlew --quiet dependencies",
+                "fmt": "./gradlew --quiet spotlessApply",
+                "fmt-check": "./gradlew --quiet spotlessCheck",
+                "lint": "./gradlew --quiet detekt",
+                "typecheck": "./gradlew --quiet compileKotlin compileTestKotlin",
+                "test": "./gradlew --quiet test koverVerify",
+                "build": "./gradlew --quiet assemble",
+                "coverage-report": "build/reports/kover/html/index.html",
+            }
+        },
+        "structure": "src/main/kotlin/<package>, src/test/kotlin mirrors main",
+    },
     "typescript": {
         "build": ["pnpm", "npm"],
         "format": ["prettier", "biome"],
@@ -69,7 +87,33 @@ CATALOG: dict[str, dict[str, Any]] = {
         },
         "structure": "src/{app,features/<name>,shared}, tests beside code as *.test.ts",
     },
-    "javascript": {"alias": "typescript"},
+    "javascript": {
+        "build": ["npm", "pnpm"],
+        "format": ["prettier"],
+        "lint": ["eslint"],
+        "test": ["vitest + v8 coverage"],
+        "cmd": {
+            "npm": {
+                "setup": "npm ci",
+                "fmt": "npm exec -- prettier --write .",
+                "fmt-check": "npm exec -- prettier --check .",
+                "lint": "npm exec -- eslint . --max-warnings 0",
+                "test": "npm exec -- vitest run --coverage",
+                "build": "npm run build",
+                "coverage-report": "coverage/index.html",
+            },
+            "pnpm": {
+                "setup": "pnpm install --frozen-lockfile",
+                "fmt": "pnpm exec prettier --write .",
+                "fmt-check": "pnpm exec prettier --check .",
+                "lint": "pnpm exec eslint . --max-warnings 0",
+                "test": "pnpm exec vitest run --coverage",
+                "build": "pnpm build",
+                "coverage-report": "coverage/index.html",
+            },
+        },
+        "structure": "src/{app,features,shared}, tests beside code as *.test.js",
+    },
     "python": {
         "build": ["uv", "pip"],
         "format": ["ruff format"],
@@ -135,6 +179,110 @@ CATALOG: dict[str, dict[str, Any]] = {
         },
         "structure": "lib/{app,features/<name>,shared}, test/ mirrors lib",
     },
+    "rust": {
+        "build": ["cargo"],
+        "format": ["rustfmt"],
+        "lint": ["clippy"],
+        "test": ["cargo test + cargo-llvm-cov", "cargo test"],
+        "cmd": {
+            "cargo": {
+                "setup": "cargo fetch --locked",
+                "fmt": "cargo fmt --all",
+                "fmt-check": "cargo fmt --all -- --check",
+                "lint": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+                "typecheck": "cargo check --workspace --all-targets --locked",
+                "test": (
+                    "cargo test --workspace --locked && "
+                    "cargo llvm-cov --workspace --locked --fail-under-lines {coverage}"
+                ),
+                "build": "cargo build --workspace --release --locked",
+                "coverage-report": "target/llvm-cov/html/index.html (cargo llvm-cov --html)",
+            }
+        },
+        "structure": (
+            "Cargo.toml workspace, src/ or crates/<name>/src/, tests/ for integration tests"
+        ),
+    },
+    "c": {
+        "build": ["cmake"],
+        "format": ["clang-format"],
+        "lint": ["clang-tidy"],
+        "test": ["ctest + gcovr"],
+        "cmd": {
+            "cmake": {
+                "setup": "cmake --preset dev",
+                "fmt": "cmake --build --preset dev --target format",
+                "fmt-check": "cmake --build --preset dev --target format-check",
+                "lint": "cmake --build --preset dev --target lint",
+                "typecheck": "cmake --build --preset dev",
+                "test": (
+                    "cmake --preset coverage && cmake --build --preset coverage && "
+                    "ctest --preset coverage && "
+                    "gcovr --root . --filter src/ --filter include/ "
+                    "--fail-under-line {coverage} --html-details coverage.html"
+                ),
+                "build": "cmake --preset release && cmake --build --preset release",
+                "coverage-report": "coverage.html",
+            }
+        },
+        "structure": "CMakeLists.txt, CMakePresets.json, src/, include/, tests/",
+    },
+    "cpp": {"alias": "c"},
+    "php": {
+        "build": ["composer"],
+        "format": ["php-cs-fixer"],
+        "lint": ["phpstan"],
+        "test": ["phpunit + coverage"],
+        "cmd": {
+            "composer": {
+                "setup": "composer install --no-interaction --prefer-dist",
+                "fmt": "vendor/bin/php-cs-fixer fix",
+                "fmt-check": "vendor/bin/php-cs-fixer fix --dry-run --diff",
+                "lint": "vendor/bin/phpstan analyse --no-progress",
+                "test": "composer run test:coverage",
+                "build": "composer validate --strict && composer dump-autoload --optimize",
+                "coverage-report": "coverage/index.html",
+            }
+        },
+        "structure": "composer.json, src/, tests/, phpunit.xml",
+    },
+    "ruby": {
+        "build": ["bundler"],
+        "format": ["rubocop"],
+        "lint": ["rubocop"],
+        "test": ["rspec + simplecov"],
+        "cmd": {
+            "bundler": {
+                "setup": "bundle install",
+                "fmt": "bundle exec rubocop --autocorrect",
+                "fmt-check": "bundle exec rubocop --only Layout",
+                "lint": "bundle exec rubocop",
+                "test": "bundle exec rspec",
+                "build": "bundle exec rake build",
+                "coverage-report": "coverage/index.html",
+            }
+        },
+        "structure": "Gemfile, lib/<package>/, spec/ mirrors lib",
+    },
+    "swift": {
+        "build": ["swiftpm"],
+        "format": ["swift-format"],
+        "lint": ["swiftlint"],
+        "test": ["swift test + llvm-cov"],
+        "cmd": {
+            "swiftpm": {
+                "setup": "swift package resolve",
+                "fmt": "swift format --in-place --recursive Sources Tests",
+                "fmt-check": "swift format lint --strict --recursive Sources Tests",
+                "lint": "swiftlint lint --strict",
+                "typecheck": "swift build --build-tests",
+                "test": "swift test --enable-code-coverage && make coverage-check",
+                "build": "swift build --configuration release",
+                "coverage-report": ".build/debug/codecov/ (coverage-check exports reports)",
+            }
+        },
+        "structure": "Package.swift, Sources/<Target>/, Tests/<Target>Tests/",
+    },
     "csharp": {
         "build": ["dotnet"],
         "format": ["dotnet format"],
@@ -167,7 +315,15 @@ PRINCIPLES_SOURCE = (
 
 def language_of(profile: dict[str, Any] | None, layer: str) -> str | None:
     values = ((profile or {}).get("layers") or {}).get(layer) or {}
-    lang = str(values.get("language") or "").lower()
+    lang = str(values.get("language") or "").strip().lower()
+    lang = {
+        "c#": "csharp",
+        "c++": "cpp",
+        "golang": "go",
+        "js": "javascript",
+        "ts": "typescript",
+        "c-sharp": "csharp",
+    }.get(lang, lang)
     if not lang and values.get("framework") == "flutter":
         lang = "dart"
     entry = CATALOG.get(lang)
@@ -269,7 +425,10 @@ def commands(tooling: dict[str, Any]) -> dict[str, dict[str, str]]:
     out = {}
     for layer, t in (tooling.get("layers") or {}).items():
         cmd = CATALOG[t["language"]]["cmd"].get(t["build"]) or {}
-        out[layer] = dict(cmd)
+        out[layer] = {
+            key: value.replace("{coverage}", str(tooling.get("coverage", 80)))
+            for key, value in cmd.items()
+        }
     return out
 
 
@@ -302,6 +461,14 @@ def makefile(tooling: dict[str, Any], name: str) -> str:
     for layer, c in cmds.items():
         if c.get("coverage-report"):
             lines.append(f"\t@echo '{layer}: {c['coverage-report']}'")
+    if any(t.get("language") == "swift" for t in (tooling.get("layers") or {}).values()):
+        lines += [
+            "",
+            ".PHONY: coverage-check",
+            "coverage-check:  ## implement platform-specific llvm-cov export and threshold check",
+            "\t@echo 'Configure Swift coverage export and enforce the chosen line floor first.'",
+            "\t@exit 1",
+        ]
     return "\n".join(lines) + "\n"
 
 

@@ -22,7 +22,7 @@ Concrete values, actor, input, output. "Refund allowed ≤ 30 days after payment
 ## Status
 | Status | Meaning |
 | --- | --- |
-| done | code (and ideally a test) does what is intended |
+| done | code does what is intended; cite a test when one exists |
 | partial | some cases or layers exist (API without UI, happy path without errors) |
 | missing | intended, no code found in the registered roots |
 | divergent | code and intended disagree (values, rules, flow) |

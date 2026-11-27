@@ -1,6 +1,6 @@
 ---
 name: sw-ship
-description: Publishes accepted epics, stories and tasks to Jira at the level the user chooses — one question for scope, a per-level dry-run, then execution only after a fresh explicit confirmation of the exact plan shown (a typed token, or a plain yes to that displayed plan), logging each remote call and every level locally. Never runs on its own. Use only when explicitly asked to ship or publish FEAT-001, its epic or its tasks, or to sync Jira status. Do NOT use for drafting or analysing (use sw-craft) or bulk Jira edits.
+description: Publishes accepted epics, stories and tasks to Jira. Use only when explicitly asked to ship, publish, or sync Jira status. Requires a scope choice, a dry-run and fresh confirmation of the exact plan; records remote calls locally. Never starts automatically. Do NOT use for drafting, analysis or approval (use sw-craft), implementation plans (use sw-forge), or bulk Jira edits.
 ---
 
 # sw-ship
@@ -45,11 +45,9 @@ no connector when the user asked for Jira.
 
 ## Finish
 
-Run `_shared/scripts/finish.py --skill sw-ship --subject "<FEAT-NNN> publish record" --cwd <project>`
-(add `--item` per named item). Act on `handoff.mode`: `continue` → print `say`, apply
-`transitions`, load `../<next_skill>/SKILL.md` now; `repair` → fix lint once, rerun with
-`--repaired`; `confirm` → ask once; `stop` → ask what `waiting` needs; `done` → report what was
-created or updated per level and what stayed local.
+Run `_shared/scripts/finish.py --skill sw-ship --subject "<FEAT-NNN> publish record" --cwd <project>`.
+Follow `_shared/references/handoff.md` for item selection, limits and every `handoff.mode`.
+On `done`: Report what was created or updated per level and what stayed local.
 
 ## Load only when
 

@@ -10,9 +10,9 @@ obstacle, its frequency or cost, and the evidence source. Outcome describes a us
 change with a way to observe it, not a screen or integration. Unknown measurements
 stay unknown until confirmed; never turn an attractive estimate into a baseline.
 
-For refunds, a solution-led statement might demand a prominent coloured control
+For refunds, a solution-led statement demands a prominent coloured control
 connected to a payment service. Instead, describe the inability to request a refund
-without support and the recorded delay. The smallest outcome might be that a customer
+without support and the recorded delay. A smallest-outcome example is that a customer
 can lodge a request and obtain its calculated amount pending approval, without asking
 support to enter it. This leaves interface and implementation choices open.
 
