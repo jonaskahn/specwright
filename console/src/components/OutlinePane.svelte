@@ -1,5 +1,6 @@
 <script lang="ts">
   import { filterTree, pathTo, type TreeNode } from '../lib/data/selectors';
+  import Icon from './Icon.svelte';
   import OutlineNode from './OutlineNode.svelte';
 
   let { roots, selected, onpick, onview }: { roots: TreeNode[]; selected: string | null; onpick: (key: string) => void; onview: (key: string) => void } = $props();
@@ -45,11 +46,15 @@
 </script>
 
 <div class="outline" bind:this={pane}>
-  <div class="row-flex wrap gap-2">
-    <input class="input" type="search" placeholder="Find in the outline" aria-label="Find in the outline" bind:value={text} />
-    <button class="btn ghost" type="button" onclick={() => all('all')}>Expand all</button>
-    <button class="btn ghost" type="button" onclick={() => all('none')}>Collapse all</button>
+  <div class="row-flex outline-h">
+    <h2>Outline</h2>
+    <button class="btn icon-only sq" type="button" aria-label="Expand all" title="Expand all" onclick={() => all('all')}><Icon name="unfold" size="sm" /></button>
+    <button class="btn icon-only sq" type="button" aria-label="Collapse all" title="Collapse all" onclick={() => all('none')}><Icon name="foldup" size="sm" /></button>
   </div>
+  <label class="bsearch sm">
+    <Icon name="query" size="sm" />
+    <input type="search" placeholder="Find in the outline" aria-label="Find in the outline" bind:value={text} />
+  </label>
   <div class="o-tree">
     {#each shown as root (root.key)}<OutlineNode node={root} {selected} {expand} {forced} {marks} onmark={mark} {onpick} {onview} />{:else}<p class="muted">Nothing matches.</p>{/each}
   </div>

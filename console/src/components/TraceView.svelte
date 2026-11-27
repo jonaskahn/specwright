@@ -98,7 +98,7 @@
 </script>
 
 <div class="stack-sm">
-  {#if coverage}<CoverageStrip {measures} active={measure} onpick={(id) => (measure = id)} />{/if}
+  {#if coverage}<CoverageStrip {measures} active={measure} onpick={(id) => (measure = id)} broken={model.broken.length} items={chainCount + below} />{/if}
   {#if big}
     <div class="banner warn"><div><p>This project has {chainCount} objectives, epics and features, too many to read at once. Showing the chain around the item chosen here.</p></div></div>
     <select class="select table-pick" aria-label="Show the chain around" value={start} onchange={(e) => { focusKey = e.currentTarget.value; onselect(null); }}>
