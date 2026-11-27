@@ -8,6 +8,8 @@
 import type { FeaturesRow, TasksRow } from '../../contract/types';
 import type { Loaded } from './data/loader';
 import { inScope, rows } from './data/selectors';
+import { plural, shortKey } from './format';
+import { label } from './status';
 
 export type Progress = TasksRow['progress'];
 
@@ -234,6 +236,82 @@ export function storyProgress(story: LaneStory): { done: number; total: number; 
     total: story.tasks.length,
     blocked: story.tasks.filter((t) => t.progress === 'blocked').length,
   };
+}
+
+/** The status columns of a lane, left to right. A task sits in the column its plan records. */
+export const PROGRESS_COLUMNS = ['not-started', 'planned', 'in-progress', 'blocked', 'done'] as const;
+export type Column = (typeof PROGRESS_COLUMNS)[number];
+
+/** A story's tasks split by column; a task with no recorded status counts as not started. */
+export function tasksByColumn(story: LaneStory): Record<Column, LaneTask[]> {
+  const out: Record<Column, LaneTask[]> = { 'not-started': [], planned: [], 'in-progress': [], blocked: [], done: [] };
+  for (const t of story.tasks) out[t.progress ?? 'not-started'].push(t);
+  return out;
+}
+
+/** How many tasks of these stories sit in each status column. */
+export function columnCounts(stories: LaneStory[]): Record<Column, number> {
+  const out: Record<Column, number> = { 'not-started': 0, planned: 0, 'in-progress': 0, blocked: 0, done: 0 };
+  for (const s of stories) for (const t of s.tasks) out[t.progress ?? 'not-started'] += 1;
+  return out;
+}
+
+/** The whole-number percentage of tasks done; zero when there are none. */
+export const percentDone = (done: number, total: number): number => (total ? Math.round((done / total) * 100) : 0);
+
+/** What a criterion looks like on its story: no task implements it, some do, or every one that does is done. */
+export type CriterionState = 'none' | 'open' | 'met';
+
+export function criterionState(story: LaneStory, key: string): CriterionState {
+  const tasks = story.tasks.filter((t) => t.traces.includes(key));
+  if (!tasks.length) return 'none';
+  return tasks.every((t) => t.progress === 'done') ? 'met' : 'open';
+}
+
+export const tasksFor = (story: LaneStory, key: string): number => story.tasks.filter((t) => t.traces.includes(key)).length;
+
+export interface AttentionCard {
+  key: string;
+  tone: 'danger' | 'warn';
+  /** Mono line: identifier and the word that says why. */
+  code: string;
+  sentence: string;
+  /** Where choosing the card goes: a story's page, or a task's preview. */
+  target: { kind: 'feature' | 'task'; key: string };
+}
+
+/** Everything on the board that waits for a person, each item once, blocked work first. */
+export function needsAttention(lanes: Lane[]): AttentionCard[] {
+  const seen = new Set<string>();
+  const stories = lanes.flatMap((l) => l.stories).filter((s) => !s.retired && s.feature && !seen.has(s.id) && seen.add(s.id));
+  const blockedTasks: AttentionCard[] = [];
+  const blockedStories: AttentionCard[] = [];
+  const questions: AttentionCard[] = [];
+  const lint: AttentionCard[] = [];
+  const gaps: AttentionCard[] = [];
+  for (const s of stories) {
+    const f = s.feature!;
+    const code = (word: string) => `${shortKey(s.id)} · ${word}`;
+    const target = { kind: 'feature' as const, key: s.id };
+    for (const t of s.tasks.filter((x) => x.progress === 'blocked')) {
+      const untied = !t.traces.length && s.criteria.length > 0;
+      blockedTasks.push({
+        key: `task:${t.id}`,
+        tone: 'danger',
+        code: `${shortKey(t.id)} · Blocked`,
+        sentence: untied ? `${t.title} is blocked and not tied to an acceptance criterion` : `${t.title} is blocked`,
+        target: { kind: 'task', key: t.id },
+      });
+    }
+    if (f.condition === 'blocked') blockedStories.push({ key: `blocked:${s.id}`, tone: 'danger', code: code(label(f.state)), sentence: `${s.title} is blocked`, target });
+    if (f.openQuestions.length) questions.push({ key: `question:${s.id}`, tone: 'warn', code: code(label(f.state)), sentence: `${s.title} has ${plural(f.openQuestions.length, 'open question')}`, target });
+    if (f.openChanges.length) questions.push({ key: `change:${s.id}`, tone: 'warn', code: code(label(f.state)), sentence: `${s.title} has ${plural(f.openChanges.length, 'open change request')}`, target });
+    if (/fail/i.test(f.lint ?? '')) lint.push({ key: `lint:${s.id}`, tone: 'warn', code: code(label(f.state)), sentence: `${s.title} is failing lint`, target });
+    if (s.tasks.length) {
+      for (const c of s.criteria.filter((x) => !x.covered)) gaps.push({ key: `gap:${c.key}`, tone: 'warn', code: code('Coverage gap'), sentence: `No task covers \u201c${c.title}\u201d`, target });
+    }
+  }
+  return [...blockedTasks, ...blockedStories, ...questions, ...lint, ...gaps];
 }
 
 /** Collapsed lanes live in the address as a comma-separated list of lane keys. */

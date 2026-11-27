@@ -2,6 +2,7 @@
   import DataTable from '../components/DataTable.svelte';
   import GraphCanvas from '../components/GraphCanvas.svelte';
   import Icon from '../components/Icon.svelte';
+  import NodeLinks from '../components/NodeLinks.svelte';
   import OutlinePane from '../components/OutlinePane.svelte';
   import OwnerEmpty from '../components/OwnerEmpty.svelte';
   import PageHead from '../components/PageHead.svelte';
@@ -111,11 +112,6 @@
         <input class="input" style:max-inline-size="18rem" type="search" placeholder="Find an item" aria-label="Find an item" bind:value={text} />
       {/if}
       {#if view === 'network'}
-        {#each kinds as kind (kind)}
-          <button class="pill" type="button" aria-pressed={!hidden.has(kind)} style:opacity={hidden.has(kind) ? 0.45 : 1} onclick={() => toggle(kind)}>
-            <svg class="mk" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill={`oklch(58% 0.15 ${hue(kind)})`} /></svg>{kindWords(kind, true)}
-          </button>
-        {/each}
         <label class="row-flex"><input type="checkbox" bind:checked={mentions} /> Links that only mention an item</label>
       {/if}
       {#if view === 'trace'}
@@ -125,6 +121,16 @@
         <button class="btn ghost hide-narrow" type="button" aria-pressed={outlineOpen} onclick={() => (outlineOpen = !outlineOpen)}>{outlineOpen ? 'Hide outline' : 'Show outline'}</button>
       {/if}
     </div>
+    {#if view === 'network'}
+      <div class="kind-row" role="group" aria-label="Show">
+        <span class="eyebrow">Show</span>
+        {#each kinds as kind (kind)}
+          <button class="kind-chip" class:off={hidden.has(kind)} type="button" aria-pressed={!hidden.has(kind)} onclick={() => toggle(kind)}>
+            <svg class="mk" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill={hidden.has(kind) ? 'none' : `oklch(58% 0.15 ${hue(kind)})`} stroke={`oklch(58% 0.15 ${hue(kind)})`} stroke-width="1.6" /></svg>{kindWords(kind, true)}<span class="num sub">{all.filter((n) => n.kind === kind).length}</span>
+          </button>
+        {/each}
+      </div>
+    {/if}
     {#if view === 'network' && all.length > LIMIT}<div class="banner warn">Showing the first {LIMIT} of {all.length} items. Narrow it with a filter.</div>{/if}
     {#if project === '~'}<p class="sub">Only links that join two projects, with the objectives, epics and features they join.</p>{/if}
     {#if ghost}
@@ -154,14 +160,22 @@
             <TraceView nodes={single.nodes} edges={single.edges} foreign={single.foreign} {selected} onselect={pick} onview={view_} needle={text} {code} />
           {/if}
         {:else if view === 'network'}
-          {#if selected && !ghost}
-            <div class="card pad row-flex wrap gap-2 picked-bar">
-              <span class="sub">Chosen:</span><strong>{app.loaded.data.graph?.nodes.find((n) => n.key === selected)?.title ?? selected}</strong><span class="mono sub">{selected}</span>
-              <span class="spacer"></span>
-              <button class="btn" type="button" onclick={() => view_(selected!)}><Icon name="eye" size="sm" />View</button>
-            </div>
-          {/if}
-          <div class="graph-wrap"><GraphCanvas {nodes} {edges} {selected} onselect={pick} /></div>
+          <div class="net-split" class:with-detail={selected && !ghost}>
+            <div class="graph-wrap"><GraphCanvas {nodes} {edges} {selected} onselect={pick} /></div>
+            {#if selected && !ghost}
+              {@const sel = app.loaded.data.graph?.nodes.find((n) => n.key === selected)}
+              <aside class="net-detail card pad stack-sm" aria-label="Chosen item">
+                <p class="sub mono">{sel ? kindWords(sel.kind) : ''} · {selected}</p>
+                <h3>{sel?.title ?? selected}</h3>
+                {#if sel?.status}<span class="row-flex"><Pill look={wordLook(sel.status)} /></span>{/if}
+                <div class="row-flex wrap">
+                  <button class="btn" type="button" onclick={() => view_(selected!)}><Icon name="eye" size="sm" />Read</button>
+                  <button class="btn ghost" type="button" onclick={() => app.setQuery({ view: null })}>Open in Trace</button>
+                </div>
+                <NodeLinks nodeKey={selected} onpick={pick} />
+              </aside>
+            {/if}
+          </div>
         {:else}
           <DataTable id="graph" rows={all} cols={tableCols} rowKey={(n) => n.key} title={(n) => n.key} template="minmax(0,1.4fr) 10rem 8rem minmax(0,2fr)" onrow={(n) => view_(n.key)}>
             {#snippet cells(n)}
@@ -173,7 +187,7 @@
         {/if}
       </div>
     </div>
-    <p class="sub">Press Ctrl or Cmd with K to search for any item. {chainCount} items in the chain.</p>
+    <p class="sub">Press Ctrl or Cmd with K to search for any item. {chainCount} items in the chain.{view === 'network' ? ` ${nodes.length} of ${all.length} items shown · drag to pan, scroll to zoom.` : ''}</p>
   </div>
 {:else}
   <OwnerEmpty kind="graph" what="graph" />

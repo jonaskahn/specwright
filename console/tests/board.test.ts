@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildLanes, closedQuery, countsOf, filterLanes, LOOSE, NO_FILTERS, orderStories, parseClosed, storyProgress, UNPLACED } from '../src/lib/board';
+import { buildLanes, closedQuery, columnCounts, countsOf, criterionState, needsAttention, percentDone, filterLanes, LOOSE, NO_FILTERS, orderStories, parseClosed, PROGRESS_COLUMNS, storyProgress, tasksByColumn, UNPLACED } from '../src/lib/board';
 import { loadAll, type Loaded } from '../src/lib/data/loader';
 import { serve } from './golden';
 
@@ -104,6 +104,35 @@ describe('the board lanes', async () => {
     expect(orderStories(list, 'id').map((s) => s.id)).toEqual(['REF:FEAT-001', 'REF:FEAT-002']);
     expect(orderStories(list, 'attention').map((s) => s.id)).toEqual(['REF:FEAT-002', 'REF:FEAT-001']);
     expect(countsOf([]).stories).toBe(0);
+  });
+
+  it('sorts a story\'s tasks into the five status columns', () => {
+    const ids = (id: string) => Object.fromEntries(Object.entries(tasksByColumn(story(id))).map(([k, v]) => [k, v.map((t) => t.id)]));
+    expect(ids('REF:FEAT-001')).toMatchObject({ planned: ['REF:TASK-001-1'], 'in-progress': ['REF:TASK-001-2'], blocked: ['REF:TASK-001-3'], done: [], 'not-started': [] });
+    expect(ids('REF:FEAT-002').done).toEqual(['REF:TASK-002-1']);
+    expect(PROGRESS_COLUMNS).toHaveLength(5);
+    const bare = { ...story('REF:FEAT-003'), tasks: [{ id: 'T', title: 't', layer: null, progress: null, evidence: null, traces: [] }] };
+    expect(tasksByColumn(bare)['not-started'].map((t) => t.id)).toEqual(['T']);
+  });
+
+  it('counts a lane\'s tasks per status column', () => {
+    expect(columnCounts(lanes[0].stories)).toEqual({ 'not-started': 0, planned: 1, 'in-progress': 1, blocked: 1, done: 1 });
+    expect(columnCounts(lanes[1].stories)['not-started']).toBe(1);
+    expect(percentDone(1, 4)).toBe(25);
+    expect(percentDone(0, 0)).toBe(0);
+  });
+
+  it('says whether a criterion has no task, open tasks, or only finished ones', () => {
+    expect(criterionState(story('REF:FEAT-003'), 'REF:AC-003-2')).toBe('none');
+    expect(criterionState(story('REF:FEAT-001'), 'REF:AC-001-1')).toBe('open');
+    expect(criterionState(story('REF:FEAT-002'), 'REF:AC-002-1')).toBe('met');
+  });
+
+  it('lists what needs a person once each: blocked work, questions, lint, then gaps', () => {
+    const cards = needsAttention(lanes);
+    expect(cards.map((c) => c.key)).toEqual(['task:REF:TASK-001-3', 'question:REF:FEAT-001', 'change:REF:FEAT-002', 'lint:REF:FEAT-002', 'gap:REF:AC-003-2']);
+    expect(cards[0]).toMatchObject({ tone: 'danger', code: 'TASK-001-3 · Blocked', target: { kind: 'task', key: 'REF:TASK-001-3' } });
+    expect(cards.at(-1)!.sentence).toContain('Rejection notice');
   });
 
   it('keeps collapsed lanes in the address', () => {
