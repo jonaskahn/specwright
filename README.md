@@ -49,18 +49,6 @@ for a person: accept the split, accept the story, answer a blocking question.
 
 A new chat reads `_meta/READ-FIRST.md` and carries on. Nothing depends on remembering this one.
 
-### See it
-
-`sw-view` opens a local, read-only console on `127.0.0.1`. It never writes a spec file.
-
-<p align="center">
-  <img src="docs/assets/graph.webp" alt="The console on the Graph page: an outline on the left, coverage measures on top, and the trace from business objective to epic, feature, acceptance criteria and tasks, with the chosen feature open and the others folded" width="920" />
-</p>
-
-<p align="center">
-  <img src="docs/assets/feature.webp" alt="The Features page with a preview panel open on a draft story, showing its Visuals list and an embedded swimlane diagram" width="920" />
-</p>
-
 ---
 
 ## `02` ▸ THE COMMANDS
