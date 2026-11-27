@@ -14,7 +14,7 @@ class AssetStoreTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name) / ".specwright"
         init = subprocess.run(
             [
                 sys.executable,

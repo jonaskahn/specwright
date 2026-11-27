@@ -7,7 +7,7 @@ holds every field later skills resolve.
 | --- | --- |
 | `scope` | Project id, 2–5 uppercase letters. |
 | `name` | Display name. |
-| `code` | Code folder this project owns (embedded layout only). |
+| `code` | Code folder this project owns (relative to the repository). |
 | `jira` | `site`, `project_key`, `epic`; `TBD` until the user supplies them. |
 | `status_map` | Repository-to-Jira status mapping. |
 | `governance` | `signoff`: `optional` (default) or `required`; `flow`: `auto` (default; stations hand off on their own and stop only for a human decision or a blocker), `guided` (one plain "continue?" per station) or `step`. Change with `workspace.py governance set`. See `_shared/references/governance.md`. |

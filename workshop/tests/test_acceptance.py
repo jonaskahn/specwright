@@ -94,7 +94,7 @@ class BaselineAcceptance(unittest.TestCase):
     def setUpClass(cls):
         cls.tmp = tempfile.TemporaryDirectory()
         cls.addClassCleanup(cls.tmp.cleanup)
-        cls.root = Path(cls.tmp.name).resolve()
+        cls.root = Path(cls.tmp.name).resolve() / ".specwright"
         cls.base = cls.root
         tree = json.loads((FIXTURE / "tree.json").read_text())
         workspace.init(

@@ -77,7 +77,7 @@
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "9a92d5673783",
   "scripts/kitlib/wiki_rest.py": "6ff05aff177f",
-  "scripts/kitlib/workspace.py": "0dd05a5f5acd",
+  "scripts/kitlib/workspace.py": "a68ee892b1d4",
   "scripts/kitlib/writelog.py": "cd458649ee8f",
   "scripts/parallel_guard.py": "c393aea1d3ee",
   "scripts/record.py": "53243bde7d70",

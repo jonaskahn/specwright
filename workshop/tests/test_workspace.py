@@ -11,7 +11,7 @@ class WorkspaceTestCase(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name).resolve()
+        self.root = Path(self.tmp.name).resolve() / ".specwright"
 
 
 class FlatTests(WorkspaceTestCase):
@@ -50,6 +50,21 @@ class FlatTests(WorkspaceTestCase):
         rtm = tables.parse((self.root / "_meta" / "rtm.md").read_text())
         self.assertEqual(rtm.table.header[0], "Spec ID")
         self.assertIn("Jira [sw-ship]", rtm.table.header)
+
+    def test_init_always_creates_the_spec_root_under_dot_specwright(self):
+        repo = self.root.parent / "plain"
+        workspace.init(repo, "flat", "REF", "Refunds")
+        self.assertTrue((repo / ".specwright/project.yaml").is_file())
+        self.assertFalse((repo / "project.yaml").exists())
+        self.assertEqual(workspace.layout_of(repo / ".specwright"), "embedded")
+
+    def test_init_refuses_a_folder_that_holds_a_retired_standalone_manifest(self):
+        repo = self.root.parent / "old"
+        repo.mkdir()
+        (repo / "project.yaml").write_text("scope: OLD\nname: Old\n")
+        with self.assertRaises(workspace.WorkspaceError):
+            workspace.init(repo, "flat", "NEW", "New")
+        self.assertFalse((repo / ".specwright").exists())
 
     def test_upgrade_adds_registry_columns_only_on_apply(self):
         self.init_flat()

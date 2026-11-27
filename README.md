@@ -284,14 +284,11 @@ It detects the target kind, refuses a folder that is not Specwright, and never d
 
 ### Where the spec lives
 
-| Layout | Spec root | Use when |
-| --- | --- | --- |
-| docs | repository root | A spec-only repository |
-| embedded | `.specwright/` inside a code repo | The folder already holds source and git |
-| program | either, plus `projects/<SCOPE>/` | Several projects share one spec root |
+The spec root is always `.specwright/` in the repository. It holds one project, or a program with
+`projects/<SCOPE>/` for several.
 
-A new docs workspace starts a Git repo only when it is not already inside one. An embedded workspace
-reuses the code repo, worktrees included. Setup changes no Git config and stages no files.
+A new workspace starts a Git repo only when the folder is not already inside one. It reuses an
+existing repo, worktrees included. Setup changes no Git config and stages no files.
 
 ### Runtimes
 

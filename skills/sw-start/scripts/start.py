@@ -315,12 +315,6 @@ def route(state):
     return ("shared status", "no single next step is evident; read the full report")
 
 
-def default_layout(cwd):
-    here = Path(cwd).resolve()
-    has_code = any((here / m).exists() for m in CODE_MARKERS)
-    return "embedded" if has_code and (here / ".git").exists() else "docs"
-
-
 ROLE_ORDER = ("manifest", "read-first", "item", "parent", "source", "decision", "amendment")
 
 
@@ -414,15 +408,15 @@ def action_for(item):
 def report(cwd, target=None, pack=False):
     info = workspace.detect(cwd)
     if info["mode"] == "none":
-        layout = default_layout(cwd)
-        detected = stack.detect(Path(cwd).resolve()) if layout == "embedded" else {}
+        here = Path(cwd).resolve()
+        has_code = any((here / m).exists() for m in CODE_MARKERS)
+        detected = stack.detect(here) if has_code else {}
         return {
             **info,
             "fresh_setup": True,
-            "suggested_layout": layout,
             "detected_stack": detected,
-            "intake": intake_questions(layout, detected),
-            "next": ["sw-start", "choose a layout and then ingest, shape or supply a baseline"],
+            "intake": intake_questions(detected),
+            "next": ["sw-start", "set up .specwright/ and then ingest, shape or supply a baseline"],
             "scopes_state": [],
         }
     root = Path(info["spec_root"])
@@ -483,7 +477,11 @@ def code_state(root, scope):
     """Registered and detected code roots and whether a light inventory exists."""
     base = workspace.scope_dir(root, scope)
     return {
-        "registered": [r["name"] for r in coderoots.registered(root, scope) if r["exists"]],
+        "registered": [
+            r["name"]
+            for r in coderoots.registered(root, scope)
+            if r["exists"] and (r["path"] or coderoots._has_build(Path(r["abs"])))
+        ],
         "detected": [d["path"] for d in coderoots.detect(root, scope)],
         "inventory": (base / "01-analysis" / "as-is" / "inventory.md").is_file(),
     }
@@ -503,7 +501,7 @@ def stack_state(root, scope):
     }
 
 
-def intake_questions(layout, detected):
+def intake_questions(detected):
     """At most three first-run questions, each with options and a default (intake.md)."""
     questions = [
         {
@@ -564,7 +562,7 @@ def brief(data):
         "Runs on its own between steps; stops only for your decisions.",
     ]
     if data.get("fresh_setup"):
-        lines.append(f"Here: no workspace yet; suggested layout {data['suggested_layout']}.")
+        lines.append("Here: no workspace yet; it is created under .specwright/.")
         if data.get("detected_stack"):
             lines.append("Detected stack: " + ", ".join(sorted(data["detected_stack"])) + ".")
         return lines

@@ -45,7 +45,7 @@ class CheckpointTests(unittest.TestCase):
         git(self.repo, "config", "user.name", "t")
         git(self.repo, "config", "user.email", "t@example.test")
         git(self.repo, "config", "commit.gpgsign", "false")
-        workspace.init(self.repo, "flat", "REF", "Refunds", layout="embedded")
+        workspace.init(self.repo, "flat", "REF", "Refunds")
         self.root = self.repo / ".specwright"
         (self.repo / "src.py").write_text("x = 1\n")
         git(self.repo, "add", "-A")
@@ -191,7 +191,7 @@ class ModeTests(unittest.TestCase):
     def setUp(self):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
-        self.root = Path(tmp.name).resolve()
+        self.root = Path(tmp.name).resolve() / ".specwright"
         workspace.init(self.root, "program", "REF", "Refunds")
         workspace.init(self.root, "program", "ORD", "Orders")
 

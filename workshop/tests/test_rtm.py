@@ -12,7 +12,7 @@ class RtmTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name) / "refund"
+        self.root = Path(self.temp.name) / "refund" / ".specwright"
         shutil.copytree(FIXTURE, self.root)
 
     def test_orphan_and_empty_bo_survive_rebuild(self):
@@ -101,7 +101,7 @@ class RtmTests(unittest.TestCase):
             rtm.scan(self.root)
 
     def test_cross_scope_resolution_and_snapshot_prose(self):
-        root = Path(self.temp.name) / "program"
+        root = Path(self.temp.name) / "program" / ".specwright"
         workspace.init(root, "program", "REF", "Refunds")
         workspace.init(root, "program", "ORD", "Orders")
         ref = root / "projects/REF"

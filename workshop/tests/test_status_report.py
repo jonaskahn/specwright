@@ -21,7 +21,7 @@ class StatusTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name) / "refund"
+        self.root = Path(self.temp.name) / "refund" / ".specwright"
         shutil.copytree(ROOT / "workshop/fixtures/refund/after-spec", self.root)
 
     def run_cli(self, *args):
@@ -112,7 +112,7 @@ class StatusTests(unittest.TestCase):
         self.assertEqual(status.age_days("invalid", date(2026, 11, 10)), "unknown")
 
     def test_all_program_scopes_without_questions_and_save_refusal(self):
-        root = Path(self.temp.name) / "program"
+        root = Path(self.temp.name) / "program" / ".specwright"
         for scope in ("REF", "ORD"):
             workspace.init(root, "program", scope, scope)
             path = root / "projects" / scope / "02-drafts/FEAT-001.story.md"

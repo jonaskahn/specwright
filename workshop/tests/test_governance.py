@@ -82,7 +82,7 @@ class ManifestTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name).resolve()
+        self.root = Path(self.tmp.name).resolve() / ".specwright"
 
     def test_a_new_workspace_is_optional_auto_and_markdown(self):
         workspace.init(self.root, "flat", "REF", "Refunds")

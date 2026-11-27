@@ -1,7 +1,9 @@
 """Find, create and resolve Specwright workspaces.
 
-A workspace is either flat (one project, manifest at the repo root) or a program (a
-workspace manifest listing projects that live under projects/<SCOPE>/).
+A workspace is either flat (one project) or a program (a workspace manifest listing projects
+that live under projects/<SCOPE>/). Every spec root is a `.specwright/` folder. A manifest
+directly in a folder is the retired standalone layout: it is still read so `upgrade` can move
+it, and nothing new is created that way.
 """
 
 from __future__ import annotations
@@ -48,9 +50,9 @@ def load(path: Path) -> dict[str, Any]:
 def find_root(start: Path) -> Path | None:
     """Nearest spec root: the folder that holds a manifest.
 
-    A folder can hold its manifest directly (docs layout) or under .specwright/ (embedded in a
-    code repo). A program manifest wins over nested project files. A folder with both kinds
-    is ambiguous and is never guessed.
+    The manifest lives under .specwright/. A manifest directly in a folder is the retired
+    standalone layout, still found so it can be migrated. A program manifest wins over nested
+    project files. A folder with both kinds is ambiguous and is never guessed.
     """
     first_project: Path | None = None
     here = start.resolve()
@@ -107,11 +109,12 @@ def scope_dir(root: Path, scope: str) -> Path:
 def layout_of(root: Path | None) -> str | None:
     if root is None:
         return None
+    # "docs" is the retired standalone root; the console data format keeps that name.
     return "embedded" if root.name == EMBED_DIR else "docs"
 
 
 def code_repo_root(root: Path) -> Path | None:
-    """The code repository an embedded spec root lives in; None for a docs layout."""
+    """The code repository a .specwright/ spec root lives in; None for a retired standalone root."""
     return root.resolve().parent if layout_of(root) == "embedded" else None
 
 
@@ -306,7 +309,7 @@ def _write_new(path: Path, text: str, created: list[str], base: Path) -> None:
     created.append(str(path.relative_to(base)))
 
 
-def prepare_git(root: Path, layout: str) -> None:
+def prepare_git(root: Path) -> None:
     """Reuse parent/worktree repositories; never configure, stage or commit."""
     git = shutil.which("git")
     if not git:
@@ -322,9 +325,7 @@ def prepare_git(root: Path, layout: str) -> None:
     )
     if result.returncode == 0:
         return
-    if layout == "embedded":
-        raise WorkspaceError("embedded layout requires an existing code repository")
-    # Initialize only the requested docs root, never its parent.
+    # Initialize only the requested repository folder, never its parent.
     root.mkdir(parents=True, exist_ok=True)
     result = subprocess.run(
         [git, "init", "--template=", str(root.resolve())],
@@ -345,45 +346,39 @@ def init(
     project_key: str = "TBD",
     epic: str | None = None,
     approvers: list[dict[str, str]] | None = None,
-    layout: str = "docs",
     code: str | None = None,
     output: str = schema.DEFAULT_OUTPUT,
     governance: dict[str, str] | None = None,
 ) -> list[str]:
     """Create the manifests and the folder tree; refuses to overwrite an existing project.
 
-    With layout="embedded", root is the code repo and the spec root is root/.specwright.
+    The spec root is always a .specwright/ folder: root/.specwright, or root itself when it is
+    already named .specwright. The folder around it is the code repository.
     """
     if mode not in ("flat", "program"):
         raise WorkspaceError("mode must be 'flat' or 'program'")
-    if layout not in ("docs", "embedded"):
-        raise WorkspaceError("layout must be 'docs' or 'embedded'")
     if output not in schema.OUTPUT_CHOICES:
         raise WorkspaceError(f"output must be one of {list(schema.OUTPUT_CHOICES)}")
     for key, value in (governance or {}).items():
         _check_governance(key, value)
     if not ids.is_scope(scope):
         raise WorkspaceError(f"scope must be 2-5 uppercase letters, got '{scope}'")
-    if code and layout != "embedded":
-        raise WorkspaceError("a code folder needs the embedded layout")
-    if layout == "embedded":
-        repo = root.resolve()
-        if (repo / FLAT_MANIFEST).exists() or (repo / PROGRAM_MANIFEST).exists():
-            raise WorkspaceError(f"{repo} already holds a docs workspace manifest")
-        if code:
-            safe_join(repo, code)
-        elif mode == "flat":
-            code = "."
-        root = repo / EMBED_DIR
-    root = root.resolve()
-    git_root = root.parent if layout == "embedded" else root
+    repo = root.resolve().parent if root.name == EMBED_DIR else root.resolve()
+    if (repo / FLAT_MANIFEST).exists() or (repo / PROGRAM_MANIFEST).exists():
+        raise WorkspaceError(f"{repo} holds a retired standalone workspace; run upgrade first")
+    if code:
+        safe_join(repo, code)
+    elif mode == "flat":
+        code = "."
+    root = repo / EMBED_DIR
+    git_root = repo
     existing = mode_of(root)
     if existing == "flat" or (mode == "flat" and existing != "none"):
         raise WorkspaceError(f"{root} already holds a workspace manifest")
     base = root / "projects" / scope if mode == "program" else root
     if (base / FLAT_MANIFEST).exists():
         raise WorkspaceError(f"{base} already holds a project manifest")
-    prepare_git(git_root, layout)
+    prepare_git(git_root)
     root.mkdir(parents=True, exist_ok=True)
     created: list[str] = []
     manifest = project_manifest(
@@ -533,7 +528,7 @@ def upgrade(root: Path, scope: str, apply: bool = False, code: str | None = None
     if code and not data.get("code"):
         repo = code_repo_root(root)
         if repo is None:
-            raise WorkspaceError("a code folder needs the embedded layout")
+            raise WorkspaceError("a code folder needs a .specwright/ root inside a code repository")
         safe_join(repo, code)
         plan.append(f"project.yaml: add code = {code}")
         data["code"] = code
@@ -666,10 +661,7 @@ def _build_parser() -> argparse.ArgumentParser:
     init_cmd.add_argument("--project-key", default="TBD")
     init_cmd.add_argument("--epic")
     init_cmd.add_argument("--approver", action="append", default=[], help="role|name|account-id")
-    init_cmd.add_argument(
-        "--layout", default="docs", choices=["docs", "embedded"], help="where the spec root lives"
-    )
-    init_cmd.add_argument("--code", help="code folder this project owns (embedded layout only)")
+    init_cmd.add_argument("--code", help="code folder this project owns, relative to the repo")
     init_cmd.add_argument(
         "--output", default="markdown", choices=list(schema.OUTPUT_CHOICES), help="delivery target"
     )
@@ -736,7 +728,6 @@ def main(argv: list[str] | None = None) -> int:
                 args.project_key,
                 args.epic,
                 approvers,
-                args.layout,
                 args.code,
                 args.output,
                 {"signoff": args.signoff, "flow": args.flow},

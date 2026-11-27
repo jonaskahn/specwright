@@ -14,7 +14,7 @@ class TraceCliTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name) / "refund"
+        self.root = Path(self.temp.name) / "refund" / ".specwright"
         shutil.copytree(ROOT / "workshop/fixtures/refund/after-spec", self.root)
 
     def run_cli(self, *args):

@@ -81,8 +81,8 @@ absolute ones, so the same wrappers work without the plugin — see above. Insta
 skill files, command wrappers and client metadata. It never writes to Jira, Confluence or a
 Specwright workspace.
 
-A workspace may live at the repository root (docs-only) or under `.specwright/` inside a code
-repository (embedded), for one project or a program of several. See the Layouts section of
+A workspace always lives under `.specwright/` in the repository, for one project or a program
+of several. See the Layouts section of
 the README and `docs/conventions.md`. Opening a skill in a client and checking
 discovery remains a manual compatibility check because client support varies by version.
 

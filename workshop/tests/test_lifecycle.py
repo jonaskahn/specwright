@@ -154,6 +154,7 @@ class LifecycleTests(WorkflowTestCase):
     def test_git_reuses_parent_and_requires_repo_for_embedded(self):
         child = self.root / "docs"
         workspace.init(child, "flat", "DOC", "Docs")
+        self.assertTrue((child / ".specwright/project.yaml").is_file())
         self.assertFalse((child / ".git").exists())
         result = subprocess.run(
             ["git", "-C", str(child), "rev-parse", "--show-toplevel"],
@@ -161,13 +162,13 @@ class LifecycleTests(WorkflowTestCase):
             text=True,
         )
         self.assertEqual(result.returncode, 0)
-        self.assertEqual(result.stdout.strip(), str(self.root))
+        self.assertEqual(result.stdout.strip(), str(self.root.parent))
         with (
             patch("kitlib.workspace.shutil.which", return_value=None),
             self.assertRaises(workspace.WorkspaceError),
         ):
             workspace.init(self.root / "missing", "flat", "NEW", "Missing")
-        self.assertFalse((self.root / "missing/project.yaml").exists())
+        self.assertFalse((self.root / "missing/.specwright/project.yaml").exists())
 
     def test_mixed_stations_and_explicit_resume_do_not_move_siblings(self):
         from pathlib import Path
@@ -258,7 +259,7 @@ class LifecycleTests(WorkflowTestCase):
         )
         try:
             self.assertTrue((worktree / ".git").is_file())
-            workspace.init(worktree, "flat", "WT", "Worktree", layout="embedded")
+            workspace.init(worktree, "flat", "WT", "Worktree")
             self.assertFalse((worktree / ".specwright/.git").exists())
         finally:
             subprocess.run(

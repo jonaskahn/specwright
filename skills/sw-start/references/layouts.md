@@ -1,13 +1,14 @@
 # Layouts
 
-The spec root is the folder holding `project.yaml` (one project) or `workspace.yaml`
-(program). All spec paths are relative to it.
+The spec root is always the `.specwright/` folder of the repository. It holds `project.yaml`
+(one project) or `workspace.yaml` (program). All spec paths are relative to it. There is no
+standalone spec folder at the repository root; an older one is read so `workspace.py upgrade`
+can move it.
 
-| Layout | Spec root | Manifest | Use when |
-| --- | --- | --- | --- |
-| docs-only | repository root | `project.yaml`, no `code` key | Spec-only repository. |
-| embedded | `.specwright/` inside a code repo | `.specwright/project.yaml` with `code: "."` | The folder already holds source and git. |
-| program | either of the above | `workspace.yaml` + `projects/<SCOPE>/project.yaml` | Several projects share one spec root; each project may set its own `code` folder (e.g. `services/orders`). |
+| Shape | Manifest | Use when |
+| --- | --- | --- |
+| project | `.specwright/project.yaml` with `code: "."` | One project in the repository. |
+| program | `.specwright/workspace.yaml` + `projects/<SCOPE>/project.yaml` | Several projects share one spec root; each project may set its own `code` folder (e.g. `services/orders`). |
 
 Scope folders under each project, who writes them and what they hold. Nothing outside these
 folders is read as evidence; `graph build` and the quality gate report any other top-level folder
@@ -28,10 +29,9 @@ pointers to it.
 
 ## Rules
 
-- Default: embedded when the folder holds source files and a git repository; otherwise docs-only.
+- A folder with no git repository gets one, so a spec-only repository works the same way.
 - A program manifest wins over nested project files when resolving the root.
 - Link projects with qualified IDs such as `REF:EPIC-001`.
-- Never convert a layout automatically; moving the spec root is a manual change.
-- Embedded: never write outside `.specwright/` unless asked. Merge the standing rules into
+- Never write outside `.specwright/` unless asked. Merge the standing rules into
   an existing AGENTS.md only with the explicit merge option and a yes.
 - `assets/` holds user-provided references; only the assets capability writes there.

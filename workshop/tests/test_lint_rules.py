@@ -766,7 +766,7 @@ class CommandTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name).resolve()
+        self.root = Path(self.tmp.name).resolve() / ".specwright"
         workspace.init(self.root, "flat", "REF", "Returns")
         (self.root / "02-drafts/FEAT-001.story.md").write_text(GOOD)
         (self.root / "01-analysis/BO-001.md").write_text(BO)

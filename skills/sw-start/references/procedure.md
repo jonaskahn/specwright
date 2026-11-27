@@ -23,8 +23,8 @@ anything else; every other step needs it.
    for the scope and read the map. Look items up with graph.py show <any name or legacy
    ID>. Never crawl the workspace folders.
 3. Route with references/routing.md. With no workspace, pick fresh or existing work and
-   a layout from references/layouts.md: default embedded `.specwright/` when the folder
-   holds code and git, otherwise docs-only. State the default and why.
+   the project shape from references/layouts.md: one project, or a program of several. The
+   spec root is always `.specwright/`.
 4. State in two sentences: chosen skill, evidence, what it produces, then the JSON
    `action` as the one next step. For a named item run start.py --item <key> --pack and
    read the listed files in order, with the blocking questions first. When several items

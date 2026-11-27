@@ -21,7 +21,7 @@ class BaselineRoutingTests(unittest.TestCase):
     def setUp(self):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
-        self.root = Path(tmp.name).resolve()
+        self.root = Path(tmp.name).resolve() / ".specwright"
         workspace.init(
             self.root,
             "flat",
@@ -90,8 +90,8 @@ class BaselineRoutingTests(unittest.TestCase):
         other = Path(tempfile.mkdtemp())
         self.addCleanup(lambda: __import__("shutil").rmtree(other, ignore_errors=True))
         workspace.init(other, "flat", "OTH", "Other", governance={"signoff": "required"})
-        graph.build(other, "OTH")
-        item = start.report(other)["scopes_state"][0]
+        graph.build(other / ".specwright", "OTH")
+        item = start.report(other / ".specwright")["scopes_state"][0]
         self.assertTrue(item["setup"][0].startswith("approvers:"))
         self.assertIn("approvers add", item["action"])
         self.assertEqual((item["signoff"], item["governance"]), ("required", "required"))
@@ -100,8 +100,8 @@ class BaselineRoutingTests(unittest.TestCase):
         other = Path(tempfile.mkdtemp())
         self.addCleanup(lambda: __import__("shutil").rmtree(other, ignore_errors=True))
         workspace.init(other, "flat", "OTH", "Other")
-        graph.build(other, "OTH")
-        item = start.report(other)["scopes_state"][0]
+        graph.build(other / ".specwright", "OTH")
+        item = start.report(other / ".specwright")["scopes_state"][0]
         self.assertEqual(item["setup"], [])
         self.assertEqual((item["signoff"], item["flow"]), ("optional", "auto"))
         self.assertEqual(item["output_default"], "markdown")
