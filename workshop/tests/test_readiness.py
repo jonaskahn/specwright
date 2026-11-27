@@ -9,6 +9,7 @@ from kitlib import frontmatter, graph, graph_query, readiness, workspace
 
 ROOT = Path(__file__).resolve().parents[2]
 GRAPH_CLI = ROOT / "skills/_shared/scripts/graph.py"
+FINISH_CLI = ROOT / "skills/_shared/scripts/finish.py"
 
 
 def story(ident, title, **extra):
@@ -115,6 +116,32 @@ class ReadinessTests(unittest.TestCase):
         )
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertEqual([i["key"] for i in json.loads(done.stdout)["items"]], ["REF:FEAT-001"])
+
+    def test_finishing_a_station_reports_what_it_opened(self):
+        (self.root / "03-plan/FEAT-001.tasks.md").write_text(
+            tasks("FEAT-001", ("TASK-001-1", "todo", "None"), ("TASK-001-2", "todo", "TASK-001-1"))
+        )
+        graph.build(self.root, "REF")
+        (self.root / "03-plan/FEAT-001.tasks.md").write_text(
+            tasks("FEAT-001", ("TASK-001-1", "done", "None"), ("TASK-001-2", "todo", "TASK-001-1"))
+        )
+        done = subprocess.run(
+            [
+                sys.executable,
+                str(FINISH_CLI),
+                "--skill",
+                "sw-forge",
+                "--subject",
+                "done",
+                "--cwd",
+                str(self.root),
+                "--no-checkpoint",
+            ],
+            capture_output=True,
+            text=True,
+        )
+        report = json.loads(done.stdout)
+        self.assertIn("REF:TASK-001-2", report["newly_ready"])
 
 
 if __name__ == "__main__":

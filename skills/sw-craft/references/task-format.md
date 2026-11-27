@@ -31,6 +31,6 @@ title and the lines below it; sw-forge never re-numbers, re-scopes or re-layers 
   mobile and design tasks when the story lists a visual.
 - `Traces to:` at least one AC, plus BR or NFR where the rule drives the task.
 - `Done when:` the AC's observable result with concrete values.
-- `Depends on:` task IDs or None. `Stop and ask if:` the condition to stop rather than assume.
+- `Depends on:` task IDs or None; a task is ready only when each one is done. A feature or epic states the same links as `depends_on: [FEAT-001]` in its front matter. `Stop and ask if:` the condition to stop rather than assume.
 - Withdrawn tasks stay as `~~TASK-001-3~~` with a reason; numbers are never reused.
 - Every active AC needs at least one task; sw-forge checks coverage and the plan.

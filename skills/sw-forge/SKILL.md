@@ -62,6 +62,7 @@ the locked stack; a change request must be applied first.
 
 Run `_shared/scripts/finish.py --skill sw-forge --subject "<FEAT-NNN> plan" --cwd <project>`.
 Follow `_shared/references/handoff.md` for item selection, limits and every `handoff.mode`.
+`finish.py` also reports `newly_ready`: the items that became startable since the last build. Name them in the reply.
 On `done`: Report the targeted code roots, plan and prompts. State that implementation runs elsewhere from `03-plan/prompts/FEAT-NNN/_order.md`.
 
 ## Load only when

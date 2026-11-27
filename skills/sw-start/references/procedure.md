@@ -21,7 +21,8 @@ anything else; every other step needs it.
    roots): list both, ask.
 2. If a graph exists, read `_meta/READ-FIRST.md`, then run _shared/scripts/graph.py map
    for the scope and read the map. Look items up with graph.py show <any name or legacy
-   ID>. Never crawl the workspace folders.
+   ID>. Never crawl the workspace folders. `graph.py ready` lists the epics, features and
+   tasks that can start now; an item is blocked while anything in its `depends_on` is not done.
 3. Route with references/routing.md. With no workspace, pick fresh or existing work and
    the project shape from references/layouts.md: one project, or a program of several. The
    spec root is always `.specwright/`.

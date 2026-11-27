@@ -23,7 +23,7 @@
   "references/untrusted-content.md": "03ff18989296",
   "scripts/checkpoint.py": "92ff545c0144",
   "scripts/data.py": "040fc73e347b",
-  "scripts/finish.py": "45bf6110d5ce",
+  "scripts/finish.py": "c89ffc5e8841",
   "scripts/graph.py": "f171ef7a7df0",
   "scripts/handoff.py": "60861c585800",
   "scripts/kitlib/__init__.py": "b15fdecaaa14",

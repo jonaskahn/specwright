@@ -101,6 +101,15 @@ def _changed(base: Path, prefixes: list[str]) -> list[Path]:
     return out
 
 
+def _ready_keys(base: Path) -> set[str] | None:
+    """Keys marked ready in the generated ready file, or None before the first build."""
+    path = base / "_meta" / "ready.tsv"
+    if not path.is_file():
+        return None
+    rows = [ln.split("\t") for ln in path.read_text(encoding="utf-8").splitlines()]
+    return {r[0] for r in rows if len(r) > 3 and not r[0].startswith("#") and r[3] == "yes"}
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--skill", required=True, choices=sorted(CONF))
@@ -142,7 +151,11 @@ def main(argv=None):
         )
         return ok
 
+    ready_before = _ready_keys(base)
     step("graph", _run([f"{s}/graph.py", "build", "--cwd", str(base), *sc], base))
+    opened = sorted(_ready_keys(base) - ready_before) if ready_before is not None else []
+    if opened:
+        report["newly_ready"] = opened
 
     # Plan: stack check and agent prompts per feature with a tasks file.
     if conf.get("plan"):
