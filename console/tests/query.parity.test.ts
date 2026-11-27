@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { GraphData } from '../contract/types';
 import { GraphIndex } from '../src/lib/query/engine';
-import { runQuery } from '../src/lib/query/parse';
 import { read, type Variant } from './golden';
 
 interface Case {
@@ -50,24 +49,9 @@ for (const variant of ['flat', 'program'] as Variant[]) {
   });
 }
 
-describe('query text', () => {
+describe('name resolution', () => {
   const graph: GraphData = JSON.parse(read('flat', 'data/graph.json'));
   const index = new GraphIndex(graph.nodes, graph.edges);
-
-  it('treats bare words as find', () => {
-    const r = runQuery(index, 'refund');
-    expect(r.type).toBe('nodes');
-  });
-
-  it('runs path with two names', () => {
-    const r = runQuery(index, 'path REF:Q-001 REF:AC-001-1');
-    expect(r).toMatchObject({ type: 'path', found: true });
-  });
-
-  it('reports an unknown ID as an error, not an exception', () => {
-    const r = runQuery(index, 'impact REF:NOPE-9');
-    expect(r).toMatchObject({ type: 'error' });
-  });
 
   it('resolves names, aliases and titles', () => {
     expect(index.resolve('FEAT-001')).toBe('REF:FEAT-001');

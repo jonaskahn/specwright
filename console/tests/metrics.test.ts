@@ -12,34 +12,59 @@ const today = new Date(Date.UTC(2026, 10, 12));
 describe('metrics', async () => {
   const flat = await loadAll('./data/', serve('flat'));
   const program = await loadAll('./data/', serve('program'));
+  const trace = await loadAll('./data/', serve('trace'));
 
   it('counts the refund fixture', () => {
-    const m = computeMetrics(flat, '*', today);
+    const m = computeMetrics(flat, '*');
     expect(m.features).toBe(2);
     expect(m.acs).toBe(3);
-    expect(m.byState.map((s) => s.state)).toEqual(['draft', 'in-review']);
+    expect(m.tasks).toBe(0);
     expect(m.openQuestions).toBe(1);
     expect(m.lintPass).toBe(1);
     expect(m.lintFail).toBe(1);
-    expect(m.bo).toEqual([{ bo: 'BO-001', features: 1 }]);
     expect(m.attention.map((a) => a.id)).toEqual(['REF:FEAT-001', 'REF:FEAT-002']);
+    expect(m.progress.every((p) => p.count === 0)).toBe(true);
   });
 
-  it('derives idle features from absolute dates', () => {
-    expect(computeMetrics(flat, '*', new Date(Date.UTC(2026, 10, 1))).idle).toBe(0);
-    expect(computeMetrics(flat, '*', new Date(Date.UTC(2026, 10, 11))).idle).toBe(1);
-    expect(computeMetrics(flat, '*', new Date(Date.UTC(2027, 0, 1))).idle).toBe(2);
+  it('lists one reason per story, then blocked tasks', () => {
+    const m = computeMetrics(flat, '*');
+    expect(m.attention).toEqual([
+      { id: 'REF:FEAT-001', kind: 'feature', reason: '1 open question' },
+      { id: 'REF:FEAT-002', kind: 'feature', reason: 'lint failing' },
+    ]);
+  });
+
+  it('counts epics and records', () => {
+    expect(computeMetrics(trace, '*').epics).toBe(2);
+    expect(computeMetrics(flat, '*').epics).toBe(0);
+    expect(computeMetrics(flat, '*').records).toBe(2);
+  });
+
+  it('puts a blocked task on the attention list and tallies progress', () => {
+    const rows = trace.data.tasks!.rows.map((r, i) => ({ ...r, progress: (['done', 'in-progress', 'blocked', 'planned', 'not-started'] as const)[i] }));
+    const m = computeMetrics({ ...trace, data: { ...trace.data, tasks: { ...trace.data.tasks!, rows } } }, '*');
+    expect(m.blockedTasks).toBe(1);
+    expect(m.attention.filter((a) => a.kind === 'task')).toEqual([{ id: 'REF:TASK-001-3', kind: 'task', reason: 'task blocked' }]);
+    expect(m.progress.map((p) => [p.progress, p.count])).toEqual([['done', 1], ['in-progress', 1], ['blocked', 1], ['planned', 1], ['not-started', 1]]);
+  });
+
+  it('leaves a withdrawn task and a retired story out', () => {
+    const tasks = trace.data.tasks!.rows.map((r, i) => (i === 0 ? { ...r, status: 'withdrawn' as const } : r));
+    const feats = trace.data.features!.rows.map((r, i) => (i === 2 ? { ...r, state: 'withdrawn' } : r));
+    const m = computeMetrics({ ...trace, data: { ...trace.data, tasks: { ...trace.data.tasks!, rows: tasks }, features: { ...trace.data.features!, rows: feats } } }, '*');
+    expect(m.tasks).toBe(4);
+    expect(m.features).toBe(2);
   });
 
   it('narrows to one project', () => {
-    expect(computeMetrics(program, '*', today).features).toBe(4);
-    expect(computeMetrics(program, 'ORD', today).features).toBe(2);
+    expect(computeMetrics(program, '*').features).toBe(4);
+    expect(computeMetrics(program, 'ORD').features).toBe(2);
   });
 
   it('copes with no data at all', () => {
-    const m = computeMetrics(empty('nodata'), '*', today);
+    const m = computeMetrics(empty('nodata'), '*');
     expect(m.features).toBe(0);
-    expect(m.ready).toBe(0);
+    expect(m.attention).toEqual([]);
   });
 
   it('builds the tree from graph links', () => {

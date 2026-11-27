@@ -1,88 +1,68 @@
-import { daysSince, percent } from '../format';
-import { RUNGS } from '../status';
+import { plural } from '../format';
 import type { Loaded } from './loader';
 import { inScope, rows } from './selectors';
+
+/** The recorded task progress words, in the order a pipeline reads. */
+export const PROGRESS_ORDER = ['done', 'in-progress', 'blocked', 'planned', 'not-started'] as const;
+
+export interface Attention {
+  /** The story's identifier, or the task's for a blocked task. */
+  id: string;
+  kind: 'feature' | 'task';
+  /** Words, already pluralised: "blocked", "lint failing", "2 open questions". */
+  reason: string;
+}
 
 export interface Metrics {
   features: number;
   acs: number;
   tasks: number;
-  byState: { state: string; count: number }[];
-  byStation: { station: string; count: number }[];
+  epics: number;
+  records: number;
   openQuestions: number;
   openChanges: number;
-  idle: number;
-  idleAfterDays: number;
-  staleSnapshots: number;
   lintPass: number;
   lintFail: number;
-  lintUnknown: number;
-  findingsBySeverity: { severity: string; count: number }[];
-  acsPerFeature: number;
-  tasksPerFeature: number;
-  noTasks: number;
-  bo: { bo: string; features: number }[];
-  ready: number;
-  attention: { id: string; reason: string }[];
+  /** One list of what needs a person: stories first, then blocked tasks. */
+  attention: Attention[];
+  /** Active tasks by recorded progress, in pipeline order. */
+  progress: { progress: (typeof PROGRESS_ORDER)[number]; count: number }[];
+  blockedTasks: number;
 }
 
-function tally<T>(items: T[], key: (item: T) => string | null): [string, number][] {
-  const counts = new Map<string, number>();
-  for (const item of items) {
-    const k = key(item);
-    if (k) counts.set(k, (counts.get(k) ?? 0) + 1);
-  }
-  return [...counts.entries()];
-}
+const RETIRED = ['superseded', 'withdrawn'];
 
-export function computeMetrics(d: Loaded, scope: string, today: Date = new Date()): Metrics {
-  const feats = inScope(rows.features(d), scope);
-  const idleAfter = d.index?.idleAfterDays ?? 14;
-  const order = [...RUNGS, 'superseded', 'withdrawn'];
-  const byState = tally(feats, (f) => f.state)
-    .map(([state, count]) => ({ state, count }))
-    .sort((a, b) => order.indexOf(a.state) - order.indexOf(b.state) || a.state.localeCompare(b.state));
-  const stationOrder = ['shape', 'spec', 'review', 'plan', 'publish', 'dev'];
-  const byStation = tally(feats, (f) => f.station)
-    .map(([station, count]) => ({ station, count }))
-    .sort((a, b) => stationOrder.indexOf(a.station) - stationOrder.indexOf(b.station));
-  const idleOf = (f: (typeof feats)[number]) => daysSince(f.updated, today);
-  const idleFeats = feats.filter((f) => (idleOf(f) ?? 0) >= idleAfter && !['superseded', 'withdrawn', 'ready-for-dev'].includes(f.state));
+export function computeMetrics(d: Loaded, scope: string): Metrics {
+  const feats = inScope(rows.features(d), scope).filter((f) => !RETIRED.includes(f.state));
+  const tasks = inScope(rows.tasks(d), scope).filter((t) => t.status === 'active');
   const open = new Set(feats.flatMap((f) => f.openQuestions));
   const changes = new Set(feats.flatMap((f) => f.openChanges));
   const lint = feats.map((f) => f.lint);
-  const findings = inScope(rows.findings(d), scope);
-  const acs = feats.reduce((n, f) => n + f.acCount, 0);
-  const tasks = feats.reduce((n, f) => n + f.taskCount, 0);
-  const bo = new Map<string, number>();
-  for (const f of feats) for (const b of f.bo) bo.set(b, (bo.get(b) ?? 0) + 1);
-  const attention: { id: string; reason: string }[] = [];
+  const blockedTasks = tasks.filter((t) => t.progress === 'blocked');
+
+  const attention: Attention[] = [];
   for (const f of feats) {
-    if (f.condition === 'blocked') attention.push({ id: f.id, reason: 'blocked' });
-    else if (/fail/i.test(f.lint ?? '')) attention.push({ id: f.id, reason: 'lint failing' });
-    else if (f.openQuestions.length) attention.push({ id: f.id, reason: `${f.openQuestions.length} open question` + (f.openQuestions.length > 1 ? 's' : '') });
-    else if (f.openChanges.length) attention.push({ id: f.id, reason: 'change request open' });
+    if (f.condition === 'blocked') attention.push({ id: f.id, kind: 'feature', reason: 'blocked' });
+    else if (/fail/i.test(f.lint ?? '')) attention.push({ id: f.id, kind: 'feature', reason: 'lint failing' });
+    else if (f.openQuestions.length) attention.push({ id: f.id, kind: 'feature', reason: plural(f.openQuestions.length, 'open question') });
+    else if (f.openChanges.length) attention.push({ id: f.id, kind: 'feature', reason: plural(f.openChanges.length, 'open change request') });
   }
+  for (const t of blockedTasks) attention.push({ id: t.id, kind: 'task', reason: 'task blocked' });
+
+  const epics = (d.data.graph?.nodes ?? []).filter((n) => n.kind === 'epic' && (scope === '*' || n.scope === scope) && !RETIRED.includes(n.status ?? '')).length;
+
   return {
     features: feats.length,
-    acs,
-    tasks,
-    byState,
-    byStation,
+    acs: feats.reduce((n, f) => n + f.acCount, 0),
+    tasks: tasks.length,
+    epics,
+    records: inScope(rows.records(d), scope).length,
     openQuestions: open.size,
     openChanges: changes.size,
-    idle: idleFeats.length,
-    idleAfterDays: idleAfter,
-    staleSnapshots: feats.filter((f) => (daysSince(f.snapshotDate, today) ?? 0) > 30).length,
     lintPass: lint.filter((l) => l && /pass/i.test(l)).length,
     lintFail: lint.filter((l) => l && /fail/i.test(l)).length,
-    lintUnknown: lint.filter((l) => !l).length,
-    findingsBySeverity: tally(findings, (f) => f.severity ?? 'unknown').map(([severity, count]) => ({ severity, count })),
-    acsPerFeature: feats.length ? Math.round((acs / feats.length) * 10) / 10 : 0,
-    tasksPerFeature: feats.length ? Math.round((tasks / feats.length) * 10) / 10 : 0,
-    noTasks: feats.filter((f) => f.taskCount === 0 && !['superseded', 'withdrawn'].includes(f.state)).length,
-    bo: [...bo.entries()].map(([b, features]) => ({ bo: b, features })).sort((a, b) => b.features - a.features || a.bo.localeCompare(b.bo)),
-    ready: percent(feats.filter((f) => f.state === 'ready-for-dev').length, feats.length),
     attention,
+    progress: PROGRESS_ORDER.map((progress) => ({ progress, count: tasks.filter((t) => t.progress === progress).length })),
+    blockedTasks: blockedTasks.length,
   };
 }

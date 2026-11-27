@@ -140,15 +140,29 @@ def tasks_file(feature: str, blocks: list[str]) -> str:
     return head + "\n".join(blocks)
 
 
-def task(number: str, title: str, traces: str, touches: str = "") -> str:
+def task(
+    number: str,
+    title: str,
+    traces: str,
+    touches: str = "",
+    status: str = "",
+    evidence: str = "",
+    blocked: str = "",
+) -> str:
     lines = [f"### TASK-{number} — [backend] {title}", f"Traces to: {traces}"]
     if touches:
         lines.append(f"Touches: {touches}")
     lines += [
         "Done when: the behaviour is observable.",
         "Stop and ask if: the rule is unclear.",
-        "",
     ]
+    if status:
+        lines.append(f"Status: {status}")
+    if evidence:
+        lines.append(f"Evidence: {evidence}")
+    if blocked:
+        lines.append(f"Blocked because: {blocked}")
+    lines.append("")
     return "\n".join(lines)
 
 
@@ -191,20 +205,45 @@ def make_trace(base: Path) -> Path:
         tasks_file(
             "FEAT-001",
             [
-                task("001-1", "Record an eligible request", "AC-001-1", "src/refund.py"),
+                task(
+                    "001-1",
+                    "Record an eligible request",
+                    "AC-001-1",
+                    "src/refund.py",
+                    status="planned",
+                ),
                 task(
                     "001-2",
                     "Refuse a duplicate",
                     "AC-001-1, AC-001-2",
                     "src/refund.py, src/notify.py",
+                    status="in-progress",
                 ),
-                task("001-3", "Write a runbook", "FEAT-001"),
+                task(
+                    "001-3",
+                    "Write a runbook",
+                    "FEAT-001",
+                    status="blocked",
+                    blocked="the refund window is not defined in BR-001.",
+                ),
             ],
         ),
         encoding="utf-8",
     )
     (plan / "FEAT-002.tasks.md").write_text(
-        tasks_file("FEAT-002", [task("002-1", "Approve a request", "AC-002-1", "src/decide.py")]),
+        tasks_file(
+            "FEAT-002",
+            [
+                task(
+                    "002-1",
+                    "Approve a request",
+                    "AC-002-1",
+                    "src/decide.py",
+                    status="done",
+                    evidence="make test -> 42 passed, exit 0",
+                )
+            ],
+        ),
         encoding="utf-8",
     )
     (plan / "FEAT-003.tasks.md").write_text(
