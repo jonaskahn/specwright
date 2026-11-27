@@ -838,7 +838,19 @@ print_agents() {
 # --------------------------------------------------------------- source ----
 
 is_root() {
-	[ -f "$1/skills/sw-start/SKILL.md" ] && [ -f "$1/skills/sw-ship/SKILL.md" ]
+	[ -f "$1/skills/sw-start/SKILL.md" ]
+}
+
+# The skills a source tree actually ships, in a stable order. A release tag
+# carries the layout of its own release, which is not always this branch's:
+# v0.9.0 shipped nine skills, main ships five. The tree decides, so
+# --version installs exactly what that release shipped.
+discover_skills() {
+	for _dir in "$1"/skills/sw-*/; do
+		[ -d "$_dir" ] || continue
+		[ -f "$_dir/SKILL.md" ] || continue
+		printf '%s\n' "$(basename "$_dir")"
+	done
 }
 
 find_root_from() {
@@ -911,6 +923,8 @@ fetch_archive() {
 }
 
 require_skills() {
+	# A pinned release installs the skills it shipped; a plain install checks
+	# this branch's list. Either way every expected SKILL.md must be present.
 	for _skill in $SKILLS; do
 		[ -f "$1/skills/$_skill/SKILL.md" ] || die "missing skill: $_skill" "$1/skills/$_skill"
 	done
@@ -1472,6 +1486,13 @@ main() {
 			fetch_archive
 			SKILL_ROOT="$(cat "$TMP_DIR/skill-root")"
 		fi
+	fi
+	if [ "$REF_PINNED" = 1 ]; then
+		# The release decides its own skill list: an older tag predates this
+		# branch's layout, and installing it must not demand today's names.
+		SKILLS="$(discover_skills "$SKILL_ROOT" | tr '\n' ' ')"
+		SKILLS="${SKILLS% }"
+		[ -n "$SKILLS" ] || die "no skills in release $REF" "The archive has no skills/sw-*/SKILL.md."
 	fi
 	require_skills "$SKILL_ROOT"
 	COMMANDS_SRC="$(find_commands "$SKILL_ROOT" || true)"

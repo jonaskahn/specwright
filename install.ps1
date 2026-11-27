@@ -540,7 +540,21 @@ function Add-Agent([string] $Id) {
 # --------------------------------------------------------------- source ----
 
 function Test-Root([string] $Path) {
-	return (Test-Path (Join-Rel $Path 'skills/sw-start/SKILL.md')) -and (Test-Path (Join-Rel $Path 'skills/sw-ship/SKILL.md'))
+	return (Test-Path (Join-Rel $Path 'skills/sw-start/SKILL.md'))
+}
+# The skills a source tree actually ships, in a stable order. A release tag
+# carries the layout of its own release, which is not always this branch's:
+# v0.9.0 shipped nine skills, main ships five. The tree decides, so -Version
+# installs exactly what that release shipped.
+function Get-ReleaseSkills([string] $Root) {
+	$found = @()
+	$dir = Join-Path $Root 'skills'
+	if (Test-Path $dir) {
+		foreach ($item in (Get-ChildItem -Path $dir -Directory -Filter 'sw-*' -ErrorAction SilentlyContinue | Sort-Object Name)) {
+			if (Test-Path (Join-Path $item.FullName 'SKILL.md')) { $found += $item.Name }
+		}
+	}
+	return $found
 }
 function Find-Root([string] $Start) {
 	$dir = $Start
@@ -883,6 +897,11 @@ if ($VersionPinned) {
 		Write-Note "No local checkout; downloading $Repo@$Ref"
 		$script:SkillRoot = Save-Archive
 	}
+}
+if ($VersionPinned) {
+	$releaseSkills = @(Get-ReleaseSkills $script:SkillRoot)
+	if ($releaseSkills.Count -eq 0) { Fail "no skills in release $Ref" @('The archive has no skills/sw-*/SKILL.md.') }
+	$Skills = $releaseSkills
 }
 foreach ($skill in $Skills) {
 	$path = Join-Rel $script:SkillRoot "skills/$skill/SKILL.md"

@@ -31,7 +31,7 @@ Useful flags: `--agent` / `-Agent` (repeatable or comma-separated), `--target` /
 
 `--version <v>` installs a released tag. `0.9.0`, `v0.9.0` and `SPECWRIGHT_VERSION=v0.9.0` all mean the tag `v0.9.0`; a tag is tried first, and a branch of the same name is the fallback. A version that does not exist stops the install with `no release <v>` and the tags URL, before anything is unpacked.
 
-A named version always downloads, even when the script runs from inside a checkout — the tag decides what lands, not this machine's tree. `--version latest` (or `--latest` / `-Latest`) is the same as passing no version: the main branch, which a run from inside a checkout takes from that checkout. `SPECWRIGHT_REF` still selects an arbitrary branch or tag for a plain, unpinned install.
+A named version always downloads, even when the script runs from inside a checkout — the tag decides what lands, not this machine's tree. It also installs the skills that release shipped, not this branch's list: `v0.9.0` ships nine skills, while `main` ships five (`sw-start`, `sw-craft`, `sw-forge`, `sw-ship`, `sw-view`), so pinning an older release gives you that release's layout. `--version latest` (or `--latest` / `-Latest`) is the same as passing no version: the main branch, which a run from inside a checkout takes from that checkout. `SPECWRIGHT_REF` still selects an arbitrary branch or tag for a plain, unpinned install.
 
 Tags pushed after the release commit only exist when they are pushed: check `https://github.com/<repo>/tags` if a version is reported missing.
 
