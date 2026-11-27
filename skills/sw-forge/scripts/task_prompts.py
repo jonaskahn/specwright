@@ -99,8 +99,8 @@ def _plan_section(base: Path, feat: str, tid: str) -> str:
     path = base / "03-plan" / f"{feat}.plan.md"
     if not path.is_file():
         return ""
-    section = markdown.sections(
-        frontmatter.parse(path.read_text(encoding="utf-8")).body, level=3
+    section = task_validation.task_sections(
+        frontmatter.parse(path.read_text(encoding="utf-8")).body
     ).get(tid)
     return section.text.strip() if section else ""
 

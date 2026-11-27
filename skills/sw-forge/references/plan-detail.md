@@ -15,6 +15,9 @@ asking what was meant.
     Test: refunds/test_service.py::test_day_3_full_amount — order R100 paid 500 USD on day 3
     yields one pending request for 500 USD.
     Command: `mvn -q -Dtest=RefundServiceTest test` (from stack: backend)
+    DoD: request refused after day 14; pending request stored; `make check` passes.
+    Accepts: AC-001-1 (day-3 request is accepted for the full amount)
+    Coverage: line 85% and branch 75% on refunds/service.py; every BR-001 branch has a test.
     Order: first; TASK-001-2 and TASK-001-3 need this type.
     Stop and ask if: BR-001 is undefined for an order with two partial payments.
 
@@ -28,6 +31,9 @@ Rules:
 - `Test:` is the test that proves `Done when`, with the concrete values of the criterion.
 - `Command:` comes from `stack.py show` for the task's layer; no layer, no command, and the
   task says why.
+- `DoD:` lists the observable conditions that make the task done; `Accepts:` names the AC IDs
+  the task proves; `Coverage:` states the metric and target the tests must reach. A project may
+  set one default in `project.yaml` (`coverage: {line: 80, branch: 70}`); a plan restates it per task.
 - `Order:` says what must exist first and which tasks depend on this one.
 - `Stop and ask if:` is the single condition under which guessing is worse than stopping.
 
@@ -37,6 +43,7 @@ Rules:
 feat: FEAT-NNN
 type: plan
 status: draft
+tasks: [TASK-001-1, TASK-001-2]
 plan_hash: <hash of the story the plan was written from>
 ```
 

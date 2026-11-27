@@ -61,7 +61,7 @@
   "scripts/kitlib/schema.py": "3ebed740abd7",
   "scripts/kitlib/stack.py": "d9caf7eec243",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
-  "scripts/kitlib/task_validation.py": "9a92d5673783",
+  "scripts/kitlib/task_validation.py": "feda909fba07",
   "scripts/kitlib/workspace.py": "a68ee892b1d4",
   "scripts/kitlib/writelog.py": "cd458649ee8f",
   "scripts/parallel_guard.py": "c393aea1d3ee",

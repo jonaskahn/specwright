@@ -137,7 +137,16 @@ PLAN_SECTIONS = (
     "Evidence from the codebase",
     "Open Dev questions",
 )
-PLAN_TASK_FIELDS = ("Files", "Change", "Test")
+PLAN_TASK_FIELDS = ("Files", "Change", "Test", "DoD", "Accepts", "Coverage")
+
+
+def task_sections(body: str) -> dict[str, markdown.Section]:
+    """Plan sections by task ID: `### TASK-001-1 — [backend] title` is keyed `TASK-001-1`."""
+    out: dict[str, markdown.Section] = {}
+    for section in markdown.iter_sections(body, level=3):
+        key = section.name.split()[0] if section.name else ""
+        out.setdefault(key, section)
+    return out
 
 
 def plan_findings(base: Path, feat: str) -> list[str]:
@@ -150,7 +159,7 @@ def plan_findings(base: Path, feat: str) -> list[str]:
     out = [
         f"{feat}: plan section '{name}' is missing" for name in PLAN_SECTIONS if name not in found
     ]
-    sections = markdown.sections(parsed.body, level=3)
+    sections = task_sections(parsed.body)
     tasks_path = base / "03-plan" / f"{feat}.tasks.md"
     blocks = {}
     if tasks_path.is_file():
@@ -168,6 +177,10 @@ def plan_findings(base: Path, feat: str) -> list[str]:
     for name in sorted(set(sections) - set(blocks)):
         if name.startswith("TASK-"):
             out.append(f"{name}: plan section names no active task")
+    listed = {str(t) for t in parsed.fm.get("tasks") or []}
+    if listed != set(blocks):
+        missing = ", ".join(sorted(set(blocks) ^ listed))
+        out.append(f"{feat}: plan front matter `tasks` must list every active task ({missing})")
     return out
 
 

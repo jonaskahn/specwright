@@ -2,6 +2,7 @@
 feat: FEAT-NNN
 type: plan
 status: draft
+tasks: [TASK-NNN-1]
 plan_hash: <draft hash of the story the plan was written from>
 assets: []
 ---
@@ -38,5 +39,8 @@ Files: <code-root>/<path> (new|changed) · …
 Change: <the behaviour and shape; the AC or BR it satisfies>
 Test: <the test that proves Done when, with concrete values>
 Command: <test command for this layer from stack.py show>
+DoD: <observable conditions that make this task done, with concrete values>
+Accepts: <the AC IDs from the task's Traces to, each as the check that passes>
+Coverage: <what the tests must cover: metric and target, e.g. line 80%, branch 70% on the changed files>
 Order: <what must exist first; which tasks depend on this>
 Stop and ask if: <the one condition to stop rather than guess>

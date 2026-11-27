@@ -30,7 +30,7 @@ or the case is an edge case named below. SKILL.md is the default path; kernel ru
    every section in dependency order.
 5. Run the BA contract check `scripts/tasks.py --feat FEAT-NNN`: it confirms coverage and
    that the plan has one section per active task, the six plan sections and a
-   `Files:`/`Change:`/`Test:` line in each. Fix findings and rerun.
+   `Files:`/`Change:`/`Test:`/`DoD:`/`Accepts:`/`Coverage:` line in each and a `tasks:` front-matter list of every active task. Fix findings and rerun.
 6. Copy nothing in the tasks file except the `Status:` and `Evidence:` lines; the BA's text is
    the contract. Withdraw a task only with the user's word, as a `~~TASK-001-3~~` tombstone.
 7. `_shared/scripts/finish.py --skill sw-forge` regenerates `03-plan/prompts/FEAT-NNN/` from the
