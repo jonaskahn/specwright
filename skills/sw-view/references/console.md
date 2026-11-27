@@ -12,7 +12,7 @@ images, fonts and fetches from its own address only.
 | Workspace | Overview | What needs a person first (a story that is blocked, fails lint or waits on a question; a task marked blocked), then each project's progress bar over its tasks, then totals and the lint gate. |
 | | Features | Every feature with its place on the lifecycle; View reads the story. |
 | | Feature | Criteria, tasks, records, links, blockers, sign-off state and its own trace map. |
-| Plan | Board | One horizontal lane per epic. Each row is a story with its acceptance criteria and its tasks, and each task shows the status its plan records (not started, planned, in progress, done, blocked). Read-only: nothing is dragged, and a story shows the command that moves it on. |
+| Plan | Board | A Jira-style board. One horizontal lane per epic, one row per story, and five status columns (not started, planned, in progress, blocked, done); each task is a card in the column its plan records. Read-only: nothing is dragged, and a story shows the command that moves it on. |
 | | Tasks | Tasks by feature, with what each traces to. |
 | Knowledge | Graph | One page: an outline beside the trace map (business objective, epic, feature, acceptance criterion, task, optionally code files), with coverage counts and placeholders for missing links; a network view; a table; the outline full width. A project select shows one project at a time, each project in turn, or only the links across projects. |
 | Governance | Records | Questions, decisions, change requests, amendments. |
@@ -23,8 +23,9 @@ a word, never by colour alone. `Ctrl/Cmd+K` opens a palette that jumps to a scre
 
 ## The board
 
-A lane is an epic, drawn left to right as three cells per story: the story, its acceptance
-criteria, its tasks. A story in two epics appears in both lanes. Stories in no epic share a lane
+A lane is an epic. Its columns are the five task statuses; each row is a story, with its
+acceptance criteria under its name, and each task is a card in the column of the status its plan
+records. A card names the criteria it implements. A story in two epics appears in both lanes. Stories in no epic share a lane
 at the end, and a task that names a story no file lists has a lane of its own, so nothing is
 dropped. An epic with no story draws no lane.
 

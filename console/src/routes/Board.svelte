@@ -1,10 +1,10 @@
 <script lang="ts">
-  import Icon from '../components/Icon.svelte';
+  import Mark from '../components/Mark.svelte';
   import OwnerEmpty from '../components/OwnerEmpty.svelte';
   import PageHead from '../components/PageHead.svelte';
   import Pill from '../components/Pill.svelte';
   import StaleBanner from '../components/StaleBanner.svelte';
-  import { ATTENTION_WORDS, buildLanes, closedQuery, countsOf, filterLanes, orderStories, parseClosed, storyProgress, type LaneFilters, type StoryOrder } from '../lib/board';
+  import { ATTENTION_WORDS, buildLanes, closedQuery, countsOf, filterLanes, orderStories, parseClosed, PROGRESS_COLUMNS, storyProgress, tasksByColumn, type LaneFilters, type StoryOrder } from '../lib/board';
   import { app } from '../lib/data/store.svelte';
   import { plural, shortKey } from '../lib/format';
   import { preview } from '../lib/preview.svelte';
@@ -36,7 +36,7 @@
   }
 </script>
 
-<PageHead title="Board" lede="Each epic is a lane. Each row is a story with its acceptance criteria and its tasks, and each task shows the status its plan records." />
+<PageHead title="Board" lede="Each epic is a lane. Each row is a story, and each task sits in the column of the status its plan records." />
 {#if everyLane.length}
   <div class="stack-sm">
     <StaleBanner />
@@ -69,12 +69,19 @@
           {#if lane.counts.retired && !filters.retired}<span class="sub">{plural(lane.counts.retired, 'retired story', 'retired stories')} hidden</span>{/if}
         </button>
         {#if open}
-          <div class="lane">
+          <div class="lane" role="table" aria-label={`Tasks of ${lane.title} by status`}>
+            <div class="lane-grid lane-head" role="row">
+              <span class="lane-col-h" role="columnheader">Story</span>
+              {#each PROGRESS_COLUMNS as col (col)}
+                {@const look = wordLook(col)}
+                <span class="lane-col-h row-flex" role="columnheader"><Mark shape={look.shape} />{look.label}</span>
+              {/each}
+            </div>
             {#each orderStories(lane.stories, order) as s (s.id)}
+              {@const cols = tasksByColumn(s)}
               {@const p = storyProgress(s)}
-              <article class="lane-row" class:retired={s.retired}>
-                <div class="lane-col">
-                  <span class="lane-col-h">Story</span>
+              <div class="lane-grid lane-row" class:retired={s.retired} role="row">
+                <div class="lane-col lane-story-cell" role="cell">
                   {#if s.feature}
                     <span class="row-flex wrap">
                       <a class="name mono" href={href('features', s.id)}>{shortKey(s.id)}</a>
@@ -84,41 +91,37 @@
                     <span class="lane-story">{s.title}</span>
                     <span class="row-flex wrap"><Pill look={stateLook(s.feature.state, s.feature.condition)} /></span>
                     {#if s.attention}<span class="lane-note">{ATTENTION_WORDS[s.attention]}</span>{/if}
+                    <span class="sub num">{p.total ? `${p.done} of ${plural(p.total, 'task')} done` : 'No task is planned yet'}</span>
+                    {#each s.criteria as c (c.key)}
+                      <button class="lane-item" class:gap={!c.covered && s.tasks.length > 0} class:picked={picked === c.key} type="button" aria-pressed={picked === c.key} title={shortKey(c.key)} onclick={() => (picked = picked === c.key ? null : c.key)}>
+                        <span>{c.title}</span>
+                        {#if !c.covered && s.tasks.length}<span class="lane-note">No task covers this criterion</span>{/if}
+                      </button>
+                    {:else}
+                      <span class="lane-note">No acceptance criterion yet</span>
+                    {/each}
                     {#if s.feature.next}<code class="chip lane-cmd" title="Run this to move the story on">{`/${s.feature.next} ${shortKey(s.id)}`}</code>{/if}
-                    <button class="btn view-btn" type="button" aria-label={`Read the story ${s.title}`} onclick={() => preview.openKey(s.id)}><Icon name="eye" size="sm" />Read</button>
                   {:else}
                     <span class="lane-story">{s.title}</span>
                     <span class="lane-note">A task names a story that no file lists.</span>
                   {/if}
                 </div>
-
-                <div class="lane-col">
-                  <span class="lane-col-h">Acceptance criteria</span>
-                  {#each s.criteria as c (c.key)}
-                    <button class="lane-item" class:gap={!c.covered && s.tasks.length > 0} class:dim={picked !== null && picked !== c.key} type="button" aria-pressed={picked === c.key} title={shortKey(c.key)} onclick={() => (picked = picked === c.key ? null : c.key)}>
-                      <span>{c.title}</span>
-                      {#if !c.covered && s.tasks.length}<span class="lane-note">No task covers this criterion</span>{/if}
-                    </button>
-                  {:else}
-                    <span class="lane-note">{s.feature ? 'No acceptance criterion yet' : ''}</span>
-                  {/each}
-                </div>
-
-                <div class="lane-col">
-                  <span class="lane-col-h">Tasks{p.total ? ` · ${p.done} of ${p.total} done` : ''}</span>
-                  {#each s.tasks as t (t.id)}
-                    <button class="lane-item" class:gap={t.traces.length === 0 && s.criteria.length > 0} class:dim={picked !== null && !t.traces.includes(picked)} type="button" onclick={() => preview.openKey(t.id)}>
-                      <span class="chip" title={t.id}>{shortKey(t.id)}</span>
-                      <span>{t.title}</span>
-                      {#if t.layer}<span class="chip">{layerWords(t.layer)}</span>{/if}
-                      {#if t.progress}<Pill look={wordLook(t.progress)} />{:else}<span class="sub">Status not recorded</span>{/if}
-                      {#if t.traces.length === 0 && s.criteria.length}<span class="lane-note">Not tied to an acceptance criterion</span>{/if}
-                    </button>
-                  {:else}
-                    <span class="lane-note">{s.feature ? 'No task is planned yet' : ''}</span>
-                  {/each}
-                </div>
-              </article>
+                {#each PROGRESS_COLUMNS as col (col)}
+                  <div class="lane-col lane-cell" role="cell">
+                    {#each cols[col] as t (t.id)}
+                      <button class="lane-card" class:gap={t.traces.length === 0 && s.criteria.length > 0} class:dim={picked !== null && !t.traces.includes(picked)} type="button" onclick={() => preview.openKey(t.id)}>
+                        <span class="chip" title={t.id}>{shortKey(t.id)}</span>
+                        <span>{t.title}</span>
+                        {#if t.layer}<span class="chip">{layerWords(t.layer)}</span>{/if}
+                        {#if t.progress === null}<span class="sub">Status not recorded</span>{/if}
+                        {#if t.progress === 'done' && t.evidence}<span class="sub">{t.evidence}</span>{/if}
+                        {#if t.traces.length === 0 && s.criteria.length}<span class="lane-note">Not tied to an acceptance criterion</span>{/if}
+                        {#each t.traces as k (k)}<span class="sub">For: {s.criteria.find((c) => c.key === k)?.title ?? shortKey(k)}</span>{/each}
+                      </button>
+                    {/each}
+                  </div>
+                {/each}
+              </div>
             {/each}
           </div>
         {/if}

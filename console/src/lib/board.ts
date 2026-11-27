@@ -236,6 +236,17 @@ export function storyProgress(story: LaneStory): { done: number; total: number; 
   };
 }
 
+/** The status columns of a lane, left to right. A task sits in the column its plan records. */
+export const PROGRESS_COLUMNS = ['not-started', 'planned', 'in-progress', 'blocked', 'done'] as const;
+export type Column = (typeof PROGRESS_COLUMNS)[number];
+
+/** A story's tasks split by column; a task with no recorded status counts as not started. */
+export function tasksByColumn(story: LaneStory): Record<Column, LaneTask[]> {
+  const out: Record<Column, LaneTask[]> = { 'not-started': [], planned: [], 'in-progress': [], blocked: [], done: [] };
+  for (const t of story.tasks) out[t.progress ?? 'not-started'].push(t);
+  return out;
+}
+
 /** Collapsed lanes live in the address as a comma-separated list of lane keys. */
 export const parseClosed = (value: string | null): Set<string> => new Set((value ?? '').split(',').filter(Boolean));
 export const closedQuery = (closed: Set<string>): string | null => (closed.size ? [...closed].sort(compareKeys).join(',') : null);
