@@ -386,7 +386,7 @@ def _touch_edge(
     repo = workspace.code_repo_root(root)
     dst = f"{scope}:code/{item}"
     if repo is None or folder is None:
-        res = "no-code-root"
+        res = "unresolved"
     else:
         try:
             target = workspace.safe_join(repo, item)
