@@ -123,6 +123,16 @@ Windows, named agents, no questions:
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1))) -Agent cursor,claude-code -Yes
 ```
 
+A released version instead of the main branch:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/jonaskahn/specwright/main/install.sh | sh -s -- --version 0.9.0
+```
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/jonaskahn/specwright/main/install.ps1))) -Version 0.9.0 -Yes
+```
+
 - macOS and Linux need `curl` or `wget`, plus `tar`. Windows needs PowerShell and `tar`.
 - All projects is the default. `--project` / `-Project` installs into this project only.
 - Skip the questions with `-y` / `-Yes`. Detected agents are used. If none show up, Universal gets the skills.

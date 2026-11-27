@@ -354,6 +354,9 @@ INTERACTIVE=0
 COMMANDS_SRC=""
 OS=""
 STAT_BSD=0
+VERSION="${SPECWRIGHT_VERSION:-latest}"
+VERSION_SET=0
+[ -z "${SPECWRIGHT_VERSION:-}" ] || VERSION_SET=1
 
 usage() {
 	cat <<EOF
@@ -365,6 +368,8 @@ Usage: install.sh [options]
   -g, --global      install for all projects (the default)
   --project         install into this project only
   --target <path>   project directory used when you pass --project
+  --version <v>     install a released version, such as 0.9.0 or v0.9.0
+                    (latest, the default, installs the main branch)
   -y, --yes         use the selected settings without prompting
   --list-agents     print agent ids and skill directories, then exit
   --help            this text
@@ -372,8 +377,8 @@ Usage: install.sh [options]
 Every public skill is installed: ${SKILLS}.
 The sw-* command wrappers in commands/ are installed beside them.
 
-Environment: SPECWRIGHT_REPO, SPECWRIGHT_REF, SPECWRIGHT_URL, SPECWRIGHT_ROOT,
-SPECWRIGHT_TARGET, SPECWRIGHT_INSTALL_YES, NO_COLOR.
+Environment: SPECWRIGHT_REPO, SPECWRIGHT_VERSION, SPECWRIGHT_REF, SPECWRIGHT_URL,
+SPECWRIGHT_ROOT, SPECWRIGHT_TARGET, SPECWRIGHT_INSTALL_YES, NO_COLOR.
 EOF
 }
 
@@ -388,12 +393,42 @@ while [ $# -gt 0 ]; do
 	--project) SCOPE="project"; SCOPE_SET=1; shift ;;
 	--target) TARGET="${2:?--target needs a value}"; shift 2 ;;
 	--target=*) TARGET="${1#*=}"; shift ;;
+	--version) VERSION="${2:?--version needs a value}"; VERSION_SET=1; shift 2 ;;
+	--version=*) VERSION="${1#*=}"; VERSION_SET=1; shift ;;
+	--latest) VERSION="latest"; VERSION_SET=1; shift ;;
 	-y | --yes) ASSUME_YES=1; shift ;;
 	--list-agents) LIST_ONLY=1; shift ;;
 	-h | --help) usage; exit 0 ;;
 	*) die "unknown option: $1" "run install.sh --help" ;;
 	esac
 done
+
+# A release version is a tag; `latest` is the main branch, the same thing an
+# install without --version fetches. Anything else is refused here, before a
+# download, so a typo cannot turn into a URL.
+version_ref() {
+	case "$1" in
+	latest | main | '') printf 'main'; return 0 ;;
+	esac
+	_v="${1#v}"
+	case "$_v" in
+	[0-9]*.[0-9]*.[0-9]*) ;;
+	*) die "bad version: $1" "Use a release such as 0.9.0 or v0.9.0, or latest." ;;
+	esac
+	case "$_v" in
+	*[!0-9A-Za-z.+-]*) die "bad version: $1" "Use a release such as 0.9.0 or v0.9.0, or latest." ;;
+	esac
+	printf 'v%s' "$_v"
+}
+
+REF_PINNED=0
+if [ "$VERSION_SET" = 1 ]; then
+	REF="$(version_ref "$VERSION")"
+	# A tag is its own source, so a checkout beside this script must not
+	# stand in for it. `latest` is the main branch, exactly what a plain
+	# install already does, checkout reuse included.
+	[ "$REF" = main ] || REF_PINNED=1
+fi
 
 if [ "$TERMINAL" = 1 ] && [ "$ASSUME_YES" = 0 ] && ( : </dev/tty ) 2>/dev/null; then
 	INTERACTIVE=1
@@ -822,21 +857,51 @@ find_root_from() {
 	return 1
 }
 
+download() {
+	# download <url> <out>; a failed fetch is a status, not a message yet.
+	# The reason is kept in $TMP_DIR/last-error so a fallback attempt stays
+	# quiet and only the final failure speaks.
+	if have curl; then
+		curl -fsSL --retry 2 --connect-timeout 20 -o "$2" "$1" 2>"$TMP_DIR/last-error"
+	else
+		wget -q -O "$2" "$1" 2>"$TMP_DIR/last-error"
+	fi
+}
+
 fetch_archive() {
 	have tar || die "tar is required to install Specwright" "Install tar, then run this installer again."
 	have curl || have wget || die "curl or wget is required" "Install curl, then run this installer again."
-	_url="${SPECWRIGHT_URL:-https://github.com/$REPO/archive/refs/heads/$REF.tar.gz}"
-	step "Downloading $REPO@$REF"
 	mkdir -p "$TMP_DIR/unpack"
-	if have curl; then
-		curl -fsSL --retry 2 --connect-timeout 20 -o "$TMP_DIR/src.tar.gz" "$_url" ||
-			die "download failed" "$_url"
+	_archive="$TMP_DIR/src.tar.gz"
+	step "Downloading $REPO@$REF"
+	if [ -n "${SPECWRIGHT_URL:-}" ]; then
+		# An explicit URL is the source, so it wins over the version's tag.
+		_url="$SPECWRIGHT_URL"
+		download "$_url" "$_archive" || die "download failed" "$_url"
 	else
-		wget -q -O "$TMP_DIR/src.tar.gz" "$_url" || die "download failed" "$_url"
+		# A version names a tag, but a branch of the same name still resolves.
+		# Try the tag first so `--version 0.9.0` cannot land on a stale branch.
+		_try=""
+		if [ "$REF_PINNED" = 1 ]; then
+			_try="refs/tags"
+		else
+			_try="refs/heads"
+		fi
+		_url="https://github.com/$REPO/archive/$_try/$REF.tar.gz"
+		if ! download "$_url" "$_archive"; then
+			if [ "$REF_PINNED" = 1 ] &&
+				download "https://github.com/$REPO/archive/refs/heads/$REF.tar.gz" "$_archive"; then
+				_url="https://github.com/$REPO/archive/refs/heads/$REF.tar.gz"
+			elif [ "$REF_PINNED" = 1 ]; then
+				die "no release $VERSION" "There is no tag $REF on $REPO." "List the releases at https://github.com/$REPO/tags"
+			else
+				die "download failed" "$_url"
+			fi
+		fi
 	fi
 	done_ "Downloaded $REPO@$REF"
 	lead "Unpacking the source archive"
-	tar -xzf "$TMP_DIR/src.tar.gz" -C "$TMP_DIR/unpack" || die "could not unpack the source archive"
+	tar -xzf "$_archive" -C "$TMP_DIR/unpack" || die "could not unpack the source archive"
 	_hit="$(find "$TMP_DIR/unpack" -type f -path '*/skills/sw-start/SKILL.md' | head -n 1)"
 	[ -n "$_hit" ] || die "the archive has no skills/sw-start/SKILL.md"
 	_root="$(dirname "$(dirname "$(dirname "$_hit")")")"
@@ -1385,20 +1450,28 @@ main() {
 	section "Install Specwright"
 	SKILL_ROOT=""
 	COMMANDS_SRC=""
-	if [ -n "${SPECWRIGHT_ROOT:-}" ]; then
-		is_root "$SPECWRIGHT_ROOT" || die "SPECWRIGHT_ROOT is not a Specwright checkout" "$SPECWRIGHT_ROOT"
-		SKILL_ROOT="$SPECWRIGHT_ROOT"
-	elif [ -n "$SCRIPT_DIR" ]; then
-		SKILL_ROOT="$(find_root_from "$SCRIPT_DIR" || true)"
-	fi
-	if [ -n "$SKILL_ROOT" ]; then
-		note "Using the checkout at $SKILL_ROOT"
-		# A checkout install reports its processing steps as a live bar.
-		PROGRESS=1
-	else
-		note "No local checkout; downloading $REPO@$REF"
+	if [ "$REF_PINNED" = 1 ]; then
+		# A named release wins over the checkout around this script: the point
+		# of --version is that this machine's tree must not decide what lands.
+		note "Installing release $REF"
 		fetch_archive
 		SKILL_ROOT="$(cat "$TMP_DIR/skill-root")"
+	else
+		if [ -n "${SPECWRIGHT_ROOT:-}" ]; then
+			is_root "$SPECWRIGHT_ROOT" || die "SPECWRIGHT_ROOT is not a Specwright checkout" "$SPECWRIGHT_ROOT"
+			SKILL_ROOT="$SPECWRIGHT_ROOT"
+		elif [ -n "$SCRIPT_DIR" ]; then
+			SKILL_ROOT="$(find_root_from "$SCRIPT_DIR" || true)"
+		fi
+		if [ -n "$SKILL_ROOT" ]; then
+			note "Using the checkout at $SKILL_ROOT"
+			# A checkout install reports its processing steps as a live bar.
+			PROGRESS=1
+		else
+			note "No local checkout; downloading $REPO@$REF"
+			fetch_archive
+			SKILL_ROOT="$(cat "$TMP_DIR/skill-root")"
+		fi
 	fi
 	require_skills "$SKILL_ROOT"
 	COMMANDS_SRC="$(find_commands "$SKILL_ROOT" || true)"
