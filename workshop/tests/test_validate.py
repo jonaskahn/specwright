@@ -282,8 +282,15 @@ class ReleaseSurfaceTests(unittest.TestCase):
 
     def test_mismatched_command_description(self):
         path = self.root / "commands/sw-start.md"
-        text = path.read_text().replace("Specwright's single entry.", "Describes or extends")
-        path.write_text(text)
+        text = path.read_text()
+        lines = text.splitlines(keepends=True)
+        for index, line in enumerate(lines):
+            if line.startswith("description:"):
+                lines[index] = "description: Intentionally mismatched command description.\n"
+                break
+        modified = "".join(lines)
+        self.assertNotEqual(text, modified, "fixture must contain a description to mutate")
+        path.write_text(modified)
         self.assertIn("V094", self.check(lambda r: validate._check_commands(self.root, r)))
 
     def test_extra_wrapper_may_load_another_public_skill(self):
