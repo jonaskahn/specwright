@@ -6,9 +6,11 @@
     foundation.py set --decline                  the owner declined; sw-start stops offering it
     foundation.py set --defaults | [--layer L --build B --format F --lint X --test T]
                       [--coverage N] [--ci C] [--hooks H] [--ai-workflow W]
+    foundation.py analyze                        what each code folder already has (names only)
     foundation.py draft --feat FEAT-NNN [--bo BO-NNN]
                                                  fill the reserved story; write reference files
                                                  02-drafts/foundation/{Makefile,AGENTS.md,CLAUDE.md}
+                                                 and <layer>/AGENTS.md when there are several layers
 
 Common: --cwd <project> [--scope S]. Tooling lives in stack.yaml `tooling` (outside the stack
 lock hash). Exit codes: 0 ok, 2 usage or file error.
@@ -25,7 +27,7 @@ import argparse  # noqa: E402
 import json  # noqa: E402
 import re  # noqa: E402
 
-from kitlib import foundation, frontmatter, fsio, stack, workspace  # noqa: E402
+from kitlib import coderoots, foundation, frontmatter, fsio, stack, workspace  # noqa: E402
 
 
 def _profile_path(root, scope):
@@ -56,7 +58,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawTextHelpFormatter
     )
-    parser.add_argument("command", choices=["questions", "set", "draft"])
+    parser.add_argument("command", choices=["questions", "set", "draft", "analyze"])
     parser.add_argument("--cwd", default=".")
     parser.add_argument("--scope")
     parser.add_argument("--defaults", action="store_true")
@@ -80,6 +82,11 @@ def main(argv=None):
         profile = stack.effective(root, scope)
         if a.command == "questions":
             print(json.dumps({"questions": foundation.questions(profile)}, indent=2))
+            return 0
+        if a.command == "analyze":
+            roots = coderoots.all_roots(root, scope) or [root.parent]
+            report = {str(r): foundation.existing_setup(r) for r in roots}
+            print(json.dumps({"existing": report}, indent=2))
             return 0
         path = _profile_path(root, scope)
         data = stack.load(path) or stack.empty()
@@ -150,6 +157,12 @@ def main(argv=None):
             if tooling.get("ai_workflow") == "agents+claude":
                 fsio.atomic_write(out / "CLAUDE.md", foundation.claude_md())
                 written.append("CLAUDE.md")
+            if len(tooling.get("layers") or {}) > 1:
+                for layer in tooling["layers"]:
+                    fsio.atomic_write(
+                        out / layer / "AGENTS.md", foundation.layer_agents_md(tooling, layer)
+                    )
+                    written.append(f"{layer}/AGENTS.md")
         print(
             json.dumps(
                 {

@@ -104,6 +104,34 @@ class Foundation(unittest.TestCase):
         self.assertIn("locked sha256:abc", locked)
         self.assertIn("andrej-karpathy-skills", locked)
 
+    def test_clean_code_rules_are_per_language_and_nested_files_hold_only_the_difference(self):
+        t = foundation.default_tooling(PROFILE)
+        root = foundation.agents_md(t, "Demo", {})
+        self.assertIn("## Clean code", root)
+        self.assertIn("Per-language rules live in each layer", root)
+        self.assertNotIn("Constructor injection", root)
+        backend = foundation.layer_agents_md(t, "backend")
+        self.assertIn("Constructor injection", backend)
+        self.assertIn("Root AGENTS.md rules apply", backend)
+        self.assertNotIn("Think first", backend)
+        single = foundation.default_tooling({"layers": {"backend": {"language": "python"}}})
+        self.assertIn("bare except", foundation.agents_md(single, "Demo", {}))
+        for lang in foundation.CATALOG:
+            if "alias" not in foundation.CATALOG[lang]:
+                self.assertTrue(foundation.clean_code(lang), lang)
+
+    def test_existing_setup_names_what_the_folder_has(self):
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            (folder / "Makefile").write_text("all:\n")
+            (folder / "tests").mkdir()
+            found = foundation.existing_setup(folder)
+        self.assertEqual(found["gate"], ["Makefile"])
+        self.assertEqual(found["tests"], ["tests"])
+        self.assertEqual(found["lint"], [])
+
     def test_story_sections(self):
         t = foundation.default_tooling(PROFILE)
         t["coverage"] = 85

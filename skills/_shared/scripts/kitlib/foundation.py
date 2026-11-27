@@ -8,6 +8,7 @@ implementing agent pins current stable versions from official docs when it sets 
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 # Per language: options per concern, first option is the default.
@@ -313,6 +314,89 @@ PRINCIPLES_SOURCE = (
 )
 
 
+# Per language: the few rules that differ from the shared rules. Kept short on purpose; a rule a
+# formatter or linter already enforces is not repeated here.
+CLEAN_CODE: dict[str, list[str]] = {
+    "java": [
+        "Prefer immutable types (records, final fields); no null returns where Optional fits.",
+        "Constructor injection only; no static mutable state.",
+        "Throw specific exceptions; never catch Exception to hide a failure.",
+    ],
+    "kotlin": [
+        "Prefer val and immutable collections; avoid !! outside tests.",
+        "Model states with sealed types, not flags and nulls.",
+        "Keep coroutines structured; never use GlobalScope.",
+    ],
+    "typescript": [
+        "Enable strict mode; no `any`; narrow unknown input at the boundary.",
+        "Prefer small pure functions and named exports; no default exports.",
+        "Handle every promise; no floating promises.",
+    ],
+    "javascript": [
+        "Use const and let, strict equality, and named exports.",
+        "Handle every promise; no floating promises.",
+        "Validate input at the boundary; keep functions small and pure where possible.",
+    ],
+    "python": [
+        "Type-annotate public functions; keep modules small with one purpose.",
+        "Raise specific exceptions; never use a bare except.",
+        "Prefer dataclasses and pure functions; no mutable default arguments.",
+    ],
+    "go": [
+        "Return errors and wrap them with context; no panics for expected failures.",
+        "Accept interfaces, return concrete types; keep interfaces small.",
+        "Pass context.Context first; no package-level mutable state.",
+    ],
+    "dart": [
+        "Prefer const constructors and immutable models.",
+        "Keep widgets small; move logic out of build methods.",
+        "Await every Future or mark it unawaited on purpose.",
+    ],
+    "rust": [
+        "Return Result and use `?`; no unwrap or expect outside tests.",
+        "Prefer borrowing over cloning; keep unsafe out unless a comment proves it sound.",
+        "Derive and implement standard traits instead of ad hoc helpers.",
+    ],
+    "c": [
+        "Check every return value and allocation; free what you allocate in one place.",
+        "Keep functions short; no global mutable state.",
+        "Compile with warnings as errors.",
+    ],
+    "php": [
+        "Declare strict_types in every file and type every parameter and return.",
+        "Constructor injection only; no static helpers with state.",
+        "Throw specific exceptions; never suppress errors with @.",
+    ],
+    "ruby": [
+        "Keep methods short and objects single-purpose.",
+        "Rescue specific errors only; never a bare rescue.",
+        "Prefer plain objects and explicit dependencies over metaprogramming.",
+    ],
+    "swift": [
+        "Prefer structs and let; avoid force unwraps outside tests.",
+        "Model failure with throws and Result, not optionals alone.",
+        "Keep types small; mark classes final unless designed for subclassing.",
+    ],
+    "csharp": [
+        "Enable nullable reference types and treat warnings as errors.",
+        "Constructor injection only; async all the way, no .Result or .Wait().",
+        "Throw specific exceptions; never swallow them.",
+    ],
+}
+SHARED_CLEAN_CODE = [
+    "Name things for what they mean; a function does one thing and fits on a screen.",
+    "No duplicated logic: extract it the second time it is needed, not before.",
+    "No dead code, commented-out code or unused dependencies.",
+    "Handle errors at the boundary with a clear message; never swallow them.",
+    "Comments say why, not what.",
+]
+
+
+def clean_code(language: str) -> list[str]:
+    """The language's own rules; a language without an entry has none beyond the shared ones."""
+    return CLEAN_CODE.get(language, [])
+
+
 def language_of(profile: dict[str, Any] | None, layer: str) -> str | None:
     values = ((profile or {}).get("layers") or {}).get(layer) or {}
     lang = str(values.get("language") or "").strip().lower()
@@ -502,6 +586,20 @@ def agents_md(
             "## Structure",
             *(structure or ["- see the foundation story"]),
             "",
+            "## Clean code",
+            *(f"- {rule}" for rule in SHARED_CLEAN_CODE),
+            *(
+                f"- {lang} — {rule}"
+                for lang in languages_of(tooling)
+                for rule in clean_code(lang)
+                if len(tooling.get("layers") or {}) == 1
+            ),
+            *(
+                ["- Per-language rules live in each layer folder's own AGENTS.md."]
+                if len(tooling.get("layers") or {}) > 1
+                else []
+            ),
+            "",
             "## How to work",
             "- Think first: state assumptions; when a request has several readings, list them "
             "and ask; when unclear, stop and name what is unclear.",
@@ -523,6 +621,91 @@ def agents_md(
             "## Specs",
             "- Stories, plans and tasks come from Specwright; a task prompt is self-contained.",
             "- Never edit the spec files; when code and spec disagree, stop and ask.",
+            "",
+        ]
+    )
+
+
+# What counts as an existing setup, per concern: any one of these files or folders present.
+EXISTING = {
+    "gate": ["Makefile", "justfile", "Taskfile.yml"],
+    "format": [
+        ".prettierrc",
+        ".prettierrc.json",
+        "prettier.config.js",
+        ".clang-format",
+        ".editorconfig",
+        "rustfmt.toml",
+        ".rustfmt.toml",
+        ".php-cs-fixer.php",
+        ".swift-format",
+    ],
+    "lint": [
+        ".eslintrc",
+        ".eslintrc.json",
+        "eslint.config.js",
+        "eslint.config.mjs",
+        ".golangci.yml",
+        ".golangci.yaml",
+        ".rubocop.yml",
+        "ruff.toml",
+        ".ruff.toml",
+        "checkstyle.xml",
+        "detekt.yml",
+        ".swiftlint.yml",
+        "phpstan.neon",
+        ".clang-tidy",
+        "analysis_options.yaml",
+        "clippy.toml",
+    ],
+    "tests": ["tests", "test", "spec", "__tests__", "src/test"],
+    "ci": [".github/workflows", ".gitlab-ci.yml"],
+    "agents": ["AGENTS.md"],
+}
+
+
+def existing_setup(code_root: Path) -> dict[str, list[str]]:
+    """Which foundation pieces a code folder already has, so the story only adds what is missing.
+
+    Reads names only, never file contents. A pyproject or package manifest that configures a tool
+    is not inspected; the implementing agent reads it before changing anything.
+    """
+    found: dict[str, list[str]] = {}
+    for concern, names in EXISTING.items():
+        found[concern] = [n for n in names if (code_root / n).exists()]
+    return found
+
+
+def languages_of(tooling: dict[str, Any]) -> list[str]:
+    seen: list[str] = []
+    for entry in (tooling.get("layers") or {}).values():
+        lang = str(entry.get("language") or "")
+        if lang and lang not in seen:
+            seen.append(lang)
+    return seen
+
+
+def layer_agents_md(tooling: dict[str, Any], layer: str) -> str:
+    """The nested file of one layer: only what differs from the root rules, nothing repeated."""
+    entry = (tooling.get("layers") or {}).get(layer) or {}
+    lang = str(entry.get("language") or "")
+    cmds = commands(tooling).get(layer, {})
+    cov = tooling.get("coverage", 80)
+    return "\n".join(
+        [
+            f"# {layer} ({lang}) — local rules",
+            "",
+            "Root AGENTS.md rules apply. This file only adds what is specific to this folder.",
+            "",
+            "## Commands (run from this folder)",
+            *(f"- `{c}`" for c in (cmds.get(t) for t in ("fmt", "lint", "test")) if c),
+            f"- Line coverage below {cov}% fails the build.",
+            "",
+            "## Structure",
+            f"- {CATALOG[lang]['structure']}" if lang in CATALOG else "- see the root file",
+            "",
+            f"## Clean code — {lang}",
+            *(f"- {rule}" for rule in clean_code(lang)),
             "",
         ]
     )

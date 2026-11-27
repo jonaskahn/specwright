@@ -11,6 +11,9 @@ prompt relies on `make check` and `AGENTS.md`.
 - An existing codebase without a gate: offer it as a change ("add `make check`, coverage floor").
 
 ## Explore before asking (runtime)
+- Run `foundation.py analyze`: it names which of the gate, formatter, linter, tests, CI and
+  AGENTS.md each code folder already has. The story adds only what is missing and never
+  replaces a working setup.
 - Read `stack.py show` and `foundation.py questions`; they prefill tool choices per layer.
 - When web search is available, check the official docs of each proposed tool for its current
   stable release and recommended setup; mention a notable alternative in one line. Never pin a
@@ -69,6 +72,12 @@ Do not pin tool versions from memory. Verify supported releases and setup before
 `make setup | fmt | fmt-check | lint | typecheck | test | build | check`; coverage below the floor
 fails; CI runs `make check` and blocks merges; `AGENTS.md` holds the locked stack, commands,
 structure, working principles and definition of done; structure follows the stack convention.
+
+## One root file, small nested files
+The root `AGENTS.md` holds the shared rules: stack, commands, working principles, definition of
+done and a short shared clean-code list. With one code layer it also lists that language's rules.
+With several layers each layer folder gets its own `AGENTS.md` holding only its commands,
+structure and language rules; nothing from the root is repeated there.
 
 ## Working principles in AGENTS.md
 Written in our words, adapted from multica-ai/andrej-karpathy-skills (CLAUDE.md): think before
