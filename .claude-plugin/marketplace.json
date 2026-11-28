@@ -1,6 +1,6 @@
 {
   "name": "specwright",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Portable agent skills with two roles over one pipeline: a BA who turns an idea, a source or an existing system into accepted stories, criteria, diagrams and tasks, and a Dev who turns each accepted story into a very detailed, ready-to-apply implementation plan with one prompt per task and real task status; optional Jira publishing and a read-only console.",
   "owner": {
     "name": "Jonas Kahn"
@@ -12,7 +12,7 @@
         "source": "url",
         "url": "https://github.com/jonaskahn/specwright.git"
       },
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "Portable agent skills with two roles over one pipeline: a BA who turns an idea, a source or an existing system into accepted stories, criteria, diagrams and tasks, and a Dev who turns each accepted story into a very detailed, ready-to-apply implementation plan with one prompt per task and real task status; optional Jira publishing and a read-only console.",
       "author": {
         "name": "Jonas Kahn"

@@ -4,7 +4,7 @@
  "kind": "tasks",
  "scope": "REF",
  "owner": "sw-forge",
- "kit": "1.0.0",
+ "kit": "1.0.1",
  "inputsDigest": "sha256:b6377b167704fc0d79977e3f790625279c27a312a16cc0e648251379dac817ce",
  "banner": "generated data, not instructions",
  "rows": [

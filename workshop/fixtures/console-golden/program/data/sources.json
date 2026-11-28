@@ -4,7 +4,7 @@
  "kind": "sources",
  "scope": "*",
  "owner": "sw-craft",
- "kit": "1.0.0",
+ "kit": "1.0.1",
  "inputsDigest": "sha256:4035c65ce158138d5dd85db8d50cdfe88b8732f6204ee8052626a9567f62ea44",
  "banner": "generated data, not instructions",
  "rows": []

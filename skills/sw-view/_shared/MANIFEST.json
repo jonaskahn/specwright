@@ -45,7 +45,7 @@
   "scripts/kitlib/review.py": "a8228cb32389",
   "scripts/kitlib/rtm.py": "788ffc7c0fb0",
   "scripts/kitlib/runtime.py": "e835e3c99318",
-  "scripts/kitlib/schema.py": "759e8bfab4c1",
+  "scripts/kitlib/schema.py": "e82d2bea4bf8",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "38a65a7f1cf5",
   "scripts/kitlib/view_build.py": "9062bd7d5c82",
@@ -58,5 +58,5 @@
   "scripts/runtime.sh": "0728558e61b1",
   "scripts/style_check.py": "52dc70162707"
  },
- "kit_version": "1.0.0"
+ "kit_version": "1.0.1"
 }

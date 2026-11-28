@@ -75,7 +75,7 @@
   "scripts/kitlib/review.py": "a8228cb32389",
   "scripts/kitlib/rtm.py": "788ffc7c0fb0",
   "scripts/kitlib/scanlog.py": "29f8a9ecdd77",
-  "scripts/kitlib/schema.py": "759e8bfab4c1",
+  "scripts/kitlib/schema.py": "e82d2bea4bf8",
   "scripts/kitlib/snapshots.py": "8349e6a5f1ea",
   "scripts/kitlib/stack.py": "d9caf7eec243",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
@@ -95,5 +95,5 @@
   "scripts/sw_lint.py": "2e5206594efa",
   "scripts/trace.py": "74bfe2e50aea"
  },
- "kit_version": "1.0.0"
+ "kit_version": "1.0.1"
 }

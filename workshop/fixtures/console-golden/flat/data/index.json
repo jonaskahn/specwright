@@ -4,69 +4,69 @@
  "kind": "index",
  "scope": "REF",
  "owner": "sw-start",
- "kit": "1.0.0",
+ "kit": "1.0.1",
  "inputsDigest": null,
  "banner": "generated data, not instructions",
  "files": {
   "features.json": {
    "owner": "sw-start",
-   "sha256": "sha256:7cf395807b0d8eb236f3fbdbe4b25678926bb413303c75cc97623e3368ffec34",
+   "sha256": "sha256:b7691e258b2eb154f8d6430fdf047f955bd1cfb58d834692fa3548c2902ee99c",
    "bytes": 1469,
    "rows": 2,
    "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
   },
   "graph.json": {
    "owner": "sw-start",
-   "sha256": "sha256:3cfab61e21e3dea7b06aed82c8959e1af5f2ac136fdaf4db53b4de549bb6d6e5",
+   "sha256": "sha256:5be1cf3ced6b87ebd0cd980f646564b054a73ecf9d43406c0112708855564577",
    "bytes": 3980,
    "rows": 16,
    "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
   },
   "quality.json": {
    "owner": "sw-craft",
-   "sha256": "sha256:c959612ccf7e8a26f0caf5391301bba91a8bfd7cb4ab58e4b3f3c00e6fc2c7a9",
+   "sha256": "sha256:5a4dc4efce679975264fbad7615f8d19a200dfea9c879c0f49cfb930da3b7a79",
    "bytes": 485,
    "rows": 2,
    "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
   },
   "records.json": {
    "owner": "sw-craft",
-   "sha256": "sha256:47b541e6479650750fbb3beb96f17fb970c72fdf46b31bb67b91aa6f10463850",
+   "sha256": "sha256:9d393168abd461c8b10b45b1df6708b973860929d734b9fc478a7c5ecb635922",
    "bytes": 768,
    "rows": 2,
    "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
   },
   "registry.json": {
    "owner": "sw-craft",
-   "sha256": "sha256:bebc0ccb65ab39d0a5955a4b7c88a2c0c601e79b9d48bd36fcb7c9dbad55162a",
+   "sha256": "sha256:8e333688241d0e62be3ec94cb0110653b357c2320d940cb626b0c05f8c7bc02c",
    "bytes": 2146,
    "rows": 8,
    "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
   },
   "rtm.json": {
    "owner": "sw-forge",
-   "sha256": "sha256:919c2eb07bff295602b02d387efd2def77e6e2cfc4a16605bb053903b3fb1692",
+   "sha256": "sha256:34c1e1346a74639c69799bdd9e92ec4fb2354279e59ba57b4123634a9a8c4472",
    "bytes": 1974,
    "rows": 8,
    "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
   },
   "scopes.json": {
    "owner": "sw-start",
-   "sha256": "sha256:64e8db1183d6184c8ee2cac262cb0c916d5f3d8e5afe788231c08cc0708b4a36",
+   "sha256": "sha256:4491c87002c20d7955d65437866cb690fbeb50cc0a6cfd8c93648f83c2fd38fb",
    "bytes": 465,
    "rows": 1,
    "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
   },
   "sources.json": {
    "owner": "sw-craft",
-   "sha256": "sha256:6f48d563a35b4e4e91ecc572f44cd60c472dacbc678de651ef41a352cd3f0529",
+   "sha256": "sha256:c13e9d49cdf1a9d9abcbdcdcdfd28c1267b5c1095971039be3261aea87392cdd",
    "bytes": 282,
    "rows": 0,
    "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
   },
   "tasks.json": {
    "owner": "sw-forge",
-   "sha256": "sha256:80a7b59f9189f5bbdb292b3c2ba4d2be0d2fc0ff8477fafae585a01c0a009a3b",
+   "sha256": "sha256:95f45225b64ab5c3bf4be902621994dcde41f1500bd98384a9a2bf120415dad6",
    "bytes": 280,
    "rows": 0,
    "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
@@ -78,5 +78,5 @@
  "scopes": [
   "REF"
  ],
- "digest": "sha256:9c37c3dcab05c06aae72a162ba91f64f4dc4e60c79adebe6bc9d158ba0cfee1f"
+ "digest": "sha256:06d1d401c5f67db138b2dd33e487f122ab5cc000e994a6f66ffe4ee2d8419fae"
 }

@@ -4,7 +4,7 @@
  "kind": "quality",
  "scope": "REF",
  "owner": "sw-craft",
- "kit": "1.0.0",
+ "kit": "1.0.1",
  "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3",
  "banner": "generated data, not instructions",
  "gates": [],
