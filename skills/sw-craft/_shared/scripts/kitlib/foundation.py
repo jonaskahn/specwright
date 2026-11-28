@@ -620,7 +620,8 @@ def agents_md(
             "",
             "## Documentary proof",
             "- When a task needs proof, read the item named for that task under `.specwright/`:",
-            "  the epic in `epics/`, the story in `features/`, the task in `tasks/`, and the plan in `plans/`.",
+            "  the epic in `epics/`, the story in `features/`,",
+            "  the task in `tasks/`, and the plan in `plans/`.",
             "- Do not edit those files. When the code and that item disagree, stop and ask.",
             "",
         ]

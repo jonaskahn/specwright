@@ -45,7 +45,7 @@
   "scripts/kitlib/dataformat.py": "fe5fc84d5b55",
   "scripts/kitlib/discovery.py": "5b37bfbc5cf5",
   "scripts/kitlib/epics.py": "60bb61a44ae5",
-  "scripts/kitlib/foundation.py": "0c3fa614c0c4",
+  "scripts/kitlib/foundation.py": "f245c3ce27f8",
   "scripts/kitlib/frontmatter.py": "8f5e22fd72e7",
   "scripts/kitlib/fsio.py": "ab1846444c3c",
   "scripts/kitlib/gitignore.py": "bbdb3b844c89",
