@@ -1012,14 +1012,6 @@ def _check_source_tree(root: Path, report: Report) -> None:
                     shared / "references" / name, 1, "V100", f"shared reference missing: {name}"
                 )
     _check_data_owner_table(root, report)
-    agents = root / "AGENTS.md"
-    standing = root / "skills" / "sw-start" / "assets" / "standing-rules.md"
-    if not agents.is_file() or not standing.is_file():
-        report.add(standing, 1, "V101", "AGENTS.md and sw-start standing rules are required")
-    elif agents.read_bytes() != standing.read_bytes():
-        report.add(
-            standing, 1, "V102", "sw-start standing rules must be byte-identical to AGENTS.md"
-        )
 
 
 def _validate_discovered(target: Path, report: Report) -> None:

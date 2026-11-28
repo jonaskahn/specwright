@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from kitlib import miniyaml, schema, tables, workspace
+from kitlib import ids, miniyaml, schema, tables, workspace
 
 
 class WorkspaceTestCase(unittest.TestCase):
@@ -50,6 +50,45 @@ class FlatTests(WorkspaceTestCase):
         rtm = tables.parse((self.root / ".metadata" / "rtm.md").read_text())
         self.assertEqual(rtm.table.header[0], "Spec ID")
         self.assertIn("Jira [sw-ship]", rtm.table.header)
+        index = (self.root / "index.md").read_text()
+        self.assertTrue(index.startswith(workspace.DOC_INDEX_BANNER))
+        self.assertIn("FEAT-001.story.md", index)
+        self.assertIn("never STORY", index)
+        self.assertFalse((self.root.parent / "AGENTS.md").exists())
+        taken = ids.taken_ids(self.root)
+        self.assertNotIn("FEAT-001", taken)
+        self.assertNotIn("EPIC-001", taken)
+
+    def test_init_appends_the_spec_pointer_once_and_leaves_layer_files(self):
+        repo = self.root.parent / "with-agents"
+        repo.mkdir()
+        (repo / "AGENTS.md").write_text("# Rules\n\nKeep this.\n")
+        (repo / "backend").mkdir()
+        (repo / "backend" / "AGENTS.md").write_text("# layer\n")
+        workspace.init(repo, "flat", "REF", "Refunds")
+        text = (repo / "AGENTS.md").read_text()
+        self.assertIn("# Rules", text)
+        self.assertIn("Keep this.", text)
+        self.assertEqual(text.count(workspace.SPEC_POINTER_MARK), 1)
+        self.assertIn(workspace.SPEC_POINTER_LINES[0], text)
+        self.assertIn(workspace.SPEC_POINTER_LINES[1], text)
+        self.assertEqual((repo / "backend" / "AGENTS.md").read_text(), "# layer\n")
+        spec = repo / ".specwright"
+        workspace.upgrade(spec, "REF", apply=True)
+        self.assertEqual((repo / "AGENTS.md").read_text().count(workspace.SPEC_POINTER_MARK), 1)
+
+    def test_upgrade_refreshes_a_banner_index_and_leaves_a_foreign_one(self):
+        self.init_flat()
+        path = self.root / "index.md"
+        path.write_text(workspace.DOC_INDEX_BANNER + "\n\nstale\n")
+        plan = workspace.upgrade(self.root, "REF")
+        self.assertIn("refresh index.md", plan)
+        self.assertIn("stale", path.read_text())
+        workspace.upgrade(self.root, "REF", apply=True)
+        self.assertEqual(path.read_text(), workspace.doc_index_text())
+        path.write_text("# Mine\n")
+        workspace.upgrade(self.root, "REF", apply=True)
+        self.assertEqual(path.read_text(), "# Mine\n")
 
     def test_init_always_creates_the_spec_root_under_dot_specwright(self):
         repo = self.root.parent / "plain"

@@ -72,17 +72,22 @@ Do not pin tool versions from memory. Verify supported releases and setup before
 
 ## What the story guarantees
 `make setup | fmt | fmt-check | lint | typecheck | test | build | check`; coverage below the floor
-fails; CI runs `make check` and blocks merges; `AGENTS.md` holds the locked stack, commands,
-structure, working principles, definition of done, and a short pointer to the epic, story,
-task and plan under `.specwright/`; structure follows the stack convention.
+fails; CI runs `make check` and blocks merges; `AGENTS.md` holds the working principles, the
+locked stack, commands, structure, coding conventions, definition of done, and a two-line
+pointer to `.specwright/index.md`; structure follows the stack convention.
 
 ## One root file, small nested files
-The root `AGENTS.md` holds the shared rules: stack, commands, working principles, definition of
-done and a short shared clean-code list. With one code layer it also lists that language's rules.
-With several layers each layer folder gets its own `AGENTS.md` holding only its commands,
-structure and language rules; nothing from the root is repeated there.
+The root `AGENTS.md` opens with four working principles, then the shared rules: stack, commands,
+structure, coding conventions, definition of done, and the two-line pointer to
+`.specwright/index.md`. That file is the document map. With one code layer the root file also
+lists that language's rules. With several layers each layer folder gets its own `AGENTS.md`
+holding only its commands, structure and language rules; nothing from the root is repeated there.
+The generator does not write `CLAUDE.md`.
 
 ## Working principles in AGENTS.md
 Written in our words, adapted from multica-ai/andrej-karpathy-skills (CLAUDE.md): think before
-coding, least code first, surgical changes, goal-driven verification. Projects may replace the
-section with their own rules.
+coding, simplicity first, surgical changes, goal-driven execution. Projects may replace those
+sections with their own rules. The two specification lines stay:
+
+- Read `.specwright/index.md` when you need a specification item, and follow that file.
+- Do not edit those documents from a coding task. When code and a document disagree, stop and ask.

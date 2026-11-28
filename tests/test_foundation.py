@@ -103,9 +103,18 @@ class Foundation(unittest.TestCase):
         locked = foundation.agents_md(t, "Demo", {"backend": "java 21"}, "sha256:abc")
         self.assertIn("locked sha256:abc", locked)
         self.assertIn("andrej-karpathy-skills", locked)
-        self.assertIn("## Documentary proof", locked)
-        self.assertIn("epics/", locked)
-        self.assertIn(".specwright/", locked)
+        for heading in (
+            "## 1. Think before coding",
+            "## 2. Simplicity first",
+            "## 3. Surgical changes",
+            "## 4. Goal-driven execution",
+            "## Coding conventions",
+            "`make lint`",
+            ".specwright/index.md",
+        ):
+            self.assertIn(heading, locked)
+        self.assertNotIn("## Documentary proof", locked)
+        self.assertNotIn("Don't assume. Don't hide confusion.", locked)
 
     def test_story_sections(self):
         t = foundation.default_tooling(PROFILE)

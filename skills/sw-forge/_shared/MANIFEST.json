@@ -45,7 +45,7 @@
   "scripts/kitlib/graph_query.py": "52be408c7607",
   "scripts/kitlib/handoff.py": "ae6f9e579a95",
   "scripts/kitlib/hashing.py": "8236e6704e63",
-  "scripts/kitlib/ids.py": "88a0e53a1198",
+  "scripts/kitlib/ids.py": "5e764abeb518",
   "scripts/kitlib/illustration.py": "26eae840a673",
   "scripts/kitlib/index.py": "af49f01becac",
   "scripts/kitlib/ingest_impact.py": "fcd3285633fa",
@@ -64,7 +64,7 @@
   "scripts/kitlib/stack.py": "d9caf7eec243",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "38a65a7f1cf5",
-  "scripts/kitlib/workspace.py": "d814f08bdd00",
+  "scripts/kitlib/workspace.py": "0cbe9886a12c",
   "scripts/kitlib/writelog.py": "7caba0304a55",
   "scripts/parallel_guard.py": "f9737bddffd5",
   "scripts/record.py": "95cd8a3e91a0",
@@ -73,7 +73,7 @@
   "scripts/runtime.sh": "0728558e61b1",
   "scripts/stack.py": "a822294e82bd",
   "scripts/style_check.py": "52dc70162707",
-  "scripts/sw_lint.py": "d9e48919691d",
+  "scripts/sw_lint.py": "d03377ad3eaf",
   "scripts/trace.py": "74bfe2e50aea"
  },
  "kit_version": "1.0.1"

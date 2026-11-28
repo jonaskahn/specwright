@@ -48,6 +48,7 @@ moved to `epics/`.
 - A folder with no git repository gets one, so a spec-only repository works the same way.
 - A program manifest wins over nested project files when resolving the root.
 - Link projects with qualified IDs such as `REF:EPIC-001`.
-- Never write outside `.specwright/` unless asked. Do not write Specwright workspace rules
-  into the repository `AGENTS.md`. The source-code `AGENTS.md` comes from the foundation story.
+- Never write outside `.specwright/` unless asked. `workspace.py init` and `upgrade --apply`
+  may append a two-line pointer to an existing repository `AGENTS.md`. They do not create that
+  file. The full file comes from the foundation story. The document map is `.specwright/index.md`.
 - `assets/` holds user-provided references; only the assets capability writes there.

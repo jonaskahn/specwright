@@ -1034,6 +1034,9 @@ def discover(base, ignore=()):
             continue
         if path.name in {"AGENTS.md", "CLAUDE.md", "GEMINI.md", "README.md"}:
             continue
+        # Spec-root reading guide. Example IDs in it are not specification records.
+        if path.name == workspace.DOC_INDEX_NAME and path.parent == base:
+            continue
         if path.is_symlink():
             raise workspace.WorkspaceError(f"refusing symbolic link {path}")
         if path.is_file() and path.suffix in {".md", ".html", ".css", ".svg"}:

@@ -103,20 +103,30 @@ class Foundation(unittest.TestCase):
         locked = foundation.agents_md(t, "Demo", {"backend": "java 21"}, "sha256:abc")
         self.assertIn("locked sha256:abc", locked)
         self.assertIn("andrej-karpathy-skills", locked)
-        self.assertIn("## Documentary proof", locked)
-        self.assertIn("epics/", locked)
-        self.assertIn(".specwright/", locked)
+        for heading in (
+            "## 1. Think before coding",
+            "## 2. Simplicity first",
+            "## 3. Surgical changes",
+            "## 4. Goal-driven execution",
+            "## Coding conventions",
+            "`make lint`",
+            ".specwright/index.md",
+        ):
+            self.assertIn(heading, locked)
+        self.assertNotIn("## Documentary proof", locked)
+        self.assertNotIn("Don't assume. Don't hide confusion.", locked)
 
     def test_clean_code_rules_are_per_language_and_nested_files_hold_only_the_difference(self):
         t = foundation.default_tooling(PROFILE)
         root = foundation.agents_md(t, "Demo", {})
-        self.assertIn("## Clean code", root)
+        self.assertIn("## Coding conventions", root)
         self.assertIn("Per-language rules live in each layer", root)
         self.assertNotIn("Constructor injection", root)
         backend = foundation.layer_agents_md(t, "backend")
         self.assertIn("Constructor injection", backend)
         self.assertIn("Root AGENTS.md rules apply", backend)
         self.assertNotIn("Think first", backend)
+        self.assertNotIn(".specwright/index.md", backend)
         single = foundation.default_tooling({"layers": {"backend": {"language": "python"}}})
         self.assertIn("bare except", foundation.agents_md(single, "Demo", {}))
         for lang in foundation.CATALOG:

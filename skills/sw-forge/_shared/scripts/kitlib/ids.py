@@ -194,6 +194,9 @@ def taken_ids(base: Path) -> list[str]:
     for path in sorted(base.rglob("*.md")):
         if _SKIP_DIRS & set(path.relative_to(base).parts) or path.is_symlink():
             continue
+        # Spec-root reading guide (workspace.DOC_INDEX_NAME). Example IDs in it are not allocated.
+        if path.name == "index.md" and path.parent == base:
+            continue
         found.extend(ref.id for ref in find_refs(path.name))
         found.extend(ref.id for ref in find_refs(path.read_text(encoding="utf-8")))
     return found

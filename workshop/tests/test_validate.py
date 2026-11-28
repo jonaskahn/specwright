@@ -219,7 +219,7 @@ class ReleaseSurfaceTests(unittest.TestCase):
         self.addCleanup(tmp.cleanup)
         self.root = Path(tmp.name)
         source = Path(__file__).resolve().parents[2]
-        for name in ("skills", "workshop/evals", "LICENSE", "AGENTS.md"):
+        for name in ("skills", "workshop/evals", "LICENSE"):
             src = source / name
             dst = self.root / name
             dst.parent.mkdir(parents=True, exist_ok=True)

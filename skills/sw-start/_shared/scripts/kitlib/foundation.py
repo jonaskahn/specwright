@@ -559,14 +559,52 @@ def makefile(tooling: dict[str, Any], name: str) -> str:
 def agents_md(
     tooling: dict[str, Any], name: str, stack_lines: dict[str, str], lock: str | None = None
 ) -> str:
+    """Karpathy-style working rules, then this project's gate, layout and coding conventions.
+
+    The four opening sections follow the shape of andrej-karpathy-skills CLAUDE.md, written in
+    our words. The specification pointer is the same two lines workspace appends to an existing
+    root AGENTS.md. This function does not emit CLAUDE.md.
+    """
+    from kitlib import workspace
+
     cov = tooling.get("coverage", 80)
     structure = [
         f"- {layer}: {CATALOG[t['language']]['structure']}"
         for layer, t in (tooling.get("layers") or {}).items()
     ]
+    conventions = [f"- {rule}" for rule in SHARED_CLEAN_CODE]
+    if len(tooling.get("layers") or {}) == 1:
+        conventions += [
+            f"- {lang} — {rule}" for lang in languages_of(tooling) for rule in clean_code(lang)
+        ]
+    elif tooling.get("layers"):
+        conventions.append("- Per-language rules live in each layer folder's own AGENTS.md.")
     return "\n".join(
         [
             f"# {name} — instructions for coding agents",
+            "",
+            "## 1. Think before coding",
+            "",
+            "State assumptions before writing. When a request has several readings, list them "
+            "and ask. When a smaller approach meets the acceptance criteria, name it. "
+            "When something is unclear, stop and name what is unclear.",
+            "",
+            "## 2. Simplicity first",
+            "",
+            "Write only what the acceptance criteria need. No speculative features, options "
+            "or abstractions. No handler for a case that cannot happen.",
+            "",
+            "## 3. Surgical changes",
+            "",
+            "Touch only the lines the task needs. Match the existing style. Mention an unrelated "
+            "problem instead of fixing it. Remove only what your change made unused.",
+            "",
+            "## 4. Goal-driven execution",
+            "",
+            "Turn each task into a test that fails first, make that test pass, then run "
+            "`make check`. For several steps, write the plan with a check per step.",
+            "",
+            f"Principles adapted from {PRINCIPLES_SOURCE}.",
             "",
             (
                 f"## Stack (locked {lock}; no framework or library outside it without asking)"
@@ -586,31 +624,8 @@ def agents_md(
             "## Structure",
             *(structure or ["- see the foundation story"]),
             "",
-            "## Clean code",
-            *(f"- {rule}" for rule in SHARED_CLEAN_CODE),
-            *(
-                f"- {lang} — {rule}"
-                for lang in languages_of(tooling)
-                for rule in clean_code(lang)
-                if len(tooling.get("layers") or {}) == 1
-            ),
-            *(
-                ["- Per-language rules live in each layer folder's own AGENTS.md."]
-                if len(tooling.get("layers") or {}) > 1
-                else []
-            ),
-            "",
-            "## How to work",
-            "- Think first: state assumptions; when a request has several readings, list them "
-            "and ask; when unclear, stop and name what is unclear.",
-            "- Least code first: only what the acceptance criteria need; no speculative "
-            "features, options or abstractions.",
-            "- Change surgically: touch only what the task needs; match the existing style; "
-            "mention unrelated problems instead of fixing them; remove only what your change "
-            "made unused.",
-            "- Work toward a check: turn each task into a test that fails first, make it pass, "
-            "then run `make check`. For several steps, write the plan with a check per step.",
-            f"- Principles adapted from {PRINCIPLES_SOURCE}.",
+            "## Coding conventions",
+            *conventions,
             "",
             "## Definition of done",
             "- Every acceptance criterion the task traces to has a test.",
@@ -618,11 +633,7 @@ def agents_md(
             "- No new dependency outside the locked stack.",
             "- The report names files changed, tests added and AC IDs satisfied.",
             "",
-            "## Documentary proof",
-            "- When a task needs proof, read the item named for that task under `.specwright/`:",
-            "  the epic in `epics/`, the story in `features/`,",
-            "  the task in `tasks/`, and the plan in `plans/`.",
-            "- Do not edit those files. When the code and that item disagree, stop and ask.",
+            *workspace.SPEC_POINTER_LINES,
             "",
         ]
     )
@@ -776,8 +787,7 @@ def story_sections(tooling: dict[str, Any], bo: str, feat_num: str) -> dict[str,
                 "a coding agent opens the repository",
                 "it reads `AGENTS.md`",
                 "it finds the locked stack, the `make` commands, the structure, the working "
-                "principles, the definition of done, and where to read the epic, story, task "
-                "and plan under `.specwright/`",
+                "principles, the definition of done, and a pointer to `.specwright/index.md`",
             )
         )
     acs.append(
