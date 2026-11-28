@@ -47,15 +47,15 @@ class Analysis(unittest.TestCase):
         r = self.check(f"| C-1 | window 30 days | owner | {c} | partial | medium | |\n")
         self.assertTrue(any("stale" in f for f in r["findings"]))
 
-    def test_auto_accept_needs_test_or_two_sites(self):
+    def test_even_high_confidence_rows_need_owner_confirmation(self):
         c = analysis.cite(self.roots, "api/src/S.java", 4)
         t = analysis.cite(self.roots, "api/src/test/T.java", 3)
         r = self.check(
             f"| C-1 | rejects after 30 | owner | {c}; {t} | done | high | |\n"
             f"| C-2 | stores amount | observed | {c} | done | high | |\n"
         )
-        self.assertEqual(r["auto_accepted"], ["C-1"])
-        self.assertEqual([a["row"] for a in r["ask"]], ["C-2"])
+        self.assertEqual(r["auto_accepted"], [])
+        self.assertEqual([a["row"] for a in r["ask"]], ["C-1", "C-2"])
         self.assertEqual(r["shape"], "as-is")
 
     def test_rules(self):

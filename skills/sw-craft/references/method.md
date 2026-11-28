@@ -12,7 +12,8 @@
 2. Docs and tickets for intended criteria (headings, rules, numbers).
 3. Entry point (route/screen) → handler → service → data access. Stop at the first file that
    decides the behaviour; cite those lines.
-4. Tests: a passing-test name plus assertion is the strongest evidence. Cite the assertion lines.
+4. Tests: cite assertion lines. A test name or static assertion is not a passing execution;
+   runtime claims require an actual result supplied by an authorized implementing agent.
 5. Config and flags that switch behaviour (feature flags, env defaults): cite them.
 
 ## One row = one observable behaviour
@@ -32,9 +33,10 @@ Concrete values, actor, input, output. "Refund allowed ≤ 30 days after payment
 high: test or two independent code sites agree · medium: one code site, no test · low:
 inferred from names, dead code, flags off, or unread branches.
 
-## Auto-accept rule
-`done` + `high` + (a test cite or ≥ 2 code cites) is accepted without asking. Every other row
-is confirmed by the user in one batch at the stop.
+## Confirmation rule
+No row is auto-accepted. Show documented intent, observed implementation and unresolved gaps
+separately, with evidence and coverage limits. Ask the owner to confirm the analysis in a batch.
+High confidence never establishes desired intent, runtime success or owner acceptance.
 
 ## Shapes (from `check`)
 | Shape | Next in sw-craft |

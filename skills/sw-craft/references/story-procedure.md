@@ -77,9 +77,9 @@ or the case is an edge case named below. SKILL.md is the default path; kernel ru
    is a defect.
 8. Unknowns become Q records (limits and command: `_shared/references/stop-and-ask.md`). Put at
    most three `[NEEDS CLARIFICATION: Q-NNN]` markers in a document, each linked to a real Q. If more uncertainty remains, narrow scope or pause;
-   never bury questions in invented "None" values. A non-blocking unknown is saved as an
-   assumed question (command: `_shared/references/stop-and-ask.md`), its default written
-   into the body; Open questions stays `None`.
+    never bury questions in invented "None" values. Unanswered questions stay open; no default
+    is written as a rule. Hold dependent work and continue independent items. List unresolved
+    Q references in Open questions, including non-blocking questions.
 9. Record Dev and QA consumer-check results in the Identity section, not in behaviour. The
    hash field stays inside the level-two Identity section (kitlib hashing excludes that
    whole section and the front matter). Recompute the hash after every body edit with

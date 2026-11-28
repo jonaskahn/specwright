@@ -30,10 +30,9 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import analysis, coderoots, fsio, inventory, paths, workspace  # noqa: E402
+from kitlib import analysis, coderoots, discovery, fsio, inventory, paths, workspace  # noqa: E402
 
 FOLDER = "01-analysis/as-is"
-DOC_DIRS = ("docs", "doc", "documentation", "wiki")
 
 
 def _roots(root, scope) -> dict[str, Path]:
@@ -43,9 +42,8 @@ def _roots(root, scope) -> dict[str, Path]:
 def _doc_folders(base: Path, roots: dict[str, Path]) -> list[tuple[Path, str]]:
     out = [(base / "00-inbox", "inbox")]
     for name, path in roots.items():
-        for d in DOC_DIRS:
-            if (path / d).is_dir():
-                out.append((path / d, f"{name}/{d}"))
+        # Root plans/README and non-Markdown docs use the same safe discovery boundary.
+        out.extend((p, f"{name}/{p.relative_to(path).as_posix()}") for p in discovery._files(path))
     return out
 
 
@@ -96,17 +94,25 @@ def cmd_area(base, roots, words, limit):
             )
             hits[kind].append((n, f"{name}/{rel}"))
     for folder, label in _doc_folders(base, roots):
-        for p in sorted(folder.rglob("*.md")) if folder.is_dir() else []:
+        for p in (
+            [folder]
+            if folder.is_file()
+            else sorted(folder.rglob("*.md"))
+            if folder.is_dir()
+            else []
+        ):
+            if p.is_symlink() or p.stat().st_size > inventory.MAX_BYTES:
+                continue
             if "raw" in p.relative_to(folder).parts[:-1]:
                 continue  # original bytes; the snapshot beside them is the citable text
             text = p.read_text(encoding="utf-8", errors="replace")
             lines = [i for i, line in enumerate(text.splitlines(), 1) if rx.search(line)]
             if lines:
-                rel = p.relative_to(folder).as_posix()
+                rel = p.relative_to(folder).as_posix() if p != folder else ""
                 hits["docs"].append(
                     (
                         len(lines),
-                        f"{label}/{rel}:L{lines[0]}"
+                        f"{label}{'/' + rel if rel else ''}:L{lines[0]}"
                         + (f" (+{len(lines) - 1})" if len(lines) > 1 else ""),
                     )
                 )
@@ -125,7 +131,8 @@ def main(argv=None):
         description=__doc__, formatter_class=argparse.RawTextHelpFormatter
     )
     parser.add_argument(
-        "command", choices=["roots", "inventory", "area", "cite", "new", "check", "confirm"]
+        "command",
+        choices=["discover", "roots", "inventory", "area", "cite", "new", "check", "confirm"],
     )
     parser.add_argument("args", nargs="*")
     parser.add_argument("--cwd", default=".")
@@ -135,10 +142,32 @@ def main(argv=None):
     parser.add_argument("--title")
     parser.add_argument("--verify", action="store_true", help="new: verify a change before ship")
     parser.add_argument("--limit", type=int, default=25)
+    parser.add_argument(
+        "--confirm-scan", action="store_true", help="discover: user approved this repository scan"
+    )
+    parser.add_argument("--batch-size", type=int, default=50)
+    parser.add_argument("--offset", type=int, default=0)
+    parser.add_argument("--snapshot", help="discover: fingerprint returned by the first batch")
+    parser.add_argument(
+        "--confirmed-by-owner",
+        action="store_true",
+        help="confirm: owner confirmed the displayed analysis",
+    )
     parser.add_argument("--format", choices=["text", "json"], default="json")
     a = parser.parse_args(argv)
     try:
         cwd = Path(a.cwd).resolve()
+        if a.command == "discover":
+            result = discovery.discover(
+                cwd,
+                consent=a.confirm_scan,
+                scope=a.scope,
+                batch_size=a.batch_size,
+                offset=a.offset,
+                snapshot=a.snapshot,
+            )
+            _print(result, a.format)
+            return 3 if result["state"] == "consent_required" else 0
         root = workspace.find_root(cwd)
         if root is None:
             raise ValueError("no workspace; run sw-start first")
@@ -214,6 +243,11 @@ def main(argv=None):
             print(path.relative_to(base).as_posix())
             return 0
         if a.command == "confirm":
+            if not a.confirmed_by_owner:
+                raise ValueError(
+                    "show the analysis and ask the owner; "
+                    "pass --confirmed-by-owner only after their confirmation"
+                )
             if len(a.args) != 1:
                 raise ValueError("usage: confirm <target>")
             path = base / FOLDER / f"{a.args[0]}.analysis.md"
@@ -222,6 +256,11 @@ def main(argv=None):
                 raise ValueError("fix the table first: " + "; ".join(result["findings"][:3]))
             text = path.read_text(encoding="utf-8")
             text = re.sub(r"^status:.*$", "status: confirmed", text, count=1, flags=re.M)
+            text = re.sub(r"^owner_confirmed_hash:.*\n?", "", text, count=1, flags=re.M)
+            digest = analysis.confirmation_hash(text)
+            text = text.replace(
+                "status: confirmed\n", f"status: confirmed\nowner_confirmed_hash: {digest}\n", 1
+            )
             fsio.atomic_write(path, text)
             print(json.dumps({"confirmed": a.args[0], "shape": result["shape"]}))
             return 0

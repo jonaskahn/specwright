@@ -32,6 +32,13 @@ def _lines_hash(lines: list[str]) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()[:8]
 
 
+def confirmation_hash(text: str) -> str:
+    """Bind the owner's analysis confirmation to all content except confirmation fields."""
+    normalized = re.sub(r"^status:.*$", "status: draft", text, count=1, flags=re.M)
+    normalized = re.sub(r"^owner_confirmed_hash:.*\n?", "", normalized, count=1, flags=re.M)
+    return hashlib.sha256(normalized.encode()).hexdigest()
+
+
 def cite(roots: dict[str, Path], ref: str, start: int, end: int | None = None) -> str:
     """CODE citation for lines start..end of <root>/<path>."""
     name, _, rel = ref.partition("/")
@@ -96,7 +103,7 @@ def check(path: Path, roots: dict[str, Path]) -> dict[str, Any]:
     if not rows:
         findings.append("Criteria table is empty")
     counts = {s: 0 for s in STATUSES}
-    ask, accepted = [], []
+    ask = []
     for row in rows:
         rid = row.get("#") or row.get("id") or f"line {row['_line']}"
         status = row.get("status", "").lower()
@@ -131,18 +138,14 @@ def check(path: Path, roots: dict[str, Path]) -> dict[str, Any]:
             problem = verify_cite(roots, m)
             if problem:
                 findings.append(f"{rid}: {problem}")
-        has_test = any(TEST_PATH.search(m.group(2)) for m in cites)
-        if status == "done" and conf == "high" and (has_test or len(cites) >= 2):
-            accepted.append(rid)
-        else:
-            ask.append(
-                {
-                    "row": rid,
-                    "status": status,
-                    "confidence": conf,
-                    "criterion": row.get("criterion", "")[:120],
-                }
-            )
+        ask.append(
+            {
+                "row": rid,
+                "status": status,
+                "confidence": conf,
+                "criterion": row.get("criterion", "")[:120],
+            }
+        )
     total = sum(counts.values())
     # A verification analysis (`verifies: FEAT-NNN`) has one row per AC of that story.
     verifies = str(parsed.fm.get("verifies") or "").split(":")[-1]
@@ -185,6 +188,11 @@ def check(path: Path, roots: dict[str, Path]) -> dict[str, Any]:
             else f"{verifies} is not fully in the code: implement the gaps, or ship with "
             "--accept-gaps and the owner's reason"
         )
+    owner_confirmed = (
+        parsed.fm.get("status") == "confirmed"
+        and parsed.fm.get("owner_confirmed_hash") == confirmation_hash(text)
+        and not findings
+    )
     return {
         "target": parsed.fm.get("target"),
         "status": parsed.fm.get("status"),
@@ -193,8 +201,9 @@ def check(path: Path, roots: dict[str, Path]) -> dict[str, Any]:
         "recommend": recommend,
         "verifies": verifies or None,
         "verified": verified,
-        "auto_accepted": accepted,
-        "ask": ask,
+        "auto_accepted": [],  # Compatibility field: evidence never records owner acceptance.
+        "owner_confirmed": owner_confirmed,
+        "ask": [] if owner_confirmed else ask,
         "findings": findings,
         "pass": not findings,
     }

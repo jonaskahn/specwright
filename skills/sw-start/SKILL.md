@@ -17,12 +17,14 @@ Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
    Exit 2 → print its reinstall command, stop. Exit 3 → list the choices, ask.
 2. First contact, "help" or "what can you do": print `start.py --brief` (≤ 10 lines).
 3. No workspace (`fresh_setup`): ask the `intake` questions in one message (≤ 3, options,
-   defaults; `references/intake.md`). Read back one line ("I will: …"), then
+   recommendations, never automatic answers; `references/intake.md`). Read back one line ("I will: …"), then
    `scripts/workspace.py init` with the layout and answers. Map "how far" to `--until`.
-4. Existing code or an existing feature (`code.registered`/`code.detected`, a request to analyse,
-   change, fix or complete something that exists) → load `../sw-craft/SKILL.md` at its as-is
-   phase. Gap shape decides what the story writes. No code at all is fine: analysis then shows
-   every criterion as missing.
+4. Adding or changing a feature in an existing project, with or without `.specwright/`:
+   offer `context_intake` (discover docs/plans / selected files or items / describe first).
+   Ask before scanning; no answer means no scan. On scan consent, load sw-craft and run
+   `../sw-craft/scripts/analyze.py discover --cwd <repository> --confirm-scan` from sw-start.
+   Follow `../sw-craft/references/repository-context.md` before drafting or linking anything.
+   Existing work is reconciled, not replaced. On resume ask only about new gaps or changed evidence.
 5. Stack (`stack.status`): `missing` with code → `_shared/scripts/stack.py detect --write`, show
    the layers, ask lock/edit; `proposed` → show and ask once; on yes run
    `stack.py lock --confirm <hash shown>`. Docs-only and no answer → leave it; plan reports it.
@@ -58,6 +60,7 @@ On `done`: Report the resulting state.
 | First-run questions, read-back, suggested replies | references/intake.md |
 | Route table, edge states | references/routing.md |
 | Register or legacy baseline present | references/brownfield.md |
+| Adopt an existing repository or add a feature; discovery and reconciliation | ../sw-craft/references/repository-context.md |
 | Existing code or feature; gap shapes | ../sw-craft/references/method.md |
 | Foundation story: tooling questions, Makefile, AGENTS.md | _shared/references/foundation.md |
 | Layout choice; manifest fields | references/layouts.md; references/manifest-schema.md |

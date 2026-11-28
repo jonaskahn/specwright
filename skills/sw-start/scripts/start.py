@@ -406,14 +406,18 @@ def action_for(item):
 
 
 def report(cwd, target=None, pack=False):
+    from kitlib import discovery
+
     info = workspace.detect(cwd)
+    info["context_intake"] = discovery.offer()
     if info["mode"] == "none":
         here = Path(cwd).resolve()
         has_code = any((here / m).exists() for m in CODE_MARKERS)
-        detected = stack.detect(here) if has_code else {}
+        detected = {}  # Repository content discovery waits for the owner's scan choice.
         return {
             **info,
             "fresh_setup": True,
+            "code_detected": has_code,
             "detected_stack": detected,
             "intake": intake_questions(detected),
             "next": ["sw-start", "set up .specwright/ and then ingest, shape or supply a baseline"],
@@ -492,7 +496,7 @@ def stack_state(root, scope):
     profile = stack.effective(root, scope)
     if profile is None:
         code = workspace.code_root(root, scope)
-        return {"status": "missing", "detectable": bool(code and stack.detect(code))}
+        return {"status": "missing", "detectable": bool(code and coderoots._has_build(code))}
     layers = {k: stack.layer_line(profile, k) for k in sorted(profile.get("layers") or {})}
     return {
         "status": profile["status"],
@@ -502,11 +506,13 @@ def stack_state(root, scope):
 
 
 def intake_questions(detected):
-    """At most three first-run questions, each with options and a default (intake.md)."""
+    """At most three first-run questions; defaults are suggestions, never applied silently."""
     questions = [
         {
             "q": "What do you have to start from?",
             "options": [
+                "discover existing repository docs and plans (ask before scanning)",
+                "use selected files or Specwright items",
                 "an idea in words",
                 "documents to import",
                 "an existing system or feature to analyse (code, docs, Jira)",
@@ -544,6 +550,8 @@ def intake_questions(detected):
                 "default": "decide at plan time",
             }
         )
+    for question in questions:
+        question["unanswered"] = "leave unresolved; do not apply the suggested default"
     return questions
 
 

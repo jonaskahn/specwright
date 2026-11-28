@@ -68,7 +68,7 @@ def _parser():
     new.add_argument(
         "--non-blocking",
         action="store_true",
-        help="--status assumed needs this and a --default: the default was applied",
+        help="question does not block any dependent work; no suggested answer is applied",
     )
     new.add_argument("--status", choices=["proposed", "open", "assumed"], default="proposed")
     answer = _add(q, "answer", "answer a question and record the decision")

@@ -238,10 +238,10 @@ def question_new(
     blocking: bool = True,
     status: str = "proposed",
 ) -> Plan:
-    if status not in ("proposed", "open", "assumed"):
-        raise RecordError("a new question starts as proposed, open or assumed")
-    if status == "assumed" and (blocking or not default.strip()):
-        raise RecordError("an assumed question is non-blocking and names the default it applied")
+    if status == "assumed":
+        raise RecordError("new assumed questions are not allowed; leave it open and ask the owner")
+    if status not in ("proposed", "open"):
+        raise RecordError("a new question starts as proposed or open")
     title = _line(title, "title", 120)
     owner = _line(owner, "owner", 60)
     if due and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", due):
@@ -276,8 +276,9 @@ def question_new(
     letters = [chr(ord("A") + i) for i in range(len(options or []))]
     listed = [f"- {x}) {text}" for x, text in zip(letters, options or [], strict=True)]
     body.append("## Options\n\n" + ("\n".join(listed) if listed else "- Not yet listed.") + "\n")
-    applied = "Default applied" if status == "assumed" else "Default if unanswered"
-    body.append(f"{applied}: {default.strip() or 'stay unresolved; not approval'}.\n")
+    if default.strip():
+        body.append(f"Suggested answer (not applied): {default.strip()}.\n")
+    body.append("Default if unanswered: stay unresolved; not approval.\n")
     path = ctx.base / "records" / ids.record_filename(identity, title)
     plan.creates[path] = frontmatter.render(fm, "\n".join(body))
     plan.summary.append(f"create {path.relative_to(ctx.base).as_posix()} ({status})")

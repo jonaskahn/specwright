@@ -267,7 +267,7 @@ def main(argv=None):
         elif asks:
             handoff = {
                 "mode": "stop",
-                "reason": "confirm these rows (low confidence, divergent, unknown or partial)",
+                "reason": "confirm the displayed analysis rows; evidence is not owner acceptance",
                 "waiting": asks,
             }
         else:

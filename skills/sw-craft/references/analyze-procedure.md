@@ -10,6 +10,9 @@ Load only when a step in SKILL.md is unclear or a script errors.
 - A root that disappears is reported (`exists: false`), never silently dropped.
 
 ## Inventory
+- For root documents, existing plans and reconciliation before or after setup, first follow
+  `references/repository-context.md`. `discover` asks for consent unless `--confirm-scan` is
+  passed after the user's choice; output is paginated, read-only and never an accepted link.
 - Names and pointers only: endpoints (Spring, Nest, Express, FastAPI/Flask, Django, Go, file
   routes), screens (file routes, React/Vue routes, Flutter screens), entities (JPA, Prisma,
   Django, SQLAlchemy, SQL), tests (names), doc headings (00-inbox, docs folders in roots).
@@ -25,3 +28,5 @@ Load only when a step in SKILL.md is unclear or a script errors.
 ## Existing workspaces
 A project with specs adopts code the same way: register roots, then analyse the named feature.
 The analysis file sits beside the specs; sw-craft turns it into version 1 or a change.
+All rows need owner confirmation, including done/high rows. `confirm` refuses without
+`--confirmed-by-owner`; pass it only for the currently displayed analysis after an explicit yes.

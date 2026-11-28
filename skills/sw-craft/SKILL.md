@@ -19,7 +19,10 @@ Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
 
 ## Steps
 
-0. Run `scripts/analyze.py roots` when any phase below needs code. Detected, unregistered
+0. Existing-project intake: follow `references/repository-context.md` in every state before
+   a new feature, changed scope or new source. Offer scan / selected material / describe first;
+   ask before the initial scan. Reconcile with current Specwright items before reserving IDs.
+   Run `scripts/analyze.py roots` when any phase below needs code. Detected, unregistered
    roots → list them, ask once, then `roots --add <path> ...`. No code anywhere is fine: the
    actual side of an analysis is empty. Also `_shared/scripts/stack.py show`; missing with code
    → `_shared/scripts/stack.py detect --write`, show the layers and ask once, lock on yes
@@ -38,6 +41,8 @@ Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
    tests, `references/method.md`), and `scripts/analyze.py new <FEAT-NNN|slug>`. One Criteria
    row per observable behaviour; cite code with `scripts/analyze.py cite <root>/<path> --lines A-B`.
    Code-only behaviour: Intended = `observed`. Sources disagree → `divergent` plus a Q.
+   Show all rows for owner confirmation; high confidence is evidence, not acceptance.
+   `confirm <target> --confirmed-by-owner` only after the owner confirms what was displayed.
 3. **Shape.** Read named sources and existing Q/DEC first. Pasted material → a provisional
    brief at once; a sparse idea → ask only the highest-impact gaps
    (`references/question-bank.md`, ≤ 5, each saved with `record.py q new`). Fill
@@ -117,6 +122,7 @@ On `done`: Report accepted stories and tasks. Say "Say **forge** to plan FEAT-00
 | Mockups, links, images in a batch | _shared/references/capabilities/assets.md |
 | Remote read tools | _shared/references/capabilities/remote.md |
 | How to read code for behaviour, statuses, confidence | references/method.md |
+| Existing repository docs, root plans, new features and reconciliation | references/repository-context.md |
 | Writing ACs, rules, NFR thresholds | references/ac-writing.md; references/ears.md; references/business-rules.md; references/nfr-defaults.md |
 | Drawing (chip says needs or check) | references/illustration-need.md; references/type-picker.md; the chosen references/type-<kind>.md |
 | Source provenance, original bytes | scripts/provenance.py --help |

@@ -387,7 +387,7 @@ class RecordTests(SoloTestCase):
         result = self.cli("accept-split", "--item", "Refund request", "--new-epic", "Refunds")
         self.assertEqual(result.returncode, 3)
 
-    def test_an_assumed_question_records_its_default_and_does_not_block(self):
+    def test_an_open_non_blocking_question_does_not_apply_its_suggestion(self):
         plan = recordops.question_new(
             self.ctx,
             "Which currency?",
@@ -395,26 +395,31 @@ class RecordTests(SoloTestCase):
             "owner",
             default="VND",
             blocking=False,
-            status="assumed",
+            status="open",
         )
         recordops.execute(self.ctx, plan, "q-new", "REF:Q-001")
         record = next((self.base / "records").glob("Q-001*.md"))
         fm, body = frontmatter.split(record.read_text())
-        self.assertEqual(fm["status"], "assumed")
-        self.assertIn("Default applied: VND", body)
+        self.assertEqual(fm["status"], "open")
+        self.assertIn("Suggested answer (not applied): VND", body)
+        self.assertIn("Default if unanswered: stay unresolved", body)
         self.assertNotIn("assumed", schema.OPEN_Q)
         from kitlib import blockers
 
         self.assertEqual(blockers.blocking_questions(self.base, "REF", "FEAT-001"), [])
 
-    def test_an_assumed_question_needs_a_default_and_must_be_non_blocking(self):
-        for kwargs in ({"blocking": True, "default": "VND"}, {"blocking": False, "default": ""}):
+    def test_new_assumed_questions_are_refused_even_with_a_default(self):
+        for kwargs in (
+            {"blocking": True, "default": "VND"},
+            {"blocking": False, "default": ""},
+            {"blocking": False, "default": "VND"},
+        ):
             with self.assertRaisesRegex(recordops.RecordError, "assumed"):
                 recordops.question_new(
                     self.ctx, "Which currency?", ["FEAT-001"], "owner", status="assumed", **kwargs
                 )
 
-    def test_an_assumed_question_can_still_be_answered(self):
+    def test_a_legacy_assumed_question_can_still_be_answered(self):
         plan = recordops.question_new(
             self.ctx,
             "Which currency?",
@@ -422,9 +427,11 @@ class RecordTests(SoloTestCase):
             "owner",
             default="VND",
             blocking=False,
-            status="assumed",
+            status="open",
         )
         recordops.execute(self.ctx, plan, "q-new", "REF:Q-001")
+        record = next((self.base / "records").glob("Q-001*.md"))
+        record.write_text(frontmatter.update(record.read_text(), {"status": "assumed"}))
         who = recordops.decision_fields(self.ctx, "", "", "", "", "")
         answer = recordops.question_answer(self.ctx, "Q-001", "USD", who)
         self.assertTrue(answer.creates or answer.rewrites)

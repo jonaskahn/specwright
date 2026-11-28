@@ -71,9 +71,8 @@ In every mode:
 - A batch accept (sw-craft) is valid only as the answer to the table just shown: each named
   feature is bound to the hash shown, and a draft that changed since is excluded. Moving a batch
   on to the next station covers the batch, never an approval.
-- Save a non-blocking unknown as a question with its default applied (the command is in
-  `stop-and-ask.md`), list it in the summary and keep going. An assumed question can still be
-  answered later.
+- Save unanswered decisions as open questions (`stop-and-ask.md`); never apply defaults or
+  manufacture consent. Work depending on the answer waits; independent work continues.
 - The user can stop the chain at any time ("pause", "only spec FEAT-004", "stop after review")
   or change the mode for one run (`handoff.py next --flow step`).
 

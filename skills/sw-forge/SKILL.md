@@ -25,7 +25,10 @@ through `scripts/forge.py status`.
 2. `_shared/scripts/stack.py show`. Missing or unlocked → say so once; the plan still gets
    written and names each command it would need.
 3. `graph.py context FEAT-NNN`; read only the listed files, the diagram and every local
-   visual. Read code roots read-only to check a claim; never write there.
+    visual. Read code roots read-only to check a claim; never write there.
+   Existing root docs or plans not linked yet → use sw-craft's repository-context procedure,
+   not an automatic import or replacement plan. Ask with evidence and options for missing
+   decisions in any state; leave unanswered choices open and plan only independent work.
 4. Plan from `assets/plan.md`: approach, constraints, ordering, risks, then **one detailed
    section per task** (`### TASK-NNN-k`) answering only for that task:
    exact files to create or change and where (`<code-root>/<path>`, or `new:<path>` for a

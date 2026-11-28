@@ -4,6 +4,11 @@ Use when sources are registered or imported but nothing is shaped yet: the proje
 capabilities under its own IDs. Each step ends with a named human decision where one is needed.
 No step approves anything by default.
 
+For a repository with root docs or plans (including one that already has Specwright items),
+start with `../sw-craft/references/repository-context.md`: ask scan / selected material /
+describe first, discover read-only, then confirm proposed mappings. A legacy register is not
+required for ordinary feature additions. Reuse existing IDs instead of re-baselining the project.
+
 | Step | Do | Human decision |
 | --- | --- | --- |
 | 1. Register the source | `workspace.py source add --id --system --root --snapshot-date --expected-count [--legacy-id-pattern]` | Who owns the source and how many items it should hold. |

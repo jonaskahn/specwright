@@ -108,6 +108,19 @@ technology-free; every code task carries a `Stack:` line, and a task outside the
 A new project with no code gets one **foundation story** first: structure, format, lint, tests with a
 coverage floor, one `make check`, CI and an `AGENTS.md`. Up to five prefilled questions.
 
+**Already have a codebase?** Say `add a feature to this project`. Specwright offers three
+paths: discover existing repository docs and plans, use selected files or existing items, or
+describe the change first. Discovery asks before scanning, works before `.specwright/` exists,
+and leaves original files untouched. It proposes matches to existing epics, features, tasks
+and plans; the owner confirms what to reuse, change, create or exclude. Discovery reviews
+documents in batches of 50, with explicit coverage limits and source-change detection.
+
+**No guessed answers.** At every stage, questions include evidence, options and consequences.
+Unanswered decisions stay open; dependent work waits while independent work continues.
+Suggested defaults and high-confidence code findings never count as acceptance. Ask to see
+evidence, correct an interpretation, change scope or leave a question unresolved at any time.
+Existing tooling is reused; Foundation proposes missing controls rather than replacing it.
+
 ### `sw-craft` · the BA line
 
 `INTAKE ▸ AS-IS ▸ SHAPE ▸ STORY ▸ REVIEW`

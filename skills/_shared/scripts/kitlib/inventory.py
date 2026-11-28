@@ -306,11 +306,15 @@ def scan_code(root: Path, name: str) -> dict[str, list[dict[str, Any]]]:
 
 def scan_docs(folders: list[tuple[Path, str]]) -> list[dict[str, Any]]:
     out = []
+    seen: set[Path] = set()
     for folder, label in folders:
-        if not folder.is_dir():
+        if not folder.is_dir() and not folder.is_file():
             continue
-        for p in sorted(folder.rglob("*.md"))[:400]:
-            rel = p.relative_to(folder).as_posix()
+        for p in [folder] if folder.is_file() else sorted(folder.rglob("*.md"))[:400]:
+            if p.is_symlink() or p.resolve() in seen or p.stat().st_size > MAX_BYTES:
+                continue
+            seen.add(p.resolve())
+            rel = p.relative_to(folder).as_posix() if p != folder else ""
             if any(
                 part in SKIP or part == "raw" or part.startswith(".")
                 for part in Path(rel).parts[:-1]
@@ -326,7 +330,7 @@ def scan_docs(folders: list[tuple[Path, str]]) -> list[dict[str, Any]]:
                     out.append(
                         {
                             "name": m.group(2)[:100],
-                            "at": f"{label}/{rel}:{n}",
+                            "at": f"{label}{'/' + rel if rel else ''}:{n}",
                             "level": len(m.group(1)),
                         }
                     )

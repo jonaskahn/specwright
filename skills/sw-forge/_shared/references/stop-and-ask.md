@@ -14,16 +14,23 @@ In a parallel batch the lead merges the workers' questions and asks five at a ti
 > B) 30 days -> the refund tiers need revision.
 > Default if unanswered: leave Q-001 open; publication stays blocked.
 
-Separate blocking decisions from assumptions that can be tested later. Save a non-blocking
-unknown as a question with its default applied, list it in the summary and keep going; only a
-blocker stops the run. Finishing a station is never a reason to ask (`handoff.md`). The
-command, with every required flag:
+Never apply a suggested answer without the user's choice. Save an unanswered question as
+open. If any work depends on its answer, keep it blocking for those items and continue only
+independent work. A truly non-blocking question uses `--non-blocking`, stays open and changes
+no requirement. Never create `status: assumed` to keep moving. Finishing a station alone is
+not a reason to ask (`handoff.md`), but a decision is due at any state. The command:
 
 ```sh
 record.py q new --title <text> --owner <role> --affects <FEAT-NNN> \
-  --non-blocking --default <text> --status assumed
+  --status open --option "<choice and consequence>" --option "leave unresolved"
 ```
 
 `record.py` lives in `_shared/scripts` of the skills that save questions. Run it from the project
 folder or add `--cwd <project>`; add `--scope <SCOPE>` in a program. Never invent approval or choose a project
 scope for an external write just to keep moving.
+
+Offer "show evidence", "correct this", "change scope" and "leave unresolved" throughout the
+workflow. Reuse an explicit answer only while its scope and evidence remain current; changed
+sources or contradictory instructions require another confirmation. Recommendations may be
+marked recommended, never preselected as authorization. Before an item has an ID, use ASK-n
+in the provisional analysis; transfer it to a Q with the shared script once an item exists.

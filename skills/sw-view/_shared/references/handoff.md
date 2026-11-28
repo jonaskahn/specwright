@@ -66,8 +66,8 @@ Stop, say why in one line, and ask (at most five questions, `stop-and-ask.md`) w
 7. **The pipeline is finished**: every item is complete in plan. Report the delivery; do not
    offer publication.
 
-A non-blocking unknown is never a stop: save it as an assumed question with its default
-(`stop-and-ask.md`), list it in the summary and keep going.
+An unknown never authorizes a guessed answer. Save it as open (`stop-and-ask.md`); hold any
+work depending on it and continue independent items. A non-blocking question changes no rule.
 
 ## Procedure at the end of every station
 
@@ -101,7 +101,7 @@ and the stations that end in a question last (shape, then review), so the user i
 at the end, with everything gathered. After the answer, the chain resumes from the board.
 
 Write one short line per hand-off, not a report per station. The full summary (what was made,
-assumed questions, checkpoint lines) comes once, at the stop or at done.
+open questions, checkpoint lines) comes once, at the stop or at done.
 
 ## Entering at any state
 
@@ -124,6 +124,9 @@ checkpoint, and stop with "Say continue to pick up at <next skill>". The files c
 ## The user stays in control
 
 - Any message from the user interrupts the chain; answer it first, then resume from the board.
+- At any state offer evidence, correction, scope change or leaving a decision unresolved when
+  an answer is needed. Changed source evidence invalidates the related inferred conclusion,
+  not unrelated approvals; show the change and ask before using a replacement decision.
 - "pause", "stop here", "only <station>" end the chain at that point (`--until`).
 - "one at a time" or "step mode" for this run: pass `--flow step`; to keep it, run
   `workspace.py governance set flow step` (or `guided` for one confirm per station).
@@ -146,7 +149,7 @@ User: "spec the refunds epic". The split is already accepted with three reserved
 
 ```text
 → sw-craft for REF:FEAT-001, REF:FEAT-002, REF:FEAT-003      (parallel, one worker each)
-  2 assumed questions saved (Q-004, Q-005); FEAT-002 waits on blocking Q-003
+  2 open non-blocking questions saved (Q-004, Q-005); FEAT-002 waits on blocking Q-003
 → sw-craft for REF:FEAT-001, REF:FEAT-003                  (submitting drafts first; not approval)
 
 | Feature  | Verdict | Hash         | Blocks |

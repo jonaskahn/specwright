@@ -18,10 +18,12 @@ prompt relies on `make check` and `AGENTS.md`.
 - When web search is available, check the official docs of each proposed tool for its current
   stable release and recommended setup; mention a notable alternative in one line. Never pin a
   version from memory; the implementing agent pins current versions in the lockfiles.
-- Ask the questions in one message (≤ 5, options, defaults). Unanswered → defaults, said so.
+- Ask the questions in one message (≤ 5, options, recommendations). Unanswered → unresolved;
+  never replace existing tooling or invent a coverage floor. Continue only independent work.
 
 ## Steps
-1. `foundation.py set --defaults`, then `set --layer <l> --build/--format/--lint/--test`,
+1. Only if the owner explicitly selects the displayed defaults: `foundation.py set --defaults`.
+   Otherwise save only their choices with `set --layer <l> --build/--format/--lint/--test`,
    `--coverage N`, `--ci`, `--hooks`, `--ai-workflow agents+claude|agents|none` per answer.
    Tooling lives in `stack.yaml` under `tooling`, outside the stack lock hash.
 2. Reserve the story with the owner's yes: `record.py accept-split --new-epic "Project
