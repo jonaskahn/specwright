@@ -1,6 +1,6 @@
 {
  "files": {
-  "references/agent-style.md": "4d9b3390dba7",
+  "references/agent-style.md": "0b961e3bd44b",
   "references/capabilities/knowledge.md": "9f9e8150b6e9",
   "references/checkpoint.md": "9c86bbd9f43c",
   "references/context.md": "b2682947ea38",
@@ -54,7 +54,7 @@
   "scripts/kitlib/view_build.py": "9062bd7d5c82",
   "scripts/kitlib/view_extract.py": "9fdcbd8a26dc",
   "scripts/kitlib/view_server.py": "18683adf4259",
-  "scripts/kitlib/workspace.py": "0cbe9886a12c",
+  "scripts/kitlib/workspace.py": "97267d0c80e1",
   "scripts/kitlib/writelog.py": "7caba0304a55",
   "scripts/runtime-pins.tsv": "ce9b02898b76",
   "scripts/runtime.ps1": "771f91a98c4b",

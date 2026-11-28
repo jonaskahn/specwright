@@ -1,6 +1,8 @@
 # Observable acceptance
 
-Given = an existing state. When = one event. Then = an observable result. `And` extends a
+Given = an existing state. When = one event. Then = an observable result. A clause the
+source does not contain stays `unanswered (Q-NNN)` until that question is answered. Do not
+write an event the source does not contain. `And` extends a
 state or result without hiding a second scenario. Use plain G/W/T text; no executable
 Gherkin dependency.
 
@@ -57,6 +59,7 @@ shared `Background`. In Jira, make expanded outcomes readable without Cucumber.
 - QA: amount basis, currency rounding, calendar and time-zone convention, ownership,
   prior requests, refusal messages. A missing decision becomes a Q record, not a guess.
 - Dev: dependencies, observable state transitions, the approval boundary. Accepting a
-  request never implies money has been paid.
+  request never implies money has been paid. Record these checks in `review/dor.md`, not in
+  the story.
 
 Reference: https://cucumber.io/docs/gherkin/reference/

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Recompute the `Draft hash:` line of a story after a body edit.
+"""Recompute front matter `draft_hash` after a body edit.
 
-stamp   restamp the draft hash in place (idempotent; Identity is excluded from the hash)
+stamp   restamp front matter `draft_hash` (front matter and a leftover
+        Identity section stay outside the hash)
 check   exit 1 when the recorded hash differs from the current draft hash
 
 Exit codes: 0 ok, 1 hash differs (check) or invalid input, 2 usage or file error.

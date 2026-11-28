@@ -28,7 +28,8 @@ DOC_INDEX_BANNER = "> Specwright reading guide. Upgrade refreshes this file."
 SPEC_POINTER_MARK = ".specwright/index.md"
 SPEC_POINTER_LINES = (
     "- Read `.specwright/index.md` when you need a specification item, and follow that file.",
-    "- Do not edit those documents from a coding task. When code and a document disagree, stop and ask.",
+    "- Do not edit those documents from a coding task. "
+    "When code and a document disagree, stop and ask.",
 )
 
 EXIT_ERROR = 2
@@ -345,7 +346,7 @@ def prepare_git(root: Path) -> None:
 
 
 def doc_index_text() -> str:
-    """Medium reading guide for specification documents. The banner marks a file upgrade may refresh."""
+    """Medium reading guide. The banner marks a file upgrade may refresh."""
     return (
         f"{DOC_INDEX_BANNER}\n"
         "\n"
@@ -357,7 +358,6 @@ def doc_index_text() -> str:
         "## Spec root\n"
         "\n"
         "- Flat: `project.yaml` in this folder. One project.\n"
-        "- Program: `workspace.yaml` in this folder. Each project is `projects/<SCOPE>/project.yaml`.\n"
         "- A link across projects uses a qualified ID: `SCOPE:FEAT-NNN`.\n"
         "\n"
         "## Folders\n"
@@ -419,7 +419,7 @@ def doc_index_plan(spec_root: Path) -> str | None:
 
 
 def sync_doc_index(spec_root: Path) -> str | None:
-    """Write the reading guide when it is missing, or refresh a copy that still carries the banner."""
+    """Write the reading guide when missing, or refresh a banner copy."""
     action = doc_index_plan(spec_root)
     if action:
         fsio.atomic_write(spec_root / DOC_INDEX_NAME, doc_index_text())
@@ -435,7 +435,7 @@ def spec_pointer_needed(repo: Path) -> bool:
 
 
 def append_spec_pointer(repo: Path) -> bool:
-    """Append the two-line specification pointer. Never creates AGENTS.md and never appends twice."""
+    """Append the two-line pointer. Never creates AGENTS.md or appends twice."""
     if not spec_pointer_needed(repo):
         return False
     path = repo / "AGENTS.md"

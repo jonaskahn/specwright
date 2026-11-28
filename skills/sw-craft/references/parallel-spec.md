@@ -32,7 +32,9 @@ Give each worker only this, with its FEAT filled in:
 > steps 4 to 7, 9 and 10, for this one item with its references (ac-writing, ears,
 > business-rules, nfr-defaults, dor). Skip step 8: return unknowns as proposed questions.
 > Context pack: <graph.py context output>. Reserved BR/NFR IDs: <list>.
-> Run `new_story.py --reserved FEAT-NNN`, fill all twelve sections, write the criteria, run
+> Run `compile_story.py compile --from SRC-NNNN --legacy <ids> --bo BO-NNN` when the feature
+> comes from a catalogue; otherwise `new_story.py --reserved FEAT-NNN` and fill the canonical
+> sections. Write the criteria, run
 > `illustration_check.py FEAT-NNN --json` and draw only when it says so (name files
 > `diagrams/FEAT-NNN-<slug>.*`), then `spec_hash.py --stamp` and `card_gen.py`.
 > Write only `features/FEAT-NNN/FEAT-NNN.*`, `diagrams/FEAT-NNN-*` and

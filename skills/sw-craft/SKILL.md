@@ -56,32 +56,29 @@ Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
 4. **Story and tasks.** An unaccepted idea goes back to Shape, above. Existing behaviour → read
    `references/change-fix.md` first (wording changes of a published story: `assets/cr.md`).
    `_shared/scripts/graph.py context FEAT-NNN`; cite with
-   `cite.py stamp`. New → `scripts/new_story.py --scope-root <project> --scope <S> --reserved
-   FEAT-NNN`; resume → edit the draft. A published story is never edited in place: open a
+   `cite.py stamp`. A published story is never edited in place: open a
    `CR-NNN` instead (`references/change-fix.md`). Visual references: `graph.py neighbors
    FEAT-NNN --dir in --rel supports`; list each ASSET in `assets:` and in UI/UX Visuals with
    the AC it shows. A catalogue feature is compiled, not transcribed:
-   `scripts/compile_story.py split` then `record.py accept-split --proposal`, then
+   `scripts/compile_story.py split`, then `record.py accept-split --proposal`, then
    `scripts/compile_story.py compile` (or `new_story.py --reserved --from --legacy --bo`).
    An older story is rewritten with `_shared/scripts/fm_migrate.py`. Dependency lines are
    linked with `_shared/scripts/sw_links.py fix`.
    Edit the compiler's wording and answer its Q records. Do not add an acceptance criterion,
-   rule or NFR that has no row in `FEAT-NNN.coverage.json`.
-   A story with no catalogue id still starts from `assets/jira-story.md`. Fill the canonical
-   sections in order; empty → `None — <reason>`.
-   ≥ 2 ACs (the sizer bundles a catalogue toward 3–7); each Given/When/Then uses the source's
-   own clauses; rules with one worked example or a Q; NFRs only when the source states one
-   for this feature; `links:` with ≥ 1 https URL.
+   rule or NFR that has no row in `FEAT-NNN.coverage.json`. A story with no catalogue id
+   starts from `assets/jira-story.md` via `scripts/new_story.py --scope-root <project>
+   --scope <S> --reserved FEAT-NNN`. Fill the canonical sections in order; an empty section
+   is `None — reason`. Resume an existing draft by editing it, never by reallocating.
+   At least two ACs. A catalogue bundle targets 3–7. Each Given, When and Then uses a clause
+   the source already contains. A rule has one worked example or a Q. An NFR is attached only
+   when the source states it for this feature. `links:` has at least one https URL.
    `scripts/illustration_check.py FEAT-NNN`; unknowns → Q records; ≤ 3
    `[NEEDS CLARIFICATION: Q-NNN]` markers; `record.py backup features/FEAT-NNN/<file>` before an
-   accepted change. `scripts/spec_hash.py --scope-root <project> --stamp FEAT-NNN`;
-   `scripts/card_gen.py <story>`.
-   Then `tasks/FEAT-NNN/FEAT-NNN.tasks.md` (`references/task-format.md`): `TASK-<n>-<k>`, one `[layer]`
-   prefix, one outcome. Fields: Traces to (≥ 1 AC), Stack (from `stack.py show`), Visuals (UI
-   tasks when the story has visuals), `Touches: <code-root>/<path>` or `Touches: new:<path>`
-   for a folder that does not exist yet, Depends on, Done when, Stop and ask if, and
-   `Status: not-started`. Copy the story's `Draft hash` to `spec_hash`; coverage and the plan
-   are checked by sw-forge.
+   accepted change. `scripts/spec_hash.py --scope-root <project> --stamp FEAT-NNN` writes
+   front matter `draft_hash`; `scripts/card_gen.py <story>`.
+   Then `tasks/FEAT-NNN/FEAT-NNN.tasks.md` (`references/task-format.md`): `TASK-<n>-<k>`, one
+   `[layer]` prefix, one outcome. `Touches` and `Depends on` follow that file. Copy
+   `draft_hash` to the tasks file `spec_hash`. Coverage and the plan are checked by sw-forge.
 5. **Review (automatic).** No feature named → every row of `graph.py board --station review
    --format json`. Machine gates first: `_shared/scripts/sw_lint.py --gate review`, DoR; a
    failing gate sends the item back to the story step. Then the independent review

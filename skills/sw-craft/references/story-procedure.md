@@ -22,13 +22,16 @@ or the case is an edge case named below. SKILL.md is the default path; kernel ru
 3. Before applying any accepted requirement change, preserve the current artifact with
    `_shared/scripts/record.py backup features/FEAT-NNN/<file>`, then increment its content revision with the real edit.
    Impacts proposed by ingestion never increment revisions.
-4. New accepted feature: run scripts/new_story.py --scope-root --scope --summary
-   (--feature asserts the expected next ID). It copies assets/jira-story.md (--template
-   selects a compatible local one), reserves the next ID across historical scope Markdown
-   and refuses overwrite or reuse. A feature reserved earlier (for example from a legacy
-   register) is specified with --reserved FEAT-NNN: it keeps its ID, title and aliases.
-   Exit 0 created, 1 invalid or conflict, 2 invocation or file error; a warning names any
-   open blocking question. Resume an existing draft by editing it, never by reallocating.
+4. A catalogue feature is compiled, not copied from the template. Run
+   `scripts/compile_story.py split`, then `record.py accept-split --proposal`, then
+   `scripts/compile_story.py compile` (or `new_story.py --reserved FEAT-NNN --from SRC-NNNN
+   --legacy Fxx.yy --bo BO-NNN`). It keeps the reserved ID, title and aliases, writes the
+   coverage map, and refuses overwrite. A story with no catalogue id is created with
+   `scripts/new_story.py --scope-root --scope --summary` (`--feature` asserts the expected
+   next ID; `--reserved FEAT-NNN` keeps an ID already reserved, for example from a legacy
+   register). It copies `assets/jira-story.md`. Exit 0 created, 1 invalid or conflict, 2
+   invocation or file error; a warning names any open blocking question. Resume an existing
+   draft by editing it, never by reallocating.
 5. Collect visual references first: every mockup, Figma link, screenshot or diagram the
    project holds for this feature (asset kinds in `_shared/references/asset-kind.md`).
    Run `_shared/scripts/graph.py neighbors FEAT-NNN --dir in --rel supports`, then the same for
@@ -36,21 +39,21 @@ or the case is an edge case named below. SKILL.md is the default path; kernel ru
    in the `assets:` front matter and in the UI/UX Visuals list (line format in assets/jira-story.md),
    saying which AC or state it shows. Open local images and take UI states from what they show;
    an unclear or missing state becomes a Q record, not an invented state. Quote a link, never
-   fetch it. Lint rules L-066 and L-067 check this. For a catalogue feature, run
-   `scripts/compile_story.py` before editing: it writes the sections, the coverage map and
-   the open questions. You may rephrase the Goal and answer Q records. Do not add an
-   acceptance criterion, rule or NFR that has no coverage row. A story with no catalogue id
-   is still filled from the template, in section order; write "None — reason" for an
-   intentionally empty section. Write ACs per references/ac-writing.md: at least two, and a
-   catalogue bundle targets 3–7, with concrete inputs and observable outputs; happy
-   path, every rule branch, boundaries, enumerated errors. Write each as a bulleted list with
-   the keywords in bold (`- **Given** …`, `- **When** …`, `- **Then** …`; layout in that file). AC IDs stay stable; new
+   fetch it. Lint rules L-066 and L-067 check this. Edit the compiler's wording and answer
+   its Q records. Do not add an acceptance criterion, rule or NFR that has no coverage row.
+   A story with no catalogue id is filled from the template, in section order; write
+   "None — reason" for an intentionally empty section. Write ACs per references/ac-writing.md:
+   at least two, and a catalogue bundle targets 3–7, with concrete inputs and observable
+   outputs; happy path, every rule branch, boundaries, enumerated errors. Write each as a
+   bulleted list with the keywords in bold (`- **Given** …`, `- **When** …`, `- **Then** …`;
+   layout in that file). A missing clause stays `unanswered (Q-NNN)`. AC IDs stay stable; new
    numbers exceed every number used for this FEAT; withdrawn IDs stay as tombstones, for
    example "~~AC-001-4~~ withdrawn — CR-001".
 6. Rules and quality: sentence syntax per references/ears.md; policy per
    references/business-rules.md (key numbers inline, worked example per rule, complete
-   decision table for multiple conditions); NFRs per references/nfr-defaults.md (proposed
-   thresholds need stakeholder agreement).
+   decision table for multiple conditions). A catalogue story takes an NFR only when the
+   source states it for that feature. A story with no catalogue id follows
+   references/nfr-defaults.md (proposed thresholds need stakeholder agreement).
 7. Illustration, once the criteria exist and before the card. A story that needs a picture gets one,
    drawn as SVG and shown inside the story; a link to a file is not enough. Run
    `scripts/illustration_check.py FEAT-NNN` and act on the chip (definitions in
@@ -84,10 +87,11 @@ or the case is an edge case named below. SKILL.md is the default path; kernel ru
     never bury questions in invented "None" values. Unanswered questions stay open; no default
     is written as a rule. Hold dependent work and continue independent items. List unresolved
     Q references in Open questions, including non-blocking questions.
-9. Record Dev and QA consumer-check results in the Identity section, not in behaviour. The
-   hash field stays inside the level-two Identity section (kitlib hashing excludes that
-   whole section and the front matter). Recompute the hash after every body edit with
-   `scripts/spec_hash.py --scope-root --stamp FEAT-NNN` (`--check` verifies instead).
+9. Dev and QA readiness is written to `features/FEAT-NNN/review/dor.md` when the story is
+   accepted. It is not a section of the story. Recompute front matter `draft_hash` after
+   every body edit with `scripts/spec_hash.py --scope-root --stamp FEAT-NNN` (`--check`
+   verifies instead). Front matter is outside the hash. A leftover Identity section is
+   excluded too.
 10. Card: run scripts/card_gen.py <story> (--stdout previews) from assets/summary-card.md.
     Exit 0 generated, 1 content invalid, 2 invocation or file error. Summary at most 150
     words, whole card at most 80 lines; Goal's first sentence plus key BR numbers, no AC text.

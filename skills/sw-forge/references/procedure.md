@@ -20,9 +20,10 @@ or the case is an edge case named below. SKILL.md is the default path; kernel ru
 2. Read the graph context for the feature (`_shared/references/query-cookbook.md`) and only the
    listed story, rules, diagrams, records and asset files. Open every local mockup, image or
    diagram; carry a Figma or other link as a link, never fetch it.
-3. Check the code a task touches, read-only: does the path in `Touches:` exist, and does the
-   change fit the code that is there? Never write inside a code root. A claim about code needs
-   a file path as evidence, otherwise UNKNOWN.
+3. Check the code a task touches, read-only. A `Touches` path is a real file, `new:<path>`
+   when the parent directory already exists under a registered code root, or `UNKNOWN`.
+   Do not require a `new:` file to exist. Never write inside a code root. A claim about
+   code needs a file path as evidence, otherwise UNKNOWN.
 4. Fill `assets/plan.md`: approach, visual references, constraints, dependencies, evidence and
    open Dev questions, then one per-task section in dependency order
    (`references/plan-detail.md`). Set `Status: planned` on each task as its section is written

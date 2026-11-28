@@ -1,6 +1,6 @@
 {
  "files": {
-  "references/agent-style.md": "4d9b3390dba7",
+  "references/agent-style.md": "0b961e3bd44b",
   "references/capabilities/knowledge.md": "9f9e8150b6e9",
   "references/capabilities/quality.md": "c22c117eff5f",
   "references/capabilities/remote.md": "8f663bca8713",
@@ -68,7 +68,7 @@
   "scripts/kitlib/story_lint.py": "5680e6798b0e",
   "scripts/kitlib/tables.py": "c3fff180a4b6",
   "scripts/kitlib/task_validation.py": "aa65cf6ab912",
-  "scripts/kitlib/workspace.py": "0cbe9886a12c",
+  "scripts/kitlib/workspace.py": "97267d0c80e1",
   "scripts/kitlib/writelog.py": "7caba0304a55",
   "scripts/runtime-pins.tsv": "ce9b02898b76",
   "scripts/runtime.ps1": "771f91a98c4b",

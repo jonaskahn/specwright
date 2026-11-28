@@ -25,7 +25,9 @@ Rules:
 
 - One section per active task, in dependency order; no section for a withdrawn task.
 - `Files:` names every file created or changed and the registered code root it lives in. A file
-  outside every root is `UNKNOWN` until the user registers a root; never invent a path.
+  marked `(new)` follows the task `Touches` rule: `new:<path>` only when the parent directory
+  exists under a registered root. A file outside every root is `UNKNOWN` until the user
+  registers a root; never invent a path.
 - `Change:` describes the behaviour and the shape (signature, type, field), not a diff. It cites
   the AC or BR it satisfies.
 - `Test:` is the test that proves `Done when`, with the concrete values of the criterion.

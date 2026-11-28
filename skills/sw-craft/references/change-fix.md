@@ -1,6 +1,6 @@
 # Existing features: version 1, changes and fixes
 
-All three are FEAT stories with the twelve sections; front matter says which kind.
+All three are FEAT stories with the canonical sections; front matter says which kind.
 
 ## Version 1 of an existing feature (from sw-craft, shape as-is or complete)
 - After the owner confirmed the asked rows: `analyze.py confirm <target>`, then
@@ -12,7 +12,7 @@ All three are FEAT stories with the twelve sections; front matter says which kin
 ## Change (`kind: change`) or fix (`kind: fix`)
 Front matter: `kind: change|fix`, `changes: FEAT-TTT`, then run `scripts/merge.py base --change
 FEAT-NNN` to record `base_hash`. The change's own ACs hold the new or corrected behaviour.
-Add two subsections at the end of Context (the twelve sections stay canonical):
+Add two subsections at the end of Context (the canonical sections stay in order):
 
 ```markdown
 ### Delta

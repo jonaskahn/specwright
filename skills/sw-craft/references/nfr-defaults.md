@@ -1,5 +1,6 @@
 # Quality thresholds are proposals, not inherited policy
 
+A catalogue story copies a quality row only when that row names one of its legacy ids.
 Ask which quality areas apply and who accepts the thresholds. A usable NFR states metric,
 numeric threshold, operating conditions and verification method. Areas below follow
 ISO/IEC 25010:2011 names, plus Safety, as prompts.
