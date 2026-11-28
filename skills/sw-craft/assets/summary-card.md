@@ -19,7 +19,7 @@ nfr: []
 ## Links
 
 - Home: <verified Jira URL or Not published>
-- Draft: 02-drafts/<FEAT-ID>.story.md
+- Draft: features/<FEAT-ID>/<FEAT-ID>.story.md
 - Diagrams: <paths or None>
 
 ## Trace

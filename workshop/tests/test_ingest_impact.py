@@ -40,9 +40,11 @@ class ImpactTests(WorkflowTestCase):
 
     def test_backup_is_exact_idempotent_and_excluded_from_scan(self):
         before = self.draft.read_bytes()
-        path = ingest_impact.backup(self.base, "02-drafts/FEAT-001.story.md")
+        path = ingest_impact.backup(self.base, "features/FEAT-001/FEAT-001.story.md")
         self.assertEqual(path.read_bytes(), before)
-        self.assertEqual(ingest_impact.backup(self.base, "02-drafts/FEAT-001.story.md"), path)
+        self.assertEqual(
+            ingest_impact.backup(self.base, "features/FEAT-001/FEAT-001.story.md"), path
+        )
         from kitlib import rtm
 
         _, findings = rtm.scan(self.root)

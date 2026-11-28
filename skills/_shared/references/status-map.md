@@ -20,7 +20,7 @@ accept exists while sign-off is required).
 
 ## Task statuses
 
-Every task carries `Status:` in `03-plan/FEAT-NNN.tasks.md`: `not-started` (the default when the
+Every task carries `Status:` in `tasks/FEAT-NNN/FEAT-NNN.tasks.md`: `not-started` (the default when the
 line is absent), `planned` (sw-forge wrote its detailed plan section), `in-progress`, `done`
 (with an `Evidence:` line saying how it was proven) or `blocked` (with `Blocked because:`). A
 withdrawn task stays as a `~~TASK-001-3~~` tombstone.

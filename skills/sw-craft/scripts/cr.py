@@ -31,7 +31,7 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import frontmatter, hashing, ids, markdown, workspace  # noqa: E402
+from kitlib import frontmatter, hashing, ids, markdown, paths, workspace  # noqa: E402
 
 ACTIONS = ("add", "change", "remove", "keep")
 AC_ID = re.compile(r"AC-\d{3}-\d+")
@@ -81,7 +81,7 @@ def check(base: Path, cr: str) -> dict:
     if str(fm.get("status")) not in ("proposed", "in-review", "approved"):
         findings.append(f"status is {fm.get('status')}; only an open CR is applied")
     target = _target(base, fm)
-    story = base / "02-drafts" / f"{target}.story.md"
+    story = paths.story(base, target)
     if not story.is_file():
         return {"cr": cr, "target": target, "findings": [f"{target} has no story"], "pass": False}
     text = story.read_text(encoding="utf-8")
@@ -134,7 +134,7 @@ def check(base: Path, cr: str) -> dict:
 def open_cr(base: Path, args) -> dict:
     scope = str(workspace.load(base / "project.yaml")["scope"])
     target = args.affects.split(":")[-1]
-    story = base / "02-drafts" / f"{target}.story.md"
+    story = paths.story(base, target)
     if not story.is_file():
         raise ValueError(f"{target} has no story to change")
     text = story.read_text(encoding="utf-8")
@@ -215,7 +215,7 @@ def main(argv=None):
             text = path.read_text(encoding="utf-8")
             fm = frontmatter.parse(text).fm or {}
             target = _target(base, fm)
-            story = (base / "02-drafts" / f"{target}.story.md").read_text(encoding="utf-8")
+            story = (paths.story(base, target)).read_text(encoding="utf-8")
             digest = hashing.draft_hash(story)
             head, sep, body = text.partition("\n---\n")
             head = re.sub(r"^base_hash:.*$", f"base_hash: {digest}", head, count=1, flags=re.M)

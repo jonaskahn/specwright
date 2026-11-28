@@ -21,7 +21,7 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import graph, lifecycle, workspace  # noqa: E402
+from kitlib import graph, lifecycle, paths, workspace  # noqa: E402
 
 
 def main(argv=None):
@@ -49,10 +49,7 @@ def main(argv=None):
             target = {"publish": "plan", "review": "spec", "spec": "shape", "plan": "spec"}.get(
                 station
             )
-            if (
-                station == "plan"
-                and not (base / "03-plan" / f"{key.split(':')[-1]}.tasks.md").exists()
-            ):
+            if station == "plan" and not (paths.tasks_file(base, key.split(":")[-1])).exists():
                 target = "review"
         else:
             target = args.to

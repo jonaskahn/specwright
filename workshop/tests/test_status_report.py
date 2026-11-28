@@ -58,7 +58,7 @@ class StatusTests(unittest.TestCase):
         )
 
     def test_signoff_is_recomputed_from_body_hash_and_identity_is_excluded(self):
-        path = self.root / "02-drafts/FEAT-001.story.md"
+        path = self.root / "features/FEAT-001/FEAT-001.story.md"
         digest = hashing.draft_hash(path.read_text())
         path.write_text(
             frontmatter.update(
@@ -89,7 +89,7 @@ class StatusTests(unittest.TestCase):
         self.assertEqual(self.run_cli("--scope", "BAD", "--cwd", str(self.root)).returncode, 2)
 
     def test_ready_for_dev_first_drift_and_snapshot_age(self):
-        path = self.root / "02-drafts/FEAT-002.story.md"
+        path = self.root / "features/FEAT-002/FEAT-002.story.md"
         path.write_text(frontmatter.update(path.read_text(), {"status": "ready-for-dev"}))
         rtm.set_cell(self.root, "REF", "FEAT-002", "Drift", "content-edited", "sw-ship")
         snap = self.root / "snapshots/jira/PROJ-14.md"
@@ -115,7 +115,8 @@ class StatusTests(unittest.TestCase):
         root = Path(self.temp.name) / "program" / ".specwright"
         for scope in ("REF", "ORD"):
             workspace.init(root, "program", scope, scope)
-            path = root / "projects" / scope / "02-drafts/FEAT-001.story.md"
+            path = root / "projects" / scope / "features/FEAT-001/FEAT-001.story.md"
+            path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(frontmatter.render({"id": "FEAT-001", "type": "feature"}, "# Story\n"))
         result = self.run_cli("--cwd", str(root), "--json")
         self.assertEqual(result.returncode, 0, result.stderr)

@@ -26,10 +26,15 @@ REGISTRY = (
 
 
 class Workspace(unittest.TestCase):
+    @staticmethod
+    def put(path, text):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.base = Path(self.tmp.name)
-        for d in ("02-drafts", "01-analysis/as-is", ".metadata", "code/src"):
+        for d in ("features/FEAT-001", "01-analysis/as-is", ".metadata", "code/src"):
             (self.base / d).mkdir(parents=True)
         (self.base / "code/src/S.java").write_text("int W = 10;\n")
         (self.base / ".metadata/id-registry.md").write_text(REGISTRY)
@@ -38,8 +43,9 @@ class Workspace(unittest.TestCase):
         self.tmp.cleanup()
 
     def story(self, status="ready-to-publish", extra=""):
-        (self.base / "02-drafts/FEAT-003.story.md").write_text(
-            STORY.format(status=status, extra=extra)
+        self.put(
+            self.base / "features/FEAT-003/FEAT-003.story.md",
+            STORY.format(status=status, extra=extra),
         )
 
 

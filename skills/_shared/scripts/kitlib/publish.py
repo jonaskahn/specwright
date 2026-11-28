@@ -16,6 +16,7 @@ from kitlib import (
     jira_diff,
     jira_port,
     miniyaml,
+    paths,
     tables,
     workspace,
 )
@@ -49,14 +50,14 @@ def context(root: Path, feat: str, scope: str | None = None) -> Context:
     base = workspace.scope_dir(base_root, selected)
     manifest = miniyaml.loads((base / "project.yaml").read_text(encoding="utf-8"))
     scope_id = f"{selected}:{feat}"
-    draft = base / "02-drafts" / f"{feat}.story.md"
+    draft = paths.story(base, feat)
     return Context(
         base_root,
         base,
         selected,
         scope_id,
         draft,
-        base / "02-drafts" / f"{feat}.card.md",
+        paths.card(base, feat),
         base / ".metadata/id-registry.md",
         base / ".metadata/rtm.md",
         base / ".metadata/write-log.md",
@@ -323,7 +324,7 @@ def levels_plan(base: Path, key: str, level: str, manifest: dict) -> dict:
             }
         )
     else:
-        tasks_file = base / "03-plan" / f"{key.split(':')[-1]}.tasks.md"
+        tasks_file = paths.tasks_file(base, key.split(":")[-1])
         if not tasks_file.is_file():
             raise PublishError(f"{key} has no tasks file to publish")
         from kitlib import markdown

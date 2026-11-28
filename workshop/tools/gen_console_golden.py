@@ -46,11 +46,11 @@ def make_program(base: Path) -> Path:
                     path.write_text(path.read_text().replace("REF", "ORD"), encoding="utf-8")
     # One epic lives in REF and groups a feature of each project, so the program has links that
     # cross projects.
-    epics = root / "projects" / "REF" / "01-analysis" / "epics"
+    epics = root / "projects" / "REF" / "epics" / "EPIC-001"
     epics.mkdir(parents=True)
     (epics / "EPIC-001.md").write_text(SHARED_EPIC, encoding="utf-8")
     for scope, ref in (("REF", "EPIC-001"), ("ORD", "REF:EPIC-001")):
-        story = root / "projects" / scope / "02-drafts" / "FEAT-001.story.md"
+        story = root / "projects" / scope / "features" / "FEAT-001" / "FEAT-001.story.md"
         story.write_text(
             story.read_text().replace("bo: [BO-001]\n", f"bo: [BO-001]\nepic: [{ref}]\n", 1),
             encoding="utf-8",
@@ -179,17 +179,17 @@ def make_trace(base: Path) -> Path:
     code.mkdir()
     (code / "refund.py").write_text("# refund handling\n", encoding="utf-8")
     (code / "decide.py").write_text("# decisions\n", encoding="utf-8")
-    (root / "01-analysis" / "epics").mkdir(parents=True)
-    (root / "01-analysis" / "epics" / "EPIC-001.md").write_text(TRACE_EPIC, encoding="utf-8")
-    (root / "01-analysis" / "epics" / "EPIC-002.md").write_text(TRACE_EPIC_BARE, encoding="utf-8")
+    for epic, text in (("EPIC-001", TRACE_EPIC), ("EPIC-002", TRACE_EPIC_BARE)):
+        (root / "epics" / epic).mkdir(parents=True)
+        (root / "epics" / epic / f"{epic}.md").write_text(text, encoding="utf-8")
     (root / "01-analysis" / "BO-002.md").write_text(TRACE_BO, encoding="utf-8")
-    drafts = root / "02-drafts"
-    first = drafts / "FEAT-001.story.md"
+    drafts = root / "features"
+    first = drafts / "FEAT-001" / "FEAT-001.story.md"
     first.write_text(
         first.read_text().replace("bo: [BO-001]\n", "bo: [BO-001]\nepic: EPIC-001\n"),
         encoding="utf-8",
     )
-    second = drafts / "FEAT-002.story.md"
+    second = drafts / "FEAT-002" / "FEAT-002.story.md"
     second.write_text(
         second.read_text()
         .replace("status: draft\n", "status: draft\nepic: EPIC-001\n")
@@ -199,9 +199,12 @@ def make_trace(base: Path) -> Path:
         ),
         encoding="utf-8",
     )
-    (drafts / "FEAT-003.story.md").write_text(TRACE_NOTIFY, encoding="utf-8")
-    plan = root / "03-plan"
-    (plan / "FEAT-001.tasks.md").write_text(
+    (drafts / "FEAT-003").mkdir()
+    (drafts / "FEAT-003" / "FEAT-003.story.md").write_text(TRACE_NOTIFY, encoding="utf-8")
+    plan = root / "tasks"
+    for feat in ("FEAT-001", "FEAT-002", "FEAT-003"):
+        (plan / feat).mkdir(parents=True, exist_ok=True)
+    (plan / "FEAT-001" / "FEAT-001.tasks.md").write_text(
         tasks_file(
             "FEAT-001",
             [
@@ -230,7 +233,7 @@ def make_trace(base: Path) -> Path:
         ),
         encoding="utf-8",
     )
-    (plan / "FEAT-002.tasks.md").write_text(
+    (plan / "FEAT-002" / "FEAT-002.tasks.md").write_text(
         tasks_file(
             "FEAT-002",
             [
@@ -246,7 +249,7 @@ def make_trace(base: Path) -> Path:
         ),
         encoding="utf-8",
     )
-    (plan / "FEAT-003.tasks.md").write_text(
+    (plan / "FEAT-003" / "FEAT-003.tasks.md").write_text(
         tasks_file("FEAT-003", [task("003-1", "Send the approval message", "AC-003-1")]),
         encoding="utf-8",
     )

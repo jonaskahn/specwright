@@ -6,7 +6,7 @@ verify    compare the tree with that snapshot and check every created, changed o
           file against the workers' allow-lists (run after the workers, before any shared write)
 
 An allow-list is NAME=PATTERN[,PATTERN...] with `/`-separated patterns relative to the scope
-root. `*` and `?` match within one path segment only, so `02-drafts/FEAT-001.*` cannot reach
+root. `*` and `?` match within one path segment only, so `features/FEAT-001/FEAT-001.*` cannot reach
 into a subfolder. A changed file that no worker owns is a stray write; one that two workers
 own is a collision. Both fail the check.
 

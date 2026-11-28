@@ -51,7 +51,7 @@ class TraceCliTests(unittest.TestCase):
         self.assertEqual(self.run_cli("check", "--cwd", self.temp.name).returncode, 2)
         from kitlib import frontmatter
 
-        path = self.root / "02-drafts/FEAT-002.story.md"
+        path = self.root / "features/FEAT-002/FEAT-002.story.md"
         path.write_text(frontmatter.update(path.read_text(), {"bo": ["BO-001"]}))
         self.assertEqual(self.run_cli("check", "--cwd", str(self.root)).returncode, 0)
         self.assertEqual(self.run_cli("impact", "BO-099", "--cwd", str(self.root)).returncode, 2)

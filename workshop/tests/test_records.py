@@ -55,12 +55,12 @@ class RecordTests(WorkflowTestCase):
         )
 
     def test_backup_cli_archives_an_authored_artifact_only(self):
-        done = self.cli("backup", "02-drafts/FEAT-001.story.md")
+        done = self.cli("backup", "features/FEAT-001/FEAT-001.story.md")
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertEqual(len(list((self.base / ".metadata/history").rglob("*.bak"))), 1)
         refused = self.cli("backup", "00-inbox/SRC-0001.md")
         self.assertEqual(refused.returncode, 2)
-        planned = self.cli("backup", "02-drafts/FEAT-001.story.md", "--dry-run")
+        planned = self.cli("backup", "features/FEAT-001/FEAT-001.story.md", "--dry-run")
         self.assertIn("plan:", planned.stdout)
 
     def make_question(self, **kwargs):

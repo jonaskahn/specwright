@@ -8,7 +8,7 @@ reviewers, and a check of the debate record.
     debate.py seal  --feat FEAT-NNN    after fixes: bind the record to the current hash
     debate.py check --feat FEAT-NNN    validate the record; finalizable or not, open disputes
 
-Common: --cwd <project> [--scope S]. Files go to 02-drafts/review/. Nothing here approves:
+Common: --cwd <project> [--scope S]. Files go to features/FEAT-NNN/review/. Nothing here approves:
 only `review.py accept` records the owner's finalize, and it requires a passing check.
 Exit codes: 0 ok (check: finalizable), 1 check not finalizable, 2 usage or file error.
 """
@@ -30,7 +30,7 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import frontmatter, fsio, hashing, markdown, workspace  # noqa: E402
+from kitlib import frontmatter, fsio, hashing, markdown, paths, workspace  # noqa: E402
 
 ROLES = ("critic", "builder", "tester")
 SEVERITY = ("blocker", "major", "minor")
@@ -38,7 +38,6 @@ RESPONSE = ("accepted", "rebutted", "open")
 EVIDENCE = re.compile(
     r"(AC-\d{3}-\d+|BR-\d{3}|N?FR-[A-Z]{2,5}-\d{3}|SRC-\d{4}:L\d+|CODE:\S+|Q-\d{3}|L\d+|§)"
 )
-FOLDER = "02-drafts/review"
 
 ROLE_BRIEF = {
     "critic": "Find ambiguity, contradictions (inside the story, with its sources, with the target "
@@ -59,11 +58,11 @@ def _git(cwd: Path, *args: str) -> str:
 
 def _paths(base: Path, feat: str) -> dict[str, Path]:
     return {
-        "story": base / "02-drafts" / f"{feat}.story.md",
-        "card": base / "02-drafts" / f"{feat}.card.md",
-        "pack": base / FOLDER / f"{feat}.pack.md",
-        "brief": base / FOLDER / f"{feat}.brief.md",
-        "debate": base / FOLDER / f"{feat}.debate.md",
+        "story": paths.story(base, feat),
+        "card": paths.card(base, feat),
+        "pack": paths.review_dir(base, feat) / f"{feat}.pack.md",
+        "brief": paths.review_dir(base, feat) / f"{feat}.brief.md",
+        "debate": paths.review_dir(base, feat) / f"{feat}.debate.md",
     }
 
 
@@ -157,7 +156,7 @@ def brief(base: Path, feat: str) -> Path:
         files += [x.relative_to(base).as_posix() for x in (base / "00-inbox").glob(f"{s}--*.md")]
     if fm.get("changes"):
         t = str(fm["changes"]).split(":")[-1]
-        files.append(f"02-drafts/{t}.story.md")
+        files.append(paths.story(base, t).relative_to(base).as_posix())
     files += _analyses(base, feat, fm)
     lines = [
         f"# Reviewer brief — {feat}",

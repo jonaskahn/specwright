@@ -9,7 +9,7 @@
     forge.py show --feat FEAT-NNN
 
 Writes only the task's `Status:`, `Evidence:` and `Blocked because:` lines in
-03-plan/FEAT-NNN.tasks.md and, when the status changes, the story's own condition:
+tasks/FEAT-NNN/FEAT-NNN.tasks.md and, when the status changes, the story's own condition:
 `in-development` while any task is in-progress, `done` only when every task is done AND every
 acceptance criterion has evidence, back to the accepted status otherwise. Exit codes: 0 written,
 1 refused (no evidence, unknown task), 2 usage or unreadable data.
@@ -33,7 +33,7 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import frontmatter, fsio, ids, markdown, workspace  # noqa: E402
+from kitlib import frontmatter, fsio, ids, markdown, paths, workspace  # noqa: E402
 
 STATES = ("not-started", "planned", "in-progress", "done", "blocked")
 FIELDS = ("Status", "Evidence", "Blocked because")
@@ -90,8 +90,8 @@ def _criterion_evidence(story_body: str, blocks: dict) -> list:
 
 def sync_story(base: Path, feat: str) -> dict:
     """Recompute the story condition from the tasks; write it only when it changes."""
-    tasks_path = base / "03-plan" / f"{feat}.tasks.md"
-    story_path = base / "02-drafts" / f"{feat}.story.md"
+    tasks_path = paths.tasks_file(base, feat)
+    story_path = paths.story(base, feat)
     if not tasks_path.is_file() or not story_path.is_file():
         return {"story": "missing", "changed": False}
     blocks = markdown.task_blocks(frontmatter.parse(tasks_path.read_text(encoding="utf-8")).body)
@@ -149,7 +149,7 @@ def mark_planned(root: Path, args) -> dict:
     else:
         feat = args.feat.split(":")[-1]
         targets = None
-    path = base / "03-plan" / f"{feat}.tasks.md"
+    path = paths.tasks_file(base, feat)
     if not path.is_file():
         raise ValueError(f"no tasks file for {feat}")
     text = path.read_text(encoding="utf-8")
@@ -210,7 +210,7 @@ def main(argv=None):
         scope = workspace.resolve(root, args.scope, args.task, cwd, True)
         feat = f"FEAT-{parsed_task[0]:03d}"
         base = workspace.scope_dir(root, scope)
-        path = base / "03-plan" / f"{feat}.tasks.md"
+        path = paths.tasks_file(base, feat)
         if not path.is_file():
             raise ValueError(f"no tasks file for {feat}")
         text = path.read_text(encoding="utf-8")

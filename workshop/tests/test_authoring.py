@@ -106,8 +106,8 @@ class StoryAllocationTests(unittest.TestCase):
         self.root = Path(self.tmp.name)
 
     def test_next_feature_is_allocated_from_historical_ids(self):
-        (self.root / "02-drafts").mkdir()
-        (self.root / "02-drafts" / "FEAT-001.story.md").write_text("id: FEAT-001\n")
+        (self.root / "features/FEAT-001").mkdir(parents=True)
+        (self.root / "features" / "FEAT-001" / "FEAT-001.story.md").write_text("id: FEAT-001\n")
         created = new_story.create(self.root, "REF", "Notify customer", feature="FEAT-002")
         self.assertEqual(created.name, "FEAT-002.story.md")
         self.assertTrue(created.is_file())

@@ -54,7 +54,8 @@ class CheckpointTests(unittest.TestCase):
         subprocess.run([GIT, "init", "-q", "--bare", "-b", "main", str(self.remote)], check=True)
 
     def draft(self, name="FEAT-001.story.md", text="# story\n"):
-        path = self.root / "02-drafts" / name
+        path = self.root / "features" / name.split(".")[0] / name
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text)
         return path
 
@@ -71,7 +72,7 @@ class CheckpointTests(unittest.TestCase):
         )
         self.assertEqual(git(self.repo, "log", "-1", "--format=%b"), "")
         files = git(self.repo, "show", "--name-only", "--format=", "HEAD").splitlines()
-        self.assertIn(".specwright/02-drafts/FEAT-001.story.md", files)
+        self.assertIn(".specwright/features/FEAT-001/FEAT-001.story.md", files)
         self.assertNotIn("src.py", files)
         self.assertIn("src.py", git(self.repo, "status", "--porcelain"))
 

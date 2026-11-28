@@ -13,8 +13,8 @@ Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
 
 ## Writes
 
-`00-inbox/` snapshots and raw copies, `01-analysis/` (ideas, as-is, epics), `02-drafts/`,
-`03-plan/FEAT-NNN.tasks.md`, `diagrams/`, `records/` and reservations only via
+`00-inbox/` snapshots and raw copies, `01-analysis/` (ideas, as-is), `epics/`,
+`features/FEAT-NNN/`, `tasks/FEAT-NNN/FEAT-NNN.tasks.md`, `diagrams/`, `records/` and reservations only via
 `_shared/scripts/record.py` (`--dry-run` first), registry rows and RTM columns via scripts.
 
 ## Steps
@@ -59,10 +59,10 @@ Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
    ≥ 2 ACs, each Given/When/Then with concrete values; rules with one worked example; NFRs
    with metric, threshold, load, method; `links:` with ≥ 1 https URL.
    `scripts/illustration_check.py FEAT-NNN`; unknowns → Q records; ≤ 3
-   `[NEEDS CLARIFICATION: Q-NNN]` markers; `record.py backup 02-drafts/<file>` before an
+   `[NEEDS CLARIFICATION: Q-NNN]` markers; `record.py backup features/FEAT-NNN/<file>` before an
    accepted change. `scripts/spec_hash.py --scope-root <project> --stamp FEAT-NNN`;
    `scripts/card_gen.py <story>`.
-   Then `03-plan/FEAT-NNN.tasks.md` (`references/task-format.md`): `TASK-<n>-<k>`, one `[layer]`
+   Then `tasks/FEAT-NNN/FEAT-NNN.tasks.md` (`references/task-format.md`): `TASK-<n>-<k>`, one `[layer]`
    prefix, one outcome. Fields: Traces to (≥ 1 AC), Stack (from `stack.py show`), Visuals (UI
    tasks when the story has visuals), `Touches: <code-root>/<path>` or `Touches: new:<path>`
    for a folder that does not exist yet, Depends on, Done when, Stop and ask if, and

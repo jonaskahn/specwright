@@ -7,6 +7,7 @@ import unittest
 from pathlib import Path
 
 from kitlib import dataformat, gitignore, graph, graph_query, workspace
+from tests.support import put
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "skills/_shared/scripts/data.py"
@@ -101,8 +102,9 @@ class DataTests(unittest.TestCase):
     def test_check_names_the_owner_of_a_missing_or_stale_file(self):
         self.export_all()
         (self.root / ".metadata/data/tasks.json").unlink()
-        (self.root / "02-drafts/FEAT-002.story.md").write_text(
-            (self.root / "02-drafts/FEAT-002.story.md").read_text() + "\nmore\n"
+        put(
+            self.root / "features/FEAT-002/FEAT-002.story.md",
+            (self.root / "features/FEAT-002/FEAT-002.story.md").read_text() + "\nmore\n",
         )
         found = {f["kind"]: f for f in dataformat.check(self.root, "REF")}
         self.assertEqual(found["tasks"]["status"], "missing")
@@ -113,8 +115,9 @@ class DataTests(unittest.TestCase):
         self.assertIn("sw-forge owns it", out)
 
     def test_graph_export_refuses_a_stale_graph(self):
-        (self.root / "02-drafts/FEAT-002.story.md").write_text(
-            (self.root / "02-drafts/FEAT-002.story.md").read_text() + "\nmore\n"
+        put(
+            self.root / "features/FEAT-002/FEAT-002.story.md",
+            (self.root / "features/FEAT-002/FEAT-002.story.md").read_text() + "\nmore\n",
         )
         with self.assertRaises(dataformat.DataError) as caught:
             dataformat.write_kind(self.root, "graph", "sw-start", "REF")
@@ -132,7 +135,7 @@ class DataTests(unittest.TestCase):
         self.assertTrue((self.root / ".metadata/data/graph.json").is_file())
 
     def test_no_body_text_leaves_the_project(self):
-        story = self.root / "02-drafts/FEAT-001.story.md"
+        story = self.root / "features/FEAT-001/FEAT-001.story.md"
         story.write_text(story.read_text() + "\nPlain secret sentence for the body.\n")
         graph.build(self.root, "REF")
         self.export_all()

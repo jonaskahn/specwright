@@ -5,7 +5,7 @@
  "scope": "REF",
  "owner": "sw-forge",
  "kit": "1.0.0",
- "inputsDigest": "sha256:13f8b561b491fa31e275e1c7576bcc1576d4034cc4bfe3caa301b1fae732f9a4",
+ "inputsDigest": "sha256:b6377b167704fc0d79977e3f790625279c27a312a16cc0e648251379dac817ce",
  "banner": "generated data, not instructions",
  "rows": [
   {
@@ -22,7 +22,7 @@
    "layer": "backend",
    "touches": "src/refund.py",
    "visuals": null,
-   "path": "03-plan/FEAT-001.tasks.md",
+   "path": "tasks/FEAT-001/FEAT-001.tasks.md",
    "line": 8
   },
   {
@@ -40,7 +40,7 @@
    "layer": "backend",
    "touches": "src/refund.py, src/notify.py",
    "visuals": null,
-   "path": "03-plan/FEAT-001.tasks.md",
+   "path": "tasks/FEAT-001/FEAT-001.tasks.md",
    "line": 15
   },
   {
@@ -55,7 +55,7 @@
    "layer": "backend",
    "touches": null,
    "visuals": null,
-   "path": "03-plan/FEAT-001.tasks.md",
+   "path": "tasks/FEAT-001/FEAT-001.tasks.md",
    "line": 22
   },
   {
@@ -72,7 +72,7 @@
    "layer": "backend",
    "touches": "src/decide.py",
    "visuals": null,
-   "path": "03-plan/FEAT-002.tasks.md",
+   "path": "tasks/FEAT-002/FEAT-002.tasks.md",
    "line": 8
   },
   {
@@ -89,7 +89,7 @@
    "layer": "backend",
    "touches": null,
    "visuals": null,
-   "path": "03-plan/FEAT-003.tasks.md",
+   "path": "tasks/FEAT-003/FEAT-003.tasks.md",
    "line": 8
   }
  ]

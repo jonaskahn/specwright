@@ -1,6 +1,6 @@
 # Detailed plan sections
 
-`03-plan/FEAT-NNN.plan.md` keeps the six plan sections every feature has, then adds one
+`plans/FEAT-NNN/FEAT-NNN.plan.md` keeps the six plan sections every feature has, then adds one
 level-three section per active task. The file is the Dev's contract: a coder applies it without
 asking what was meant.
 

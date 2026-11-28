@@ -7,7 +7,7 @@
 | Feature | `FEAT-NNN`. Also called Story by product and QA. One document, one Jira Story. |
 | Story | The BA/PO word for a Feature. STORY-001 is an input alias only; files use FEAT-001. |
 | Acceptance criterion | `AC-<feature number>-<n>`. A Given/When/Then observable criterion inside a FEAT. |
-| Task | `TASK-<feature number>-<n>`. An agent-executable unit in `03-plan/FEAT-NNN.tasks.md`. |
+| Task | `TASK-<feature number>-<n>`. An agent-executable unit in `tasks/FEAT-NNN/FEAT-NNN.tasks.md`. |
 | Spec root | The folder holding `project.yaml` or `workspace.yaml`, either at the repository root or under `.specwright/`. |
 | Spec root | The `.specwright/` folder of a repository; every spec path is relative to it. |
 | Program | Several projects sharing one spec root, with `projects/<SCOPE>/project.yaml` per project. |

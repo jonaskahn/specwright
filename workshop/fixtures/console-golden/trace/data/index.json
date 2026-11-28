@@ -10,66 +10,66 @@
  "files": {
   "features.json": {
    "owner": "sw-start",
-   "sha256": "sha256:982f055d21c0534582739008c439447506e83cc43032718e1f9b552cc79745e4",
-   "bytes": 2017,
+   "sha256": "sha256:af0dcb79dc1ed2065bb493dfc08dd74a3344c55b5128fa1edd422711d0578671",
+   "bytes": 2041,
    "rows": 3,
-   "inputsDigest": "sha256:13f8b561b491fa31e275e1c7576bcc1576d4034cc4bfe3caa301b1fae732f9a4"
+   "inputsDigest": "sha256:b6377b167704fc0d79977e3f790625279c27a312a16cc0e648251379dac817ce"
   },
   "graph.json": {
    "owner": "sw-start",
-   "sha256": "sha256:b083f8ed0dbe97a67f2730f9309cf63210d1488232f9d3de38a86738f0d462c0",
-   "bytes": 13935,
+   "sha256": "sha256:55f4a03971fe17ae608d606b373ba55c6517e8b40e1dcf326f8143923ccd806a",
+   "bytes": 14261,
    "rows": 61,
-   "inputsDigest": "sha256:13f8b561b491fa31e275e1c7576bcc1576d4034cc4bfe3caa301b1fae732f9a4"
+   "inputsDigest": "sha256:b6377b167704fc0d79977e3f790625279c27a312a16cc0e648251379dac817ce"
   },
   "quality.json": {
    "owner": "sw-craft",
-   "sha256": "sha256:c8010a1b93e7a78dbb798ab903c333e88ee08dd8a9fbc2a9c025d7e3464b074b",
+   "sha256": "sha256:2109c10d2fc87c1bb611fa03dddf966d459318acdf1bcb05b0b2c8c3c6affeec",
    "bytes": 485,
    "rows": 2,
-   "inputsDigest": "sha256:13f8b561b491fa31e275e1c7576bcc1576d4034cc4bfe3caa301b1fae732f9a4"
+   "inputsDigest": "sha256:b6377b167704fc0d79977e3f790625279c27a312a16cc0e648251379dac817ce"
   },
   "records.json": {
    "owner": "sw-craft",
-   "sha256": "sha256:248687fbab717f2104c22e9d3a9a24c367aa46cc30e49f57799d581f9b906b64",
+   "sha256": "sha256:12ff6cd9bb4106afa4875b6379c9ce0ecc56dd6faa3f389bb422dea9e5930a7d",
    "bytes": 768,
    "rows": 2,
-   "inputsDigest": "sha256:13f8b561b491fa31e275e1c7576bcc1576d4034cc4bfe3caa301b1fae732f9a4"
+   "inputsDigest": "sha256:b6377b167704fc0d79977e3f790625279c27a312a16cc0e648251379dac817ce"
   },
   "registry.json": {
    "owner": "sw-craft",
-   "sha256": "sha256:5853c9ccc3866b62901b3f24ae21609a9cc9f5500c17bc869d1737e207bec823",
+   "sha256": "sha256:bbf982b69162f2d0f2efb6a3489914c68905159e9dae7ac9aaa38186a89aae97",
    "bytes": 3561,
    "rows": 14,
-   "inputsDigest": "sha256:13f8b561b491fa31e275e1c7576bcc1576d4034cc4bfe3caa301b1fae732f9a4"
+   "inputsDigest": "sha256:b6377b167704fc0d79977e3f790625279c27a312a16cc0e648251379dac817ce"
   },
   "rtm.json": {
    "owner": "sw-forge",
-   "sha256": "sha256:132eabb96ccfd0d1f5b6e06ba8a28be8880b3ea035e24c0670262f5fead11436",
+   "sha256": "sha256:bc2a5f59d9f1ffc97693e491f270c89d560c9b716a47f3ea1c2e95d00cb0b55b",
    "bytes": 1974,
    "rows": 8,
-   "inputsDigest": "sha256:13f8b561b491fa31e275e1c7576bcc1576d4034cc4bfe3caa301b1fae732f9a4"
+   "inputsDigest": "sha256:b6377b167704fc0d79977e3f790625279c27a312a16cc0e648251379dac817ce"
   },
   "scopes.json": {
    "owner": "sw-start",
-   "sha256": "sha256:984923622b7f8bcc23c06e8d5e2d3896acd3e5969a875006c2899bc678cf1d18",
+   "sha256": "sha256:56ec0ee5a52d4f070a1a935a79348e6ea65c7b2af99fa0bc62366bbd67d0cef4",
    "bytes": 465,
    "rows": 1,
-   "inputsDigest": "sha256:13f8b561b491fa31e275e1c7576bcc1576d4034cc4bfe3caa301b1fae732f9a4"
+   "inputsDigest": "sha256:b6377b167704fc0d79977e3f790625279c27a312a16cc0e648251379dac817ce"
   },
   "sources.json": {
    "owner": "sw-craft",
-   "sha256": "sha256:0f7f0119598e3bde168d93eaa204d89f9e2fe0bca53a031c18bb89e42991a564",
+   "sha256": "sha256:fd3547b2bc6a9f1fa941ed7a230af9b3088ddb6e4f1fa59032a84119d4d33b9d",
    "bytes": 282,
    "rows": 0,
-   "inputsDigest": "sha256:13f8b561b491fa31e275e1c7576bcc1576d4034cc4bfe3caa301b1fae732f9a4"
+   "inputsDigest": "sha256:b6377b167704fc0d79977e3f790625279c27a312a16cc0e648251379dac817ce"
   },
   "tasks.json": {
    "owner": "sw-forge",
-   "sha256": "sha256:485b3a3f0741805928ccbe72d8bf123bff27359ff9438e44d56afd1d844bf754",
-   "bytes": 2147,
+   "sha256": "sha256:841046591b3e234deedabc6be3621338d148e422fe80a7fa5ab830d0936b92fd",
+   "bytes": 2182,
    "rows": 5,
-   "inputsDigest": "sha256:13f8b561b491fa31e275e1c7576bcc1576d4034cc4bfe3caa301b1fae732f9a4"
+   "inputsDigest": "sha256:b6377b167704fc0d79977e3f790625279c27a312a16cc0e648251379dac817ce"
   }
  },
  "idleAfterDays": 14,
@@ -78,5 +78,5 @@
  "scopes": [
   "REF"
  ],
- "digest": "sha256:72946307587b0dc795d18110d83024dc225e9e8f0205bbe50d2fbc16fe266bf5"
+ "digest": "sha256:d53eb02c903ace6da26c95cbbe6a51e12148423030d58d544ffcc9bfd1c487d2"
 }

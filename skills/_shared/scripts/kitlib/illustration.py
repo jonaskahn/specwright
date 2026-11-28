@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from kitlib import frontmatter, fsio, graph, graph_query, ids, markdown, workspace
+from kitlib import frontmatter, fsio, graph, graph_query, ids, markdown, paths, workspace
 
 DRAW = "DRAW"
 PROSE = "PROSE"
@@ -132,7 +132,7 @@ _BEHAVIOUR = (
 _ACTOR_SECTIONS = ("Goal", "Business rules")
 _HANDOFF_SECTIONS = ("Context", "Dependencies and relations")
 _DATA_SECTIONS = _BEHAVIOUR
-_DOC_FOLDERS = ("01-analysis", "02-drafts", "records")
+_DOC_FOLDERS = ("01-analysis", "epics", "features", "records")
 _STALE_RESOLUTION = {"withdrawn", "unresolved"}
 
 # Longer forms first so "customers" is the customer role, not a truncated stem.
@@ -319,7 +319,7 @@ def _bare(feature: str) -> str:
 
 
 def _story_path(base: Path, feat: str) -> Path:
-    path = base / "02-drafts" / f"{feat}.story.md"
+    path = paths.story(base, feat)
     if not path.is_file():
         raise ValueError(f"{path} does not exist")
     return path
@@ -394,11 +394,8 @@ def _scope_ids(base: Path, scope: str) -> tuple[set[str], set[str]]:
 def _other_aliases(base: Path | None, feat: str) -> tuple[str, ...]:
     if base is None:
         return ()
-    folder = base / "02-drafts"
-    if not folder.is_dir():
-        return ()
     found: list[str] = []
-    for path in sorted(folder.glob("*.story.md")):
+    for path in paths.stories(base):
         if path.is_symlink():
             continue
         try:
@@ -489,20 +486,21 @@ _EMBED_SECTIONS = ("Context", "UI/UX")
 def embeds(story: str, base: Path) -> list[tuple[str, Path | None]]:
     """Local images the story shows in Context or UI/UX, as (written path, file or None).
 
-    A path is read from the story's own folder, so `../diagrams/x.svg` is the picture
+    A path is read from the story's own folder, so `../../diagrams/x.svg` is the picture
     `diagrams/x.svg` of the project. Remote and absolute targets are not local pictures.
     """
     parsed = frontmatter.parse(story)
     sections = markdown.sections(parsed.body)
     found: list[tuple[str, Path | None]] = []
     root = base.resolve()
+    home = paths.feature_dir(base, str((parsed.fm or {}).get("id") or ""))
     for name in _EMBED_SECTIONS:
         for line in _section_lines(sections, name):
             for match in _IMAGE.finditer(line):
                 ref = match.group(1)
                 if re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:|^[/\\]", ref):
                     continue
-                path = (base / "02-drafts" / ref.split("#", 1)[0]).resolve()
+                path = (home / ref.split("#", 1)[0]).resolve()
                 found.append((ref, path if path.is_relative_to(root) and path.is_file() else None))
     return found
 
@@ -606,7 +604,7 @@ def assess(
 
 
 def state(base: Path, feat: str, scope: str | None = None) -> dict[str, Any]:
-    """Chip for the feature whose story is `base/02-drafts/FEAT-NNN.story.md`."""
+    """Chip for the feature whose story is `base/features/FEAT-NNN/FEAT-NNN.story.md`."""
     feature = _bare(feat)
     text = _story_path(Path(base), feature).read_text(encoding="utf-8")
     return assess(text, Path(base), scope)

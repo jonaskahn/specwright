@@ -16,6 +16,7 @@ from kitlib import (
     task_validation,
     workspace,
 )
+from tests.support import put
 from tests.test_workflow import DRAFT, WorkflowTestCase
 
 
@@ -33,17 +34,18 @@ class LifecycleTests(WorkflowTestCase):
 
     def plan(self):
         text = self.draft.read_text()
-        (self.base / "03-plan/FEAT-001.plan.md").write_text("# Plan\nImplement criteria.\n")
+        put(self.base / "plans/FEAT-001/FEAT-001.plan.md", "# Plan\nImplement criteria.\n")
         tasks = "\n".join(
             f"### TASK-001-{n} — [backend] Criterion\nTraces to: AC-001-{n}\n"
             "Done when: observable criterion verified\n"
             for n in (1, 2)
         )
-        (self.base / "03-plan/FEAT-001.tasks.md").write_text(
+        put(
+            self.base / "tasks/FEAT-001/FEAT-001.tasks.md",
             frontmatter.render(
                 {"feat": "FEAT-001", "status": "ready", "spec_hash": hashing.draft_hash(text)},
                 tasks,
-            )
+            ),
         )
 
     def test_deferral_survives_restart_and_rebuild(self):
@@ -62,10 +64,10 @@ class LifecycleTests(WorkflowTestCase):
         self.approve()
         self.plan()
         digest = hashing.draft_hash(self.draft.read_text())
-        tasks = (self.base / "03-plan/FEAT-001.tasks.md").read_bytes()
+        tasks = (self.base / "tasks/FEAT-001/FEAT-001.tasks.md").read_bytes()
         self.apply("return-spec")
         self.assertEqual(hashing.draft_hash(self.draft.read_text()), digest)
-        self.assertEqual((self.base / "03-plan/FEAT-001.tasks.md").read_bytes(), tasks)
+        self.assertEqual((self.base / "tasks/FEAT-001/FEAT-001.tasks.md").read_bytes(), tasks)
         self.assertEqual(
             lifecycle.approval_state(self.base, "FEAT-001", self.draft.read_text()), "invalidated"
         )
@@ -173,7 +175,7 @@ class LifecycleTests(WorkflowTestCase):
     def test_mixed_stations_and_explicit_resume_do_not_move_siblings(self):
         from pathlib import Path
 
-        other = self.base / "02-drafts/FEAT-002.story.md"
+        other = self.base / "features/FEAT-002/FEAT-002.story.md"
         other.write_text(frontmatter.update(DRAFT, {"id": "FEAT-002", "status": "draft"}))
         self.approve()
         self.plan()
@@ -195,7 +197,7 @@ class LifecycleTests(WorkflowTestCase):
     def test_accepted_split_keeps_reserved_membership_visible(self):
         from kitlib import rtm
 
-        epic = self.base / "01-analysis/epics/EPIC-001.md"
+        epic = self.base / "epics/EPIC-001/EPIC-001.md"
         epic.write_text(
             frontmatter.render(
                 {"id": "EPIC-001", "type": "epic", "scope": "REF", "status": "approved"},

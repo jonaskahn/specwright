@@ -56,7 +56,7 @@ As a <role>, I want <capability>, so that <outcome>. Business objective: <BO-ID>
 
 Visuals: <one line per mockup, Figma link, screenshot or diagram, or None — no visual supplied>
 - <ASSET-NNN> (<kind>) — <screen or state it shows, AC-NNN-n> — <assets/ASSET-NNN.png | URL | diagrams/FEAT-NNN.flow.svg>
-![<what the picture shows, AC-NNN-n>](../diagrams/FEAT-NNN.flow.svg)
+![<what the picture shows, AC-NNN-n>](../../diagrams/FEAT-NNN.flow.svg)
 
 ## Out of scope
 

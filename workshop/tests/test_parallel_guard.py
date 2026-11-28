@@ -8,8 +8,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "skills/_shared/scripts/parallel_guard.py"
 ALLOW = (
-    "FEAT-001=02-drafts/FEAT-001.*,diagrams/FEAT-001-*",
-    "FEAT-002=02-drafts/FEAT-002.*,diagrams/FEAT-002-*",
+    "FEAT-001=features/FEAT-001/FEAT-001.*,diagrams/FEAT-001-*",
+    "FEAT-002=features/FEAT-002/FEAT-002.*,diagrams/FEAT-002-*",
 )
 
 
@@ -18,7 +18,7 @@ class ParallelGuardTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name) / "scope"
-        for folder in ("02-drafts", "diagrams", "records", ".metadata"):
+        for folder in ("features/FEAT-001", "diagrams", "records", ".metadata"):
             (self.root / folder).mkdir(parents=True)
         (self.root / "records/Q-001.md").write_text("question\n", encoding="utf-8")
         (self.root / ".metadata/id-registry.md").write_text("registry\n", encoding="utf-8")
@@ -42,16 +42,16 @@ class ParallelGuardTests(unittest.TestCase):
         path.write_text(text, encoding="utf-8")
 
     def test_each_worker_in_its_own_files_is_clean(self):
-        self.write("02-drafts/FEAT-001.story.md")
-        self.write("02-drafts/FEAT-001.card.md")
-        self.write("02-drafts/FEAT-002.story.md")
+        self.write("features/FEAT-001/FEAT-001.story.md")
+        self.write("features/FEAT-001/FEAT-001.card.md")
+        self.write("features/FEAT-002/FEAT-002.story.md")
         self.write("diagrams/FEAT-002-flow.json")
         result = self.verify()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("clean", result.stdout)
 
     def test_write_to_a_shared_file_is_stray(self):
-        self.write("02-drafts/FEAT-001.story.md")
+        self.write("features/FEAT-001/FEAT-001.story.md")
         self.write(".metadata/id-registry.md", "tampered\n")
         result = self.verify()
         self.assertEqual(result.returncode, 1)
@@ -60,26 +60,26 @@ class ParallelGuardTests(unittest.TestCase):
     def test_new_record_and_deletion_are_stray(self):
         self.write("records/Q-002.md")
         (self.root / "records/Q-001.md").unlink()
-        result = self.verify("FEAT-001=02-drafts/FEAT-001.*", extra=("--json",))
+        result = self.verify("FEAT-001=features/FEAT-001/FEAT-001.*", extra=("--json",))
         self.assertEqual(result.returncode, 1)
         data = json.loads(result.stdout)
         self.assertEqual(data["stray"], ["records/Q-001.md", "records/Q-002.md"])
         self.assertEqual(data["changes"]["records/Q-001.md"], "deleted")
 
     def test_sibling_write_is_attributed_to_the_sibling(self):
-        self.write("02-drafts/FEAT-002.story.md")
-        result = self.verify("FEAT-001=02-drafts/FEAT-001.*")
+        self.write("features/FEAT-002/FEAT-002.story.md")
+        result = self.verify("FEAT-001=features/FEAT-001/FEAT-001.*")
         self.assertEqual(result.returncode, 1)
-        self.assertIn("STRAY created 02-drafts/FEAT-002.story.md", result.stdout)
+        self.assertIn("STRAY created features/FEAT-002/FEAT-002.story.md", result.stdout)
 
     def test_two_owners_of_one_file_collide(self):
-        self.write("02-drafts/FEAT-001.story.md")
-        result = self.verify("A=02-drafts/FEAT-001.*", "B=02-drafts/*.story.md")
+        self.write("features/FEAT-001/FEAT-001.story.md")
+        result = self.verify("A=features/FEAT-001/FEAT-001.*", "B=features/FEAT-001/*.story.md")
         self.assertEqual(result.returncode, 1)
-        self.assertIn("COLLISION 02-drafts/FEAT-001.story.md: owned by A, B", result.stdout)
+        self.assertIn("COLLISION features/FEAT-001/FEAT-001.story.md: owned by A, B", result.stdout)
 
     def test_star_does_not_cross_a_folder(self):
-        self.write("02-drafts/FEAT-001.assets/extra.md")
+        self.write("features/FEAT-001/FEAT-001.assets/extra.md")
         result = self.verify()
         self.assertEqual(result.returncode, 1)
         self.assertIn("STRAY", result.stdout)

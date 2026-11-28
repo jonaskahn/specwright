@@ -100,7 +100,7 @@ def generate(text: str) -> str:
     output = frontmatter.render(
         card_fm,
         f"## Summary\n{summary}\n\n## Links\n"
-        f"- Home: {home}\n- Draft: 02-drafts/{fm['id']}.story.md\n\n## "
+        f"- Home: {home}\n- Draft: features/{fm['id']}/{fm['id']}.story.md\n\n## "
         "Trace\n" + (" · ".join(dict.fromkeys(refs)) or "None") + "\n",
     )
     validate_card(output)

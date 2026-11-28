@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 
 from kitlib import frontmatter, rtm, schema, workspace
+from tests.support import put
 
 FIXTURE = Path(__file__).resolve().parent.parent / "fixtures/refund/after-spec"
 
@@ -51,7 +52,7 @@ class RtmTests(unittest.TestCase):
             rtm.set_cell(self.root, "REF", "FEAT-099", "Test ref", "x", "qa")
 
     def test_dangling_duplicate_jira_and_tombstone(self):
-        path = self.root / "02-drafts/FEAT-001.story.md"
+        path = self.root / "features/FEAT-001/FEAT-001.story.md"
         path.write_text(path.read_text() + "\nSee BR-099.\n")
         for feat in ("FEAT-001", "FEAT-002"):
             rtm.registry_upsert(
@@ -90,7 +91,7 @@ class RtmTests(unittest.TestCase):
             rtm.impact(self.root, "BO-099", "REF")
 
     def test_duplicate_definitions_block_rebuild_and_bad_yaml_fails(self):
-        source = self.root / "02-drafts/FEAT-001.story.md"
+        source = self.root / "features/FEAT-001/FEAT-001.story.md"
         duplicate = source.with_name("duplicate.story.md")
         duplicate.write_bytes(source.read_bytes())
         before = (self.root / ".metadata/rtm.md").read_bytes()
@@ -111,11 +112,12 @@ class RtmTests(unittest.TestCase):
         (order / "01-analysis/BO-001.md").write_text(
             frontmatter.render({"id": "BO-001", "type": "bo"}, "# Outcome\n")
         )
-        (ref / "02-drafts/FEAT-001.story.md").write_text(
+        put(
+            ref / "features/FEAT-001/FEAT-001.story.md",
             frontmatter.render(
                 {"id": "FEAT-001", "type": "feature", "bo": ["ORD:BO-001"]},
                 "## Acceptance criteria\n### AC-001-1 — Works\nDone.\n",
-            )
+            ),
         )
         (ref / "snapshots/jira/source.md").write_text(
             frontmatter.render(
@@ -127,7 +129,7 @@ class RtmTests(unittest.TestCase):
         self.assertNotIn("REF:FEAT-099", rtm.scan(root)[0])
 
     def test_historical_rows_are_retained_and_bad_tables_fail(self):
-        (self.root / "02-drafts/FEAT-002.story.md").unlink()
+        (self.root / "features/FEAT-002/FEAT-002.story.md").unlink()
         rtm.rebuild(self.root, "REF")
         self.assertIn("historical row", "\n".join(rtm.check(self.root)))
         path = self.root / ".metadata/id-registry.md"

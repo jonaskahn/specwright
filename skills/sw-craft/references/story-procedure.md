@@ -20,7 +20,7 @@ or the case is an edge case named below. SKILL.md is the default path; kernel ru
    issue content (`_shared/references/capabilities/remote.md`). If reads are unavailable, ask for pasted issue
    content, mark unread fields UNKNOWN and claim no verified baseline. Never write to Jira.
 3. Before applying any accepted requirement change, preserve the current artifact with
-   `_shared/scripts/record.py backup 02-drafts/<file>`, then increment its content revision with the real edit.
+   `_shared/scripts/record.py backup features/FEAT-NNN/<file>`, then increment its content revision with the real edit.
    Impacts proposed by ingestion never increment revisions.
 4. New accepted feature: run scripts/new_story.py --scope-root --scope --summary
    (--feature asserts the expected next ID). It copies assets/jira-story.md (--template
@@ -99,7 +99,7 @@ or the case is an edge case named below. SKILL.md is the default path; kernel ru
     `flow: auto`), which refuses while a blocking Q is unanswered. Never set
     ready-to-publish (shown as accepted) or ready-for-dev without sw-craft.
 12. Gherkin export, when requested: scripts/export_feature.py <story>.
-13. Tasks: write `03-plan/FEAT-NNN.tasks.md` (format in `references/task-format.md`). Every new
+13. Tasks: write `tasks/FEAT-NNN/FEAT-NNN.tasks.md` (format in `references/task-format.md`). Every new
     task carries `Status: not-started`; `Evidence:` is written only by sw-forge when the code
     elsewhere proves a task done. Coverage is checked by sw-forge, never by an edit of the story's status.
 14. Published story: never edit it in place. Open a `CR-NNN` (`assets/cr.md`) with the target's
@@ -112,7 +112,7 @@ or the case is an edge case named below. SKILL.md is the default path; kernel ru
 Two or more accepted, reserved features of one scope with no story yet (or several named
 drafts) are written in parallel, one sub-agent per FEAT, as the default; offer a single
 pick instead. Follow references/parallel-spec.md and _shared/references/parallel-writers.md:
-a worker writes only its own `02-drafts/FEAT-NNN.*` files; the lead guards the writes with
+a worker writes only its own `features/FEAT-NNN/FEAT-NNN.*` files; the lead guards the writes with
 `_shared/scripts/parallel_guard.py`, then saves questions, trace, lint, graph and data once.
 One feature, an amendment of published content, or a host without sub-agents stays serial.
 

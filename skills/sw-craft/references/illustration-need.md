@@ -111,7 +111,7 @@ A picture is two files and two lines.
   an image line relative to the story file:
 
       - diagram — Invite to activation, AC-001-1 to AC-001-5 — diagrams/FEAT-001.flow.svg
-      ![Invite flow: member invites, system creates the account (AC-001-1 to AC-001-5)](../diagrams/FEAT-001.flow.svg)
+      ![Invite flow: member invites, system creates the account (AC-001-1 to AC-001-5)](../../diagrams/FEAT-001.flow.svg)
 
 - The alt text names the criteria it shows. It is the text for readers who cannot see the picture.
 - `scripts/illustration_check.py` prints `not embedded:` for a picture the story does not show

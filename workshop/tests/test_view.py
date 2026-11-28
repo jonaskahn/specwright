@@ -211,9 +211,16 @@ class DocTests(unittest.TestCase):
         (tmp / "dist").mkdir()
         (tmp / "data").mkdir()
         project = tmp / "project"
-        for folder in ("02-drafts", "assets", ".metadata/data", "console/src", ".git", "records"):
+        for folder in (
+            "features/FEAT-001",
+            "assets",
+            ".metadata/data",
+            "console/src",
+            ".git",
+            "records",
+        ):
             (project / folder).mkdir(parents=True)
-        (project / "02-drafts/FEAT-001.story.md").write_text("# Story\n")
+        (project / "features/FEAT-001/FEAT-001.story.md").write_text("# Story\n")
         (project / "00-brief.pdf").write_bytes(b"%PDF-1.4 brief")
         (project / "assets/ASSET-001.png").write_bytes(b"\x89PNG")
         (project / "assets/ASSET-002.svg").write_text("<svg onload='x()'/>")
@@ -226,7 +233,7 @@ class DocTests(unittest.TestCase):
         (project / ".git/notes.md").write_text("hidden\n")
         (project / "console/src/README.md").write_text("# app\n")
         (tmp / "outside.md").write_text("private\n")
-        (project / "02-drafts/leak.md").symlink_to(tmp / "outside.md")
+        (project / "features/FEAT-001/leak.md").symlink_to(tmp / "outside.md")
         (project / "big.pdf").write_bytes(b"x")
         self.server = view_server.make_server(
             tmp / "dist", tmp / "data", 47200, docs={"REF": project}
@@ -249,7 +256,7 @@ class DocTests(unittest.TestCase):
         return response.status, headers, body
 
     def test_serves_markdown_pdf_images_and_link_files(self):
-        status, headers, body = self.get("/doc/REF/02-drafts/FEAT-001.story.md")
+        status, headers, body = self.get("/doc/REF/features/FEAT-001/FEAT-001.story.md")
         self.assertEqual((status, body), (200, b"# Story\n"))
         self.assertEqual(headers["Content-Type"], "text/markdown; charset=utf-8")
         self.assertIn("default-src 'none'", headers["Content-Security-Policy"])
@@ -285,17 +292,17 @@ class DocTests(unittest.TestCase):
             "/doc/REF/%252e%252e/outside.md",
             "/doc/REF//etc/passwd",
             "/doc/REF/..%2foutside.md",
-            "/doc/REF/02-drafts%5c..%5cleak.md",
-            "/doc/REF/02-drafts/leak.md",
+            "/doc/REF/features%5c..%5cleak.md",
+            "/doc/REF/features/FEAT-001/leak.md",
             "/doc/REF/.git/notes.md",
             "/doc/REF/workspace.yaml",
             "/doc/REF/records/Q-001.py",
             "/doc/REF/.metadata/data/tasks.json",
             "/doc/REF/.metadata/write-log.json",
             "/doc/REF/console/src/README.md",
-            "/doc/REF/02-drafts/",
+            "/doc/REF/features/",
             "/doc/REF/missing.md",
-            "/doc/ORD/02-drafts/FEAT-001.story.md",
+            "/doc/ORD/features/FEAT-001/FEAT-001.story.md",
             "/doc/REF",
             "/doc/%00",
         ):
@@ -306,7 +313,7 @@ class DocTests(unittest.TestCase):
             self.assertEqual(self.get("/doc/REF/00-brief.pdf")[0], 413)
 
     def test_only_get_and_head_and_only_for_the_right_host(self):
-        self.assertEqual(self.get("/doc/REF/02-drafts/FEAT-001.story.md", "POST")[0], 405)
+        self.assertEqual(self.get("/doc/REF/features/FEAT-001/FEAT-001.story.md", "POST")[0], 405)
         self.assertEqual(self.get("/doc/", host="evil.example")[0], 403)
 
     def test_without_projects_the_documents_are_off(self):

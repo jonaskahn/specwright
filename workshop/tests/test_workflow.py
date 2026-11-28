@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from kitlib import frontmatter, hashing, jira_port, publish, review, tables, workspace
+from tests.support import put
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -84,13 +85,17 @@ class WorkflowTestCase(unittest.TestCase):
             governance={"signoff": self.signoff},
         )
         self.base = self.root
-        self.draft = self.root / "02-drafts" / "FEAT-001.story.md"
+        self.draft = self.root / "features" / "FEAT-001" / "FEAT-001.story.md"
+        for feat in ("FEAT-001", "FEAT-002"):
+            for kind in ("features", "tasks", "plans"):
+                (self.root / kind / feat).mkdir(parents=True, exist_ok=True)
+        (self.root / "epics" / "EPIC-001").mkdir(parents=True, exist_ok=True)
         self.draft.write_text(DRAFT)
         card = (
             "---\nid: FEAT-001\ntype: feature\nscope: REF\nstatus: in-review\ncard: true\n"
             "home: repo\nlinks: [https://example.test/card]\n---\n## Summary\nRefund request.\n"
         )
-        (self.root / "02-drafts" / "FEAT-001.card.md").write_text(card)
+        put(self.root / "features" / "FEAT-001" / "FEAT-001.card.md", card)
         (self.root / ".metadata" / "lint-report.md").write_text(
             "# Lint report\n\nScope: REF · Gate: publish\n\n0 blocking error(s).\n"
         )
@@ -281,10 +286,12 @@ class PublishTests(WorkflowTestCase):
             ),
         )
         self.draft.write_text(text)
-        (self.root / "03-plan/FEAT-001.plan.md").write_text(
-            "# Implementation plan\n\nImplement both acceptance criteria.\n"
+        put(
+            self.root / "plans/FEAT-001/FEAT-001.plan.md",
+            "# Implementation plan\n\nImplement both acceptance criteria.\n",
         )
-        (self.root / "03-plan/FEAT-001.tasks.md").write_text(
+        put(
+            self.root / "tasks/FEAT-001/FEAT-001.tasks.md",
             frontmatter.render(
                 {"feat": "FEAT-001", "status": "ready", "spec_hash": hashing.draft_hash(text)},
                 "\n".join(
@@ -292,7 +299,7 @@ class PublishTests(WorkflowTestCase):
                     "Done when: criterion is verified\n"
                     for n in (1, 2)
                 ),
-            )
+            ),
         )
 
     def test_identity_checks_registry_then_label_then_property(self):

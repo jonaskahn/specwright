@@ -797,8 +797,9 @@ def story_sections(tooling: dict[str, Any], bo: str, feat_num: str) -> dict[str,
         ),
         "Context": (
             f"Layers: {names}. Coverage floor {cov}%. CI: {ci}. Hooks: "
-            f"{tooling.get('hooks', 'none')}. Reference files: `02-drafts/foundation/Makefile`, "
-            "`02-drafts/foundation/AGENTS.md`"
+            f"{tooling.get('hooks', 'none')}. Reference files: "
+            "`features/FEAT-NNN/foundation/Makefile`, "
+            "`features/FEAT-NNN/foundation/AGENTS.md`"
             + (" and `CLAUDE.md`" if tooling.get("ai_workflow") == "agents+claude" else "")
             + ". Tool versions: current stable from official docs, pinned in the lockfiles."
         ),

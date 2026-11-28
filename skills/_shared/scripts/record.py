@@ -126,7 +126,7 @@ def _parser():
     _decider(split)
 
     bak = _add(top, "backup", "archive an authored artifact just before an accepted edit")
-    bak.add_argument("path", help="project-relative path, e.g. 02-drafts/FEAT-001.md")
+    bak.add_argument("path", help="project-relative path, e.g. features/FEAT-001/FEAT-001.story.md")
 
     reg = _add(top, "register", "set registry cells (ownership checked)")
     reg.add_argument("key")

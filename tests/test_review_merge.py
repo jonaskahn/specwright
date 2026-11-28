@@ -22,11 +22,11 @@ class Debate(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.base = Path(self.tmp.name)
-        (self.base / "02-drafts").mkdir()
-        self.story = self.base / "02-drafts/FEAT-001.story.md"
+        self.story = self.base / "features/FEAT-001/FEAT-001.story.md"
+        self.story.parent.mkdir(parents=True)
         self.story.write_text(STORY)
         debate.start(self.base, "FEAT-001", "subagent")
-        self.record = self.base / debate.FOLDER / "FEAT-001.debate.md"
+        self.record = self.base / "features/FEAT-001/review" / "FEAT-001.debate.md"
 
     def tearDown(self):
         self.tmp.cleanup()

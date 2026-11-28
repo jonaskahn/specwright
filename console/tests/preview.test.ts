@@ -6,9 +6,9 @@ import { serve } from './golden';
 describe('a program names files from the workspace root, the server from the project', async () => {
   const program = await loadAll('./data/', serve('program'));
   it('opens a project item at its path inside that project', () => {
-    expect(forKey(program, 'ORD:AC-001-2')).toMatchObject({ scope: 'ORD', path: '02-drafts/FEAT-001.story.md' });
-    expect(forKey(program, 'REF:EPIC-001')).toMatchObject({ scope: 'REF', path: '01-analysis/epics/EPIC-001.md' });
-    expect(forKey(program, 'ORD:FEAT-001')?.path).toBe('02-drafts/FEAT-001.story.md');
+    expect(forKey(program, 'ORD:AC-001-2')).toMatchObject({ scope: 'ORD', path: 'features/FEAT-001/FEAT-001.story.md' });
+    expect(forKey(program, 'REF:EPIC-001')).toMatchObject({ scope: 'REF', path: 'epics/EPIC-001/EPIC-001.md' });
+    expect(forKey(program, 'ORD:FEAT-001')?.path).toBe('features/FEAT-001/FEAT-001.story.md');
   });
 });
 
@@ -16,12 +16,12 @@ describe('what the preview opens for an item or a file', async () => {
   const trace = await loadAll('./data/', serve('trace'));
 
   it('opens a criterion at its line in the story', () => {
-    expect(forKey(trace, 'REF:AC-001-2')).toMatchObject({ key: 'REF:AC-001-2', kind: 'ac', scope: 'REF', path: '02-drafts/FEAT-001.story.md', line: 26, title: 'Duplicate request' });
+    expect(forKey(trace, 'REF:AC-001-2')).toMatchObject({ key: 'REF:AC-001-2', kind: 'ac', scope: 'REF', path: 'features/FEAT-001/FEAT-001.story.md', line: 26, title: 'Duplicate request' });
   });
 
   it('opens a task at its heading in the plan, and a feature at the top of its story', () => {
-    expect(forKey(trace, 'REF:TASK-001-1')).toMatchObject({ path: '03-plan/FEAT-001.tasks.md', line: 8 });
-    expect(forKey(trace, 'REF:FEAT-001')).toMatchObject({ path: '02-drafts/FEAT-001.story.md', line: 1 });
+    expect(forKey(trace, 'REF:TASK-001-1')).toMatchObject({ path: 'tasks/FEAT-001/FEAT-001.tasks.md', line: 8 });
+    expect(forKey(trace, 'REF:FEAT-001')).toMatchObject({ path: 'features/FEAT-001/FEAT-001.story.md', line: 1 });
   });
 
   it('accepts an identifier written without its project when only one item matches', () => {

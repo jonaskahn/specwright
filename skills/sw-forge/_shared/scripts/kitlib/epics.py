@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from kitlib import frontmatter, ids
+from kitlib import frontmatter, ids, paths
 
 DEFAULT_TEMPLATE = """---
 id: EPIC-NNN
@@ -91,7 +91,7 @@ def build(
             "scopes": participants,
         }
     )
-    path = root / "01-analysis" / "epics" / ids.record_filename(identity, title)
+    path = paths.epic_dir(root, identity) / ids.record_filename(identity, title)
     return identity, path, frontmatter.render(fm, body)
 
 
@@ -114,7 +114,7 @@ def create(
 
 def set_objectives(root: Path, scope: str, epic: str, values: list[str]) -> Path:
     """Replace the business objectives of an existing epic, keeping everything else."""
-    path = ids.find_record(root / "01-analysis" / "epics", epic)
+    path = ids.find_record(paths.epic_dir(root, epic), epic)
     if path is None:
         raise ValueError(f"{epic} is not an epic of {scope}")
     serves = objectives(root, scope, values)

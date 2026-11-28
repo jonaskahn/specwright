@@ -1,7 +1,7 @@
 # Agent task prompts
 
 `scripts/task_prompts.py --feat FEAT-NNN` (finish.py runs it for ready tasks) writes
-`03-plan/prompts/FEAT-NNN/TASK-NNN-k.md` and `_order.md` (dependency order).
+`tasks/FEAT-NNN/prompts/TASK-NNN-k.md` and `_order.md` (dependency order).
 
 Each prompt is self-contained, in this order: Goal · Done when · Acceptance criteria (verbatim)
 · Rules (traced BR/NFR lines) · Implementation plan (the task's own plan section) · Stack (layer line, lock hash, forbidden, needs-approval,

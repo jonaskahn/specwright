@@ -27,7 +27,7 @@ prompt relies on `make check` and `AGENTS.md`.
 2. Reserve the story with the owner's yes: `record.py accept-split --new-epic "Project
    foundation" --bo BO-NNN --item "Set up project foundation|foundation"` (no BO yet → ask).
 3. `new_story.py --reserved FEAT-NNN`, set `links:`, then `foundation.py draft --feat FEAT-NNN`.
-   It fills the twelve sections and writes reference files: `02-drafts/foundation/Makefile`,
+   It fills the twelve sections and writes reference files: `features/FEAT-NNN/foundation/Makefile`,
    `AGENTS.md` and (agents+claude) `CLAUDE.md` with `@AGENTS.md`.
 4. Continue as any story: consumer checks, illustration check, hash, card, finish → review.
 

@@ -10,7 +10,18 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from kitlib import blockers, frontmatter, fsio, hashing, ids, review, tables, workspace, writelog
+from kitlib import (
+    blockers,
+    frontmatter,
+    fsio,
+    hashing,
+    ids,
+    paths,
+    review,
+    tables,
+    workspace,
+    writelog,
+)
 
 VERSION = 1
 ACTIONS = {
@@ -114,7 +125,7 @@ def publication(base: Path, key: str) -> dict:
 
 def feature(base: Path, key: str, status: str = "reserved") -> dict:
     feat = key.split(":")[-1]
-    path = base / "02-drafts" / f"{feat}.story.md"
+    path = paths.story(base, feat)
     text = path.read_text(encoding="utf-8") if path.is_file() else ""
     parsed = frontmatter.parse(text)
     fm = parsed.fm or {}
@@ -200,17 +211,17 @@ def feature(base: Path, key: str, status: str = "reserved") -> dict:
 
 def input_hash(base: Path) -> str:
     """Bind confirmation to current artifacts, decisions and mappings, not a cache."""
-    paths = []
-    for folder in ("01-analysis", "02-drafts", "03-plan", "records", "snapshots"):
-        paths.extend(p for p in (base / folder).rglob("*.md") if not p.is_symlink())
-    paths += [
+    files = []
+    for folder in ("01-analysis", *paths.ITEM_FOLDERS, "records", "snapshots"):
+        files.extend(p for p in (base / folder).rglob("*.md") if not p.is_symlink())
+    files += [
         base / "project.yaml",
         base / ".metadata/id-registry.md",
         base / ".metadata/lint-report.md",
     ]
     payload = [
         (str(p.relative_to(base)), hashing.bytes_hash(p.read_bytes()))
-        for p in sorted(set(paths))
+        for p in sorted(set(files))
         if p.is_file()
     ]
     return hashing.text_hash(json.dumps(payload, sort_keys=True))
@@ -269,7 +280,7 @@ def transition(
     if action == "set-destination" and destination is None:
         raise ValueError("set-destination requires a destination")
     feat = key.split(":")[-1]
-    story = base / "02-drafts" / f"{feat}.story.md"
+    story = paths.story(base, feat)
     for protected in (base / "records", base / ".metadata", story):
         if protected.is_symlink() or not protected.resolve().is_relative_to(base.resolve()):
             raise ValueError("transition paths must remain inside the scope and not be symlinks")

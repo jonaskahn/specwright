@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from kitlib import frontmatter, hashing, ids, markdown, rtm, schema
+from kitlib import frontmatter, hashing, ids, markdown, paths, rtm, schema
 
 APPROVED = ("ready-to-publish", "published", "ready-for-dev", "in-development", "done")
 
@@ -29,7 +29,9 @@ def _visual_findings(base: Path, tid: str, block, layer: str | None, story_visua
     """A task's Visuals must name registered assets or existing diagrams; UI tasks must cite one."""
     text = block.field_line("Visuals")
     cited = [r.id for r in ids.find_refs(text) if r.id.startswith("ASSET-")]
-    paths = [p.rstrip(".,;") for p in text.replace(",", " ").split() if p.startswith("diagrams/")]
+    diagrams = [
+        p.rstrip(".,;") for p in text.replace(",", " ").split() if p.startswith("diagrams/")
+    ]
     kinds = asset_kinds(base)
     out = [
         f"{tid}: Visuals names {a}, which is not in the asset registry"
@@ -37,9 +39,11 @@ def _visual_findings(base: Path, tid: str, block, layer: str | None, story_visua
         if a not in kinds
     ]
     out += [
-        f"{tid}: Visuals names {p}, which does not exist" for p in paths if not (base / p).is_file()
+        f"{tid}: Visuals names {p}, which does not exist"
+        for p in diagrams
+        if not (base / p).is_file()
     ]
-    if layer in schema.UI_TASK_LAYERS and story_visuals and not (cited or paths):
+    if layer in schema.UI_TASK_LAYERS and story_visuals and not (cited or diagrams):
         out.append(
             f"{tid}: a {layer} task needs Visuals: cite the mockup or diagram it builds "
             f"({', '.join(sorted(story_visuals))})"
@@ -50,8 +54,8 @@ def _visual_findings(base: Path, tid: str, block, layer: str | None, story_visua
 def check(base: Path, feat: str):
     """Keep the CLI's (path, findings, parsed) contract without writing files."""
     findings = []
-    story = base / "02-drafts" / f"{feat}.story.md"
-    tasks_path = base / "03-plan" / f"{feat}.tasks.md"
+    story = paths.story(base, feat)
+    tasks_path = paths.tasks_file(base, feat)
     if not story.is_file():
         return None, [f"{feat}: story draft not found"], None
     text = story.read_text(encoding="utf-8")
@@ -67,7 +71,8 @@ def check(base: Path, feat: str):
     if approval_state(base, feat, text) != "fresh":
         findings.append(f"{feat}: active approval is absent, stale or invalidated")
     if not tasks_path.is_file():
-        return tasks_path, [*findings, f"{feat}: no tasks file at 03-plan/{feat}.tasks.md"], None
+        missing = f"{feat}: no tasks file at tasks/{feat}/{feat}.tasks.md"
+        return tasks_path, [*findings, missing], None
     tp = frontmatter.parse(tasks_path.read_text(encoding="utf-8"))
     if tp.error or not tp.fm:
         return tasks_path, [*findings, f"tasks file front matter: {tp.error or 'missing'}"], None
@@ -123,7 +128,7 @@ def check(base: Path, feat: str):
 def planning(base: Path, feat: str) -> dict:
     """A plan is deliverable only when both artifacts and current coverage exist."""
     _, findings, _ = check(base, feat)
-    path = base / "03-plan" / f"{feat}.plan.md"
+    path = paths.plan_file(base, feat)
     if not path.is_file() or not frontmatter.parse(path.read_text(encoding="utf-8")).body.strip():
         findings.append(f"{feat}: implementation plan is missing or empty")
     return {"passing": not findings, "findings": findings}
@@ -151,7 +156,7 @@ def task_sections(body: str) -> dict[str, markdown.Section]:
 
 def plan_findings(base: Path, feat: str) -> list[str]:
     """Every active task needs a detailed plan section; a gone task's section is stale."""
-    path = base / "03-plan" / f"{feat}.plan.md"
+    path = paths.plan_file(base, feat)
     parsed = frontmatter.parse(path.read_text(encoding="utf-8"))
     if parsed.error:
         return [f"{feat}: plan front matter: {parsed.error}"]
@@ -160,7 +165,7 @@ def plan_findings(base: Path, feat: str) -> list[str]:
         f"{feat}: plan section '{name}' is missing" for name in PLAN_SECTIONS if name not in found
     ]
     sections = task_sections(parsed.body)
-    tasks_path = base / "03-plan" / f"{feat}.tasks.md"
+    tasks_path = paths.tasks_file(base, feat)
     blocks = {}
     if tasks_path.is_file():
         blocks = markdown.task_blocks(
@@ -186,7 +191,7 @@ def plan_findings(base: Path, feat: str) -> list[str]:
 
 def label(base: Path, feat: str) -> str:
     """`FEAT-001 — Request a refund (LEG-100)`: the ID with the names a reader knows it by."""
-    story = base / "02-drafts" / f"{feat}.story.md"
+    story = paths.story(base, feat)
     fm = (frontmatter.parse(story.read_text(encoding="utf-8")).fm or {}) if story.is_file() else {}
     name = str(fm.get("title") or fm.get("jira_summary") or "")
     aliases = [str(a) for a in fm.get("aliases") or []]

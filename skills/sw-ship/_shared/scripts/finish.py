@@ -23,7 +23,7 @@ import argparse  # noqa: E402
 import json  # noqa: E402
 import subprocess  # noqa: E402
 
-from kitlib import workspace  # noqa: E402
+from kitlib import paths, workspace  # noqa: E402
 
 # One row per public skill. sw-craft runs the BA line, so it takes the union of every phase
 # gate: the narrowest gate that still lets its automatic review pass. Its `analyze` flag runs
@@ -33,14 +33,14 @@ CONF = {
     "sw-craft": {
         "gate": "review",
         "data": ["sources", "registry", "quality"],
-        "style": ["01-analysis/", "02-drafts/"],
+        "style": ["01-analysis/", "epics/", "features/"],
         "status": True,
         "analyze": True,
     },
     "sw-forge": {
         "gate": "review",
         "data": ["tasks", "registry"],
-        "style": ["03-plan/"],
+        "style": ["tasks/", "plans/"],
         "plan": True,
     },
     "sw-ship": {"gate": "publish", "data": ["registry", "quality"], "style": []},
@@ -160,7 +160,7 @@ def main(argv=None):
     # Plan: stack check and agent prompts per feature with a tasks file.
     if conf.get("plan"):
         feats = [i.split(":")[-1] for i in a.item] or sorted(
-            p.name.split(".")[0] for p in (base / "03-plan").glob("FEAT-*.tasks.md")
+            p.name.split(".")[0] for p in paths.tasks_files(base)
         )
         scripts = _skill_scripts(a.skill)
         report["stack"], report["prompts"] = {}, {}

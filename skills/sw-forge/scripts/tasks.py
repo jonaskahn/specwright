@@ -20,7 +20,7 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import frontmatter, fsio, ids, task_validation, workspace  # noqa: E402
+from kitlib import frontmatter, fsio, ids, paths, task_validation, workspace  # noqa: E402
 
 APPROVED = task_validation.APPROVED
 check = task_validation.check
@@ -47,7 +47,7 @@ def main(argv=None):
         print(task_validation.label(base, feat))
         plan = (
             task_validation.plan_findings(base, feat)
-            if (base / "03-plan" / f"{feat}.plan.md").is_file()
+            if (paths.plan_file(base, feat)).is_file()
             else []
         )
         for line in findings:

@@ -8,7 +8,7 @@ content stay serial.
 ## Lead
 
 1. Resolve scope and list the batch from the registry and graph board (reserved, accepted,
-   no `02-drafts/FEAT-NNN.story.md`), keeping only features with no unfinished `depends_on`
+   no `features/FEAT-NNN/FEAT-NNN.story.md`), keeping only features with no unfinished `depends_on`
    (`graph.py ready --kind feat`; `references/layered-writing.md`). Show it in one line and start; under `flow: auto` there is no
    entry question (`_shared/references/handoff.md`), under `flow: guided` one yes covers the batch.
 2. For each item run `_shared/scripts/graph.py context`; read its answered questions,
@@ -16,7 +16,7 @@ content stay serial.
    decision two items share before briefing.
 3. Take the guard snapshot, then launch one worker per item in a single message.
 4. After all workers return, run the guard `verify` with these allow-lists per item:
-   `FEAT-NNN=02-drafts/FEAT-NNN.*,diagrams/FEAT-NNN-*,.metadata/work/illustration-FEAT-NNN.json`
+   `FEAT-NNN=features/FEAT-NNN/FEAT-NNN.*,diagrams/FEAT-NNN-*,.metadata/work/illustration-FEAT-NNN.json`
 5. Reconcile once: save each worker's proposed questions with `record.py q new` (at most
    three `[NEEDS CLARIFICATION]` markers per document, each linked to a real Q), apply the
    RTM draft columns through the trace capability, run `spec_hash.py --check` and the lint
@@ -35,7 +35,7 @@ Give each worker only this, with its FEAT filled in:
 > Run `new_story.py --reserved FEAT-NNN`, fill all twelve sections, write the criteria, run
 > `illustration_check.py FEAT-NNN --json` and draw only when it says so (name files
 > `diagrams/FEAT-NNN-<slug>.*`), then `spec_hash.py --stamp` and `card_gen.py`.
-> Write only `02-drafts/FEAT-NNN.*`, `diagrams/FEAT-NNN-*` and
+> Write only `features/FEAT-NNN/FEAT-NNN.*`, `diagrams/FEAT-NNN-*` and
 > `.metadata/work/illustration-FEAT-NNN.json`. Do not write records, the registry, the RTM, the
 > graph or any other feature's files, and do not run lint, graph build or data export.
 > Return: the files written, the illustration chip, and up to five ranked proposed

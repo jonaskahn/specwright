@@ -98,7 +98,7 @@ class BlockerTests(WorkflowTestCase):
             timeout=30,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertTrue((self.base / "02-drafts/FEAT-002.story.md").is_file())
+        self.assertTrue((self.base / "features/FEAT-002/FEAT-002.story.md").is_file())
         self.assertIn("blocking question Q-001 is open", result.stderr)
         none = subprocess.run(
             [sys.executable, str(SCRIPT), "--scope-root", str(self.base), "--scope", "REF"],

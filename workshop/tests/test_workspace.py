@@ -37,7 +37,7 @@ class FlatTests(WorkspaceTestCase):
         for folder in (
             "00-inbox",
             "01-analysis",
-            "02-drafts",
+            "features",
             "diagrams",
             "records",
             "snapshots",
@@ -204,10 +204,10 @@ class FlatTests(WorkspaceTestCase):
     def test_detect_and_resolve_in_flat_mode(self):
         self.assertEqual(workspace.detect(self.root)["mode"], "none")
         self.init_flat()
-        info = workspace.detect(self.root / "02-drafts")
+        info = workspace.detect(self.root / "features")
         self.assertEqual((info["mode"], info["scopes"]), ("flat", ["REF"]))
         self.assertEqual(
-            workspace.resolve(self.root, cwd=self.root / "02-drafts", write=True), "REF"
+            workspace.resolve(self.root, cwd=self.root / "features", write=True), "REF"
         )
         self.assertEqual(workspace.scope_dir(self.root, "REF"), self.root)
 
@@ -238,11 +238,11 @@ class ProgramTests(WorkspaceTestCase):
         self.assertEqual((self.root / "workspace.yaml").read_bytes(), before)
 
     def test_root_is_found_from_a_nested_project_folder(self):
-        nested = self.root / "projects" / "ORD" / "02-drafts"
+        nested = self.root / "projects" / "ORD" / "features"
         self.assertEqual(workspace.find_root(nested), self.root)
 
     def test_resolution_order(self):
-        nested = self.root / "projects" / "ORD" / "02-drafts"
+        nested = self.root / "projects" / "ORD" / "features"
         self.assertEqual(workspace.resolve(self.root, arg="REF", cwd=nested), "REF")
         self.assertEqual(workspace.resolve(self.root, ref="REF:FEAT-001", cwd=nested), "REF")
         self.assertEqual(workspace.resolve(self.root, cwd=nested, write=True), "ORD")

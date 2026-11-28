@@ -43,7 +43,7 @@ def _base(scope_root: Path | None, cwd: Path) -> Path:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("feature", help="feature ID such as FEAT-002")
-    parser.add_argument("--scope-root", type=Path, help="project directory that holds 02-drafts/")
+    parser.add_argument("--scope-root", type=Path, help="project directory that holds features/")
     parser.add_argument("--cwd", type=Path, default=Path("."))
     parser.add_argument("--json", action="store_true", help="write the chip under .metadata/work/")
     parser.add_argument("--dismiss", help="record illustration: none with this reason")

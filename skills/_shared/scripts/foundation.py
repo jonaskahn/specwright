@@ -9,7 +9,7 @@
     foundation.py analyze                        what each code folder already has (names only)
     foundation.py draft --feat FEAT-NNN [--bo BO-NNN]
                                                  fill the reserved story; write reference files
-                                                 02-drafts/foundation/{Makefile,AGENTS.md,CLAUDE.md}
+                                                 features/FEAT-NNN/foundation/{Makefile,AGENTS.md,CLAUDE.md}
                                                  and <layer>/AGENTS.md when there are several layers
 
 Common: --cwd <project> [--scope S]. Tooling lives in stack.yaml `tooling` (outside the stack
@@ -27,7 +27,7 @@ import argparse  # noqa: E402
 import json  # noqa: E402
 import re  # noqa: E402
 
-from kitlib import coderoots, foundation, frontmatter, fsio, stack, workspace  # noqa: E402
+from kitlib import coderoots, foundation, frontmatter, fsio, paths, stack, workspace  # noqa: E402
 
 
 def _profile_path(root, scope):
@@ -124,7 +124,7 @@ def main(argv=None):
         if not a.feat:
             raise ValueError("draft needs --feat FEAT-NNN")
         feat = a.feat.split(":")[-1]
-        story = base / "02-drafts" / f"{feat}.story.md"
+        story = paths.story(base, feat)
         if not story.is_file():
             raise ValueError(f"no story {feat}; reserve and create it first (new_story.py)")
         tooling = data.get("tooling")
@@ -143,7 +143,7 @@ def main(argv=None):
         fsio.atomic_write(story, text)
         name = str(workspace.load(base / workspace.FLAT_MANIFEST).get("name") or scope)
         lines = {k: stack.layer_line(profile, k) for k in foundation.code_layers(profile)}
-        out = base / "02-drafts" / "foundation"
+        out = paths.foundation_dir(base, feat)
         fsio.atomic_write(out / "Makefile", foundation.makefile(tooling, name))
         written = ["Makefile"]
         if tooling.get("ai_workflow", "none") != "none":
@@ -166,8 +166,8 @@ def main(argv=None):
         print(
             json.dumps(
                 {
-                    "story": f"02-drafts/{feat}.story.md",
-                    "files": [f"02-drafts/foundation/{w}" for w in written],
+                    "story": paths.story(base, feat).relative_to(base).as_posix(),
+                    "files": [(out / w).relative_to(base).as_posix() for w in written],
                 },
                 indent=2,
             )

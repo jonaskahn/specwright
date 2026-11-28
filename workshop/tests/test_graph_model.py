@@ -12,7 +12,7 @@ class GraphModelTests(WorkflowTestCase):
 
     def epic_and_split(self, **split):
         self.write(
-            "01-analysis/epics/EPIC-001.md",
+            "epics/EPIC-001/EPIC-001.md",
             {"id": "EPIC-001", "type": "epic", "scope": "REF", "status": "approved"},
             "# Refunds\n",
         )
@@ -45,7 +45,7 @@ class GraphModelTests(WorkflowTestCase):
     def test_one_decision_can_place_features_in_several_epics(self):
         self.epic_and_split(epics=["REF:EPIC-001", "REF:EPIC-002"])
         self.write(
-            "01-analysis/epics/EPIC-002.md",
+            "epics/EPIC-002/EPIC-002.md",
             {"id": "EPIC-002", "type": "epic", "scope": "REF", "status": "approved"},
             "# Payments\n",
         )

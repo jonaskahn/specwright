@@ -25,6 +25,7 @@ from kitlib import (
     task_validation,
     workspace,
 )
+from tests.support import put
 from tests.test_lint_rules import GOOD, doc, lint, update
 from tests.test_workflow import FakePort, WorkflowTestCase
 
@@ -61,17 +62,18 @@ class SoloTestCase(WorkflowTestCase):
 
     def write_plan(self):
         text = self.draft.read_text()
-        (self.base / "03-plan/FEAT-001.plan.md").write_text("# Plan\nImplement criteria.\n")
+        put(self.base / "plans/FEAT-001/FEAT-001.plan.md", "# Plan\nImplement criteria.\n")
         tasks = "\n".join(
             f"### TASK-001-{n} — [backend] Criterion\nTraces to: AC-001-{n}\n"
             "Done when: observable criterion verified\n"
             for n in (1, 2)
         )
-        (self.base / "03-plan/FEAT-001.tasks.md").write_text(
+        put(
+            self.base / "tasks/FEAT-001/FEAT-001.tasks.md",
             frontmatter.render(
                 {"feat": "FEAT-001", "status": "ready", "spec_hash": hashing.draft_hash(text)},
                 tasks,
-            )
+            ),
         )
 
     def set_mode(self, value):
@@ -303,7 +305,7 @@ class PublishWithoutPlanTests(SoloTestCase):
     def test_publishing_an_accepted_story_needs_no_tasks(self):
         self.assertTrue(publish.preconditions(self.ctx()))
         self.accept()
-        self.assertFalse((self.base / "03-plan/FEAT-001.tasks.md").exists())
+        self.assertFalse((self.base / "tasks/FEAT-001/FEAT-001.tasks.md").exists())
         self.assertEqual(publish.preconditions(self.ctx()), [])
 
     def test_a_stale_accept_blocks_publishing(self):

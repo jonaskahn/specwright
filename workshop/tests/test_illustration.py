@@ -70,11 +70,10 @@ class ChipTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.base = Path(self.tmp.name)
-        self.drafts = self.base / "02-drafts"
-        self.drafts.mkdir()
 
     def write_story(self, text, name="FEAT-009.story.md"):
-        path = self.drafts / name
+        path = self.base / "features" / name.split(".")[0] / name
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text)
         return path
 
@@ -164,9 +163,9 @@ class CommandTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.base = Path(self.tmp.name)
-        drafts = self.base / "02-drafts"
-        drafts.mkdir()
-        (drafts / "FEAT-009.story.md").write_text(DRAW)
+        story = self.base / "features/FEAT-009/FEAT-009.story.md"
+        story.parent.mkdir(parents=True)
+        story.write_text(DRAW)
 
     def run_cli(self, *args):
         return subprocess.run(
@@ -195,7 +194,7 @@ class CommandTests(unittest.TestCase):
         )
         self.assertEqual(dismissed.returncode, 0, dismissed.stderr)
         self.assertIn("no illustration", dismissed.stdout)
-        story = (self.base / "02-drafts/FEAT-009.story.md").read_text()
+        story = (self.base / "features/FEAT-009/FEAT-009.story.md").read_text()
         self.assertEqual(hashing.draft_hash(story), hashing.draft_hash(DRAW))
 
     def test_usage_and_missing_files_exit_2(self):

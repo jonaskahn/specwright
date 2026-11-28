@@ -24,7 +24,7 @@ if str(_here) not in sys.path:
 import argparse  # noqa: E402
 import json  # noqa: E402
 
-from kitlib import markdown, stack, workspace  # noqa: E402
+from kitlib import markdown, paths, stack, workspace  # noqa: E402
 
 
 def _out(data, fmt):
@@ -112,7 +112,7 @@ def main(argv=None):
             if not a.feat:
                 raise stack.StackError("check needs --feat FEAT-NNN")
             feat = a.feat.split(":")[-1]
-            path = workspace.scope_dir(root, scope) / "03-plan" / f"{feat}.tasks.md"
+            path = paths.tasks_file(workspace.scope_dir(root, scope), feat)
             if not path.is_file():
                 raise stack.StackError(f"no tasks file at {path}")
             blocks = markdown.task_blocks(path.read_text(encoding="utf-8"))

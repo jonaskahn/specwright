@@ -15,7 +15,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from kitlib import frontmatter, markdown
+from kitlib import frontmatter, markdown, paths
 
 STATUSES = ("done", "partial", "missing", "divergent", "unknown")
 CONFIDENCE = ("high", "medium", "low")
@@ -148,7 +148,7 @@ def check(path: Path, roots: dict[str, Path]) -> dict[str, Any]:
     verifies = str(parsed.fm.get("verifies") or "").split(":")[-1]
     verified = None
     if verifies:
-        story = path.parents[2] / "02-drafts" / f"{verifies}.story.md"
+        story = paths.story(path.parents[2], verifies)
         if story.is_file():
             sp = frontmatter.parse(story.read_text(encoding="utf-8"))
             want = set(markdown.ac_blocks(markdown.sections(sp.body).get("Acceptance criteria")))

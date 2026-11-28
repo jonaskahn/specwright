@@ -61,7 +61,7 @@ class LayoutTests(unittest.TestCase):
 
     def findings(self, text):
         return lint.lint_document(
-            lint.Doc.from_text("02-drafts/FEAT-001.story.md", text),
+            lint.Doc.from_text("features/FEAT-001/FEAT-001.story.md", text),
             lint.Context(
                 Path("."), docs=[], gate="review", definitions=lint.definitions_for([], "REF")
             ),

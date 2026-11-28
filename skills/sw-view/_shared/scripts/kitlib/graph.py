@@ -20,6 +20,7 @@ from kitlib import (
     hashing,
     ids,
     markdown,
+    paths,
     provenance,
     rtm,
     schema,
@@ -185,9 +186,11 @@ def input_files(root: Path, scopes: list[str]) -> list[Path]:
             out.append(base / workspace.FLAT_MANIFEST)
         for folder, pattern in (
             ("01-analysis", "*.md"),
-            ("02-drafts", "*.md"),
-            ("02-drafts", "*.feature"),
-            ("03-plan", "*.md"),
+            ("epics", "*.md"),
+            ("features", "*.md"),
+            ("features", "*.feature"),
+            ("tasks", "*.md"),
+            ("plans", "*.md"),
             ("records", "*.md"),
             ("snapshots", "*.md"),
             ("diagrams", "*.json"),
@@ -446,7 +449,7 @@ def _scope_artifacts(graph: Graph, root: Path, scope: str, entities: dict[str, A
                 )
             )
     _asset_registry_edges(graph, root, base, scope)
-    for path in sorted((base / "02-drafts").glob("*.feature")):
+    for path in paths.feature_files(base):
         if path.is_symlink():
             continue
         feat = feat_key(path.name.split(".")[0])
@@ -466,7 +469,7 @@ def _scope_artifacts(graph: Graph, root: Path, scope: str, entities: dict[str, A
                 graph.edges.append(
                     Edge(key, "exercises", f"{scope}:{tag}", "declared", rel, number)
                 )
-    for path in sorted((base / "03-plan").glob("*.md")):
+    for path in [*paths.tasks_files(base), *paths.plan_files(base)]:
         if path.is_symlink():
             continue
         rel = _rel(path, root)

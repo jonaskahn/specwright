@@ -41,7 +41,7 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import analysis, coderoots, frontmatter, fsio, hashing, markdown, workspace  # noqa: E402
+from kitlib import analysis, coderoots, frontmatter, fsio, hashing, markdown, paths, workspace  # noqa: E402
 
 ACTIONS = ("add", "change", "remove", "keep")
 ACCEPTED = ("ready-to-publish", "published", "ready-for-dev", "in-development")
@@ -49,7 +49,7 @@ AC_ID = re.compile(r"AC-\d{3}-\d+")
 
 
 def _story(base: Path, feat: str) -> Path:
-    return base / "02-drafts" / f"{feat}.story.md"
+    return paths.story(base, feat)
 
 
 def _load(path: Path):

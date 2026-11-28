@@ -15,7 +15,7 @@ As the customer who bought a delivered order, I want to lodge a refund request w
 
 ## Links
 - Home: Not published
-- Draft: 02-drafts/FEAT-001.story.md
+- Draft: features/FEAT-001/FEAT-001.story.md
 
 ## Trace
 BO-001 · BR-001 · Q-002 · NFR-REF-001

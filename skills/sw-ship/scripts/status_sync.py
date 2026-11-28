@@ -30,7 +30,7 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import frontmatter, fsio, miniyaml, workspace  # noqa: E402
+from kitlib import frontmatter, fsio, miniyaml, paths, workspace  # noqa: E402
 
 DEFAULT_MAP = {
     "accepted": "To Do",
@@ -62,7 +62,7 @@ def _registry(base: Path) -> dict[str, str]:
 
 
 def local_state(base: Path, feat: str) -> str:
-    story = base / "02-drafts" / f"{feat}.story.md"
+    story = paths.story(base, feat)
     if not story.is_file():
         return "unknown"
     fm = frontmatter.parse(story.read_text(encoding="utf-8")).fm or {}
@@ -74,7 +74,7 @@ def local_state(base: Path, feat: str) -> str:
     if fm.get("origin") == "as-is" and status in ACCEPTED:
         return "shipped"  # version 1 of a live feature
     if status in ACCEPTED:
-        tasks = base / "03-plan" / f"{feat}.tasks.md"
+        tasks = paths.tasks_file(base, feat)
         if tasks.is_file():
             tfm = frontmatter.parse(tasks.read_text(encoding="utf-8")).fm or {}
             if tfm.get("status") == "ready":

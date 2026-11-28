@@ -3,7 +3,7 @@
 
     task_prompts.py --feat FEAT-NNN [--scope SCOPE] [--cwd <project>] [--draft]
 
-Output: 03-plan/prompts/FEAT-NNN/TASK-NNN-n.md plus _order.md (dependency order). Each prompt
+Output: tasks/FEAT-NNN/prompts/TASK-NNN-n.md plus _order.md (dependency order). Each prompt
 holds the task, its acceptance criteria verbatim, the rule lines it traces to, the locked stack
 for its layer, inputs and the stop conditions; nothing else, so an agent needs no other file.
 The folder is regenerated each run (prompts of withdrawn tasks are removed). Prompts are
@@ -36,12 +36,11 @@ from kitlib import (  # noqa: E402
     hashing,
     ids,
     markdown,
+    paths,
     stack,
     task_validation,
     workspace,
 )
-
-OUT = "prompts"
 
 
 def _order(blocks: dict) -> list[str]:
@@ -67,10 +66,8 @@ def _existing(base: Path, feat: str, fm: dict, body: str) -> dict:
     target = str(fm.get("changes") or "").split(":")[-1]
     cited = body
     tbody = ""
-    if target and (base / "02-drafts" / f"{target}.story.md").is_file():
-        tbody = frontmatter.parse(
-            (base / "02-drafts" / f"{target}.story.md").read_text(encoding="utf-8")
-        ).body
+    if target and (paths.story(base, target)).is_file():
+        tbody = frontmatter.parse((paths.story(base, target)).read_text(encoding="utf-8")).body
         cited += tbody
     code, tests = [], []
     for a in sorted((base / "01-analysis" / "as-is").glob("*.analysis.md")):
@@ -96,7 +93,7 @@ def _existing(base: Path, feat: str, fm: dict, body: str) -> dict:
 
 def _plan_section(base: Path, feat: str, tid: str) -> str:
     """The task's own detailed plan section, verbatim; empty when the plan has none yet."""
-    path = base / "03-plan" / f"{feat}.plan.md"
+    path = paths.plan_file(base, feat)
     if not path.is_file():
         return ""
     section = task_validation.task_sections(
@@ -119,8 +116,8 @@ def _rule_lines(body: str, refs: list[str]) -> list[str]:
 
 
 def build(base: Path, scope: str, feat: str, draft: bool) -> tuple[list[Path], list[str]]:
-    story_path = base / "02-drafts" / f"{feat}.story.md"
-    tasks_path = base / "03-plan" / f"{feat}.tasks.md"
+    story_path = paths.story(base, feat)
+    tasks_path = paths.tasks_file(base, feat)
     if not story_path.is_file() or not tasks_path.is_file():
         return [], [f"{feat}: story or tasks file missing"]
     story = story_path.read_text(encoding="utf-8")
@@ -152,7 +149,7 @@ def build(base: Path, scope: str, feat: str, draft: bool) -> tuple[list[Path], l
     lock = (profile or {}).get("locked") or {}
     libs = (profile or {}).get("libraries") or {}
     summary = str(sp.fm.get("jira_summary") or feat)
-    folder = base / "03-plan" / OUT / feat
+    folder = paths.prompts_dir(base, feat)
     folder.mkdir(parents=True, exist_ok=True)
     order = _order(blocks)
     existing = _existing(base, feat, sp.fm, sp.body)

@@ -1,6 +1,6 @@
 # Task format (the BA contract, with status)
 
-File: `03-plan/FEAT-NNN.tasks.md`. Front matter holds `feat`, `spec_hash`, `status` (draft or
+File: `tasks/FEAT-NNN/FEAT-NNN.tasks.md`. Front matter holds `feat`, `spec_hash`, `status` (draft or
 ready) and `assets`.
 
 Each task is a level-three heading followed by labelled lines:

@@ -33,7 +33,7 @@ or the case is an edge case named below. SKILL.md is the default path; kernel ru
    `Files:`/`Change:`/`Test:`/`DoD:`/`Accepts:`/`Coverage:` line in each and a `tasks:` front-matter list of every active task. Fix findings and rerun.
 6. Copy nothing in the tasks file except the `Status:` and `Evidence:` lines; the BA's text is
    the contract. Withdraw a task only with the user's word, as a `~~TASK-001-3~~` tombstone.
-7. `_shared/scripts/finish.py --skill sw-forge` regenerates `03-plan/prompts/FEAT-NNN/` from the
+7. `_shared/scripts/finish.py --skill sw-forge` regenerates `tasks/FEAT-NNN/prompts/` from the
    ready tasks (`references/task-prompts.md`) and reports the stack check.
 8. Status: `scripts/forge.py status <TASK> <state>` rewrites the task line and the story's
    condition together (`in-development` while a task is `in-progress`, `done` only when every
@@ -43,9 +43,9 @@ or the case is an edge case named below. SKILL.md is the default path; kernel ru
 
 Two or more accepted features of one scope that lack a current plan are planned in
 parallel, one sub-agent per FEAT, as the default. A worker writes only its own
-`03-plan/FEAT-NNN.plan.md` and its task `Status:` lines, runs steps 2 to 5 and
+`plans/FEAT-NNN/FEAT-NNN.plan.md` and its task `Status:` lines, runs steps 2 to 5 and
 `tasks.py` for that feature, and returns the result. The lead guards the writes with
-`_shared/scripts/parallel_guard.py` (allow `FEAT-NNN=03-plan/FEAT-NNN.*`), then runs step 7
+`_shared/scripts/parallel_guard.py` (allow `FEAT-NNN=plans/FEAT-NNN/FEAT-NNN.*,tasks/FEAT-NNN/FEAT-NNN.*`), then runs step 7
 once. Rules: _shared/references/parallel-writers.md. A worker for a feature that fails step 1
 writes nothing and reports why.
 

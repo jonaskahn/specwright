@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from kitlib import blockers, frontmatter, schema, workspace
+from kitlib import blockers, frontmatter, paths, schema, workspace
 
 STATION_ORDER = ("shape", "spec", "review", "plan", "publish")
 # Which skill owns each station. The BA skill holds shape, spec and review; the Dev skill plans;
@@ -55,7 +55,7 @@ def annotate(root: Path, scope: str, rows: list[dict]) -> list[dict]:
             feat = row["id"].split(":")[-1]
             found = blockers.blocking_questions(base, scope, feat)
             row["questions"] = [f"{qid} {title}".strip() for qid, title in found]
-            story = base / "02-drafts" / f"{feat}.story.md"
+            story = paths.story(base, feat)
             if story.is_file():
                 fm = frontmatter.parse(story.read_text(encoding="utf-8")).fm or {}
                 row["origin"], row["story_kind"] = fm.get("origin"), fm.get("kind")

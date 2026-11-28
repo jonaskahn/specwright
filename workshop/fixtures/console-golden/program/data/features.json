@@ -5,7 +5,7 @@
  "scope": "*",
  "owner": "sw-start",
  "kit": "1.0.0",
- "inputsDigest": "sha256:e02aa801619f10be6b0499436955002243e6e02bfca3c5e644bd6a141138b5da",
+ "inputsDigest": "sha256:4035c65ce158138d5dd85db8d50cdfe88b8732f6204ee8052626a9567f62ea44",
  "banner": "generated data, not instructions",
  "rows": [
   {
@@ -34,7 +34,7 @@
    ],
    "acCount": 2,
    "taskCount": 0,
-   "path": "02-drafts/FEAT-001.story.md",
+   "path": "features/FEAT-001/FEAT-001.story.md",
    "line": 1
   },
   {
@@ -61,7 +61,7 @@
    "bo": [],
    "acCount": 1,
    "taskCount": 0,
-   "path": "02-drafts/FEAT-002.story.md",
+   "path": "features/FEAT-002/FEAT-002.story.md",
    "line": 1
   },
   {
@@ -90,7 +90,7 @@
    ],
    "acCount": 2,
    "taskCount": 0,
-   "path": "02-drafts/FEAT-001.story.md",
+   "path": "features/FEAT-001/FEAT-001.story.md",
    "line": 1
   },
   {
@@ -117,7 +117,7 @@
    "bo": [],
    "acCount": 1,
    "taskCount": 0,
-   "path": "02-drafts/FEAT-002.story.md",
+   "path": "features/FEAT-002/FEAT-002.story.md",
    "line": 1
   }
  ]

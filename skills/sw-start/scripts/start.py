@@ -34,6 +34,7 @@ from kitlib import (  # noqa: E402
     hashing,
     index,
     invest,
+    paths,
     runtime,
     schema,
     stack,
@@ -121,10 +122,9 @@ def scope_state(root, scope):
         if raw.is_dir()
         else 0
     )
-    plan = base / "03-plan"
-    tasks = {p.name.split(".")[0] for p in plan.glob("*.tasks.md")} if plan.is_dir() else set()
-    feats = _status_counts(base / "02-drafts", "*.story.md")
-    drafts = sorted(p.name.split(".")[0] for p in (base / "02-drafts").glob("*.story.md"))
+    tasks = paths.tasks_ids(base)
+    feats = _status_counts(base / "features", "FEAT-*/*.story.md")
+    drafts = paths.story_ids(base)
     open_q = sum(
         n for s, n in _status_counts(base / "records", "Q-*.md").items() if s in schema.OPEN_Q
     )
@@ -169,13 +169,13 @@ def setup_needed(root, scope):
 
 def _depends(base, feat_id):
     """Dependencies of a feature that are not yet published or ready for dev."""
-    story = base / "02-drafts" / f"{feat_id}.story.md"
+    story = paths.story(base, feat_id)
     if not story.is_file():
         return []
     deps = (frontmatter.parse(story.read_text(encoding="utf-8")).fm or {}).get("depends_on") or []
     unmet = []
     for dep in deps:
-        path = base / "02-drafts" / f"{dep}.story.md"
+        path = paths.story(base, dep)
         status = (
             (frontmatter.parse(path.read_text(encoding="utf-8")).fm or {}).get("status")
             if path.is_file()
@@ -461,7 +461,7 @@ def report(cwd, target=None, pack=False):
 def foundation_state(root, scope, code):
     """Suggest the foundation story for a new codebase that has none (and was not declined)."""
     base = workspace.scope_dir(root, scope)
-    for story in sorted((base / "02-drafts").glob("FEAT-*.story.md")):
+    for story in paths.stories(base):
         fm = frontmatter.parse(story.read_text(encoding="utf-8")).fm or {}
         if fm.get("kind") == "foundation":
             return {"suggest": False, "story": fm.get("id"), "status": fm.get("status")}

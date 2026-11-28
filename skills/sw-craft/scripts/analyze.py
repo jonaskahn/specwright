@@ -30,7 +30,7 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import analysis, coderoots, fsio, inventory, workspace  # noqa: E402
+from kitlib import analysis, coderoots, fsio, inventory, paths, workspace  # noqa: E402
 
 FOLDER = "01-analysis/as-is"
 DOC_DIRS = ("docs", "doc", "documentation", "wiki")
@@ -53,7 +53,7 @@ def _verify_rows(base: Path, feat: str, text: str) -> str:
     """Pre-fill one Criteria row per AC of the change, Intended = that AC."""
     from kitlib import frontmatter, markdown
 
-    story = base / "02-drafts" / f"{feat.split(':')[-1]}.story.md"
+    story = paths.story(base, feat.split(":")[-1])
     if not story.is_file():
         raise ValueError(f"no story for {feat}")
     sp = frontmatter.parse(story.read_text(encoding="utf-8"))

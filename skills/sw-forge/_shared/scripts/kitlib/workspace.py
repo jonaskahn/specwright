@@ -533,14 +533,27 @@ def upgrade(root: Path, scope: str, apply: bool = False, code: str | None = None
         plan.append(f"project.yaml: add code = {code}")
         data["code"] = code
         changed = True
+    from kitlib import migrate  # imported here because migrate reads front matter and paths
+
+    moves = migrate.plan(base)
+    plan += [
+        f"move {s.relative_to(base).as_posix()} -> {d.relative_to(base).as_posix()}"
+        for s, d in moves
+    ]
+    for src, dst in migrate.conflicts(moves):
+        plan.append(
+            f"conflict: {dst.relative_to(base).as_posix()} exists; "
+            f"{src.relative_to(base).as_posix()} stays"
+        )
     missing = [d for d in schema.SCOPE_DIRS if not (base / d).is_dir()]
     plan += [f"create {d}/" for d in missing]
     asset_registry = base / ".metadata/asset-registry.md"
-    if not asset_registry.is_file():
+    if not asset_registry.is_file() and not (base / "_meta/asset-registry.md").is_file():
         plan.append("create .metadata/asset-registry.md")
     registry_path = base / ".metadata/id-registry.md"
-    if registry_path.is_file():
-        header = tables.parse(registry_path.read_text(encoding="utf-8")).table
+    current_registry = registry_path if registry_path.is_file() else base / "_meta/id-registry.md"
+    if current_registry.is_file():
+        header = tables.parse(current_registry.read_text(encoding="utf-8")).table
         if header is not None and header.header != schema.REGISTRY_COLUMNS:
             plan.append("migrate .metadata/id-registry.md: add Title, Aliases, Source ref columns")
     plan.append("graph: build .metadata/graph/")
@@ -548,6 +561,8 @@ def upgrade(root: Path, scope: str, apply: bool = False, code: str | None = None
         return plan
     if changed:
         fsio.atomic_write(manifest_path, miniyaml.dumps(data))
+    migrate.apply(base)
+    missing = [d for d in schema.SCOPE_DIRS if not (base / d).is_dir()]
     for folder in missing:
         _make_folder(base, folder, [], root)
     _write_new(asset_registry, _asset_registry_text(), [], root)

@@ -27,7 +27,7 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import fsio, hashing, review  # noqa: E402
+from kitlib import fsio, hashing, paths, review  # noqa: E402
 
 
 def _require_debate(args):
@@ -36,14 +36,14 @@ def _require_debate(args):
     import debate
 
     feat = args.draft.name.split(".")[0]
-    base = args.draft.resolve().parent.parent
+    base = args.draft.resolve().parent.parent.parent
     result = debate.check(base, feat)
     if result["finalizable"]:
         return
     if args.skip_debate:
         # The owner's reason is kept in the debate record, which the checkpoint commits.
         note = f"Skipped by the owner before finalize: {args.skip_debate}"
-        path = base / debate.FOLDER / f"{feat}.debate.md"
+        path = paths.review_dir(base, feat) / f"{feat}.debate.md"
         if not path.is_file():
             debate.start(base, feat, "same-session")
         text = path.read_text(encoding="utf-8")

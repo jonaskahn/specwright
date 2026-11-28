@@ -226,7 +226,7 @@ class BaselineAcceptance(unittest.TestCase):
             flag=False,
         )
         assert story.returncode == 0, story.stderr
-        path = cls.base / "02-drafts/FEAT-002.story.md"
+        path = cls.base / "features/FEAT-002/FEAT-002.story.md"
         path.write_text(
             path.read_text().replace("## Goal\n", "## Goal\nRefunds close after 14 days.\n", 1)
         )

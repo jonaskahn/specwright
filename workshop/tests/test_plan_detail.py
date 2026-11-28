@@ -1,6 +1,7 @@
 """The detailed plan lists its tasks and gives each a definition of done, criteria and coverage."""
 
 from kitlib import frontmatter, task_validation
+from tests.support import put
 from tests.test_task_progress import TaskProgressTests
 
 SECTIONS = "".join(f"## {n}\n\nx\n\n" for n in task_validation.PLAN_SECTIONS)
@@ -24,7 +25,7 @@ class PlanDetailTests(TaskProgressTests):
         self.tasks()
         text = SECTIONS + "## Tasks\n\n" + "".join(task_section(t, skip) for t in tasks)
         fm = {"feat": "FEAT-001", "type": "plan", "tasks": list(listed or tasks)}
-        (self.base / "03-plan" / "FEAT-001.plan.md").write_text(frontmatter.render(fm, text))
+        put(self.base / "plans" / "FEAT-001" / "FEAT-001.plan.md", frontmatter.render(fm, text))
         return task_validation.plan_findings(self.base, "FEAT-001")
 
     def test_a_complete_plan_has_no_findings(self):

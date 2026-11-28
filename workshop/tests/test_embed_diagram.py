@@ -28,9 +28,9 @@ class EmbedTests(unittest.TestCase):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         self.base = Path(tmp.name)
-        (self.base / "02-drafts").mkdir()
+        (self.base / "features/FEAT-009").mkdir(parents=True)
         (self.base / "diagrams").mkdir()
-        self.story = self.base / "02-drafts/FEAT-009.story.md"
+        self.story = self.base / "features/FEAT-009/FEAT-009.story.md"
         self.story.write_text(DRAW)
         (self.base / PICTURE).write_text(SVG)
         (self.base / "diagrams/FEAT-009.flow.json").write_text(
@@ -44,9 +44,9 @@ class EmbedTests(unittest.TestCase):
         self.run_embed()
         text = self.story.read_text()
         self.assertIn(f"- diagram — {ALT} — {PICTURE}", text)
-        self.assertIn(f"![{ALT}](../{PICTURE})", text)
+        self.assertIn(f"![{ALT}](../../{PICTURE})", text)
         self.assertIn("Visuals:", text)
-        self.assertIn(f"{ALT} — {PICTURE}\n![{ALT}](../{PICTURE})\n\n## Out of scope", text)
+        self.assertIn(f"{ALT} — {PICTURE}\n![{ALT}](../../{PICTURE})\n\n## Out of scope", text)
         self.assertFalse(hashing.needs_stamp(text))
         result = illustration.state(self.base, "FEAT-009")
         self.assertEqual(result["chip"], illustration.ILLUSTRATED)

@@ -23,7 +23,8 @@ class TaskProgressTests(WorkflowTestCase):
 
     def tasks(self, one="not-started", two="not-started", evidence_one="", evidence_two=""):
         body = TASKS.format(one=one, two=two, evidence_one=evidence_one, evidence_two=evidence_two)
-        path = self.base / "03-plan" / "FEAT-001.tasks.md"
+        path = self.base / "tasks" / "FEAT-001" / "FEAT-001.tasks.md"
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(
             frontmatter.render(
                 {

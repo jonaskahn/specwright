@@ -38,9 +38,11 @@ for a person: accept the split, accept the story, answer a blocking question.
 │  your-repo/   or   your-repo/.specwright/                              │
 │  00-inbox/      frozen sources      SRC-0001--policy.md                │
 │  01-analysis/   problem, evidence   BO-001 · IDEA-refunds              │
-│  02-drafts/     what to build       FEAT-001.story.md                  │
-│  03-plan/       the work            FEAT-001.tasks.md                  │
+│  epics/         outcomes            EPIC-001/EPIC-001.md               │
+│  features/      what to build       FEAT-001/FEAT-001.story.md         │
+│  tasks/         the work            FEAT-001/FEAT-001.tasks.md         │
 │    prompts/     one per session     TASK-001-1.md                      │
+│  plans/         how to build it     FEAT-001/FEAT-001.plan.md          │
 │  records/       decisions           Q-001 · DEC-001 · CR-001           │
 │  diagrams/      pictures            FEAT-001.swimlane.svg              │
 │  .metadata/         start here          READ-FIRST.md                      │
@@ -157,8 +159,8 @@ prompt per task. No code is written here, and no code root is touched.
 
 | Start from | Say | Lands on disk |
 | --- | --- | --- |
-| An accepted story | `plan FEAT-004` | `03-plan/FEAT-004.plan.md` |
-| The finished plan | *(automatic)* | `03-plan/prompts/FEAT-004/TASK-004-1.md` + `_order.md` |
+| An accepted story | `plan FEAT-004` | `plans/FEAT-004/FEAT-004.plan.md` |
+| The finished plan | *(automatic)* | `tasks/FEAT-004/prompts/TASK-004-1.md` + `_order.md` |
 | Real work | `TASK-004-1 is done — make test: 42 passed` | status and evidence in `FEAT-004.tasks.md` |
 
 Each plan section names the exact files, the change itself, the test that proves it, the command

@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from kitlib import frontmatter, fsio, ids, markdown, schema, tables, workspace
+from kitlib import frontmatter, fsio, ids, markdown, paths, schema, tables, workspace
 
 
 class OwnershipError(ValueError):
@@ -36,7 +36,7 @@ def qualify(value: str, scope: str) -> str:
 
 def documents(base: Path):
     """Imported snapshot text cannot establish local definitions."""
-    for folder in ("00-inbox", "01-analysis", "02-drafts", "records", "snapshots"):
+    for folder in ("00-inbox", "01-analysis", "epics", "features", "records", "snapshots"):
         for path in sorted((base / folder).rglob("*.md")):
             if "raw" not in path.relative_to(base).parts and not path.is_symlink():
                 parsed = frontmatter.parse(path.read_text(encoding="utf-8"))
@@ -92,8 +92,7 @@ def scan(root: Path) -> tuple[dict[str, Entity], list[str]]:
                 key, "ac", entity.path, {}, "", {entity.key}, ac in removed, entity.key
             )
     for scope in workspace.list_scopes(root):
-        plan = workspace.scope_dir(root, scope) / "03-plan"
-        for path in sorted(plan.glob("*.tasks.md")) if plan.is_dir() else []:
+        for path in paths.tasks_files(workspace.scope_dir(root, scope)):
             if not path.is_symlink():
                 _scan_tasks(path, scope, entities, findings)
     return entities, findings

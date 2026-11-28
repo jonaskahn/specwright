@@ -6,6 +6,7 @@ from pathlib import Path
 from unittest import mock
 
 from kitlib import frontmatter, hashing, markdown, schema, tables, task_validation
+from tests.support import put
 
 ROOT = Path(__file__).resolve().parents[2]
 GOOD = (ROOT / "workshop/fixtures/lint/good-story.md").read_text()
@@ -34,8 +35,14 @@ class CheckTests(unittest.TestCase):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         self.base = Path(tmp.name)
-        for name in ("02-drafts", "03-plan", ".metadata", "diagrams"):
-            (self.base / name).mkdir()
+        for name in (
+            "features/FEAT-001",
+            "tasks/FEAT-001",
+            "plans/FEAT-001",
+            ".metadata",
+            "diagrams",
+        ):
+            (self.base / name).mkdir(parents=True)
         patcher = mock.patch("kitlib.lifecycle.approval_state", return_value="fresh")
         patcher.start()
         self.addCleanup(patcher.stop)
@@ -49,9 +56,9 @@ class CheckTests(unittest.TestCase):
 
     def write(self, tasks, assets=()):
         story = frontmatter.update(GOOD, {"assets": list(assets)})
-        (self.base / "02-drafts/FEAT-001.story.md").write_text(story)
+        put(self.base / "features/FEAT-001/FEAT-001.story.md", story)
         fm = {"feat": "FEAT-001", "status": "draft", "spec_hash": hashing.draft_hash(story)}
-        (self.base / "03-plan/FEAT-001.tasks.md").write_text(frontmatter.render(fm, tasks))
+        put(self.base / "tasks/FEAT-001/FEAT-001.tasks.md", frontmatter.render(fm, tasks))
 
     def findings(self):
         return task_validation.check(self.base, "FEAT-001")[1]

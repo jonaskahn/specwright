@@ -6,7 +6,7 @@ import json
 import re
 from pathlib import Path
 
-from kitlib import frontmatter, graph_query, hashing, ids, workspace
+from kitlib import frontmatter, graph_query, hashing, ids, paths, workspace
 
 
 def candidates(store: graph_query.Store, text: str) -> list[dict]:
@@ -41,7 +41,7 @@ def propose(base: Path, source: str, target: str, source_quote: str, claim_quote
     snapshot = ids.find_record(base / "00-inbox", source_ref.id)
     if snapshot is None:
         raise ValueError(f"no snapshot file for {source_ref.id}")
-    story = base / "02-drafts" / f"{ref.id}.story.md"
+    story = paths.story(base, ref.id)
     if snapshot.is_symlink() or story.is_symlink():
         raise ValueError("impact input must not be a symlink")
     source_text = frontmatter.parse(snapshot.read_text(encoding="utf-8"))
@@ -117,7 +117,7 @@ def backup(base: Path, relative: str) -> Path:
     path = workspace.safe_join(base, relative)
     if path.is_symlink() or not path.is_file():
         raise ValueError("backup requires an existing local artifact")
-    if path.parts[len(base.resolve().parts)] not in ("01-analysis", "02-drafts", "03-plan"):
+    if path.parts[len(base.resolve().parts)] not in ("01-analysis", *paths.ITEM_FOLDERS):
         raise ValueError("only authored artifacts may be revision-backed up")
     data = path.read_bytes()
     digest = hashing.bytes_hash(data)

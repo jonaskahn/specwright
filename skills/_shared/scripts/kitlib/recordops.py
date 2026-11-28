@@ -21,6 +21,7 @@ from kitlib import (
     fsio,
     hashing,
     ids,
+    paths,
     rtm,
     schema,
     workspace,
@@ -420,7 +421,7 @@ def _story(ctx: Ctx, feat: str) -> tuple[str, str]:
     ref = ids.parse_ref(ids.story_alias(feat.strip()))
     if ref is None or not ids.matches_type("feature", ref.id):
         raise RecordError(f"'{feat}' is not a feature ID")
-    path = ctx.base / "02-drafts" / f"{ref.id}.story.md"
+    path = paths.story(ctx.base, ref.id)
     if not path.is_file():
         raise RecordError(f"{ref.id} has no saved story text to amend")
     return ref.id, path.read_text(encoding="utf-8")

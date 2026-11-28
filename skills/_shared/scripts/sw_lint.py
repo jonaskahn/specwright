@@ -1021,7 +1021,8 @@ def discover(base, ignore=()):
         "projects",
         "console",
         "node_modules",
-        "03-plan",
+        "tasks",
+        "plans",
         "as-is",  # analysis files: checked by sw-craft (analyze.py check)
         "review",  # review packs and debate records: checked by sw-craft
         *(str(i).strip("/") for i in ignore),

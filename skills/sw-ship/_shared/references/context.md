@@ -43,7 +43,7 @@ external key mappings in the ID registry. Use qualified IDs (`SCOPE:FEAT-NNN`) a
 | Spec root | The folder holding `project.yaml` (flat) or `workspace.yaml` (program). |
 | Flat / program | Flat: one project at the spec root. Program: several projects under `projects/<SCOPE>/` that share a workspace. |
 | Scope | The short name of one project, for example `REF`. Pass it as `--scope`; a program needs it for every write. |
-| Scope root | One project's folder (the spec root when flat, `projects/<SCOPE>/` in a program). Its folders are `00-inbox/`, `01-analysis/`, `02-drafts/`, `03-plan/`, `records/`, `.metadata/`. |
+| Scope root | One project's folder (the spec root when flat, `projects/<SCOPE>/` in a program). Its folders are `00-inbox/`, `01-analysis/`, `epics/`, `features/`, `tasks/`, `plans/`, `records/`, `.metadata/`. |
 | Active approval | An accept line or formal sign-off whose hash still matches the current story. A content change makes it stale. |
 | Accepted | Stored status `ready-to-publish`, always shown as accepted. The approval then reads `accepted`, `signed-off` or `needs-signoff`. |
 | Lead, worker | In a parallel batch the lead is the session agent that guards the writes and saves shared state; a worker is a sub-agent that writes one item's files. |

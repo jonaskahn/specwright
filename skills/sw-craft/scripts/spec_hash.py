@@ -26,13 +26,13 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import fsio, hashing, ids  # noqa: E402
+from kitlib import fsio, hashing, ids, paths  # noqa: E402
 
 
 def _path(root: Path, feature: str) -> Path:
     if not ids.matches_type("feature", feature):
         raise ValueError(f"{feature} is not a feature ID such as FEAT-002")
-    target = root / "02-drafts" / f"{feature}.story.md"
+    target = paths.story(root, feature)
     if not target.is_file():
         raise ValueError(f"{target} does not exist")
     return target

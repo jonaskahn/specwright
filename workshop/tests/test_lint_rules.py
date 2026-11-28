@@ -12,6 +12,7 @@ from pathlib import Path
 from unittest import mock
 
 from kitlib import frontmatter, graph, hashing, schema, tables, workspace
+from tests.support import put
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "skills/_shared/scripts/sw_lint.py"
@@ -23,7 +24,7 @@ GOOD = (ROOT / "workshop/fixtures/lint/good-story.md").read_text()
 BO = (ROOT / "workshop/fixtures/lint/BO-001.md").read_text()
 
 
-def doc(text=GOOD, path="02-drafts/FEAT-001.story.md"):
+def doc(text=GOOD, path="features/FEAT-001/FEAT-001.story.md"):
     return lint.Doc.from_text(path, text)
 
 
@@ -193,8 +194,8 @@ class RuleTests(unittest.TestCase):
         )
         self.check_rule(
             "L-040",
-            doc(update(card, links=[]), "02-drafts/FEAT-001.card.md"),
-            doc(card, "02-drafts/FEAT-001.card.md"),
+            doc(update(card, links=[]), "features/FEAT-001/FEAT-001.card.md"),
+            doc(card, "features/FEAT-001/FEAT-001.card.md"),
         )
 
     def test_l040_names_the_failed_condition(self):
@@ -204,7 +205,7 @@ class RuleTests(unittest.TestCase):
                 "home: jira\n---\n## Summary\nReturn requests.\n",
                 links=[],
             ),
-            "02-drafts/FEAT-001.card.md",
+            "features/FEAT-001/FEAT-001.card.md",
         )
         finding = next(f for f in self.findings(card) if f.rule == "L-040")
         self.assertIn("links", finding.msg)
@@ -269,8 +270,8 @@ class RuleTests(unittest.TestCase):
             self.base.mkdir(parents=True, exist_ok=True)
             (self.base / "project.yaml").write_text("scope: REF\n")
             (self.base / ".metadata").mkdir(parents=True, exist_ok=True)
-            (self.base / "02-drafts").mkdir(parents=True, exist_ok=True)
-            (self.base / "02-drafts/FEAT-001.story.md").write_text(GOOD)
+            (self.base / "features/FEAT-001").mkdir(parents=True, exist_ok=True)
+            put(self.base / "features/FEAT-001/FEAT-001.story.md", GOOD)
         return self.context([doc()], built=built)
 
     def test_l047(self):
@@ -280,7 +281,7 @@ class RuleTests(unittest.TestCase):
             "feature-file",
             "-",
             "x",
-            "02-drafts/FEAT-001.feature",
+            "features/FEAT-001/FEAT-001.feature",
             1,
             1,
             "-",
@@ -292,7 +293,7 @@ class RuleTests(unittest.TestCase):
             "feat",
             "-",
             "x",
-            "02-drafts/FEAT-001.story.md",
+            "features/FEAT-001/FEAT-001.story.md",
             1,
             1,
             hashing.draft_hash(GOOD),
@@ -309,7 +310,7 @@ class RuleTests(unittest.TestCase):
                     "implements",
                     "REF:AC-001-1",
                     "declared",
-                    "03-plan/x.md",
+                    "tasks/FEAT-001/x.md",
                     1,
                     "unresolved",
                 )
@@ -317,7 +318,7 @@ class RuleTests(unittest.TestCase):
             inputs={},
         )
         g.nodes["REF:TASK-001-1"] = graph.Node(
-            "REF:TASK-001-1", "task", "-", "x", "03-plan/x.md", 1, 1, "-", "REF:FEAT-001"
+            "REF:TASK-001-1", "task", "-", "x", "tasks/FEAT-001/x.md", 1, 1, "-", "REF:FEAT-001"
         )
         self.assertIn("L-048", {f.rule for f in lint.graph_findings(self.graph_ctx(g))})
 
@@ -335,7 +336,7 @@ class RuleTests(unittest.TestCase):
                     "member_of",
                     "REF:EPIC-001",
                     "declared",
-                    "02-drafts/x.md",
+                    "features/FEAT-001/x.md",
                     1,
                     "unresolved",
                 )
@@ -343,7 +344,7 @@ class RuleTests(unittest.TestCase):
             inputs={},
         )
         g.nodes["REF:FEAT-001"] = graph.Node(
-            "REF:FEAT-001", "feat", "-", "x", "02-drafts/x.md", 1, 1, "-", "REF:FEAT-001"
+            "REF:FEAT-001", "feat", "-", "x", "features/FEAT-001/x.md", 1, 1, "-", "REF:FEAT-001"
         )
         self.assertIn("L-050", {f.rule for f in lint.graph_findings(self.graph_ctx(g))})
 
@@ -356,7 +357,7 @@ class RuleTests(unittest.TestCase):
                     "member_of",
                     "REF:EPIC-001",
                     "declared",
-                    "02-drafts/x.md",
+                    "features/FEAT-001/x.md",
                     1,
                     "resolved",
                 )
@@ -364,14 +365,14 @@ class RuleTests(unittest.TestCase):
             inputs={},
         )
         g.nodes["REF:FEAT-001"] = graph.Node(
-            "REF:FEAT-001", "feat", "-", "x", "02-drafts/x.md", 1, 1, "-", "REF:FEAT-001"
+            "REF:FEAT-001", "feat", "-", "x", "features/FEAT-001/x.md", 1, 1, "-", "REF:FEAT-001"
         )
         g.nodes["REF:EPIC-001"] = graph.Node(
             "REF:EPIC-001",
             "epic",
             "-",
             "x",
-            "01-analysis/epics/EPIC-001.md",
+            "epics/EPIC-001/EPIC-001.md",
             1,
             1,
             "-",
@@ -385,7 +386,7 @@ class RuleTests(unittest.TestCase):
             return doc(
                 "---\nid: EPIC-001\ntype: epic\nscope: REF\ntitle: Refunds\naliases: []\n"
                 f"status: draft\nbo: {bo}\nscopes: [REF]\n---\n## Outcome\n\nFewer waits.\n",
-                "01-analysis/epics/EPIC-001.md",
+                "epics/EPIC-001/EPIC-001.md",
             )
 
         bare = [f for f in self.findings(epic("[]")) if f.rule == "L-068"]
@@ -398,7 +399,12 @@ class RuleTests(unittest.TestCase):
             g = graph.Graph(nodes={}, edges=[], inputs={})
             g.edges.append(
                 graph.Edge(
-                    "REF:FEAT-001", "member_of", "REF:EPIC-001", "declared", "02-drafts/x.md", 3
+                    "REF:FEAT-001",
+                    "member_of",
+                    "REF:EPIC-001",
+                    "declared",
+                    "features/FEAT-001/x.md",
+                    3,
                 )
             )
             for src, dst in serves:
@@ -420,7 +426,7 @@ class RuleTests(unittest.TestCase):
                     "touches",
                     "REF:code/x.py",
                     "declared",
-                    "03-plan/x.md",
+                    "tasks/FEAT-001/x.md",
                     1,
                     "missing",
                 )
@@ -428,7 +434,7 @@ class RuleTests(unittest.TestCase):
             inputs={},
         )
         g.nodes["REF:TASK-001-1"] = graph.Node(
-            "REF:TASK-001-1", "task", "-", "x", "03-plan/x.md", 1, 1, "-", "REF:FEAT-001"
+            "REF:TASK-001-1", "task", "-", "x", "tasks/FEAT-001/x.md", 1, 1, "-", "REF:FEAT-001"
         )
         self.assertIn("L-052", {f.rule for f in lint.graph_findings(self.graph_ctx(g))})
 
@@ -613,7 +619,7 @@ class RuleTests(unittest.TestCase):
         )
         (self.base / "diagrams/flow.svg").write_text("<svg/>\n")
         shown = GOOD.replace(
-            "## UI/UX\n", "## UI/UX\n\n![Return flow (AC-001-1)](../diagrams/flow.svg)\n", 1
+            "## UI/UX\n", "## UI/UX\n\n![Return flow (AC-001-1)](../../diagrams/flow.svg)\n", 1
         )
         self.assertNotEqual(shown, GOOD)
         self.check_rule("L-070", doc(), doc(shown))
@@ -768,7 +774,7 @@ class CommandTests(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name).resolve() / ".specwright"
         workspace.init(self.root, "flat", "REF", "Returns")
-        (self.root / "02-drafts/FEAT-001.story.md").write_text(GOOD)
+        put(self.root / "features/FEAT-001/FEAT-001.story.md", GOOD)
         (self.root / "01-analysis/BO-001.md").write_text(BO)
 
     def cli(self, *args):
@@ -793,12 +799,12 @@ class CommandTests(unittest.TestCase):
 
     def test_bad_story_and_all_gate_codes(self):
         bad = (ROOT / "workshop/fixtures/lint/bad-story.md").read_text()
-        (self.root / "02-drafts/FEAT-001.story.md").write_text(bad)
+        put(self.root / "features/FEAT-001/FEAT-001.story.md", bad)
         code, text, _ = self.cli("--format", "json")
         self.assertEqual(code, 20)
         rules = {f["rule"] for f in json.loads(text)["findings"]}
         self.assertTrue({"L-008", "L-009", "L-013"} <= rules)
-        (self.root / "02-drafts/FEAT-001.story.md").write_text("---\nid: [\n---\n")
+        put(self.root / "features/FEAT-001/FEAT-001.story.md", "---\nid: [\n---\n")
         for gate, expected in lint.GATES.items():
             self.assertEqual(self.cli("--gate", gate)[0], expected)
 
@@ -818,7 +824,7 @@ class CommandTests(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()), self.assertRaises(SystemExit) as raised:
             lint.main(["--help"])
         self.assertEqual(raised.exception.code, 0)
-        shutil.rmtree(self.root / "02-drafts")
+        shutil.rmtree(self.root / "features")
         (self.root / "project.yaml").unlink()
         self.assertEqual(self.cli()[0], 2)
 
@@ -836,7 +842,7 @@ class CommandTests(unittest.TestCase):
         workspace.init(self.root, "program", "REF", "Returns")
         workspace.init(self.root, "program", "ORD", "Orders")
         selected = self.root / "projects/REF"
-        (selected / "02-drafts/FEAT-001.story.md").write_text(GOOD.replace("BO-001", "ORD:BO-001"))
+        put(selected / "features/FEAT-001/FEAT-001.story.md", GOOD.replace("BO-001", "ORD:BO-001"))
         (self.root / "projects/ORD/01-analysis/BO-001.md").write_text(BO.replace("REF", "ORD"))
         self.assertEqual(self.cli()[0], 2)
         code, text, _ = self.cli("--scope", "REF", "--format", "json")

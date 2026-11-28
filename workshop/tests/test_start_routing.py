@@ -112,7 +112,9 @@ class RankingAndPackTests(WorkflowTestCase):
         text = self.draft.read_text()
         fm = {"id": ident, "title": title, "aliases": [], "status": "draft"}
         fm.update(extra)
-        (self.base / f"02-drafts/{ident}.story.md").write_text(frontmatter.update(text, fm))
+        target = self.base / f"features/{ident}/{ident}.story.md"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(frontmatter.update(text, fm))
 
     def write(self, rel, fm, body="# Body\n"):
         path = self.base / rel
@@ -234,7 +236,7 @@ class RankingAndPackTests(WorkflowTestCase):
         self.assertEqual(roles, sorted(roles, key=start.ROLE_ORDER.index))
         self.assertTrue(all(f["hash"] for f in pack["files"]))
         item = next(f for f in pack["files"] if f["role"] == "item")
-        self.assertEqual(item["path"], "02-drafts/FEAT-001.story.md")
+        self.assertEqual(item["path"], "features/FEAT-001/FEAT-001.story.md")
         self.assertEqual(
             pack["questions"],
             [{"key": "REF:Q-001", "title": "Window?", "blocking": True, "status": "open"}],

@@ -29,6 +29,7 @@ from kitlib import (  # noqa: E402
     hashing,
     ids,
     markdown,
+    paths,
     rtm,
     schema,
 )
@@ -62,7 +63,7 @@ def create(
         key = f"{scope}:{reserved}"
         if row.find(key) is None or row.value(key, "State") in ("withdrawn", "superseded"):
             raise ValueError(f"{reserved} is not a reserved feature of {scope}")
-        if (root / "02-drafts" / f"{reserved}.story.md").exists():
+        if (paths.story(root, reserved)).exists():
             raise ValueError(f"{reserved} already has a story")
         summary = summary or row.value(key, "Title")
         aliases = [a for a in row.value(key, "Aliases").split("|") if a]
@@ -106,7 +107,7 @@ def create(
             fm[key] = list(refs)
     output = frontmatter.render(fm, body)
     output = output.replace("<sha256:…>", hashing.draft_hash(output))
-    target = root / "02-drafts" / f"{candidate}.story.md"
+    target = paths.story(root, candidate)
     target.parent.mkdir(parents=True, exist_ok=True)
     # Exclusive creation protects a reservation made by another writer during allocation.
     with target.open("x", encoding="utf-8", newline="") as handle:

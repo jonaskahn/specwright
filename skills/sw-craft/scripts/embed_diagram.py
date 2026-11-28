@@ -32,7 +32,7 @@ if str(_here) not in sys.path:
 
 from check_offline import check_text  # noqa: E402
 
-from kitlib import frontmatter, fsio, hashing, ids, illustration  # noqa: E402
+from kitlib import frontmatter, fsio, hashing, ids, illustration, paths  # noqa: E402
 from kitlib.borders import find_one_sided  # noqa: E402
 
 EDITABLE = {"draft", "in-review"}
@@ -102,7 +102,7 @@ def embed(text: str, name: str, alt: str) -> str:
     after = at + 1
     while after < len(body) and body[after].lstrip().startswith("!["):
         after += 1
-    body.insert(after, f"![{alt}](../{name})")
+    body.insert(after, f"![{alt}](../../{name})")
     body += [""] * gap
     return "\n".join([*lines[: start + 1], *body, *lines[end:]])
 
@@ -110,7 +110,7 @@ def embed(text: str, name: str, alt: str) -> str:
 def run(base: Path, feature: str, name: str, alt: str, scope: str | None = None) -> str:
     if not ids.matches_type("feature", feature):
         raise ValueError(f"{feature} is not a feature ID such as FEAT-002")
-    story = base / "02-drafts" / f"{feature}.story.md"
+    story = paths.story(base, feature)
     if not story.is_file():
         raise ValueError(f"{story} does not exist")
     text = story.read_text(encoding="utf-8")
