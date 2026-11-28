@@ -55,6 +55,10 @@ matching file, folder or link is replaced, even if it has no valid `SKILL.md`. U
 instructions and `.specwright/` data are untouched. Cleanup applies only to the selected scope
 and destinations; run the installer for each other installation you want to update.
 
+Installation displays one updating progress bar, followed by a compact completion message.
+Redirected output prints a start and completion line instead of terminal redraw sequences.
+Per-destination copy/link logs and the repeated path list are omitted; failures still show details.
+
 ### Skills CLI
 
 All projects:

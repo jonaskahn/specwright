@@ -220,13 +220,17 @@ bar() {
 	_out=""
 	_i=0
 	while [ "$_i" -lt "$BAR_W" ]; do
-		if [ "$_i" -lt "$_fill" ]; then _out="${_out}█"; else _out="${_out}░"; fi
+		if [ "$UTF8" = 1 ]; then
+			if [ "$_i" -lt "$_fill" ]; then _out="${_out}█"; else _out="${_out}░"; fi
+		else
+			if [ "$_i" -lt "$_fill" ]; then _out="${_out}#"; else _out="${_out}-"; fi
+		fi
 		_i=$((_i + 1))
 	done
 	printf '%s' "$_out"
 }
 
-progress_live() { [ "$PROGRESS" = 1 ] && [ "$UTF8" = 1 ]; }
+progress_live() { [ "$TERMINAL" = 1 ]; }
 
 # Erase the live line the bar last drew, so the next draw replaces it in place
 # instead of stacking one line per tick.
@@ -248,16 +252,16 @@ progress_draw() {
 }
 
 progress_begin() {
-	progress_live || return 0
 	PROG_LABEL="$1"
 	PROG_TOTAL="$2"
 	PROG_DONE=0
-	progress_draw
+	if progress_live; then progress_draw; else row "  Installing Specwright…"; fi
 }
 
 progress_tick() {
 	progress_live || return 0
-	PROG_DONE=$((PROG_DONE + 1))
+	# Link fallback may retry work; reserve the final tick for a successful commit.
+	[ "$PROG_DONE" -ge $((PROG_TOTAL - 1)) ] || PROG_DONE=$((PROG_DONE + 1))
 	progress_draw
 }
 
@@ -1328,12 +1332,16 @@ replace_existing() {
 			printf '%s\n' "$_file" >>"$TMP_DIR/old"
 		done
 	done <"$TMP_DIR/dests"
+	_progress_total=$(( $(wc -l <"$TMP_DIR/old") + $(wc -l <"$TMP_DIR/new-paths") + 1 ))
+	for _stage_skill in $SKILLS; do _progress_total=$((_progress_total + 1)); done
+	progress_begin "Installing Specwright" "$_progress_total"
 	# Stage the entire new release before changing any destination. Copies never
 	# merge with a previous install and source read failures cannot delete it.
 	mkdir -p "$TMP_DIR/staged/skills" "$TMP_DIR/rollback"
 	for _stage_skill in $SKILLS; do
 		cp -R "$SKILL_ROOT/skills/$_stage_skill" "$TMP_DIR/staged/skills/$_stage_skill" ||
 			die "could not stage $_stage_skill; previous install unchanged"
+		progress_tick
 	done
 	if [ -n "$COMMANDS_SRC" ]; then
 		cp -R "$COMMANDS_SRC" "$TMP_DIR/staged/commands" || die "could not stage command wrappers"
@@ -1341,11 +1349,6 @@ replace_existing() {
 	fi
 	SKILL_ROOT="$TMP_DIR/staged"
 	[ -s "$TMP_DIR/old" ] || { INSTALL_WRITING=1; return 0; }
-	_n="$(wc -l <"$TMP_DIR/old" | tr -d ' ')"
-	note "Replacing $_n existing Specwright file(s)"
-	if progress_live; then
-		progress_start "Removing $_n previous file(s)" "$_n"
-	fi
 	_index=0
 	while IFS= read -r _path; do
 		_index=$((_index + 1))
@@ -1359,7 +1362,6 @@ replace_existing() {
 		progress_tick
 	done <"$TMP_DIR/old"
 	INSTALL_WRITING=1
-	progress_end "Removed the previous install"
 }
 
 commit_install() {
@@ -1450,20 +1452,15 @@ install_commands() {
 	_out="$(commands_dir "$_dest")"
 	_base="$(dirname "${_dest%/}")"
 	mkdir -p "$_out"
-	_n=0
-	_cmds="$(command_files "$_src" | wc -l | tr -d ' ')"
-	progress_start "Writing $_cmds command wrapper(s) into $_out" "$_cmds"
 	while IFS= read -r _file; do
 		[ -n "$_file" ] || continue
 		_name="${_file##*/}"
 		rewrite_command "$_file" "$_base" >"$_out/$_name" ||
 			die "could not write $_out/$_name"
-		_n=$((_n + 1))
 		progress_tick
 	done <<EOF
 $(command_files "$_src")
 EOF
-	progress_end "Copied $_n command(s) into $_out"
 }
 
 pick_canonical() {
@@ -1481,31 +1478,16 @@ pick_canonical() {
 
 install_skills() {
 	_canon="$(pick_canonical)"
-	_total=0
-	for _skill in $SKILLS; do _total=$((_total + 1)); done
-	if progress_live; then
-		progress_start "Installing $_total skills into $_canon" "$_total"
-	else
-		step "Installing into $_canon"
-	fi
 	copy_skills "$_canon"
-	progress_end "Copied $_total skills into $_canon"
 	install_commands "${COMMANDS_SRC:-}" "$_canon"
 	while IFS= read -r _dest; do
 		[ "$_dest" = "$_canon" ] && continue
 		mkdir -p "$_dest"
-		if progress_live; then
-			progress_start "Linking $_total skills into $_dest" "$_total"
-		fi
 		if same_device "$_canon" "$_dest" && link_skills "$_dest" "$_canon"; then
-			progress_end "Linked $_total skills into $_dest"
+			:
 		else
 			clear_new_links "$_dest"
-			if progress_live; then
-				progress_start "Copying $_total skills into $_dest" "$_total"
-			fi
 			copy_skills "$_dest"
-			progress_end "Copied $_total skills into $_dest"
 		fi
 		install_commands "${COMMANDS_SRC:-}" "$_dest"
 	done <"$TMP_DIR/dests"
@@ -1513,28 +1495,11 @@ install_skills() {
 
 summary() {
 	_places="$(wc -l <"$TMP_DIR/dests" | tr -d ' ')"
-	hline '├' '┤'
-	row ""
-	row "  ${BRIGHT}✓${OFF} ${BOLD}Specwright is installed.${OFF}"
-	row ""
-	row "  ${MID}Scope${OFF}    $SCOPE"
 	_have=0
 	for _skill in $SKILLS; do _have=$((_have + 1)); done
-	row "  ${MID}Skills${OFF}   $_have skills in $_places location(s)"
-	[ -z "$COMMANDS_SRC" ] || row "  ${MID}Commands${OFF} $(command_files "$COMMANDS_SRC" | wc -l | tr -d ' ') /sw-* wrappers beside them"
-	row ""
-	while IFS= read -r _dest; do
-		row "  ${MID}·${OFF} $_dest"
-		[ -z "$COMMANDS_SRC" ] || row "  ${MID} ${OFF} $(commands_dir "$_dest")"
-	done <"$TMP_DIR/dests"
-	row ""
-	row "  ${BOLD}Your next step${OFF}"
-	row "  Open the project in your agent and say what you want:"
-	row "    start a spec for the refunds flow"
-	row "    or use /sw-start and /sw-continue"
-	row ""
+	progress_end "Installed $_have skills in $_places location(s) ($SCOPE)."
+	row "  Run /sw-start to begin."
 	runtime_notes
-	note "To update, run this installer again."
 }
 
 # Check only, never install: say what the skills will need that this machine lacks.

@@ -88,6 +88,22 @@ class InstallerCases:
         self.assertNotEqual(result.returncode, 0)
         self.assertTrue((self.skills / "sw-spec/_shared/stale.py").is_file())
 
+    def test_output_has_one_install_summary_without_per_destination_logs(self):
+        self.seed()
+        result = self.run_install()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(result.stdout.count("Installed 5 skills in 1 location(s)"), 1)
+        self.assertIn("Run /sw-start to begin.", result.stdout)
+        for verbose in (
+            "Copied ",
+            "Linked ",
+            "Removed the previous install",
+            "Replacing ",
+            self.skills.as_posix(),
+            "Your next step",
+        ):
+            self.assertNotIn(verbose, result.stdout)
+
     def test_every_sw_prefixed_file_folder_and_link_is_removed(self):
         self.seed()
         put(self.skills / "sw-unknown/SKILL.md", "not a Specwright skill")

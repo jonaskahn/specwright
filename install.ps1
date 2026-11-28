@@ -235,6 +235,24 @@ function Write-Step([string] $Text) {
 }
 function Write-OK([string] $Text) { Clear-Line; Write-Row ("  " + (Paint $script:Check 'bright') + " $Text") }
 function Write-Note([string] $Text) { Clear-Line; Write-Row ("  " + (Paint $script:Dot 'note') + " " + (Paint $Text 'note')) }
+function Show-InstallProgress {
+	if (-not $script:Terminal) { return }
+	$fill = [Math]::Min(20, [int][Math]::Floor(20 * $script:InstallDone / $script:InstallTotal))
+	$bar = ([string][char]0x2588) * $fill + ([string][char]0x2591) * (20 - $fill)
+	if ($script:InstallDrawn) { Write-Host ("$($script:Esc)[1A`r$($script:Esc)[2K") -NoNewline }
+	Write-Row "  Installing Specwright  $bar  $($script:InstallDone)/$($script:InstallTotal)"
+	$script:InstallDrawn = $true
+}
+function Step-InstallProgress {
+	$script:InstallDone++
+	Show-InstallProgress
+}
+function Clear-InstallProgress {
+	if ($script:InstallDrawn) {
+		Write-Host ("$($script:Esc)[1A`r$($script:Esc)[2K") -NoNewline
+		$script:InstallDrawn = $false
+	}
+}
 function Write-Lead([string] $Text) { Write-Row ("  " + (Paint $script:Bullet 'bright') + " $Text") }
 function Write-Rule { Write-Separator ([string][char]0x251C) ([string][char]0x2524) }
 function Write-Section([string] $Text) {
@@ -620,6 +638,7 @@ function Install-Commands([string] $Source, [string] $SkillsDir) {
 		$text = $text.Replace('${CLAUDE_PLUGIN_ROOT}/skills/', "$base/skills/")
 		[IO.File]::WriteAllText((Join-Path $out $file.Name), $text)
 		$count++
+		Step-InstallProgress
 	}
 	return $count
 }
@@ -1021,6 +1040,11 @@ $newPaths = @()
 $writing = $false
 $committed = $false
 $originalCommandsRoot = $script:CommandsRoot
+$script:InstallDone = 0
+$script:InstallDrawn = $false
+$commandCount = if ($script:CommandsRoot) { @(Get-CommandFiles $script:CommandsRoot).Count } else { 0 }
+$script:InstallTotal = $Skills.Count + $previous.Count + ($Skills.Count + $commandCount) * $script:Destinations.Count + 1
+if ($script:Terminal) { Show-InstallProgress } else { Write-Row '  Installing Specwright...' }
 function Remove-InstallEntry([string] $Path) {
 	$item = Get-Item -LiteralPath $Path -Force -ErrorAction SilentlyContinue
 	if (-not $item) { return }
@@ -1034,6 +1058,7 @@ try {
 	New-Item -ItemType Directory -Path (Join-Path $stage 'skills') -Force | Out-Null
 	foreach ($skill in $Skills) {
 		Copy-Item -LiteralPath (Join-Rel $script:SkillRoot "skills/$skill") -Recurse -Destination (Join-Rel $stage "skills/$skill")
+		Step-InstallProgress
 	}
 	if ($script:CommandsRoot) {
 		Copy-Item -LiteralPath $script:CommandsRoot -Recurse -Destination (Join-Path $stage 'commands')
@@ -1046,27 +1071,26 @@ try {
 			foreach ($file in (Get-CommandFiles $script:CommandsRoot)) { $newPaths += Join-Path $out $file.Name }
 		}
 	}
-	Write-Note "Replacing $($previous.Count) existing Specwright file(s)"
 	foreach ($path in $previous) {
 		$backup = Join-Path (Split-Path $path -Parent) ('.specwright-backup-' + [guid]::NewGuid().ToString('N'))
 		Move-Item -LiteralPath $path -Destination $backup
 		$backups += [pscustomobject]@{ Original = $path; Backup = $backup }
+		Step-InstallProgress
 	}
 	$writing = $true
 	foreach ($dest in $script:Destinations) {
-		Write-Step "Installing into $dest"
 		New-Item -ItemType Directory -Force -Path $dest | Out-Null
 		foreach ($skill in $Skills) {
 			Copy-Item -LiteralPath (Join-Rel $stage "skills/$skill") -Recurse -Destination (Join-Path $dest $skill)
+			Step-InstallProgress
 		}
-		Write-OK "Copied $($Skills.Count) skills into $dest"
 		if ($script:CommandsRoot) {
 			$count = Install-Commands $script:CommandsRoot $dest
-			Write-OK "Copied $count command(s) into $(Join-Path (Split-Path $dest -Parent) 'commands')"
 		}
 	}
 	$committed = $true
 } catch {
+	Clear-InstallProgress
 	$failure = $_
 	if ($writing) { foreach ($path in $newPaths) { Remove-InstallEntry $path } }
 	foreach ($entry in $backups) { Move-Item -LiteralPath $entry.Backup -Destination $entry.Original }
@@ -1077,25 +1101,10 @@ try {
 	$script:CommandsRoot = $originalCommandsRoot
 }
 
-Write-Rule
-Write-OK (Paint 'Specwright is installed.' 'bold')
-Write-Row ''
-Write-Row ("  " + (Paint 'Scope' 'mid') + "    $($script:Scope)")
-Write-Row ("  " + (Paint 'Skills' 'mid') + "   $($Skills.Count) skills in $($script:Destinations.Count) location(s)")
-if ($script:CommandsRoot) {
-	Write-Row ("  " + (Paint 'Commands' 'mid') + "  $(@(Get-CommandFiles $script:CommandsRoot).Count) /sw-* wrappers beside them")
-}
-Write-Row ''
-foreach ($dest in $script:Destinations) {
-	Write-Row ("  " + (Paint $script:Dot 'mid') + " $dest")
-	if ($script:CommandsRoot) { Write-Row ("  " + (Paint ' ' 'mid') + " $(Join-Path (Split-Path $dest -Parent) 'commands')") }
-}
-Write-Row ''
-Write-Row (Paint '  Your next step' 'bold')
-Write-Row '  Open the project in your agent and say what you want:'
-Write-Row '    start a spec for the refunds flow'
-Write-Row '    or use /sw-start and /sw-continue'
-Write-Row ''
+Step-InstallProgress
+Clear-InstallProgress
+Write-OK "Installed $($Skills.Count) skills in $($script:Destinations.Count) location(s) ($($script:Scope))."
+Write-Row '  Run /sw-start to begin.'
 $hasPython = $false
 foreach ($name in @('python3', 'python')) {
 	$exe = Get-Command $name -ErrorAction SilentlyContinue | Select-Object -First 1
@@ -1108,6 +1117,5 @@ $nodeMajor = 0
 $node = Get-Command node -ErrorAction SilentlyContinue | Select-Object -First 1
 if ($node) { $nodeMajor = [int](& $node.Source -p 'process.versions.node.split(".")[0]' 2>$null) }
 if ($nodeMajor -lt 24) { Write-Note 'Node 24 was not found. Only sw-view needs it; /sw-start offers to install it.' }
-Write-Note 'To update, run this installer again.'
 Write-ScreenClose
 if ($script:DownloadDir) { Remove-Item -Recurse -Force $script:DownloadDir -ErrorAction SilentlyContinue }
