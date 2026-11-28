@@ -17,8 +17,10 @@ Run this order whenever the work is more than one feature.
    feature's tasks are written by one writer so numbers and links stay consistent.
 
 The first feature of a new project is Foundation (`_shared/scripts/foundation.py`): tooling,
-lint, format, tests and the standing rules. Every other feature of that project sets
-`depends_on` on it unless it is documentation only.
+lint, format, tests and the standing rules. Foundation is a hard gate, not just a convention:
+`graph.py ready` blocks every feature whose `code:` is not `false` until the project's
+foundation feature is done. A documentation-only feature sets `code: false` and starts at once.
+Set `kind: foundation` in the foundation story's front matter; a project has one.
 
 ## Which work can run in parallel
 

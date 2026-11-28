@@ -4,6 +4,10 @@ A task's status comes from its own `Status:` line. A feature is done when every 
 done, in progress when any task has started, otherwise todo. An epic follows its features the
 same way. An item is blocked while something it `depends_on` is not done, or (for a feature)
 while a blocking question is open; blocked is never stored. Ready means todo and not blocked.
+
+The foundation feature of a project is a hard prerequisite too: a feature whose `code:` is not
+false waits until the project's foundation is done, because every later task runs `make check`.
+A documentation-only feature sets `code: false` and is exempt.
 """
 
 from __future__ import annotations
@@ -21,6 +25,18 @@ def _rollup(children: list[str]) -> str:
     if children and all(c == DONE for c in children):
         return DONE
     return IN_PROGRESS if any(c in (IN_PROGRESS, DONE) for c in children) else TODO
+
+
+def _foundation(graph: Graph, scope: str) -> str | None:
+    """The project's foundation feature: the first feature whose front matter says `kind`."""
+    found = [
+        k
+        for k, n in sorted(graph.nodes.items())
+        if n.kind == "feat"
+        and n.extra.get("feature_kind") == "foundation"
+        and k.startswith(f"{scope}:")
+    ]
+    return found[0] if found else None
 
 
 def compute(graph: Graph) -> dict[str, dict]:
@@ -55,9 +71,20 @@ def compute(graph: Graph) -> dict[str, dict]:
         if e.rel == "depends_on" and e.src in live:
             deps.setdefault(e.src, []).append(e.dst)
     out: dict[str, dict] = {}
+    foundations = {scope: _foundation(graph, scope) for scope in {k.split(":")[0] for k in live}}
     for key in sorted(live):
         node = live[key]
         blocked = [d for d in sorted(set(deps.get(key, []))) if status.get(d) != DONE]
+        scope = key.split(":")[0]
+        gate = foundations.get(scope)
+        if (
+            node.kind == "feat"
+            and gate
+            and gate != key
+            and node.extra.get("code") is not False
+            and status.get(gate) != DONE
+        ):
+            blocked.append(gate)
         blocked += [
             q for q in node.extra.get("lifecycle", {}).get("blocked_by_q", []) if q not in blocked
         ]

@@ -153,6 +153,18 @@ class ReadinessTests(unittest.TestCase):
         report = json.loads(done.stdout)
         self.assertIn("REF:TASK-001-2", report["newly_ready"])
 
+    def test_a_coding_feature_waits_for_the_foundation_and_a_docs_feature_does_not(self):
+        self.put("FEAT-001", story("FEAT-001", "Foundation", epic="EPIC-001", kind="foundation"))
+        self.put("FEAT-002", story("FEAT-002", "Second", epic="EPIC-001", depends_on=[]))
+        self.put("FEAT-003", story("FEAT-003", "Docs", epic="EPIC-001", code=False))
+        out = self.state(tasks("FEAT-001", ("TASK-001-1", "todo", "None")))
+        self.assertEqual(out["REF:FEAT-002"]["blocked_by"], ["REF:FEAT-001"])
+        self.assertFalse(out["REF:FEAT-002"]["ready"])
+        self.assertEqual(out["REF:FEAT-003"]["blocked_by"], [])
+        self.assertTrue(out["REF:FEAT-003"]["ready"])
+        done = self.state(tasks("FEAT-001", ("TASK-001-1", "done", "None")))
+        self.assertEqual(done["REF:FEAT-002"]["blocked_by"], [])
+
     def test_a_dependency_cycle_is_a_finding(self):
         self.put("FEAT-001", story("FEAT-001", "First", epic="EPIC-001", depends_on=["FEAT-002"]))
         graph.build(self.root, "REF")

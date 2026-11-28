@@ -270,6 +270,11 @@ def collect(root: Path, scopes: list[str], known: list[str]) -> Graph:
         )
         if kind == "epic":
             node.extra["scopes"] = [str(s) for s in entity.fm.get("scopes") or [scope]]
+        if kind == "feat":
+            if entity.fm.get("kind"):
+                node.extra["feature_kind"] = str(entity.fm["kind"])
+            if entity.fm.get("code") is False or str(entity.fm.get("code")).lower() == "false":
+                node.extra["code"] = False
         if kind == "q":
             node.extra["blocking"] = is_blocking(entity.fm)
         node.extra.update(

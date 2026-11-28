@@ -14,6 +14,7 @@ sources: []
 assets: []
 links: []
 depends_on: []   # features that must be done first, e.g. [FEAT-001]
+code: true       # false for a documentation-only feature, which skips the foundation gate
 ---
 
 ## Goal
