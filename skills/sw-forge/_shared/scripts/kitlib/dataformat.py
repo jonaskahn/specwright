@@ -1,6 +1,6 @@
 """The one data format every sw-* skill writes for readers such as the console.
 
-Each file lives in ``<project base>/_meta/data/`` (a program root also holds merged copies) and
+Each file lives in ``<project base>/.metadata/data/`` (a program root also holds merged copies) and
 has one owner skill. ``write_kind`` is the only function that writes there: it refuses a skill
 that does not own the kind, validates the rows against the schema below, writes atomically, and
 refreshes ``index.json``. The schema is the single source of truth: the console contract

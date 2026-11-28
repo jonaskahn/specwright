@@ -1012,7 +1012,7 @@ def discover(base, ignore=()):
     if base.is_symlink():
         raise workspace.WorkspaceError("scope directory must not be a symbolic link")
     skip = {
-        "_meta",
+        ".metadata",
         "raw",
         ".git",
         ".agents",
@@ -1059,7 +1059,7 @@ def registry_findings(ctx):
                     "L-055",
                     "draft",
                     "error",
-                    "_meta/id-registry.md",
+                    ".metadata/id-registry.md",
                     1,
                     "reserved feature has no real title; record one with the reservation",
                     ref.id,
@@ -1074,7 +1074,7 @@ def registry_findings(ctx):
                     "L-043",
                     "draft",
                     "error",
-                    "_meta/id-registry.md",
+                    ".metadata/id-registry.md",
                     1,
                     f"invalid Jira key {key}",
                     ref.id,
@@ -1090,7 +1090,7 @@ def registry_findings(ctx):
                         "L-037",
                         "publish",
                         "error",
-                        "_meta/id-registry.md",
+                        ".metadata/id-registry.md",
                         1,
                         "feature maps to several Jira keys",
                         feat,
@@ -1104,7 +1104,7 @@ def registry_findings(ctx):
                             "L-037",
                             "publish",
                             "error",
-                            "_meta/id-registry.md",
+                            ".metadata/id-registry.md",
                             1,
                             f"Jira key {key} maps to several features",
                             feat,
@@ -1201,7 +1201,7 @@ def graph_findings(ctx):
     for row in ctx.registry.rows:
         cell = row[ctx.registry.col("Last snapshot")]
         if cell.startswith("/") or re.match(r"^[A-Za-z]:[\\/]", cell):
-            add("L-053", "warn", "_meta/id-registry.md", 1, "registry path is absolute", row[0])
+            add("L-053", "warn", ".metadata/id-registry.md", 1, "registry path is absolute", row[0])
 
     if ctx.built is not None:
         built = ctx.built
@@ -1210,7 +1210,7 @@ def graph_findings(ctx):
             add(
                 "L-049",
                 "warn",
-                "_meta/graph",
+                ".metadata/graph",
                 1,
                 "no workspace manifest; the graph cannot be checked",
                 ctx.scope,
@@ -1223,7 +1223,7 @@ def graph_findings(ctx):
             add(
                 "L-049",
                 "warn",
-                "_meta/graph",
+                ".metadata/graph",
                 1,
                 "knowledge graph could not be built; the workspace has unreadable content",
                 ctx.scope,
@@ -1314,7 +1314,7 @@ def _graph_state(ctx, root, add):
         add(
             "L-049",
             "warn",
-            "_meta/graph",
+            ".metadata/graph",
             1,
             "knowledge graph is missing; run graph.py build",
             ctx.scope,
@@ -1329,7 +1329,7 @@ def _graph_state(ctx, root, add):
         add(
             "L-049",
             "warn",
-            "_meta/graph",
+            ".metadata/graph",
             1,
             "knowledge graph is stale; run graph.py build",
             ctx.scope,
@@ -1428,8 +1428,8 @@ def run(root, gate="review", scope=None):
     base = workspace.scope_dir(workspace_root, selected)
     if (
         base.is_symlink()
-        or (base / "_meta").is_symlink()
-        or (base / "_meta/lint-report.md").is_symlink()
+        or (base / ".metadata").is_symlink()
+        or (base / ".metadata/lint-report.md").is_symlink()
     ):
         raise workspace.WorkspaceError("report destination must not be a symbolic link")
     manifest = workspace.load(base / workspace.FLAT_MANIFEST)
@@ -1440,7 +1440,7 @@ def run(root, gate="review", scope=None):
             defined.update(
                 definitions_for(discover(workspace.scope_dir(workspace_root, other)), other)
             )
-    registry_path = base / "_meta/id-registry.md"
+    registry_path = base / ".metadata/id-registry.md"
     registry = tables.Table(list(schema.REGISTRY_COLUMNS))
     extra = []
     if registry_path.exists():
@@ -1450,7 +1450,9 @@ def run(root, gate="review", scope=None):
                 raise tables.TableError("registry columns differ from the shared schema")
         except (tables.TableError, UnicodeError) as exc:
             registry = tables.Table(list(schema.REGISTRY_COLUMNS))
-            extra.append(Finding("L-001", "draft", "error", "_meta/id-registry.md", 1, str(exc)))
+            extra.append(
+                Finding("L-001", "draft", "error", ".metadata/id-registry.md", 1, str(exc))
+            )
     # A reserved registry row is a definition even before its draft exists, so referencing a
     # sibling reservation does not fail L-004. Withdrawn and superseded rows do not define.
     defined.update(registry_definitions(registry, selected))
@@ -1468,14 +1470,14 @@ def run(root, gate="review", scope=None):
     findings = sorted(
         [*collect(ctx), *extra], key=lambda f: (f.path, f.line, f.rule, f.subject, f.msg)
     )
-    report = base / "_meta/lint-report.md"
+    report = base / ".metadata/lint-report.md"
     fsio.atomic_write(report, report_text(ctx, findings))
     errors = sum(f.sev == "error" and not f.waiver for f in findings)
     return (GATES[gate] if errors else 0), {
         "scope": selected,
         "gate": gate,
         "errors": errors,
-        "report": "_meta/lint-report.md",
+        "report": ".metadata/lint-report.md",
         "findings": [asdict(f) for f in findings],
         "waivers": [list(w) for w in ctx.waivers],
     }

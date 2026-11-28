@@ -56,7 +56,7 @@ class IngestConversionTests(unittest.TestCase):
         self.assertIn("hidden-chars", parsed.fm["warnings"])
         self.assertEqual(next((self.out / "raw").iterdir()).read_bytes(), source.read_bytes())
         self.assertTrue(mod.ingest(source, self.out)["duplicate"])
-        registry = tables.parse((self.out.parent / "_meta/id-registry.md").read_text()).table
+        registry = tables.parse((self.out.parent / ".metadata/id-registry.md").read_text()).table
         self.assertEqual(len(registry.rows), 1)
         self.assertEqual(
             registry.get("REF:SRC-0001", "Last snapshot"), "00-inbox/SRC-0001--source.md"
@@ -81,9 +81,9 @@ class IngestConversionTests(unittest.TestCase):
             fm["aliases"], ["POL-7", "page-12", "WIKI-12", "https://wiki.example.test/page-12"]
         )
         self.assertEqual((fm["remote_id"], fm["source_parent"]), ("page-12", "SRC-0009"))
-        registry = tables.parse((self.out.parent / "_meta/id-registry.md").read_text()).table
+        registry = tables.parse((self.out.parent / ".metadata/id-registry.md").read_text()).table
         self.assertEqual(registry.get("REF:SRC-0001", "Source ref"), "page-12")
-        log = (self.out.parent / "_meta/write-log.md").read_text()
+        log = (self.out.parent / ".metadata/write-log.md").read_text()
         self.assertIn("sw-craft | import | REF:SRC-0001", log)
         self.assertIn("file=00-inbox/SRC-0001--refund-policy.md@", log)
 
@@ -106,7 +106,7 @@ class IngestConversionTests(unittest.TestCase):
         mod.ingest(source, self.out, redacted_from=original)
         fm = self.snapshot().fm
         self.assertEqual((fm["redacted_from"], fm["redaction_markers"]), (original, 2))
-        rows = scanlog.read(self.out.parent / "_meta/scan-decisions.tsv")
+        rows = scanlog.read(self.out.parent / ".metadata/scan-decisions.tsv")
         self.assertEqual([r["decision"] for r in rows], ["redact"])
         with self.assertRaises(ValueError):
             mod.ingest(self.source("b.txt", "other text"), self.out, redacted_from="not-a-hash")
@@ -115,7 +115,7 @@ class IngestConversionTests(unittest.TestCase):
         mod.ingest(self.source(), self.out)
         with self.assertRaises(mod.Refused):
             mod.ingest(self.source("pii.txt", "Contact owner@example.test"), self.out)
-        rows = scanlog.read(self.out.parent / "_meta/scan-decisions.tsv")
+        rows = scanlog.read(self.out.parent / ".metadata/scan-decisions.tsv")
         self.assertEqual([r["decision"] for r in rows], ["retain", "skip"])
         self.assertEqual(rows[1]["type"], "email")
 
@@ -124,7 +124,7 @@ class IngestConversionTests(unittest.TestCase):
         source = self.source("policy.txt", text)
         digest = hashing.bytes_hash(source.read_bytes())
         scanlog.append(
-            self.out.parent / "_meta/scan-decisions.tsv",
+            self.out.parent / ".metadata/scan-decisions.tsv",
             {
                 "source_hash": digest,
                 "line": 1,
@@ -138,7 +138,7 @@ class IngestConversionTests(unittest.TestCase):
         self.assertEqual(mod.ingest(source, self.out)["id"], "SRC-0001")
 
     def test_ids_from_registry_and_inbox_preserve_other_rows(self):
-        meta = self.out.parent / "_meta"
+        meta = self.out.parent / ".metadata"
         meta.mkdir(parents=True)
         table = tables.Table(list(schema.REGISTRY_COLUMNS))
         table.upsert("REF:SRC-0019", {"Kind": "snapshot", "State": "withdrawn"})

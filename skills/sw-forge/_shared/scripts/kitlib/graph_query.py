@@ -211,7 +211,7 @@ def show(store: Store, key: str) -> list[str]:
 
 
 def meta_rows(store: Store, name: str) -> list[dict[str, str]]:
-    """Rows of a generated tab-separated file in `_meta/`; empty when it is not there yet."""
+    """Rows of a generated tab-separated file in `.metadata/`; empty when it is not there yet."""
     path = store.dir.parent / name
     if not path.is_file():
         return []

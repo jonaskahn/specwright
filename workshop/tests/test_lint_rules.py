@@ -268,7 +268,7 @@ class RuleTests(unittest.TestCase):
         if root:
             self.base.mkdir(parents=True, exist_ok=True)
             (self.base / "project.yaml").write_text("scope: REF\n")
-            (self.base / "_meta").mkdir(parents=True, exist_ok=True)
+            (self.base / ".metadata").mkdir(parents=True, exist_ok=True)
             (self.base / "02-drafts").mkdir(parents=True, exist_ok=True)
             (self.base / "02-drafts/FEAT-001.story.md").write_text(GOOD)
         return self.context([doc()], built=built)
@@ -323,7 +323,7 @@ class RuleTests(unittest.TestCase):
 
     def test_l049(self):
         g = graph.Graph(nodes={}, edges=[], inputs={})
-        (self.base / "_meta").mkdir(parents=True, exist_ok=True)
+        (self.base / ".metadata").mkdir(parents=True, exist_ok=True)
         self.assertIn("L-049", {f.rule for f in lint.graph_findings(self.graph_ctx(g, root=True))})
 
     def test_l050(self):
@@ -627,7 +627,7 @@ class RuleTests(unittest.TestCase):
     def registry(self, *rows):
         table = tables.Table(list(schema.ASSET_REGISTRY_COLUMNS))
         table.rows = [list(r) for r in rows]
-        path = self.base / "_meta/asset-registry.md"
+        path = self.base / ".metadata/asset-registry.md"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("# asset-registry\n\n" + table.render())
 
@@ -782,7 +782,7 @@ class CommandTests(unittest.TestCase):
         for gate in ("review", "publish"):
             code, text, err = self.cli("--gate", gate, "--format", "json")
             self.assertEqual((code, err), (0, ""), text)
-        report = self.root / "_meta/lint-report.md"
+        report = self.root / ".metadata/lint-report.md"
         first = report.read_bytes()
         self.cli("--gate", "publish")
         self.assertEqual(first, report.read_bytes())
@@ -841,11 +841,11 @@ class CommandTests(unittest.TestCase):
         self.assertEqual(self.cli()[0], 2)
         code, text, _ = self.cli("--scope", "REF", "--format", "json")
         self.assertEqual(code, 0, text)
-        self.assertTrue((selected / "_meta/lint-report.md").exists())
-        self.assertFalse((self.root / "_meta/lint-report.md").exists())
+        self.assertTrue((selected / ".metadata/lint-report.md").exists())
+        self.assertFalse((self.root / ".metadata/lint-report.md").exists())
 
     def test_bad_registry_and_invalid_utf8_are_findings(self):
-        (self.root / "_meta/id-registry.md").write_text("| Wrong |\n|---|\n| x |\n")
+        (self.root / ".metadata/id-registry.md").write_text("| Wrong |\n|---|\n| x |\n")
         (self.root / "01-analysis/broken.md").write_bytes(b"\xff")
         code, text, _ = self.cli("--format", "json")
         self.assertEqual(code, 20)

@@ -88,7 +88,7 @@ class BulkImportTests(WorkflowTestCase):
     def test_registry_and_graph_carry_the_remote_names_and_hierarchy(self):
         self.run_batch()
         table = rtm.read_table(
-            self.base / "_meta/id-registry.md", list(schema.REGISTRY_COLUMNS)
+            self.base / ".metadata/id-registry.md", list(schema.REGISTRY_COLUMNS)
         ).table
         refs = sorted(table.value(r[0], "Source ref") for r in table.rows if ":SRC-" in r[0])
         self.assertEqual(refs, ["10", "20", "30"])

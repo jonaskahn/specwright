@@ -259,7 +259,7 @@ def project_manifest(
     return manifest
 
 
-WORK_FOLDER = "_meta/work"
+WORK_FOLDER = ".metadata/work"
 WORK_IGNORE = "*\n!.gitignore\n"
 # Folders a project may hold next to its spec folders without the stray-folder report noticing.
 ALWAYS_ALLOWED = {"console", "node_modules", "projects", "skills"}
@@ -397,7 +397,7 @@ def init(
     _write_new(base / FLAT_MANIFEST, miniyaml.dumps(manifest), created, root)
     for folder in schema.SCOPE_DIRS:
         _make_folder(base, folder, created, root)
-    meta = base / "_meta"
+    meta = base / ".metadata"
     _write_new(meta / "id-registry.md", _registry_text(), created, root)
     _write_new(meta / "asset-registry.md", _asset_registry_text(), created, root)
     _write_new(meta / "rtm.md", _rtm_text(), created, root)
@@ -535,15 +535,15 @@ def upgrade(root: Path, scope: str, apply: bool = False, code: str | None = None
         changed = True
     missing = [d for d in schema.SCOPE_DIRS if not (base / d).is_dir()]
     plan += [f"create {d}/" for d in missing]
-    asset_registry = base / "_meta/asset-registry.md"
+    asset_registry = base / ".metadata/asset-registry.md"
     if not asset_registry.is_file():
-        plan.append("create _meta/asset-registry.md")
-    registry_path = base / "_meta/id-registry.md"
+        plan.append("create .metadata/asset-registry.md")
+    registry_path = base / ".metadata/id-registry.md"
     if registry_path.is_file():
         header = tables.parse(registry_path.read_text(encoding="utf-8")).table
         if header is not None and header.header != schema.REGISTRY_COLUMNS:
-            plan.append("migrate _meta/id-registry.md: add Title, Aliases and Source ref columns")
-    plan.append("graph: build _meta/graph/")
+            plan.append("migrate .metadata/id-registry.md: add Title, Aliases, Source ref columns")
+    plan.append("graph: build .metadata/graph/")
     if not apply:
         return plan
     if changed:

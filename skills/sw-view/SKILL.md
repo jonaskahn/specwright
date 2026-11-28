@@ -5,7 +5,7 @@ description: Opens the local read-only console: overview, features, tasks, epic 
 
 # sw-view
 
-Open a local, read-only web console over `_meta/data/`. Not a station; never advances an item.
+Open a local, read-only web console over `.metadata/data/`. Not a station; never advances an item.
 
 Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
 `_shared/references/agent-style.md`.

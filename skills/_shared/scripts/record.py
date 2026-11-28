@@ -5,8 +5,8 @@ Every command validates first. With --dry-run it prints the plan and writes noth
 logs the write, rebuilds the trace and graph, and undoes itself on failure. Registry cells are
 checked against the owner given by --as.
 
-`backup <path>` archives the exact bytes of one authored artifact under _meta/history/ just before
-an accepted requirement edit.
+`backup <path>` archives the exact bytes of one authored artifact under .metadata/history/
+just before an accepted requirement edit.
 
 Exit codes: 0 done, 2 invalid request or unreadable data, 3 a human must supply something first
 (for example the approvers), 4 the skill does not own a registry column.
@@ -224,7 +224,7 @@ def _build(ctx, args):
 def _backup(root, scope, args):
     base = workspace.scope_dir(root, scope)
     if args.dry_run:
-        print(f"plan:\n  back up {args.path} under _meta/history/")
+        print(f"plan:\n  back up {args.path} under .metadata/history/")
         return 0
     target = ingest_impact.backup(base, args.path)
     print(f"done:\n  {target.relative_to(base)}")

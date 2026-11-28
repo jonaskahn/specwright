@@ -37,13 +37,13 @@ snapshot), exists or missing (code path), no-code-root, unsafe-path.
 
 ## Files
 
-_meta/graph/ holds manifest.json, KNOWLEDGE-MAP.md, maps/, index.tsv (key, kind, status, title, shard, path:line,
+.metadata/graph/ holds manifest.json, KNOWLEDGE-MAP.md, maps/, index.tsv (key, kind, status, title, shard, path:line,
 aliases), edges-out.tsv, edges-in.tsv and shards/. A program root has a merged copy. Everything is generated and
 committed. After a merge conflict in these files, run build.
 
 ## Master index
 
-The same build writes four files next to the graph in _meta/, never edited by hand (check reports an edited copy):
+The same build writes four files next to the graph in .metadata/, never edited by hand (check reports an edited copy):
 
 - INDEX.md and index.tsv: one row per artifact (key, kind, name, aliases, origin, path, status with flags, hash,
   parent, links). Flags are blocked, stale, withdrawn, superseded, index-only and untitled. Links are `rel:KEY`, and

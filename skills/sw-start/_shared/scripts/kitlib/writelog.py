@@ -175,7 +175,9 @@ def operation(
 
 
 # Shared state several tools rewrite, and files a worker (not a script) owns, are not judged.
-SHARED_STATE = frozenset({"_meta/id-registry.md", "_meta/rtm.md", "_meta/asset-registry.md"})
+SHARED_STATE = frozenset(
+    {".metadata/id-registry.md", ".metadata/rtm.md", ".metadata/asset-registry.md"}
+)
 WORKER_OWNED = ("01-analysis/candidates/",)
 
 

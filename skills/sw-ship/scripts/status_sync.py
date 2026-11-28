@@ -42,8 +42,8 @@ ACCEPTED = ("ready-to-publish", "published", "ready-for-dev", "in-development")
 
 
 def _registry(base: Path) -> dict[str, str]:
-    """Spec ID (unqualified) → Jira key, from _meta/id-registry.md."""
-    path = base / "_meta" / "id-registry.md"
+    """Spec ID (unqualified) → Jira key, from .metadata/id-registry.md."""
+    path = base / ".metadata" / "id-registry.md"
     out, header = {}, None
     for line in path.read_text(encoding="utf-8").splitlines() if path.is_file() else []:
         if not line.startswith("|"):

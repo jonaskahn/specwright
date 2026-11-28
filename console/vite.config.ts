@@ -4,10 +4,10 @@ import { resolve } from 'node:path';
 import { type Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
 
-// In development /data/*.json comes from a workspace's _meta/data (or the golden fixture).
+// In development /data/*.json comes from a workspace's .metadata/data (or the golden fixture).
 // In a built console the same URLs are served by the sw-view server.
 function serveData(): Plugin {
-  const dir = resolve(process.env.DATA_DIR ?? '../_meta/data');
+  const dir = resolve(process.env.DATA_DIR ?? '../.metadata/data');
   return {
     name: 'specwright-data',
     configureServer(server) {

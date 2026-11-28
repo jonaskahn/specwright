@@ -43,7 +43,7 @@ def age_days(value, today):
 
 
 def report_cell(base, filename, key):
-    path = base / "_meta" / filename
+    path = base / ".metadata" / filename
     if not path.exists():
         return UNKNOWN
     text = path.read_text(encoding="utf-8")
@@ -145,9 +145,9 @@ def build_report(root: Path, scopes=None, today=None):
     for scope in scopes or workspace.list_scopes(root):
         base = workspace.scope_dir(root, scope)
         registry = rtm.read_table(
-            base / "_meta/id-registry.md", list(schema.REGISTRY_COLUMNS)
+            base / ".metadata/id-registry.md", list(schema.REGISTRY_COLUMNS)
         ).table
-        matrix = rtm.read_table(base / "_meta/rtm.md", rtm.rtm_header()).table
+        matrix = rtm.read_table(base / ".metadata/rtm.md", rtm.rtm_header()).table
         for key, entity in sorted(entities.items()):
             if not key.startswith(scope + ":") or entity.kind != "feature":
                 continue
@@ -252,7 +252,7 @@ def main(argv=None):
     parser.add_argument(
         "--save",
         action="store_true",
-        help="write _meta/status.md and refresh data/features.json; needs an unambiguous scope",
+        help="write .metadata/status.md and refresh data/features.json; needs an unambiguous scope",
     )
     args = parser.parse_args(argv)
     try:
@@ -272,7 +272,7 @@ def main(argv=None):
         report = build_report(root, scopes)
         if args.save:
             fsio.atomic_write(
-                workspace.scope_dir(root, scopes[0]) / "_meta/status.md", render(report)
+                workspace.scope_dir(root, scopes[0]) / ".metadata/status.md", render(report)
             )
             dataformat.refresh(root, "features", scopes[0])
         print(

@@ -29,10 +29,10 @@ class Workspace(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.base = Path(self.tmp.name)
-        for d in ("02-drafts", "01-analysis/as-is", "_meta", "code/src"):
+        for d in ("02-drafts", "01-analysis/as-is", ".metadata", "code/src"):
             (self.base / d).mkdir(parents=True)
         (self.base / "code/src/S.java").write_text("int W = 10;\n")
-        (self.base / "_meta/id-registry.md").write_text(REGISTRY)
+        (self.base / ".metadata/id-registry.md").write_text(REGISTRY)
 
     def tearDown(self):
         self.tmp.cleanup()

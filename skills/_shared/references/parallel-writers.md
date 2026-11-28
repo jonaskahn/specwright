@@ -26,7 +26,7 @@ Do not initialize Git or configure hooks solely to make delegation work.
 ## Rules
 
 1. **One writer per file.** A worker owns its item's files only (the skill names them).
-   It never writes records, registry rows, RTM, graph, `_meta/data/`, status, snapshots,
+   It never writes records, registry rows, RTM, graph, `.metadata/data/`, status, snapshots,
    or a sibling's files.
 2. **The lead owns shared state** and writes it once, after the workers (and commits once with
    `checkpoint.py`; a worker never does): questions

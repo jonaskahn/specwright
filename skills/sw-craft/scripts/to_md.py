@@ -371,8 +371,8 @@ def ingest(
         raise ValueError("redacted-from must be the sha256 of the original file")
     digest = hashing.bytes_hash(data)
     root = out.parent
-    registry_path = root / "_meta" / "id-registry.md"
-    scan_log = root / "_meta" / "scan-decisions.tsv"
+    registry_path = root / ".metadata" / "id-registry.md"
+    scan_log = root / ".metadata" / "scan-decisions.tsv"
     taken = ids.taken_ids(root)
     for snapshot in sorted(out.glob("SRC-*.md")):
         parsed = frontmatter.parse(snapshot.read_text(encoding="utf-8"))
@@ -461,7 +461,7 @@ def ingest(
     }
     if remote_id or tracker_key:
         cells["Source ref"] = remote_id or str(tracker_key)
-    with writelog.operation(root / "_meta" / "write-log.md", "sw-craft", "import", key) as op:
+    with writelog.operation(root / ".metadata" / "write-log.md", "sw-craft", "import", key) as op:
         raw_path.parent.mkdir(parents=True, exist_ok=True)
         # Exclusive creation keeps originals append-only, including on a prefix collision.
         with raw_path.open("xb") as handle:

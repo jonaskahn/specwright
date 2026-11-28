@@ -245,7 +245,7 @@ class BaselineTests(WorkflowTestCase):
             )
         )
         self.baseline_cli("reserve", "--group", "Refunds")
-        lines = (self.base / "_meta/CROSSWALK.tsv").read_text().splitlines()
+        lines = (self.base / ".metadata/CROSSWALK.tsv").read_text().splitlines()
         head = lines[1][2:].split("\t")
         rows = {
             r["legacy_id"]: r

@@ -1,12 +1,12 @@
 """Serve the built console and the data files, on this machine only.
 
 Bound to 127.0.0.1. ``/`` and ``/assets/...`` come from ``dist``; ``/data/<name>.json`` comes
-from ``_meta/data`` and only for the names the data format defines. ``/doc/<SCOPE>/<path>`` shows
-one spec document (Markdown, PDF, an image, a link file) read from that project's folder, for
-the preview panel; ``/doc/`` lists the projects it can read. GET and HEAD only, no directory
-listing, no path outside those folders, no dot-files, no machine files (`_meta` keeps only its
-Markdown reports), a Host check against DNS rebinding, and a strict Content-Security-Policy on
-every answer.
+from ``.metadata/data`` and only for the names the data format defines.
+``/doc/<SCOPE>/<path>`` shows one spec document (Markdown, PDF, an image, a link file) read
+from that project's folder, for the preview panel; ``/doc/`` lists the projects it can read.
+GET and HEAD only, no directory listing, no path outside those folders, no dot-files, no
+machine files (`.metadata` keeps only its Markdown reports), a Host check against DNS
+rebinding, and a strict Content-Security-Policy on every answer.
 """
 
 from __future__ import annotations
@@ -163,11 +163,14 @@ def doc_path(base: Path | None, relative: str) -> Path | None:
     if base is None or not relative or "\x00" in relative or "\\" in relative:
         return None
     parts = relative.split("/")
-    if relative.startswith("/") or any(p in ("", ".", "..") or p.startswith(".") for p in parts):
+    if relative.startswith("/") or any(
+        p in ("", ".", "..") or (p.startswith(".") and not (i == 0 and p == ".metadata"))
+        for i, p in enumerate(parts)
+    ):
         return None
     if parts[0] in DOC_SKIP:
         return None
-    if parts[0] == "_meta" and (len(parts) != 2 or parts[1].count(".") != 1):
+    if parts[0] == ".metadata" and (len(parts) != 2 or parts[1].count(".") != 1):
         return None
     if Path(relative).suffix.lower() not in DOC_TYPES:
         return None

@@ -22,7 +22,7 @@ folders is read as evidence; `graph build` and the quality gate report any other
 | `03-plan/` | plans and tasks | sw-forge |
 | `records/` | questions, decisions, change requests, amendments | `record.py`, sw-craft, sw-craft |
 | `diagrams/`, `assets/`, `snapshots/` | diagrams, user assets, remote snapshots | their capabilities |
-| `_meta/` | registry, RTM, write log, generated index and graph; `work/` is ephemeral, ignored by version control and the graph | shared scripts |
+| `.metadata/` | registry, RTM, write log, generated index and graph; `work/` is ephemeral, ignored by version control and the graph | shared scripts |
 
 `AGENTS.md` holds the only copy of the standing rules; `CLAUDE.md` and `GEMINI.md` are one-line
 pointers to it.

@@ -3,7 +3,7 @@
 
 Exit 0 when the story can be read. Exit 2 on usage or file errors.
 A dismissal writes illustration and illustration_reason in front matter only.
---json also writes _meta/work/illustration-FEAT-NNN.json.
+--json also writes .metadata/work/illustration-FEAT-NNN.json.
 """
 
 from __future__ import annotations
@@ -45,7 +45,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("feature", help="feature ID such as FEAT-002")
     parser.add_argument("--scope-root", type=Path, help="project directory that holds 02-drafts/")
     parser.add_argument("--cwd", type=Path, default=Path("."))
-    parser.add_argument("--json", action="store_true", help="write the chip under _meta/work/")
+    parser.add_argument("--json", action="store_true", help="write the chip under .metadata/work/")
     parser.add_argument("--dismiss", help="record illustration: none with this reason")
     args = parser.parse_args(argv)
     try:
@@ -56,7 +56,7 @@ def main(argv: list[str] | None = None) -> int:
             result = illustration.state(base, args.feature)
         print(illustration.render_text(result), end="")
         if args.json:
-            target = base / "_meta/work" / f"illustration-{result['id']}.json"
+            target = base / ".metadata/work" / f"illustration-{result['id']}.json"
             fsio.atomic_write(target, json.dumps(result, indent=2, sort_keys=True) + "\n")
             print(target)
         return 0

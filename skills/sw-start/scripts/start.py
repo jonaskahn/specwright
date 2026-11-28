@@ -340,7 +340,7 @@ def context_pack(root, scope, key, store, board_row):
         str(manifest.relative_to(root)),
         hashing.bytes_hash(manifest.read_bytes())[:12],
     )
-    first = base / "_meta/READ-FIRST.md"
+    first = base / ".metadata/READ-FIRST.md"
     if first.is_file():
         add(
             "read-first",

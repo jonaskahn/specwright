@@ -84,14 +84,14 @@ class CheckpointTests(unittest.TestCase):
 
     def test_derived_folders_are_not_committed(self):
         self.draft()
-        for folder in ("_meta/graph", "_meta/work"):
+        for folder in (".metadata/graph", ".metadata/work"):
             (self.root / folder).mkdir(parents=True, exist_ok=True)
             (self.root / folder / "x.json").write_text("{}\n")
-        (self.root / "_meta/lint-report.md").write_text("report\n")
+        (self.root / ".metadata/lint-report.md").write_text("report\n")
         self.run_commit()
         files = git(self.repo, "show", "--name-only", "--format=", "HEAD")
-        self.assertNotIn("_meta/graph", files)
-        self.assertNotIn("_meta/work", files)
+        self.assertNotIn(".metadata/graph", files)
+        self.assertNotIn(".metadata/work", files)
         self.assertNotIn("lint-report", files)
 
     def test_nothing_changed_makes_no_commit(self):

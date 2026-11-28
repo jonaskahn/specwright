@@ -397,5 +397,5 @@ def render(inv: dict[str, Any]) -> str:
                 lines += ["", f"## {r['name']} {kind}", ""]
                 lines += [f"- {x['name']} — {x['at']}" for x in rows[:80]]
                 if len(rows) > 80:
-                    lines.append(f"- … {len(rows) - 80} more in _meta/inventory.json")
+                    lines.append(f"- … {len(rows) - 80} more in .metadata/inventory.json")
     return "\n".join(lines) + "\n"

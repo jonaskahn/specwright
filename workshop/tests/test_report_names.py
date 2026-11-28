@@ -20,7 +20,7 @@ class ReportNameTests(WorkflowTestCase):
         fields = {"title": "Request a refund", "aliases": ["LEG-100"], "status": "ready-to-publish"}
         self.draft.write_text(frontmatter.update(text, fields))
         rtm.registry_upsert(
-            self.base / "_meta/id-registry.md",
+            self.base / ".metadata/id-registry.md",
             "REF:FEAT-001",
             {"Kind": "story", "Aliases": "LEG-100|refund-flow"},
             "sw-craft",

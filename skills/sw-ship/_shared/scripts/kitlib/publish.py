@@ -57,9 +57,9 @@ def context(root: Path, feat: str, scope: str | None = None) -> Context:
         scope_id,
         draft,
         base / "02-drafts" / f"{feat}.card.md",
-        base / "_meta/id-registry.md",
-        base / "_meta/rtm.md",
-        base / "_meta/write-log.md",
+        base / ".metadata/id-registry.md",
+        base / ".metadata/rtm.md",
+        base / ".metadata/write-log.md",
         manifest,
     )
 
@@ -75,7 +75,7 @@ def preconditions(ctx: Context, lint_report: str = "") -> list[str]:
     fm, _ = frontmatter.split(draft)
     if fm.get("status") != "ready-to-publish":
         errors.append("draft is not accepted (ready-to-publish)")
-    report = ctx.base / "_meta/lint-report.md"
+    report = ctx.base / ".metadata/lint-report.md"
     if lint_report:
         if "0 blocking error(s)" not in lint_report:
             errors.append("publish lint gate is not clean")
@@ -262,7 +262,7 @@ def issue_types(manifest: dict) -> dict[str, str]:
 
 
 def _registry_table(base: Path):
-    path = base / "_meta/id-registry.md"
+    path = base / ".metadata/id-registry.md"
     return tables.parse(path.read_text(encoding="utf-8")).table if path.is_file() else None
 
 
@@ -358,7 +358,7 @@ def record_levels(base: Path, plan: dict, keys: dict[str, str], draft_hash: str)
         if not key:
             continue
         rtm.registry_upsert(
-            base / "_meta/id-registry.md",
+            base / ".metadata/id-registry.md",
             row["id"],
             {
                 "Kind": row["type"],
@@ -369,11 +369,11 @@ def record_levels(base: Path, plan: dict, keys: dict[str, str], draft_hash: str)
             "sw-ship",
         )
         written.append(f"{row['id']} → {key}")
-    matrix = rtm.read_table(base / "_meta/rtm.md", rtm.rtm_header())
+    matrix = rtm.read_table(base / ".metadata/rtm.md", rtm.rtm_header())
     matrix.table.upsert(plan["scope_id"], {"Jira [sw-ship]": keys.get(plan["scope_id"], "")})
     from kitlib import fsio
 
-    fsio.atomic_write(base / "_meta/rtm.md", matrix.render())
+    fsio.atomic_write(base / ".metadata/rtm.md", matrix.render())
     return written
 
 

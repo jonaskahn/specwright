@@ -65,7 +65,7 @@ class ProvenanceTests(WorkflowTestCase):
         self.assertEqual(store.resolve("page-77"), "REF:SRC-0001")
         row = next(
             line
-            for line in (self.base / "_meta/index.tsv").read_text().splitlines()
+            for line in (self.base / ".metadata/index.tsv").read_text().splitlines()
             if line.startswith("REF:SRC-0001")
         )
         self.assertIn("\twiki:page-77\t", row)
@@ -128,7 +128,7 @@ class ProvenanceTests(WorkflowTestCase):
         shown = json.loads(done.stdout)
         self.assertEqual(shown["effective"]["source"], "wiki:page-5")
         self.assertEqual(len(shown["amendments"]), 1)
-        log = writelog.read(self.base / "_meta/write-log.md")
+        log = writelog.read(self.base / ".metadata/write-log.md")
         self.assertTrue(any("provenance-amend" in e.fields for e in log if e.kind == "INTENT"))
         again = self.cli(*base)
         self.assertEqual(again.returncode, 2)

@@ -2,7 +2,7 @@
 
 A Svelte project, packed in `assets/console.zip`, built on the user's machine with Node 24
 and served by `scripts/view.py`. It reads only `data/*.json`, which the server takes from
-`_meta/data/`. It makes no other network request, and its page policy allows scripts, styles,
+`.metadata/data/`. It makes no other network request, and its page policy allows scripts, styles,
 images, fonts and fetches from its own address only.
 
 ## Screens

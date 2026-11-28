@@ -3,7 +3,7 @@
 
 Configure with SPECWRIGHT_WIKI_SITE (an https origin), SPECWRIGHT_WIKI_EMAIL and
 SPECWRIGHT_WIKI_TOKEN. Only GET requests are made; nothing is written to the wiki. Output goes to
-_meta/work/pull-<batch>/: one file per page (and per comment with --comments), list.tsv for
+.metadata/work/pull-<batch>/: one file per page (and per comment with --comments), list.tsv for
 bulk_import.py, and pull.json with each page's version, labels, attachments and the counts.
 
 Exit codes: 0 the whole tree was read, 2 invalid configuration or request, 3 the wiki could not be
@@ -48,7 +48,7 @@ def run(args, transport=None):
     limits = workspace.load(base / workspace.FLAT_MANIFEST).get("limits") or {}
     max_pages = args.max_pages or int(limits.get("max_pages", 50))
     max_depth = args.depth if args.depth is not None else int(limits.get("child_depth", 2))
-    out = base / "_meta" / "work" / f"pull-{args.batch_id}"
+    out = base / ".metadata" / "work" / f"pull-{args.batch_id}"
     if out.exists():
         raise ValueError(f"{out.name} already exists; use a new batch id")
     client = wiki_rest.Client(transport or wiki_rest.HttpTransport.from_env())

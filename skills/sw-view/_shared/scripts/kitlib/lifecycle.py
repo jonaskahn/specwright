@@ -81,7 +81,7 @@ def approval_state(base: Path, feat: str, text: str) -> str:
             return "invalidated"
         old = set(invalidation.get("signoffs") or [])
         signoffs = [s for s in signoffs if s not in old]
-    if (base / "_meta/lifecycle-pending.json").exists():
+    if (base / ".metadata/lifecycle-pending.json").exists():
         return "invalidated"
     digest = hashing.short(hashing.draft_hash(text))
     return "fresh" if any(review.line_counts(s, digest, mode) for s in signoffs) else "stale"
@@ -97,7 +97,7 @@ def _approval_label(base: Path, text: str, state: str) -> str:
 
 
 def _registry(base: Path):
-    return tables.parse((base / "_meta/id-registry.md").read_text(encoding="utf-8")).table
+    return tables.parse((base / ".metadata/id-registry.md").read_text(encoding="utf-8")).table
 
 
 def publication(base: Path, key: str) -> dict:
@@ -136,7 +136,7 @@ def feature(base: Path, key: str, status: str = "reserved") -> dict:
         return result
     try:
         history = decisions(base, key)
-        if (base / "_meta/lifecycle-pending.json").exists():
+        if (base / ".metadata/lifecycle-pending.json").exists():
             raise ValueError("incomplete lifecycle transaction; inspect lifecycle-pending.json")
         if text and (parsed.error or not parsed.fm):
             raise ValueError("invalid story front matter")
@@ -203,7 +203,11 @@ def input_hash(base: Path) -> str:
     paths = []
     for folder in ("01-analysis", "02-drafts", "03-plan", "records", "snapshots"):
         paths.extend(p for p in (base / folder).rglob("*.md") if not p.is_symlink())
-    paths += [base / "project.yaml", base / "_meta/id-registry.md", base / "_meta/lint-report.md"]
+    paths += [
+        base / "project.yaml",
+        base / ".metadata/id-registry.md",
+        base / ".metadata/lint-report.md",
+    ]
     payload = [
         (str(p.relative_to(base)), hashing.bytes_hash(p.read_bytes()))
         for p in sorted(set(paths))
@@ -223,7 +227,7 @@ def transition(
         raise ValueError("unsupported lifecycle action")
     if destination is not None and destination not in ("markdown", "jira", "both"):
         raise ValueError("invalid destination")
-    log = base / "_meta/write-log.md"
+    log = base / ".metadata/write-log.md"
     if action in (
         "defer-publish",
         "return-spec",
@@ -266,13 +270,13 @@ def transition(
         raise ValueError("set-destination requires a destination")
     feat = key.split(":")[-1]
     story = base / "02-drafts" / f"{feat}.story.md"
-    for protected in (base / "records", base / "_meta", story):
+    for protected in (base / "records", base / ".metadata", story):
         if protected.is_symlink() or not protected.resolve().is_relative_to(base.resolve()):
             raise ValueError("transition paths must remain inside the scope and not be symlinks")
     if not story.is_file():
         raise ValueError("create the reserved feature story before transitioning")
     if action == "submit-review":
-        report = base / "_meta/lint-report.md"
+        report = base / ".metadata/lint-report.md"
         if not report.is_file() or "0 blocking error(s)" not in report.read_text(encoding="utf-8"):
             raise ValueError("a passing lint gate is required before submission")
     history = decisions(base, key)
@@ -285,12 +289,12 @@ def transition(
         return result
     if confirm != token:
         raise ValueError("confirmation does not match the current transition")
-    lock = base / "_meta/lifecycle.lock"
+    lock = base / ".metadata/lifecycle.lock"
     with lock.open("x", encoding="utf-8"):
         try:
             if input_hash(base) != fingerprint:
                 raise ValueError("workspace changed; regenerate transition preview")
-            pending = base / "_meta/lifecycle-pending.json"
+            pending = base / ".metadata/lifecycle-pending.json"
             if pending.exists():
                 raise ValueError("an incomplete lifecycle transaction needs recovery")
             text = story.read_text(encoding="utf-8")

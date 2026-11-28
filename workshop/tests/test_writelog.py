@@ -12,7 +12,7 @@ class WriteLogTests(unittest.TestCase):
     def setUp(self):
         self.dir = tempfile.TemporaryDirectory()
         self.addCleanup(self.dir.cleanup)
-        self.path = Path(self.dir.name) / "_meta" / "write-log.md"
+        self.path = Path(self.dir.name) / ".metadata" / "write-log.md"
 
     def test_intent_and_result_lines(self):
         writelog.intent(
@@ -62,9 +62,9 @@ class OperationTests(unittest.TestCase):
         self.dir = tempfile.TemporaryDirectory()
         self.addCleanup(self.dir.cleanup)
         self.base = Path(self.dir.name)
-        (self.base / "_meta").mkdir()
+        (self.base / ".metadata").mkdir()
         (self.base / "records").mkdir()
-        self.log = self.base / "_meta/write-log.md"
+        self.log = self.base / ".metadata/write-log.md"
 
     def test_an_operation_logs_intent_then_ok_with_file_hashes(self):
         note = self.base / "records/Q-001.md"
@@ -124,7 +124,7 @@ class OperationTests(unittest.TestCase):
     def test_shared_state_and_worker_files_are_not_judged(self):
         (self.base / "01-analysis/candidates").mkdir(parents=True)
         files = [
-            self.base / "_meta/id-registry.md",
+            self.base / ".metadata/id-registry.md",
             self.base / "01-analysis/candidates/CAND-001--x.md",
         ]
         with writelog.operation(self.log, "sw-craft", "x", "X") as op:

@@ -91,7 +91,7 @@ class WorkflowTestCase(unittest.TestCase):
             "home: repo\nlinks: [https://example.test/card]\n---\n## Summary\nRefund request.\n"
         )
         (self.root / "02-drafts" / "FEAT-001.card.md").write_text(card)
-        (self.root / "_meta" / "lint-report.md").write_text(
+        (self.root / ".metadata" / "lint-report.md").write_text(
             "# Lint report\n\nScope: REF · Gate: publish\n\n0 blocking error(s).\n"
         )
         self.manifest = self.root / "project.yaml"

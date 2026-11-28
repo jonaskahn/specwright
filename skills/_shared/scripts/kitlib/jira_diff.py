@@ -118,7 +118,7 @@ def exit_code(result):
 
 
 def render_plan(result):
-    """Render _meta/publish-plan.md without turning cell content into extra columns."""
+    """Render .metadata/publish-plan.md without turning cell content into extra columns."""
     lines = [
         "# Publish plan",
         "",

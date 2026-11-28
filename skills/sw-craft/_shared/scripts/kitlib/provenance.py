@@ -2,7 +2,7 @@
 
 A snapshot with the right text but a wrong or missing source, version or URL would otherwise
 carry bad provenance forever, because an identical re-import is a duplicate. An amendment is
-appended to `_meta/provenance/<SRC-ID>.jsonl`; the snapshot file stays as written and readers
+appended to `.metadata/provenance/<SRC-ID>.jsonl`; the snapshot file stays as written and readers
 merge the amendments over its header with `effective`.
 """
 
@@ -17,7 +17,7 @@ from typing import Any
 from kitlib import frontmatter, hashing, ids
 
 FIELDS = ("source", "source_version", "remote_url", "remote_id", "tracker_key")
-FOLDER = "_meta/provenance"
+FOLDER = ".metadata/provenance"
 
 
 class ProvenanceError(ValueError):

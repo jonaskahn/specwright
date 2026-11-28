@@ -43,7 +43,7 @@ class InitCliTests(unittest.TestCase):
         for folder in schema.SCOPE_DIRS:
             self.assertTrue((self.root / folder).is_dir())
         self.assertEqual(
-            tables.parse((self.root / "_meta/id-registry.md").read_text()).table.rows, []
+            tables.parse((self.root / ".metadata/id-registry.md").read_text()).table.rows, []
         )
         before = (self.root / "project.yaml").read_bytes()
         self.assertEqual(self.run_cli(*args).returncode, 2)

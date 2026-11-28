@@ -250,7 +250,7 @@ def make_trace(base: Path) -> Path:
         tasks_file("FEAT-003", [task("003-1", "Send the approval message", "AC-003-1")]),
         encoding="utf-8",
     )
-    registry = root / "_meta" / "id-registry.md"
+    registry = root / ".metadata" / "id-registry.md"
     rows = registry.read_text().splitlines()
     out = []
     for line in rows:
@@ -372,7 +372,7 @@ def write(variant: str, root: Path, out: Path = OUT) -> None:
     folder = out / variant
     shutil.rmtree(folder, ignore_errors=True)
     (folder / "data").mkdir(parents=True)
-    for file in sorted((root / "_meta" / "data").glob("*.json")):
+    for file in sorted((root / ".metadata" / "data").glob("*.json")):
         text = file.read_text(encoding="utf-8").replace(str(root), "<root>")
         (folder / "data" / file.name).write_text(text, encoding="utf-8")
     (folder / "expected-queries.json").write_text(

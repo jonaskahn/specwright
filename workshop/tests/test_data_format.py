@@ -43,7 +43,7 @@ class DataTests(unittest.TestCase):
 
     def test_every_kind_is_written_valid_and_indexed(self):
         self.export_all()
-        folder = self.root / "_meta/data"
+        folder = self.root / ".metadata/data"
         index = json.loads((folder / "index.json").read_text())
         self.assertEqual(sorted(index["files"]), sorted(k.file for k in dataformat.KINDS.values()))
         for kind in dataformat.KINDS:
@@ -53,7 +53,7 @@ class DataTests(unittest.TestCase):
 
     def test_rows_carry_qualified_keys_and_null_placeholders(self):
         self.export_all()
-        folder = self.root / "_meta/data"
+        folder = self.root / ".metadata/data"
         features = json.loads((folder / "features.json").read_text())["rows"]
         self.assertEqual([r["id"] for r in features], ["REF:FEAT-001", "REF:FEAT-002"])
         first = features[0]
@@ -69,7 +69,7 @@ class DataTests(unittest.TestCase):
 
     def test_output_is_byte_deterministic(self):
         self.export_all()
-        folder = self.root / "_meta/data"
+        folder = self.root / ".metadata/data"
         first = {p.name: p.read_bytes() for p in folder.glob("*.json")}
         self.export_all()
         self.assertEqual(first, {p.name: p.read_bytes() for p in folder.glob("*.json")})
@@ -84,12 +84,12 @@ class DataTests(unittest.TestCase):
     def test_export_all_writes_only_what_the_skill_may_write(self):
         code, out, _ = self.cli("export", "all", "--as", "sw-forge")
         self.assertEqual(code, 0, out)
-        names = {p.name for p in (self.root / "_meta/data").glob("*.json")}
+        names = {p.name for p in (self.root / ".metadata/data").glob("*.json")}
         self.assertEqual(names, {"index.json", "graph.json", "tasks.json", "rtm.json"})
 
     def test_validation_rejects_bad_rows(self):
         self.export_all()
-        doc = json.loads((self.root / "_meta/data/graph.json").read_text())
+        doc = json.loads((self.root / ".metadata/data/graph.json").read_text())
         doc["edges"][0]["rel"] = "invented"
         doc["nodes"][0]["extra"] = 1
         doc["nodes"][1]["title"] = None
@@ -100,7 +100,7 @@ class DataTests(unittest.TestCase):
 
     def test_check_names_the_owner_of_a_missing_or_stale_file(self):
         self.export_all()
-        (self.root / "_meta/data/tasks.json").unlink()
+        (self.root / ".metadata/data/tasks.json").unlink()
         (self.root / "02-drafts/FEAT-002.story.md").write_text(
             (self.root / "02-drafts/FEAT-002.story.md").read_text() + "\nmore\n"
         )
@@ -129,14 +129,14 @@ class DataTests(unittest.TestCase):
             timeout=30,
         )
         self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertTrue((self.root / "_meta/data/graph.json").is_file())
+        self.assertTrue((self.root / ".metadata/data/graph.json").is_file())
 
     def test_no_body_text_leaves_the_project(self):
         story = self.root / "02-drafts/FEAT-001.story.md"
         story.write_text(story.read_text() + "\nPlain secret sentence for the body.\n")
         graph.build(self.root, "REF")
         self.export_all()
-        blob = "".join(p.read_text() for p in (self.root / "_meta/data").glob("*.json"))
+        blob = "".join(p.read_text() for p in (self.root / ".metadata/data").glob("*.json"))
         self.assertNotIn("Plain secret sentence", blob)
 
 
@@ -187,25 +187,25 @@ class GitHygieneTests(unittest.TestCase):
     def test_generated_folders_stay_out_of_git(self):
         git(self.repo, "add", "-A")
         staged = git(self.repo, "diff", "--cached", "--name-only")
-        self.assertNotIn("_meta/data", staged)
-        self.assertIn("docs/_meta/graph", staged)
-        self.assertEqual(git(self.repo, "status", "--porcelain", "docs/_meta/data"), "")
+        self.assertNotIn(".metadata/data", staged)
+        self.assertIn("docs/.metadata/graph", staged)
+        self.assertEqual(git(self.repo, "status", "--porcelain", "docs/.metadata/data"), "")
 
     def test_the_repository_gitignore_is_not_touched(self):
         self.assertFalse((self.repo / ".gitignore").exists())
-        self.assertEqual((self.root / "_meta/data/.gitignore").read_text(), "*\n")
+        self.assertEqual((self.root / ".metadata/data/.gitignore").read_text(), "*\n")
 
     def test_an_existing_folder_keeps_its_own_gitignore(self):
-        (self.root / "_meta/data/.gitignore").unlink()
+        (self.root / ".metadata/data/.gitignore").unlink()
         dataformat.write_kind(self.root, "tasks", "sw-forge", "REF")
-        self.assertFalse((self.root / "_meta/data/.gitignore").exists())
+        self.assertFalse((self.root / ".metadata/data/.gitignore").exists())
 
     def test_check_warns_and_never_runs_git_changes(self):
-        (self.root / "_meta/data/.gitignore").unlink()
-        git(self.repo, "add", "-f", "docs/_meta/data")
-        findings = gitignore.git_findings(self.root / "_meta/data", ["index.json"])
+        (self.root / ".metadata/data/.gitignore").unlink()
+        git(self.repo, "add", "-f", "docs/.metadata/data")
+        findings = gitignore.git_findings(self.root / ".metadata/data", ["index.json"])
         self.assertTrue(any("git rm -r --cached" in f for f in findings))
-        self.assertIn("docs/_meta/data/index.json", git(self.repo, "ls-files"))
+        self.assertIn("docs/.metadata/data/index.json", git(self.repo, "ls-files"))
 
 
 if __name__ == "__main__":

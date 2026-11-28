@@ -17,7 +17,7 @@ class GraphModelTests(WorkflowTestCase):
             "# Refunds\n",
         )
         rtm.registry_upsert(
-            self.base / "_meta/id-registry.md", "REF:FEAT-002", {"Kind": "story"}, "sw-craft"
+            self.base / ".metadata/id-registry.md", "REF:FEAT-002", {"Kind": "story"}, "sw-craft"
         )
         fm = {
             "id": "DEC-001",
@@ -39,7 +39,7 @@ class GraphModelTests(WorkflowTestCase):
         self.epic_and_split(epic="REF:EPIC-001")
         graph.build(self.root, "REF")
         self.assertEqual(self.members(), ["REF:FEAT-001", "REF:FEAT-002"])
-        page = (self.base / "_meta/graph/maps/REF_EPIC-001.md").read_text()
+        page = (self.base / ".metadata/graph/maps/REF_EPIC-001.md").read_text()
         self.assertNotIn("DEC-001", page)
 
     def test_one_decision_can_place_features_in_several_epics(self):
@@ -86,8 +86,8 @@ class GraphModelTests(WorkflowTestCase):
 
     def test_a_stray_folder_is_reported_by_build_check_and_the_work_folder_is_ignored(self):
         (self.base / "scratch").mkdir()
-        (self.base / "_meta/work").mkdir(parents=True, exist_ok=True)
-        (self.base / "_meta/work/notes.md").write_text("---\nid: FEAT-009\n---\nnot evidence\n")
+        (self.base / ".metadata/work").mkdir(parents=True, exist_ok=True)
+        (self.base / ".metadata/work/notes.md").write_text("---\nid: FEAT-009\n---\nnot evidence\n")
         graph.build(self.root, "REF")
         self.assertIn(
             "REF: stray folder scratch/ is not read as evidence",
@@ -99,5 +99,5 @@ class GraphModelTests(WorkflowTestCase):
         store = graph_query.Store(self.root, "REF")
         self.assertIsNone(store.node("REF:FEAT-009"))
         self.assertEqual(store.freshness(), "fresh")
-        (self.base / "_meta/work/more.md").write_text("changed working file")
+        (self.base / ".metadata/work/more.md").write_text("changed working file")
         self.assertEqual(store.freshness(), "fresh")

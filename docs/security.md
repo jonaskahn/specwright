@@ -53,7 +53,7 @@ and are never stored. Pulled text goes through the same scan as any import.
 The sensitive-content scan skips personal-data matches inside a front matter block and inside
 plain hashes (hex runs of 24 or more characters); a secret is always reported. A sample value in
 a policy text is a documented example only when a named person, with an evidence reference, adds
-a row to `_meta/scan-decisions.tsv`; that row can never cover a secret. Every imported document
+a row to `.metadata/scan-decisions.tsv`; that row can never cover a secret. Every imported document
 leaves a retain, redact or skip row in the same file.
 
 Unsupported ADF content is lossy: preserve its warning and original JSON. Do not

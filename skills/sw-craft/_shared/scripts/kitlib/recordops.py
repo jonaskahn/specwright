@@ -49,11 +49,11 @@ class Ctx:
 
     @property
     def log(self) -> Path:
-        return self.base / "_meta/write-log.md"
+        return self.base / ".metadata/write-log.md"
 
     @property
     def registry(self) -> Path:
-        return self.base / "_meta/id-registry.md"
+        return self.base / ".metadata/id-registry.md"
 
 
 @dataclass

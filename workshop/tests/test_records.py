@@ -43,7 +43,7 @@ class RecordTests(WorkflowTestCase):
         return {
             p.relative_to(self.base).as_posix(): p.read_bytes()
             for p in sorted(self.base.rglob("*"))
-            if p.is_file() and "_meta/graph" not in p.as_posix()
+            if p.is_file() and ".metadata/graph" not in p.as_posix()
         }
 
     def cli(self, *args):
@@ -57,7 +57,7 @@ class RecordTests(WorkflowTestCase):
     def test_backup_cli_archives_an_authored_artifact_only(self):
         done = self.cli("backup", "02-drafts/FEAT-001.story.md")
         self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertEqual(len(list((self.base / "_meta/history").rglob("*.bak"))), 1)
+        self.assertEqual(len(list((self.base / ".metadata/history").rglob("*.bak"))), 1)
         refused = self.cli("backup", "00-inbox/SRC-0001.md")
         self.assertEqual(refused.returncode, 2)
         planned = self.cli("backup", "02-drafts/FEAT-001.story.md", "--dry-run")
@@ -85,7 +85,7 @@ class RecordTests(WorkflowTestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("create records/Q-001--window.md", result.stdout)
         self.assertEqual(before, self.snapshot_of_tree())
-        self.assertEqual(writelog.read(self.base / "_meta/write-log.md"), [])
+        self.assertEqual(writelog.read(self.base / ".metadata/write-log.md"), [])
 
     def test_question_is_named_cited_logged_and_counted_on_the_board(self):
         ident = self.make_question(quote="Refunds close after 14 days")
@@ -97,13 +97,13 @@ class RecordTests(WorkflowTestCase):
         self.assertRegex(fm["raised_from"][0], r"^SRC-0001:L8#[0-9a-f]{4}$")
         self.assertIn("> Refunds close after 14 days.", body)
         self.assertEqual(fm["sources"], ["SRC-0001"])
-        entries = writelog.read(self.base / "_meta/write-log.md")
+        entries = writelog.read(self.base / ".metadata/write-log.md")
         self.assertEqual([e.kind for e in entries], ["INTENT", "RESULT"])
         self.assertTrue(any(f.startswith("file=records/Q-001--") for f in entries[1].fields))
         rows = graph_query.board(graph_query.Store(self.root, "REF"))
         row = next(r for r in rows if r["id"] == "REF:FEAT-001")
         self.assertEqual(row["blocked_by_q"], ["REF:Q-001"])
-        self.assertEqual(writelog.drift(self.base / "_meta/write-log.md"), [])
+        self.assertEqual(writelog.drift(self.base / ".metadata/write-log.md"), [])
 
     def test_invalid_questions_are_refused_before_any_write(self):
         before = self.snapshot_of_tree()
@@ -207,7 +207,7 @@ class RecordTests(WorkflowTestCase):
         recordops.execute(self.ctx, plan, "reserve-feat", ", ".join(plan.made))
         self.assertEqual(plan.made, ["FEAT-002", "FEAT-003"])
         table = rtm.read_table(
-            self.base / "_meta/id-registry.md", list(schema.REGISTRY_COLUMNS)
+            self.base / ".metadata/id-registry.md", list(schema.REGISTRY_COLUMNS)
         ).table
         self.assertEqual(table.value("REF:FEAT-002", "Title"), "Payout")
         self.assertEqual(table.value("REF:FEAT-002", "Aliases"), "LEG-300|payout-flow")
@@ -229,7 +229,7 @@ class RecordTests(WorkflowTestCase):
             e.src for e in store.edges_for({"REF:EPIC-001"}, "in") if e.rel == "member_of"
         )
         self.assertEqual(members, ["REF:FEAT-001", "REF:FEAT-002", "REF:FEAT-003"])
-        entries = writelog.read(self.base / "_meta/write-log.md")
+        entries = writelog.read(self.base / ".metadata/write-log.md")
         self.assertEqual([e.kind for e in entries], ["INTENT", "RESULT"])
         self.assertEqual(graph.check(self.root, "REF").count("REF: graph is stale; run build"), 0)
 
@@ -243,11 +243,11 @@ class RecordTests(WorkflowTestCase):
         ):
             recordops.execute(self.ctx, plan, "accept-split", "x")
         after = self.snapshot_of_tree()
-        after.pop("_meta/write-log.md", None)
-        before.pop("_meta/write-log.md", None)
+        after.pop(".metadata/write-log.md", None)
+        before.pop(".metadata/write-log.md", None)
         self.assertEqual(before, after)
-        self.assertEqual(writelog.read(self.base / "_meta/write-log.md")[-1].fields[0], "error")
-        self.assertEqual(writelog.unfinished(self.base / "_meta/write-log.md"), [])
+        self.assertEqual(writelog.read(self.base / ".metadata/write-log.md")[-1].fields[0], "error")
+        self.assertEqual(writelog.unfinished(self.base / ".metadata/write-log.md"), [])
 
     def test_accept_split_needs_url_evidence_and_active_epics(self):
         meeting = recordops.decision_fields(self.ctx, "PO", "Lan", "", "meeting", "minutes-7")
@@ -265,7 +265,7 @@ class RecordTests(WorkflowTestCase):
         unknown = self.cli("register", "FEAT-001", "--set", "Colour=red")
         self.assertEqual(unknown.returncode, 2)
         table = rtm.read_table(
-            self.base / "_meta/id-registry.md", list(schema.REGISTRY_COLUMNS)
+            self.base / ".metadata/id-registry.md", list(schema.REGISTRY_COLUMNS)
         ).table
         self.assertEqual(table.value("REF:FEAT-001", "Jira key"), "PROJ-9")
 

@@ -42,7 +42,7 @@ cannot report that Python is missing.
 ## Consumer check
 
 Can the user open the printed address and see their project with the counts that
-`_shared/scripts/graph.py map` reports? Is `git status` free of `console/` and `_meta/data/`?
+`_shared/scripts/graph.py map` reports? Is `git status` free of `console/` and `.metadata/data/`?
 
 ## Stop and ask
 

@@ -27,7 +27,7 @@ or the case is an edge case named below. SKILL.md is the default path; kernel ru
    --redacted-from <sha256 of the original>. Keep originals restricted and untracked.
    --retain-sensitive-raw only records explicit user consent; never infer it. A sample
    value inside a policy text counts as a documented example only through a named,
-   evidenced row in _meta/scan-decisions.tsv (--decisions); never for a secret.
+   evidenced row in .metadata/scan-decisions.tsv (--decisions); never for a secret.
 4. Remote evidence, in this order: a user-supplied export; the session read tools
    (jira-read, jira-search, wiki-read; definitions in
    `_shared/references/capabilities/remote.md`), naming the providing tool before the first call;

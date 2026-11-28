@@ -50,7 +50,9 @@ class AssetStoreTests(unittest.TestCase):
         asset_id = result.stdout.split()[0]
         self.assertEqual(asset_id, "ASSET-001")
         self.assertTrue((self.root / "assets" / "ASSET-001.md").is_file())
-        registry = tables.parse((self.root / "_meta/asset-registry.md").read_text(encoding="utf-8"))
+        registry = tables.parse(
+            (self.root / ".metadata/asset-registry.md").read_text(encoding="utf-8")
+        )
         self.assertEqual(registry.table.rows[0][0], "ASSET-001")
         self.assertEqual(registry.table.rows[0][2], "raw-idea")
         self.assertEqual(registry.table.rows[0][6], "")

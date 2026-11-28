@@ -41,13 +41,13 @@ class FlatTests(WorkspaceTestCase):
             "diagrams",
             "records",
             "snapshots",
-            "_meta",
+            ".metadata",
         ):
             self.assertTrue((self.root / folder).is_dir(), folder)
-        registry = tables.parse((self.root / "_meta" / "id-registry.md").read_text())
+        registry = tables.parse((self.root / ".metadata" / "id-registry.md").read_text())
         self.assertEqual(registry.table.header, schema.REGISTRY_COLUMNS)
         self.assertEqual(registry.table.rows, [])
-        rtm = tables.parse((self.root / "_meta" / "rtm.md").read_text())
+        rtm = tables.parse((self.root / ".metadata" / "rtm.md").read_text())
         self.assertEqual(rtm.table.header[0], "Spec ID")
         self.assertIn("Jira [sw-ship]", rtm.table.header)
 
@@ -68,7 +68,7 @@ class FlatTests(WorkspaceTestCase):
 
     def test_upgrade_adds_registry_columns_only_on_apply(self):
         self.init_flat()
-        path = self.root / "_meta/id-registry.md"
+        path = self.root / ".metadata/id-registry.md"
         old = tables.Table(schema.REGISTRY_COLUMNS[:9])
         old.upsert("REF:FEAT-001", {"Kind": "story"})
         path.write_text("# ID registry\n\n" + old.render())
@@ -156,8 +156,8 @@ class FlatTests(WorkspaceTestCase):
         self.init_flat()
         self.assertTrue((self.root / "00-inbox/imports").is_dir())
         self.assertTrue((self.root / "01-analysis/candidates").is_dir())
-        self.assertEqual((self.root / "_meta/work/.gitignore").read_text(), "*\n!.gitignore\n")
-        self.assertFalse((self.root / "_meta/work/.gitkeep").exists())
+        self.assertEqual((self.root / ".metadata/work/.gitignore").read_text(), "*\n!.gitignore\n")
+        self.assertFalse((self.root / ".metadata/work/.gitkeep").exists())
 
     def test_stray_folders_are_reported_but_known_and_hidden_ones_are_not(self):
         self.init_flat()
@@ -172,11 +172,11 @@ class FlatTests(WorkspaceTestCase):
         self.init_flat()
         import shutil
 
-        shutil.rmtree(self.root / "_meta/work")
+        shutil.rmtree(self.root / ".metadata/work")
         shutil.rmtree(self.root / "00-inbox/imports")
         plan = workspace.upgrade(self.root, "REF", apply=True)
-        self.assertIn("create _meta/work/", plan)
-        self.assertTrue((self.root / "_meta/work/.gitignore").is_file())
+        self.assertIn("create .metadata/work/", plan)
+        self.assertTrue((self.root / ".metadata/work/.gitignore").is_file())
         self.assertTrue((self.root / "00-inbox/imports/.gitkeep").is_file())
 
     def test_init_refuses_to_overwrite(self):

@@ -1,10 +1,10 @@
 # Data files for other readers
 
-Readers such as the console never open the spec files. They read `_meta/data/`, one set of
+Readers such as the console never open the spec files. They read `.metadata/data/`, one set of
 files in one format, written by the skill that owns each file. The files are derived, so they
 are git-ignored: the folder holds a `.gitignore` with `*`, created with the folder.
 
-Place: `<project base>/_meta/data/`. A program root also holds merged copies, which are the
+Place: `<project base>/.metadata/data/`. A program root also holds merged copies, which are the
 ones a reader opens. Format: `specwright-data`, version 1, defined in `_shared/scripts/kitlib/dataformat.py`.
 
 ## Files and owners

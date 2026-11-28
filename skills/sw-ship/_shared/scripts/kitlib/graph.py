@@ -198,10 +198,10 @@ def input_files(root: Path, scopes: list[str]) -> list[Path]:
             for path in sorted((base / folder).rglob(pattern)):
                 if path.is_file() and not path.is_symlink():
                     out.append(path)
-        out.append(base / "_meta/id-registry.md")
-        out.append(base / "_meta/asset-registry.md")
-        out.append(base / "_meta/lifecycle-pending.json")
-        out.extend(sorted((base / "_meta/provenance").glob("SRC-*.jsonl")))
+        out.append(base / ".metadata/id-registry.md")
+        out.append(base / ".metadata/asset-registry.md")
+        out.append(base / ".metadata/lifecycle-pending.json")
+        out.extend(sorted((base / ".metadata/provenance").glob("SRC-*.jsonl")))
         out.extend(p for p in (base / "00-inbox").glob("SRC-*.md") if not p.is_symlink())
     return sorted({p for p in out if p.is_file()})
 
@@ -494,7 +494,7 @@ def _scope_artifacts(graph: Graph, root: Path, scope: str, entities: dict[str, A
 
 def _asset_registry_edges(graph: Graph, root: Path, base: Path, scope: str) -> None:
     """Read the asset registry; assets are reference material, never instructions."""
-    path = base / "_meta/asset-registry.md"
+    path = base / ".metadata/asset-registry.md"
     if not path.is_file():
         return
     try:
@@ -551,7 +551,7 @@ def _spec_ids(data: Any, scope: str) -> set[str]:
 
 def _registry_edges(graph: Graph, root: Path, scope: str, entities: dict[str, Any]) -> None:
     base = workspace.scope_dir(root, scope)
-    path = base / "_meta/id-registry.md"
+    path = base / ".metadata/id-registry.md"
     try:
         doc = rtm.read_table(path, list(schema.REGISTRY_COLUMNS))
     except (OSError, ValueError):
@@ -586,7 +586,7 @@ def _lifecycle_nodes(graph: Graph, root: Path, scopes: list[str]) -> None:
 
     for scope in scopes:
         base = workspace.scope_dir(root, scope)
-        registry_path = base / "_meta/id-registry.md"
+        registry_path = base / ".metadata/id-registry.md"
         registry = tables.parse(registry_path.read_text(encoding="utf-8")).table
         if registry:
             for row in registry.rows:
@@ -940,7 +940,7 @@ def drift_warnings(root: Path, scope: str | None = None) -> list[str]:
     scopes = [scope] if scope else workspace.list_scopes(root)
     out = []
     for item in scopes:
-        log = workspace.scope_dir(root, item) / "_meta/write-log.md"
+        log = workspace.scope_dir(root, item) / ".metadata/write-log.md"
         out += [f"{item}: {line}" for line in writelog.drift(log)]
     out += [f for f in build_graph(root, scopes_for(root, scope)).findings if "stray folder" in f]
     return out
@@ -988,9 +988,9 @@ def check(root: Path, scope: str | None = None) -> list[str]:
         for name, recorded in sorted((data.get("meta_files") or {}).items()):
             path = outdir.parent / name
             if not path.is_file():
-                findings.append(f"{item}: _meta/{name} is missing; run build")
+                findings.append(f"{item}: .metadata/{name} is missing; run build")
             elif hashing.text_hash(path.read_text(encoding="utf-8")) != recorded:
-                findings.append(f"{item}: _meta/{name} was edited by hand; run build")
+                findings.append(f"{item}: .metadata/{name} was edited by hand; run build")
         graph = build_graph(root, [item])
         for e in graph.edges:
             if e.res in ("unresolved", "missing", "unsafe-path") and e.cls != "mentioned":

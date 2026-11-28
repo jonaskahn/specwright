@@ -123,7 +123,7 @@ class BaselineAcceptance(unittest.TestCase):
             Fake(tree),
         )
         assert code == 0
-        cls.pull = cls.base / "_meta/work/pull-pull1"
+        cls.pull = cls.base / ".metadata/work/pull-pull1"
         cls.first = run(
             SKILLS / "sw-craft/scripts/bulk_import.py",
             "--batch-id",
@@ -139,7 +139,7 @@ class BaselineAcceptance(unittest.TestCase):
         text = to_md.clean(to_md.convert(page, page.read_bytes(), "en")[0], [])
         line = next(n for n, ln in enumerate(text.splitlines(), 1) if "owner@example.test" in ln)
         scanlog.append(
-            cls.base / "_meta/scan-decisions.tsv",
+            cls.base / ".metadata/scan-decisions.tsv",
             {
                 "source_hash": hashing.bytes_hash(page.read_bytes()),
                 "line": line,
@@ -358,7 +358,7 @@ class BaselineAcceptance(unittest.TestCase):
             self.assertEqual(store.resolve(name, fuzzy=True), key, name)
         shown = "\n".join(graph_query.show(store, "REF:FEAT-001"))
         self.assertIn("crosswalk: LEG-100 -> REF:FEAT-001", shown)
-        lines = (self.base / "_meta/CROSSWALK.tsv").read_text().splitlines()
+        lines = (self.base / ".metadata/CROSSWALK.tsv").read_text().splitlines()
         head = lines[1][2:].split("\t")
         rows = [dict(zip(head, ln.split("\t"), strict=False)) for ln in lines[2:]]
         match = {r["legacy_id"] or "(none)": r["match"] for r in rows}
@@ -401,7 +401,7 @@ class BaselineAcceptance(unittest.TestCase):
     # ---- 6. the write log accounts for every change; no stray folders
 
     def test_6_the_write_log_accounts_for_every_record_and_no_folder_is_stray(self):
-        log = self.base / "_meta/write-log.md"
+        log = self.base / ".metadata/write-log.md"
         self.assertEqual(writelog.unfinished(log), [])
         self.assertEqual(writelog.drift(log), [])
         logged = {
@@ -420,7 +420,7 @@ class BaselineAcceptance(unittest.TestCase):
     # ---- 7. a new session can work from READ-FIRST and queries alone
 
     def test_7_read_first_and_queries_name_each_items_state_and_next_action(self):
-        text = (self.base / "_meta/READ-FIRST.md").read_text()
+        text = (self.base / ".metadata/READ-FIRST.md").read_text()
         for needle in (
             "project.yaml",
             "AGENTS.md",

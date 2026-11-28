@@ -101,7 +101,7 @@ def occurrence(base: Path, source_id: str, digest: str, origin: str, version: st
     """Keep additional provenance without modifying an immutable SRC snapshot."""
     record = {"source_id": source_id, "sha256": digest, "origin": origin, "source_version": version}
     identity = hashing.bytes_hash(json.dumps(record, sort_keys=True).encode("utf-8"))
-    path = base / "_meta/provenance" / f"{identity}.json"
+    path = base / ".metadata/provenance" / f"{identity}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     if not path.exists():
         from datetime import datetime, timezone
@@ -124,7 +124,7 @@ def backup(base: Path, relative: str) -> Path:
     fm = frontmatter.parse(data.decode("utf-8")).fm or {}
     revision = str(fm.get("revision", "unversioned"))
     revision = re.sub(r"[^A-Za-z0-9_.-]", "_", revision)
-    target = workspace.safe_join(base, f"_meta/history/{relative}/{revision}-{digest}.bak")
+    target = workspace.safe_join(base, f".metadata/history/{relative}/{revision}-{digest}.bak")
     target.parent.mkdir(parents=True, exist_ok=True)
     try:
         with target.open("xb") as handle:

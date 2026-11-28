@@ -288,8 +288,8 @@ def read_first(graph: Graph, label: str) -> str:
             "",
             "1. Manifest: project.yaml (approvers, sources, limits, delivery target).",
             "2. Standing rules: AGENTS.md at the repository root, the only copy.",
-            "3. Master index: _meta/INDEX.md, or _meta/index.tsv for scripts.",
-            "4. Crosswalk: _meta/CROSSWALK.tsv maps every legacy or external name to its record.",
+            "3. Master index: .metadata/INDEX.md, or .metadata/index.tsv for scripts.",
+            "4. Crosswalk: .metadata/CROSSWALK.tsv maps legacy or external names to records.",
             "5. Status board: graph.py board.",
             "6. Open questions: graph.py find --kind q --status open (also --status proposed).",
             "7. Query the graph; do not open folders: graph.py show <any name>, "
@@ -300,7 +300,7 @@ def read_first(graph: Graph, label: str) -> str:
 
 
 def render(graph: Graph, root: Path, scopes: list[str], label: str) -> dict[str, str]:
-    """The four generated files, keyed by file name inside `_meta/`."""
+    """The four generated files, keyed by file name inside `.metadata/`."""
     data = rows(graph)
     index_tsv = "\n".join([f"# {BANNER}", "# " + "\t".join(COLUMNS), *map(_line, data)]) + "\n"
     cross = crosswalk(graph, root, scopes)

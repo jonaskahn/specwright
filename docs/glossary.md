@@ -11,10 +11,10 @@
 | Spec root | The folder holding `project.yaml` or `workspace.yaml`, either at the repository root or under `.specwright/`. |
 | Spec root | The `.specwright/` folder of a repository; every spec path is relative to it. |
 | Program | Several projects sharing one spec root, with `projects/<SCOPE>/project.yaml` per project. |
-| Knowledge graph | The derived, committed map under `_meta/graph/` that links every item with provenance. |
+| Knowledge graph | The derived, committed map under `.metadata/graph/` that links every item with provenance. |
 | Alias | Another name an item goes by: a legacy ID, a remote page ID, a tracker key, a former title. `graph.py show <alias>` finds the record. |
-| Master index | `_meta/INDEX.md` and `index.tsv`: one generated row per artifact (name, aliases, origin, status, parent, links). Never edited by hand. |
-| Crosswalk | `_meta/CROSSWALK.tsv`: every legacy or external item mapped to its internal key, with unmatched items listed on both sides. |
+| Master index | `.metadata/INDEX.md` and `index.tsv`: one generated row per artifact (name, aliases, origin, status, parent, links). Never edited by hand. |
+| Crosswalk | `.metadata/CROSSWALK.tsv`: every legacy or external item mapped to its internal key, with unmatched items listed on both sides. |
 | Baseline | An existing set of capabilities the business already runs under its own IDs, imported as a legacy register and shaped into features. |
 | Batch | One bulk import. Its manifest (`00-inbox/imports/<batch>/manifest.json`) records expected and received counts and a status per item. |
 | Candidate | A claim a worker extracted from a snapshot, with a citation. It is unverified until `candidates.py check` passes and a person reviews it. |

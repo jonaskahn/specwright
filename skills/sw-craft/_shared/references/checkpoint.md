@@ -14,7 +14,7 @@ by the lead; a worker never runs it.
 ## What it does
 
 1. Stages only this project's spec files (and the program manifest). Derived output
-   (`_meta/graph`, `_meta/data`, `_meta/work`, lint and index reports) is left out. Other work in the
+   (`.metadata/graph`, `.metadata/data`, `.metadata/work`, lint and index reports) is left out. Other work in the
    same repository, staged or not, is neither committed nor unstaged.
 2. Commits them as `<skill>: <subject>`, at most 72 characters, with no trailer. Hooks run; it
    never skips one.

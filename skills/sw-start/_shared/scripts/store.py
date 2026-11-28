@@ -26,7 +26,7 @@ SAFE_KINDS = {"figma", "diagram", "mockup", "raw-idea", "document", "image", "ot
 
 def _next_asset(root: Path) -> str:
     taken: set[str] = set()
-    registry = root / "_meta/asset-registry.md"
+    registry = root / ".metadata/asset-registry.md"
     if registry.is_file():
         for row in tables.parse(registry.read_text(encoding="utf-8")).table.rows:
             taken.add(row[0])
@@ -50,7 +50,7 @@ def _registry_row(
 
 
 def _append_registry(root: Path, row: list[str]) -> None:
-    path = root / "_meta/asset-registry.md"
+    path = root / ".metadata/asset-registry.md"
     doc = tables.parse(path.read_text(encoding="utf-8"))
     if doc.table.header != list(schema.ASSET_REGISTRY_COLUMNS):
         raise ValueError("asset registry has unexpected columns")

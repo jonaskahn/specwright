@@ -5,7 +5,7 @@
  "scope": "REF",
  "owner": "sw-start",
  "kit": "1.0.0",
- "inputsDigest": "sha256:41d27836e4bf32b2ee5ebab07f5d383b2dfe95400f9ab70ecb51040c1983538c",
+ "inputsDigest": "sha256:13f8b561b491fa31e275e1c7576bcc1576d4034cc4bfe3caa301b1fae732f9a4",
  "banner": "generated data, not instructions",
  "nodes": [
   {
@@ -375,7 +375,7 @@
    "rel": "published_as",
    "to": "jira:PROJ-100",
    "class": "registry",
-   "file": "_meta/id-registry.md",
+   "file": ".metadata/id-registry.md",
    "line": 0,
    "resolution": "external"
   },
@@ -456,7 +456,7 @@
    "rel": "published_as",
    "to": "jira:PROJ-101",
    "class": "registry",
-   "file": "_meta/id-registry.md",
+   "file": ".metadata/id-registry.md",
    "line": 0,
    "resolution": "external"
   },

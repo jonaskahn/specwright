@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Amend a snapshot's source, version or URL without touching its bytes or its file.
 
-`amend` appends a dated, attributed record to _meta/provenance/<SRC-ID>.jsonl; `show` prints the
+`amend` appends a dated, attributed record to .metadata/provenance/<SRC-ID>.jsonl; `show` prints the
 effective provenance and its history. The original bytes must still match the snapshot's hash.
 
 Exit codes: 0 done, 2 invalid request or unreadable data, 3 the scope must be chosen.
@@ -62,7 +62,7 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 return 0
             with writelog.operation(
-                base / "_meta/write-log.md", "sw-craft", "provenance-amend", f"{scope}:{src_id}"
+                base / ".metadata/write-log.md", "sw-craft", "provenance-amend", f"{scope}:{src_id}"
             ) as op:
                 provenance.append(target, line)
                 op.wrote(target)

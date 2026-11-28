@@ -35,7 +35,9 @@ class BlockerTests(WorkflowTestCase):
     def reserve(self, ident="FEAT-002", **cells):
         values = {"Kind": "story", "Title": "Decide a refund", "State": "reserved"}
         values.update(cells)
-        rtm.registry_upsert(self.base / "_meta/id-registry.md", f"REF:{ident}", values, "sw-craft")
+        rtm.registry_upsert(
+            self.base / ".metadata/id-registry.md", f"REF:{ident}", values, "sw-craft"
+        )
 
     # ---- blocking questions
 

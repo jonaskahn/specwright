@@ -93,7 +93,7 @@ class AmendmentTests(WorkflowTestCase):
 
     def test_a_published_feature_needs_a_change_request(self):
         rtm.registry_upsert(
-            self.base / "_meta/id-registry.md",
+            self.base / ".metadata/id-registry.md",
             "REF:FEAT-001",
             {"State": "published", "Jira key": "PROJ-14"},
             "sw-ship",

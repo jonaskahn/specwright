@@ -224,7 +224,7 @@ class PullScriptTests(WorkflowTestCase):
 
     def test_a_pull_writes_files_a_list_and_a_detail_manifest(self):
         self.assertEqual(self.run_pull(), 0)
-        out = self.base / "_meta/work/pull-p1"
+        out = self.base / ".metadata/work/pull-p1"
         with (out / "list.tsv").open(encoding="utf-8") as handle:
             rows = list(csv.DictReader(handle, delimiter="\t"))
         self.assertEqual([r["remote_id"] for r in rows], ["100", "101", "102", "103"])
@@ -235,7 +235,7 @@ class PullScriptTests(WorkflowTestCase):
 
     def test_the_pulled_list_feeds_a_bulk_import_dry_run(self):
         self.run_pull()
-        out = self.base / "_meta/work/pull-p1"
+        out = self.base / ".metadata/work/pull-p1"
         result = subprocess.run(
             [
                 sys.executable,
@@ -261,7 +261,7 @@ class PullScriptTests(WorkflowTestCase):
 
     def test_an_incomplete_pull_exits_four_and_still_writes_what_it_read(self):
         self.assertEqual(self.run_pull(None, "--max-pages", "2"), 4)
-        detail = json.loads((self.base / "_meta/work/pull-p1/pull.json").read_text())
+        detail = json.loads((self.base / ".metadata/work/pull-p1/pull.json").read_text())
         self.assertFalse(detail["complete"])
 
     def test_invalid_requests_and_remote_failures_have_their_own_codes(self):

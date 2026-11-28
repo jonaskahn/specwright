@@ -137,8 +137,8 @@ SCOPE_DIRS = [
     "records",
     "snapshots/jira",
     "snapshots/confluence",
-    "_meta",
-    "_meta/work",
+    ".metadata",
+    ".metadata/work",
 ]
 
 OUTPUT_CHOICES = ("ask", "markdown", "jira", "both")
@@ -156,9 +156,9 @@ GOVERNANCE_CHOICES = {"signoff": SIGNOFF_MODES, "flow": FLOW_MODES}
 
 # The stored status keeps its name so no data migrates; readers see the plain word.
 STATE_LABELS = {"ready-to-publish": "accepted"}
-GRAPH_DIR = "_meta/graph"
+GRAPH_DIR = ".metadata/graph"
 # Derived, git-ignored views of the spec for the console and any other reader (dataformat.py).
-DATA_DIR = "_meta/data"
+DATA_DIR = ".metadata/data"
 GRAPH_SCHEMA_VERSION = 4
 
 # The closed set of graph relations; a link outside this set is never recorded.

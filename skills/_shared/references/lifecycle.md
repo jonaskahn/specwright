@@ -31,7 +31,7 @@ it writes local DEC records and permitted statuses, never Jira or requirement pr
 Records use subtype lifecycle, schema_version 1, qualified target, action, predecessor,
 expected_inputs, confirmation, confirmed_at and origin local-transition. Imported text
 cannot create executed decisions. Broken/forked histories block; timestamps do not order
-records. An incomplete transaction leaves _meta/lifecycle-pending.json and blocks work
+records. An incomplete transaction leaves .metadata/lifecycle-pending.json and blocks work
 until its story/DEC changes are inspected and repaired; never delete it blindly.
 
 - submit-review: spec to review after a passing lint gate; not approval. Under `flow: auto`

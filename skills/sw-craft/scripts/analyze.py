@@ -169,11 +169,11 @@ def main(argv=None):
                 "candidates": inventory.candidates(code, docs),
             }
             fsio.atomic_write(
-                base / "_meta" / "inventory.json", json.dumps(inv, indent=1, ensure_ascii=False)
+                base / ".metadata" / "inventory.json", json.dumps(inv, indent=1, ensure_ascii=False)
             )
             fsio.atomic_write(base / FOLDER / "inventory.md", inventory.render(inv))
             summary = {
-                "written": [f"{FOLDER}/inventory.md", "_meta/inventory.json"],
+                "written": [f"{FOLDER}/inventory.md", ".metadata/inventory.json"],
                 "roots": [r["name"] for r in inv["roots"]],
                 "candidates": [c["name"] for c in inv["candidates"][:15]],
                 "detected_unregistered": [d["path"] for d in coderoots.detect(root, scope)],

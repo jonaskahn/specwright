@@ -18,29 +18,29 @@ class RtmTests(unittest.TestCase):
     def test_orphan_and_empty_bo_survive_rebuild(self):
         rtm.rebuild(self.root, "REF")
         self.assertIn("REF:FEAT-002 orphan: no BO (L-005)", rtm.check(self.root))
-        doc = rtm.read_table(self.root / "_meta/rtm.md", rtm.rtm_header())
+        doc = rtm.read_table(self.root / ".metadata/rtm.md", rtm.rtm_header())
         self.assertEqual(doc.table.get("REF:FEAT-002", "BO [sw-craft]"), "—")
         self.assertIsNotNone(doc.table.find("REF:AC-002-1"))
 
     def test_rebuild_preserves_every_cell_and_registry_evidence(self):
         rtm.set_cell(self.root, "REF", "FEAT-001", "Jira", "PROJ-14", "sw-ship")
-        path = self.root / "_meta/id-registry.md"
+        path = self.root / ".metadata/id-registry.md"
         rtm.registry_upsert(
             path, "REF:FEAT-001", {"Jira key": "PROJ-14", "State": "published"}, "sw-ship"
         )
-        before = (self.root / "_meta/rtm.md").read_bytes(), path.read_bytes()
+        before = (self.root / ".metadata/rtm.md").read_bytes(), path.read_bytes()
         rtm.rebuild(self.root, "REF")
-        self.assertEqual(before, ((self.root / "_meta/rtm.md").read_bytes(), path.read_bytes()))
+        self.assertEqual(before, ((self.root / ".metadata/rtm.md").read_bytes(), path.read_bytes()))
 
     def test_reject_ownership_without_writes(self):
-        path = self.root / "_meta/rtm.md"
+        path = self.root / ".metadata/rtm.md"
         before = path.read_bytes()
         with self.assertRaises(rtm.OwnershipError):
             rtm.set_cell(self.root, "REF", "FEAT-001", "Jira", "PROJ-14", "shared-trace")
         self.assertEqual(path.read_bytes(), before)
         with self.assertRaises(rtm.OwnershipError):
             rtm.registry_upsert(
-                self.root / "_meta/id-registry.md",
+                self.root / ".metadata/id-registry.md",
                 "REF:FEAT-001",
                 {"Jira key": "PROJ-14"},
                 "sw-craft",
@@ -55,7 +55,7 @@ class RtmTests(unittest.TestCase):
         path.write_text(path.read_text() + "\nSee BR-099.\n")
         for feat in ("FEAT-001", "FEAT-002"):
             rtm.registry_upsert(
-                self.root / "_meta/id-registry.md",
+                self.root / ".metadata/id-registry.md",
                 "REF:" + feat,
                 {"Jira key": "PROJ-14"},
                 "sw-ship",
@@ -69,12 +69,14 @@ class RtmTests(unittest.TestCase):
         self.assertIn("L-037", findings)
         self.assertIn("REF:AC-001-2 tombstone", findings)
         self.assertIsNotNone(
-            rtm.read_table(self.root / "_meta/rtm.md", rtm.rtm_header()).table.find("REF:AC-001-2")
+            rtm.read_table(self.root / ".metadata/rtm.md", rtm.rtm_header()).table.find(
+                "REF:AC-001-2"
+            )
         )
 
     def test_impact_includes_criteria_and_jira(self):
         rtm.registry_upsert(
-            self.root / "_meta/id-registry.md",
+            self.root / ".metadata/id-registry.md",
             "REF:FEAT-001",
             {"Jira key": "PROJ-14"},
             "sw-ship",
@@ -91,11 +93,11 @@ class RtmTests(unittest.TestCase):
         source = self.root / "02-drafts/FEAT-001.story.md"
         duplicate = source.with_name("duplicate.story.md")
         duplicate.write_bytes(source.read_bytes())
-        before = (self.root / "_meta/rtm.md").read_bytes()
+        before = (self.root / ".metadata/rtm.md").read_bytes()
         self.assertIn("duplicate definition", "\n".join(rtm.check(self.root)))
         with self.assertRaises(ValueError):
             rtm.rebuild(self.root, "REF")
-        self.assertEqual(before, (self.root / "_meta/rtm.md").read_bytes())
+        self.assertEqual(before, (self.root / ".metadata/rtm.md").read_bytes())
         duplicate.write_text("---\nid: [broken\n---\n")
         with self.assertRaises(ValueError):
             rtm.scan(self.root)
@@ -128,7 +130,7 @@ class RtmTests(unittest.TestCase):
         (self.root / "02-drafts/FEAT-002.story.md").unlink()
         rtm.rebuild(self.root, "REF")
         self.assertIn("historical row", "\n".join(rtm.check(self.root)))
-        path = self.root / "_meta/id-registry.md"
+        path = self.root / ".metadata/id-registry.md"
         path.write_text("not a table\n")
         with self.assertRaises(ValueError):
             rtm.read_table(path, list(schema.REGISTRY_COLUMNS))

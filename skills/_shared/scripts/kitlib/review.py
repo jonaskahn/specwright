@@ -110,7 +110,7 @@ def _guard(manifest: Path, scope_id: str) -> dict | None:
     latest = next((r for r in reversed(history) if r["action"] != "set-destination"), {})
     if latest.get("action") == "reopen-shape":
         raise ApprovalError("accept the reopened feature slice before review")
-    if (manifest.parent / "_meta/lifecycle-pending.json").exists():
+    if (manifest.parent / ".metadata/lifecycle-pending.json").exists():
         raise ApprovalError("incomplete lifecycle transaction requires recovery")
     invalidation = next(
         (r for r in reversed(history) if r["action"] in lifecycle.INVALIDATES), None
@@ -151,7 +151,7 @@ def accept(draft_path: Path, scope_id: str, manifest: Path, today: date | None =
         raise ApprovalError(
             f"a {fm.get('status')} story changes only through a change request, not an accept"
         )
-    report = manifest.parent / "_meta/lint-report.md"
+    report = manifest.parent / ".metadata/lint-report.md"
     if not report.is_file() or "0 blocking error(s)" not in report.read_text(encoding="utf-8"):
         raise ApprovalError("a passing lint gate is required before accepting")
     invalidation = _guard(manifest, scope_id)

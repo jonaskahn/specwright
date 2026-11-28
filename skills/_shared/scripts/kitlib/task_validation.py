@@ -9,7 +9,7 @@ APPROVED = ("ready-to-publish", "published", "ready-for-dev", "in-development", 
 
 def asset_rows(base: Path) -> dict[str, tuple[str, str]]:
     """ASSET id to (kind, refs) from the scope's asset registry; empty when there is none."""
-    path = base / "_meta/asset-registry.md"
+    path = base / ".metadata/asset-registry.md"
     if not path.is_file():
         return {}
     try:

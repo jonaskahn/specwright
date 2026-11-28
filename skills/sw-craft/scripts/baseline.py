@@ -87,7 +87,7 @@ def main(argv=None):
         scope = workspace.resolve(root, args.scope, None, cwd, args.command != "propose-grouping")
         base = workspace.scope_dir(root, scope)
         ctx = recordops.Ctx(root, scope, "sw-craft")
-        log = base / "_meta/write-log.md"
+        log = base / ".metadata/write-log.md"
         if args.command == "import-register":
             pattern = ""
             if args.source_id:

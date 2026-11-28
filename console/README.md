@@ -4,7 +4,7 @@ A read-only dashboard for a Specwright workspace, written in Svelte 5 with Vite 
 TypeScript. The `sw-view` skill ships this folder packed (`skills/sw-view/assets/console.zip`),
 unpacks it into `<spec root>/console/`, builds it and serves it on 127.0.0.1.
 
-It reads only `data/*.json`, the files the owning skills write into `_meta/data/` (format:
+It reads only `data/*.json`, the files the owning skills write into `.metadata/data/` (format:
 `skills/_shared/references/data-format.md`). It makes no other request and its page policy
 allows its own address only.
 
@@ -15,7 +15,7 @@ Needs Node 24 or newer. From this folder:
 ```sh
 python3 ../workshop/tools/gen_console_contract.py   # types and schema, from kitlib/dataformat.py
 npm ci --ignore-scripts
-npm run dev                  # hot reload; data from ../_meta/data, or set DATA_DIR
+npm run dev                  # hot reload; data from ../.metadata/data, or set DATA_DIR
 npm run dev:golden           # the same, on the golden fixture (a two-project program)
 npm run check                # svelte-check
 npm test                     # Vitest: query parity, loader, metrics, safety

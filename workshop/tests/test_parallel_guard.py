@@ -18,10 +18,10 @@ class ParallelGuardTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name) / "scope"
-        for folder in ("02-drafts", "diagrams", "records", "_meta"):
+        for folder in ("02-drafts", "diagrams", "records", ".metadata"):
             (self.root / folder).mkdir(parents=True)
         (self.root / "records/Q-001.md").write_text("question\n", encoding="utf-8")
-        (self.root / "_meta/id-registry.md").write_text("registry\n", encoding="utf-8")
+        (self.root / ".metadata/id-registry.md").write_text("registry\n", encoding="utf-8")
         self.before = Path(self.temp.name) / "before.json"
         self.run_cli("snapshot", "--scope-root", str(self.root), "--out", str(self.before))
 
@@ -52,10 +52,10 @@ class ParallelGuardTests(unittest.TestCase):
 
     def test_write_to_a_shared_file_is_stray(self):
         self.write("02-drafts/FEAT-001.story.md")
-        self.write("_meta/id-registry.md", "tampered\n")
+        self.write(".metadata/id-registry.md", "tampered\n")
         result = self.verify()
         self.assertEqual(result.returncode, 1)
-        self.assertIn("STRAY changed _meta/id-registry.md", result.stdout)
+        self.assertIn("STRAY changed .metadata/id-registry.md", result.stdout)
 
     def test_new_record_and_deletion_are_stray(self):
         self.write("records/Q-002.md")

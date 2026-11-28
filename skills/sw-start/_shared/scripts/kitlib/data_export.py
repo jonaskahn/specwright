@@ -60,7 +60,7 @@ def _list(value: Any) -> list[str]:
 
 
 def _gate(base: Path) -> str | None:
-    path = base / "_meta" / "lint-report.md"
+    path = base / ".metadata" / "lint-report.md"
     if not path.is_file():
         return None
     found = _GATE.search(path.read_text(encoding="utf-8"))
@@ -76,7 +76,7 @@ def _entities(root: Path) -> dict[str, rtm.Entity]:
 
 def _table(base: Path, name: str, header: list[str]) -> list[list[str]]:
     try:
-        doc = rtm.read_table(base / "_meta" / name, header)
+        doc = rtm.read_table(base / ".metadata" / name, header)
     except ValueError as exc:
         raise DataError(str(exc)) from exc
     return doc.table.rows if doc.table else []
@@ -391,7 +391,7 @@ def export_quality(root: Path, scopes: list[str]) -> dict[str, Any]:
     gates: list[str] = []
     for scope in scopes:
         base = _base(root, scope)
-        path = base / "_meta" / "lint-report.md"
+        path = base / ".metadata" / "lint-report.md"
         gate = _gate(base)
         if gate:
             gates.append(f"{scope}:{gate}")

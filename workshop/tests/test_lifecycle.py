@@ -101,7 +101,7 @@ class LifecycleTests(WorkflowTestCase):
             lifecycle.transition(self.base, "REF:FEAT-001", "return-spec")
 
     def test_pending_transaction_blocks_board(self):
-        (self.base / "_meta/lifecycle-pending.json").write_text("{}")
+        (self.base / ".metadata/lifecycle-pending.json").write_text("{}")
         self.assertEqual(lifecycle.feature(self.base, "REF:FEAT-001")["condition"], "unknown")
 
     def test_forked_records_are_not_ordered_by_filename(self):
@@ -125,7 +125,7 @@ class LifecycleTests(WorkflowTestCase):
         from kitlib import rtm
 
         rtm.registry_upsert(
-            self.base / "_meta/id-registry.md", "REF:FEAT-002", {"Kind": "story"}, "sw-craft"
+            self.base / ".metadata/id-registry.md", "REF:FEAT-002", {"Kind": "story"}, "sw-craft"
         )
         graph.build(self.root, "REF")
         rows = graph_query.board(graph_query.Store(self.root, "REF"))
@@ -145,7 +145,7 @@ class LifecycleTests(WorkflowTestCase):
 
     def test_graph_schema_mismatch_blocks_resume(self):
         graph.build(self.root, "REF")
-        path = self.base / "_meta/graph/manifest.json"
+        path = self.base / ".metadata/graph/manifest.json"
         data = json.loads(path.read_text())
         data["schema_version"] = 0
         path.write_text(json.dumps(data))
@@ -203,7 +203,7 @@ class LifecycleTests(WorkflowTestCase):
             )
         )
         rtm.registry_upsert(
-            self.base / "_meta/id-registry.md", "REF:FEAT-002", {"Kind": "story"}, "sw-craft"
+            self.base / ".metadata/id-registry.md", "REF:FEAT-002", {"Kind": "story"}, "sw-craft"
         )
         (self.base / "records/DEC-001.md").write_text(
             frontmatter.render(
@@ -228,7 +228,7 @@ class LifecycleTests(WorkflowTestCase):
         from kitlib import writelog
 
         writelog.intent(
-            self.base / "_meta/write-log.md", "abcd", 1, "sw-ship", "create", "REF:FEAT-001"
+            self.base / ".metadata/write-log.md", "abcd", 1, "sw-ship", "create", "REF:FEAT-001"
         )
         with self.assertRaisesRegex(ValueError, "recovery"):
             lifecycle.transition(self.base, "REF:FEAT-001", "return-spec")

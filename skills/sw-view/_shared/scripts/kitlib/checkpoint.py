@@ -23,7 +23,13 @@ MODES = ("off", "commit", "push")
 DEFAULT_MODE = "push"
 KEY = "checkpoint"
 # Rebuilt from the spec on demand, so a commit of them would only add noise.
-DERIVED = ("_meta/graph/**", "_meta/data/**", "_meta/work/**", "_meta/lint-report*", "_meta/index*")
+DERIVED = (
+    ".metadata/graph/**",
+    ".metadata/data/**",
+    ".metadata/work/**",
+    ".metadata/lint-report*",
+    ".metadata/index*",
+)
 BUSY = ("MERGE_HEAD", "CHERRY_PICK_HEAD", "REVERT_HEAD", "rebase-merge", "rebase-apply")
 SUBJECT_MAX = 72
 PUSH_SECONDS = 60

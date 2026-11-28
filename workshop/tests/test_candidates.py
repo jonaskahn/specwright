@@ -247,7 +247,7 @@ class CandidateTests(WorkflowTestCase):
         self.assertIn("Refunds close after 14 days.", shown.stdout)
         self.assertEqual(self.cli("status", "CAND-001.1", "accepted").returncode, 0)
         self.assertEqual(candidates.item(self.base, "CAND-001.1").status, "accepted")
-        entries = writelog.read(self.base / "_meta/write-log.md")
+        entries = writelog.read(self.base / ".metadata/write-log.md")
         self.assertTrue(any("candidate-status" in e.fields for e in entries if e.kind == "INTENT"))
         self.snapshot("SRC-0009", "Late page")
         late = self.cli("check")

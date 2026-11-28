@@ -211,16 +211,16 @@ class DocTests(unittest.TestCase):
         (tmp / "dist").mkdir()
         (tmp / "data").mkdir()
         project = tmp / "project"
-        for folder in ("02-drafts", "assets", "_meta/data", "console/src", ".git", "records"):
+        for folder in ("02-drafts", "assets", ".metadata/data", "console/src", ".git", "records"):
             (project / folder).mkdir(parents=True)
         (project / "02-drafts/FEAT-001.story.md").write_text("# Story\n")
         (project / "00-brief.pdf").write_bytes(b"%PDF-1.4 brief")
         (project / "assets/ASSET-001.png").write_bytes(b"\x89PNG")
         (project / "assets/ASSET-002.svg").write_text("<svg onload='x()'/>")
         (project / "assets/ASSET-003.url").write_text("[InternetShortcut]\nURL=https://x.test\n")
-        (project / "_meta/status.md").write_text("# Status\n")
-        (project / "_meta/data/tasks.json").write_text("{}")
-        (project / "_meta/write-log.json").write_text("{}")
+        (project / ".metadata/status.md").write_text("# Status\n")
+        (project / ".metadata/data/tasks.json").write_text("{}")
+        (project / ".metadata/write-log.json").write_text("{}")
         (project / "workspace.yaml").write_text("secret: 1\n")
         (project / "records/Q-001.py").write_text("print(1)\n")
         (project / ".git/notes.md").write_text("hidden\n")
@@ -255,7 +255,7 @@ class DocTests(unittest.TestCase):
         self.assertIn("default-src 'none'", headers["Content-Security-Policy"])
         self.assertEqual(self.get("/doc/REF/assets/ASSET-001.png")[1]["Content-Type"], "image/png")
         self.assertEqual(self.get("/doc/REF/assets/ASSET-003.url")[0], 200)
-        self.assertEqual(self.get("/doc/REF/_meta/status.md")[0], 200)
+        self.assertEqual(self.get("/doc/REF/.metadata/status.md")[0], 200)
 
     def test_a_pdf_can_be_framed_by_the_console_and_an_svg_is_sandboxed(self):
         _, headers, body = self.get("/doc/REF/00-brief.pdf")
@@ -290,8 +290,8 @@ class DocTests(unittest.TestCase):
             "/doc/REF/.git/notes.md",
             "/doc/REF/workspace.yaml",
             "/doc/REF/records/Q-001.py",
-            "/doc/REF/_meta/data/tasks.json",
-            "/doc/REF/_meta/write-log.json",
+            "/doc/REF/.metadata/data/tasks.json",
+            "/doc/REF/.metadata/write-log.json",
             "/doc/REF/console/src/README.md",
             "/doc/REF/02-drafts/",
             "/doc/REF/missing.md",
@@ -445,13 +445,15 @@ class CommandTests(unittest.TestCase):
             text=True,
         ).stdout
         self.assertNotIn("console/", status)
-        self.assertNotIn("_meta/data", status)
+        self.assertNotIn(".metadata/data", status)
 
     def test_prepare_never_writes_data_files(self):
         self.node_present()
-        before = {p: p.read_bytes() for p in (self.docs / "_meta/data").glob("*")}
+        before = {p: p.read_bytes() for p in (self.docs / ".metadata/data").glob("*")}
         self.assertEqual(self.view("prepare").returncode, 0)
-        self.assertEqual(before, {p: p.read_bytes() for p in (self.docs / "_meta/data").glob("*")})
+        self.assertEqual(
+            before, {p: p.read_bytes() for p in (self.docs / ".metadata/data").glob("*")}
+        )
 
     def test_a_second_prepare_reports_the_console_current(self):
         self.node_present()
@@ -461,15 +463,17 @@ class CommandTests(unittest.TestCase):
 
     def test_doctor_names_the_owner_of_a_missing_data_file(self):
         self.node_present()
-        (self.docs / "_meta/data/tasks.json").unlink()
+        (self.docs / ".metadata/data/tasks.json").unlink()
         done = self.view("doctor", "--format", "json")
         self.assertEqual(done.returncode, 4, done.stderr)
         self.assertTrue(any("sw-forge owns it" in line for line in json.loads(done.stdout)["data"]))
 
     def test_doctor_flags_a_tracked_generated_folder(self):
         self.node_present()
-        (self.docs / "_meta/data/.gitignore").unlink()
-        subprocess.run(["git", "-C", str(self.repo), "add", "-f", "docs/_meta/data"], check=True)
+        (self.docs / ".metadata/data/.gitignore").unlink()
+        subprocess.run(
+            ["git", "-C", str(self.repo), "add", "-f", "docs/.metadata/data"], check=True
+        )
         done = self.view("doctor", "--format", "json")
         self.assertTrue(
             any("git rm -r --cached" in line for line in json.loads(done.stdout)["git"])

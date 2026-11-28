@@ -32,7 +32,7 @@ class ImpactTests(WorkflowTestCase):
         self.assertEqual(self.draft.read_bytes(), before)
         self.assertEqual(self.source.read_bytes(), source)
         self.assertEqual(frontmatter.parse(path.read_text()).fm["status"], "proposed")
-        self.assertFalse((self.base / "_meta/history").exists())
+        self.assertFalse((self.base / ".metadata/history").exists())
 
     def test_quotes_must_exist_in_both_inputs(self):
         with self.assertRaises(ValueError):

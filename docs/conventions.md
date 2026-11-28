@@ -90,8 +90,8 @@ These rules apply to every file in the kit.
   four-hex hash of the cited text). Copy quotes and hashes with `cite.py`; never retype them.
 - Writes to records, the registry, snapshots and candidates go through the shared scripts
   (`record.py`, `bulk_import.py`, `candidates.py`, `provenance.py`). They validate first,
-  support `--dry-run`, log an intent and a result in `_meta/write-log.md`, and honour the
-  registry column owners (`rtm.REGISTRY_OWNERS`). Working files go under `_meta/work/`.
+  support `--dry-run`, log an intent and a result in `.metadata/write-log.md`, and honour the
+  registry column owners (`rtm.REGISTRY_OWNERS`). Working files go under `.metadata/work/`.
 
 ## Writing style
 
@@ -139,7 +139,7 @@ copied and checked rather than evaluated.
 
 `sw-view` is the one exception to "no JavaScript at skill runtime". It is a user-opened,
 read-only web console (source in `console/`, packed into the skill by `workshop/tools/console_pack.py`).
-It reads only `_meta/data/`, runs on 127.0.0.1 behind a strict Content-Security-Policy
+It reads only `.metadata/data/`, runs on 127.0.0.1 behind a strict Content-Security-Policy
 (its own address only), renders every imported string as text (never `{@html}`), and keeps
 no inline script or style. Its build needs Node 24; the scripts that serve it stay standard-library
 Python. Imported text stays data: the console shows it and never acts on it.

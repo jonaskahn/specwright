@@ -43,11 +43,11 @@ for a person: accept the split, accept the story, answer a blocking question.
 │    prompts/     one per session     TASK-001-1.md                      │
 │  records/       decisions           Q-001 · DEC-001 · CR-001           │
 │  diagrams/      pictures            FEAT-001.swimlane.svg              │
-│  _meta/         start here          READ-FIRST.md                      │
+│  .metadata/         start here          READ-FIRST.md                      │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
-A new chat reads `_meta/READ-FIRST.md` and carries on. Nothing depends on remembering this one.
+A new chat reads `.metadata/READ-FIRST.md` and carries on. Nothing depends on remembering this one.
 
 ---
 

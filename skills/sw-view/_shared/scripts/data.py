@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read, check and export the data files other tools consume (_meta/data/).
+"""Read, check and export the data files other tools consume (.metadata/data/).
 
 The files follow one format (references/data-format.md). Each file has one owner skill, and
 only that skill writes it: `export` refuses a kind the named skill does not own. `check` and

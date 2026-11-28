@@ -1,6 +1,6 @@
 """Keep generated folders out of git without touching the repository's own .gitignore.
 
-A folder the kit generates (``_meta/data``, ``console``) gets a ``.gitignore`` holding ``*``. A
+A folder the kit generates (``.metadata/data``, ``console``) gets a ``.gitignore`` holding ``*``. A
 ``*`` file ignores itself too, so git sees nothing in the folder: no stray file, no empty tracked
 folder. The file is written only when the folder is created, so a team that wants the folder in
 git deletes that one file and it stays deleted. The checks here only read git; they never run

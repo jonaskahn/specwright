@@ -82,7 +82,7 @@ def main(argv=None):
                 return 0
             target = candidates.folder(base) / candidates.ASSIGNMENT
             with writelog.operation(
-                base / "_meta/write-log.md", "sw-craft", "candidates-assign", scope
+                base / ".metadata/write-log.md", "sw-craft", "candidates-assign", scope
             ) as op:
                 for path, text in files.items():
                     path.parent.mkdir(parents=True, exist_ok=True)
@@ -115,7 +115,7 @@ def main(argv=None):
             return 0
         path, text = candidates.set_status(base, args.key, args.value, args.into)
         with writelog.operation(
-            base / "_meta/write-log.md", "sw-craft", "candidate-status", args.key
+            base / ".metadata/write-log.md", "sw-craft", "candidate-status", args.key
         ) as op:
             candidates.write_text(path, text)
             op.wrote(path)

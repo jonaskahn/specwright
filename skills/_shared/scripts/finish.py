@@ -103,7 +103,7 @@ def _changed(base: Path, prefixes: list[str]) -> list[Path]:
 
 def _ready_keys(base: Path) -> set[str] | None:
     """Keys marked ready in the generated ready file, or None before the first build."""
-    path = base / "_meta" / "ready.tsv"
+    path = base / ".metadata" / "ready.tsv"
     if not path.is_file():
         return None
     rows = [ln.split("\t") for ln in path.read_text(encoding="utf-8").splitlines()]

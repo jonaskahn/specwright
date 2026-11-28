@@ -183,7 +183,7 @@ class CommandTests(unittest.TestCase):
         self.assertIn("verdict: DRAW", shown.stdout)
         saved = self.run_cli("FEAT-009", "--scope-root", str(self.base), "--json")
         self.assertEqual(saved.returncode, 0, saved.stderr)
-        written = self.base / "_meta/work/illustration-FEAT-009.json"
+        written = self.base / ".metadata/work/illustration-FEAT-009.json"
         self.assertTrue(written.is_file())
         self.assertEqual(json.loads(written.read_text())["chip"], "needs illustration")
         dismissed = self.run_cli(

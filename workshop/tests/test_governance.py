@@ -205,7 +205,9 @@ class AcceptTests(SoloTestCase):
             review.accept(self.draft, "REF:FEAT-001", self.manifest)
 
     def test_accept_needs_a_passing_lint_gate(self):
-        (self.base / "_meta/lint-report.md").write_text("# Lint report\n\n2 blocking error(s).\n")
+        (self.base / ".metadata/lint-report.md").write_text(
+            "# Lint report\n\n2 blocking error(s).\n"
+        )
         with self.assertRaisesRegex(review.ApprovalError, "lint"):
             review.accept(self.draft, "REF:FEAT-001", self.manifest)
 

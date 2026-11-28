@@ -34,7 +34,7 @@ class CheckTests(unittest.TestCase):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         self.base = Path(tmp.name)
-        for name in ("02-drafts", "03-plan", "_meta", "diagrams"):
+        for name in ("02-drafts", "03-plan", ".metadata", "diagrams"):
             (self.base / name).mkdir()
         patcher = mock.patch("kitlib.lifecycle.approval_state", return_value="fresh")
         patcher.start()
@@ -45,7 +45,7 @@ class CheckTests(unittest.TestCase):
         table.rows = [
             ["ASSET-001", "assets/ASSET-001.png", kind, "sha", "now", "user", "", "captured"]
         ]
-        (self.base / "_meta/asset-registry.md").write_text("# registry\n\n" + table.render())
+        (self.base / ".metadata/asset-registry.md").write_text("# registry\n\n" + table.render())
 
     def write(self, tasks, assets=()):
         story = frontmatter.update(GOOD, {"assets": list(assets)})

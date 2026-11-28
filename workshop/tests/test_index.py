@@ -32,7 +32,7 @@ class IndexTests(WorkflowTestCase):
         reg.parent.mkdir(parents=True, exist_ok=True)
         reg.write_text(REGISTER)
         rtm.registry_upsert(
-            self.base / "_meta/id-registry.md",
+            self.base / ".metadata/id-registry.md",
             "REF:FEAT-003",
             {"Kind": "story", "Title": "Payout", "Aliases": "LEG-300"},
             "sw-craft",
@@ -60,13 +60,13 @@ class IndexTests(WorkflowTestCase):
         )
 
     def table(self, name):
-        lines = (self.base / "_meta" / name).read_text().splitlines()
+        lines = (self.base / ".metadata" / name).read_text().splitlines()
         head = lines[1][2:].split("\t")
         return [dict(zip(head, ln.split("\t"), strict=False)) for ln in lines[2:]]
 
     def test_every_generated_file_is_written(self):
         for name in ("INDEX.md", "index.tsv", "CROSSWALK.tsv", "READ-FIRST.md", "ready.tsv"):
-            self.assertTrue((self.base / "_meta" / name).is_file(), name)
+            self.assertTrue((self.base / ".metadata" / name).is_file(), name)
 
     def test_rows_carry_name_aliases_status_and_links(self):
         rows = {r["key"]: r for r in self.table("index.tsv")}
@@ -86,7 +86,7 @@ class IndexTests(WorkflowTestCase):
 
     def test_an_untitled_reservation_is_flagged_never_given_a_placeholder(self):
         rtm.registry_upsert(
-            self.base / "_meta/id-registry.md", "REF:FEAT-004", {"Kind": "story"}, "sw-craft"
+            self.base / ".metadata/id-registry.md", "REF:FEAT-004", {"Kind": "story"}, "sw-craft"
         )
         graph.build(self.root, "REF")
         row = {r["key"]: r for r in self.table("index.tsv")}["REF:FEAT-004"]
@@ -105,25 +105,25 @@ class IndexTests(WorkflowTestCase):
         self.assertEqual(rows[("", "no-register")]["source_ids"], "REF:SRC-0002")
 
     def test_read_first_names_the_fixed_reading_order(self):
-        text = (self.base / "_meta/READ-FIRST.md").read_text()
+        text = (self.base / ".metadata/READ-FIRST.md").read_text()
         order = ["project.yaml", "AGENTS.md", "INDEX.md", "CROSSWALK.tsv", "graph.py board"]
         positions = [text.index(item) for item in order]
         self.assertEqual(positions, sorted(positions))
         self.assertIn("do not open folders", text)
 
     def test_a_second_build_changes_nothing(self):
-        before = {p: p.read_bytes() for p in (self.base / "_meta").glob("*") if p.is_file()}
+        before = {p: p.read_bytes() for p in (self.base / ".metadata").glob("*") if p.is_file()}
         self.assertEqual(graph.build(self.root, "REF"), [])
-        after = {p: p.read_bytes() for p in (self.base / "_meta").glob("*") if p.is_file()}
+        after = {p: p.read_bytes() for p in (self.base / ".metadata").glob("*") if p.is_file()}
         self.assertEqual(before, after)
 
     def test_hand_edits_to_generated_files_are_reported(self):
         marker = "was edited by hand"
         self.assertFalse([f for f in graph.check(self.root, "REF") if marker in f])
-        path = self.base / "_meta/INDEX.md"
+        path = self.base / ".metadata/INDEX.md"
         path.write_text(path.read_text() + "| hand | edit |\n")
         self.assertIn(
-            "REF: _meta/INDEX.md was edited by hand; run build", graph.check(self.root, "REF")
+            "REF: .metadata/INDEX.md was edited by hand; run build", graph.check(self.root, "REF")
         )
         graph.build(self.root, "REF")
         self.assertFalse([f for f in graph.check(self.root, "REF") if marker in f])

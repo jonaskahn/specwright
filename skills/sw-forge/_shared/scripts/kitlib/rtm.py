@@ -170,8 +170,8 @@ def rebuild(root: Path, scope: str) -> list[str]:
     if any("duplicate" in finding for finding in findings):
         raise ValueError("; ".join(findings))
     base = workspace.scope_dir(root, scope)
-    matrix = read_table(base / "_meta/rtm.md", rtm_header())
-    registry = read_table(base / "_meta/id-registry.md", list(schema.REGISTRY_COLUMNS))
+    matrix = read_table(base / ".metadata/rtm.md", rtm_header())
+    registry = read_table(base / ".metadata/id-registry.md", list(schema.REGISTRY_COLUMNS))
     for key, entity in sorted(entities.items()):
         if key.split(":")[0] != scope:
             continue
@@ -181,8 +181,8 @@ def rebuild(root: Path, scope: str) -> list[str]:
             registry.table.upsert(
                 key, {"Kind": "story" if entity.kind == "feature" else entity.kind}
             )
-    fsio.atomic_write(base / "_meta/rtm.md", matrix.render())
-    fsio.atomic_write(base / "_meta/id-registry.md", registry.render())
+    fsio.atomic_write(base / ".metadata/rtm.md", matrix.render())
+    fsio.atomic_write(base / ".metadata/id-registry.md", registry.render())
     return findings
 
 
@@ -195,7 +195,7 @@ def set_cell(root: Path, scope: str, key: str, column: str, value: str, skill: s
     key = qualify(key, scope)
     if key.split(":")[0] != scope:
         raise ValueError("row scope differs from write scope")
-    path = workspace.scope_dir(root, scope) / "_meta/rtm.md"
+    path = workspace.scope_dir(root, scope) / ".metadata/rtm.md"
     doc = read_table(path, rtm_header())
     if doc.table.find(key) is None:
         raise ValueError(f"unknown row: {key}; rebuild first")
@@ -248,7 +248,7 @@ def migrate_registry(path: Path) -> bool:
 def jira_keys(root: Path) -> dict[str, str]:
     result = {}
     for scope in workspace.list_scopes(root):
-        path = workspace.scope_dir(root, scope) / "_meta/id-registry.md"
+        path = workspace.scope_dir(root, scope) / ".metadata/id-registry.md"
         doc = read_table(path, list(schema.REGISTRY_COLUMNS))
         for row in doc.table.rows:
             value = row[doc.table.col("Jira key")]
@@ -290,7 +290,7 @@ def check(root: Path, scope: str | None = None) -> list[str]:
             ("rtm.md", rtm_header()),
             ("id-registry.md", list(schema.REGISTRY_COLUMNS)),
         ):
-            doc = read_table(base / "_meta" / filename, header)
+            doc = read_table(base / ".metadata" / filename, header)
             for row in doc.table.rows:
                 if row[0] not in entities:
                     findings.append(

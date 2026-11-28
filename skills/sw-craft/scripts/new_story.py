@@ -58,7 +58,7 @@ def create(
         # title and its aliases; no new number is allocated.
         if not ids.matches_type("feature", reserved):
             raise ValueError("--reserved takes a feature ID such as FEAT-002")
-        row = rtm.read_table(root / "_meta/id-registry.md", list(schema.REGISTRY_COLUMNS)).table
+        row = rtm.read_table(root / ".metadata/id-registry.md", list(schema.REGISTRY_COLUMNS)).table
         key = f"{scope}:{reserved}"
         if row.find(key) is None or row.value(key, "State") in ("withdrawn", "superseded"):
             raise ValueError(f"{reserved} is not a reserved feature of {scope}")

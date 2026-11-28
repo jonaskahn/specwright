@@ -276,7 +276,7 @@ def main(argv: list[str] | None = None) -> int:
         }
         target = batch / "manifest.json"
         with writelog.operation(
-            base / "_meta/write-log.md", "sw-craft", "bulk-import", f"{scope}:{args.batch_id}"
+            base / ".metadata/write-log.md", "sw-craft", "bulk-import", f"{scope}:{args.batch_id}"
         ) as op:
             fsio.atomic_write(target, json.dumps(summary, indent=1, sort_keys=True) + "\n")
             op.wrote(target)

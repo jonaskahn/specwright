@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Open the Specwright console: unpack it, build it, and serve it on this machine.
 
-The console is a read-only dashboard over the data files in _meta/data. `prepare` unpacks the
+The console is a read-only dashboard over the data files in .metadata/data. `prepare` unpacks the
 packed console into <spec root>/console, builds it with Node 24, and prints the command that
 serves it. `serve` runs a loopback-only server. `open` does both. `doctor` reports what is
 ready. Nothing here writes the data files, a spec, Jira or Confluence.

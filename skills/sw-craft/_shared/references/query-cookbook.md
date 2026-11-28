@@ -31,4 +31,4 @@ Output reading:
 - Each link shows [class/resolution] and file:line.
 - A +N more line gives the next --offset.
 - Exit 3 lists candidates when a name is ambiguous or unknown; it never picks one. Qualify an ID, for example
-  REF:FEAT-001, or use a more specific name. `show` also reads the crosswalk row, parent and links from _meta/.
+  REF:FEAT-001, or use a more specific name. `show` also reads the crosswalk row, parent and links from .metadata/.

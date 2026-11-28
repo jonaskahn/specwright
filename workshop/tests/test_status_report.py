@@ -78,12 +78,12 @@ class StatusTests(unittest.TestCase):
         result = self.run_cli("--cwd", str(self.root), "--json")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(len(json.loads(result.stdout)["features"]), 2)
-        self.assertFalse((self.root / "_meta/status.md").exists())
-        (self.root / "_meta/lint-report.md").unlink()
+        self.assertFalse((self.root / ".metadata/status.md").exists())
+        (self.root / ".metadata/lint-report.md").unlink()
         self.assertEqual(status.build_report(self.root)["features"][0]["lint"], "unknown")
         result = self.run_cli("--cwd", str(self.root), "--save")
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertTrue((self.root / "_meta/status.md").exists())
+        self.assertTrue((self.root / ".metadata/status.md").exists())
         self.assertEqual(self.run_cli("--help").returncode, 0)
         self.assertEqual(self.run_cli("--cwd", self.temp.name).returncode, 2)
         self.assertEqual(self.run_cli("--scope", "BAD", "--cwd", str(self.root)).returncode, 2)
@@ -100,7 +100,7 @@ class StatusTests(unittest.TestCase):
             )
         )
         rtm.registry_upsert(
-            self.root / "_meta/id-registry.md",
+            self.root / ".metadata/id-registry.md",
             "REF:FEAT-002",
             {"Last snapshot": "snapshots/jira/PROJ-14.md"},
             "sw-ship",
@@ -123,11 +123,11 @@ class StatusTests(unittest.TestCase):
         self.assertEqual(result.stderr, "")
         result = self.run_cli("--cwd", str(root), "--save")
         self.assertEqual(result.returncode, 2)
-        self.assertFalse((root / "projects/REF/_meta/status.md").exists())
+        self.assertFalse((root / "projects/REF/.metadata/status.md").exists())
 
     def test_malformed_data_and_path_escape_fail_safely(self):
         rtm.registry_upsert(
-            self.root / "_meta/id-registry.md",
+            self.root / ".metadata/id-registry.md",
             "REF:FEAT-001",
             {"Last snapshot": "../../outside.md"},
             "sw-ship",
@@ -135,8 +135,8 @@ class StatusTests(unittest.TestCase):
         result = self.run_cli("--cwd", str(self.root))
         self.assertEqual(result.returncode, 2)
         self.assertIn("escapes", result.stderr)
-        self.assertFalse((self.root / "_meta/status.md").exists())
-        (self.root / "_meta/id-registry.md").write_text("bad table\n")
+        self.assertFalse((self.root / ".metadata/status.md").exists())
+        (self.root / ".metadata/id-registry.md").write_text("bad table\n")
         self.assertEqual(self.run_cli("--cwd", str(self.root)).returncode, 2)
 
 
