@@ -237,6 +237,8 @@ def question_new(
     default: str = "",
     blocking: bool = True,
     status: str = "proposed",
+    identity: str | None = None,
+    plan: Plan | None = None,
 ) -> Plan:
     if status == "assumed":
         raise RecordError("new assumed questions are not allowed; leave it open and ask the owner")
@@ -248,8 +250,14 @@ def question_new(
         raise RecordError("due must be YYYY-MM-DD")
     targets = affects_list(ctx, affects)
     stamped, blocks = citations(ctx, raised_from or [], quote)
-    plan = new_plan(ctx)
-    identity = plan.next_id("Q")
+    plan = plan or new_plan(ctx)
+    if identity:
+        if not ids.matches_type("q", identity):
+            raise RecordError(f"{identity} is not a question id")
+        if identity not in plan.made:
+            plan.made.append(identity)
+    else:
+        identity = plan.next_id("Q")
     fm: dict[str, Any] = {
         "id": identity,
         "type": "q",

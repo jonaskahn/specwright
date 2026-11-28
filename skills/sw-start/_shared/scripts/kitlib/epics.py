@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
-from kitlib import frontmatter, ids, paths
+from kitlib import frontmatter, ids, links, markdown, paths
 
 DEFAULT_TEMPLATE = """---
 id: EPIC-NNN
@@ -20,9 +21,32 @@ scopes: [<SCOPE>]
 
 <The business outcome this epic groups features under; no interface or technology choices.>
 
+## Done when
+
+<measurable exit criteria, or a Q>
+
+## Scope
+
+**In scope**
+
+- <what this epic includes>
+
+**Out of scope**
+
+- <what it excludes> — reason: <why>
+
 ## Features
 
-<FEAT references linked to this epic, or None until the PO accepts the split.>
+| ID | Title | Priority | Status | Depends on |
+| --- | --- | --- | --- | --- |
+
+## Risks
+
+None — not yet compiled.
+
+## Open questions
+
+None — not yet compiled.
 
 ## Projects involved
 
@@ -110,6 +134,106 @@ def create(
         handle.write(text)
     _ = identity
     return path
+
+
+def feature_rows(body: str) -> list[dict[str, object]]:
+    """Rows of a generated Features table. An empty or placeholder section has none."""
+    section = markdown.sections(body).get("Features")
+    if section is None:
+        return []
+    rows = []
+    for line in section.text.splitlines():
+        if not line.startswith("|"):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) < 5 or cells[0].lower() == "id" or set(cells[0]) <= set("-: "):
+            continue
+        feat = re.search(r"FEAT-\d{3}", cells[0])
+        if not feat:
+            continue
+        rows.append(
+            {
+                "id": feat.group(0),
+                "title": cells[1],
+                "priority": cells[2],
+                "status": cells[3],
+                "depends_on": sorted(set(re.findall(r"FEAT-\d{3}", cells[4]))),
+            }
+        )
+    return rows
+
+
+def refresh_features(base: Path) -> list[Path]:
+    """Rewrite each epic's Features table from the stories that name it."""
+    folder = paths.epics_dir(base)
+    if not folder.is_dir():
+        return []
+    stories = []
+    for path in paths.stories(base):
+        parsed = frontmatter.parse(path.read_text(encoding="utf-8"))
+        if parsed.fm and parsed.fm.get("type") == "feature" and not parsed.fm.get("card"):
+            stories.append((path, parsed.fm))
+    changed = []
+    for path in sorted(folder.glob("EPIC-*/*.md")):
+        if _refresh_one(base, path, stories):
+            changed.append(path)
+    return changed
+
+
+def _refresh_one(base: Path, path: Path, stories: list[tuple[Path, dict]]) -> bool:
+    text = path.read_text(encoding="utf-8")
+    fm, body = frontmatter.split(text)
+    if not fm or fm.get("type") != "epic":
+        return False
+    epic = str(fm.get("id") or "")
+    members = [(story, story_fm) for story, story_fm in stories if _names_epic(story_fm, epic)]
+    rows = [
+        "| ID | Title | Priority | Status | Depends on |",
+        "| --- | --- | --- | --- | --- |",
+    ]
+    sources: list[str] = []
+    for _story, story_fm in members:
+        feat = str(story_fm.get("id") or "")
+        linked = links.link_for(feat, path, base) or feat
+        deps = []
+        for dep in story_fm.get("depends_on") or []:
+            ident = str(dep).split(":")[-1]
+            deps.append(links.link_for(ident, path, base) or ident)
+        rows.append(
+            "| {id} | {title} | {priority} | {status} | {deps} |".format(
+                id=linked,
+                title=str(story_fm.get("title") or ""),
+                priority=str(story_fm.get("priority") or ""),
+                status=str(story_fm.get("status") or ""),
+                deps=", ".join(deps) if deps else "None",
+            )
+        )
+        for source in story_fm.get("sources") or []:
+            ident = str(source).split(":")[-1]
+            if ident not in sources:
+                sources.append(ident)
+    if members:
+        fm["sources"] = sources
+    table = "\n".join(rows)
+    updated = frontmatter.render(fm, _replace_section(body, "Features", table))
+    if updated == text:
+        return False
+    path.write_text(updated, encoding="utf-8", newline="")
+    return True
+
+
+def _names_epic(fm: dict, epic: str) -> bool:
+    raw = fm.get("epic")
+    values = raw if isinstance(raw, list) else [raw]
+    return any(str(item).split(":")[-1] == epic for item in values if item)
+
+
+def _replace_section(body: str, name: str, content: str) -> str:
+    pattern = re.compile(rf"(^## {re.escape(name)}\n)(.*?)(?=^## |\Z)", re.M | re.S)
+    block = "\n" + content.strip() + "\n\n"
+    if pattern.search(body):
+        return pattern.sub(lambda match: match.group(1) + block, body, count=1)
+    return body.rstrip() + f"\n\n## {name}\n{block}"
 
 
 def set_objectives(root: Path, scope: str, epic: str, values: list[str]) -> Path:

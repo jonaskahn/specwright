@@ -31,11 +31,14 @@ through `scripts/forge.py status`.
    decisions in any state; leave unanswered choices open and plan only independent work.
 4. Plan from `assets/plan.md`: approach, constraints, ordering, risks, then **one detailed
    section per task** (`### TASK-NNN-k`) answering only for that task:
-   exact files to create or change and where (`<code-root>/<path>`, or `new:<path>` for a
-   folder to create), the change described concretely enough to apply without judgement,
+   exact files to create or change and where (`<code-root>/<path>`, or `new:<path>` only when
+   that parent directory already exists under a registered code root; otherwise `UNKNOWN`),
+   the change described concretely enough to apply without judgement,
    the test that proves it and the command that runs it (from the locked stack), the order
-   against other tasks and what must exist first, and the condition under which a coder must
-   stop and ask. A claim about code needs a path from `Touches`, else `UNKNOWN`.
+   against other tasks and what must exist first (tasks that touch the same path name each
+   other in `Depends on`; `None` is not the default), and the condition under which a coder
+   must stop and ask. A claim about code needs a path from `Touches`, else `UNKNOWN`.
+   `scripts/tasks.py --mark-ready` refuses until this plan exists.
 5. Tasks as the BA wrote them are the contract: do not re-number, re-scope or re-layer. Set
    each task's `Status: planned` as its plan section is written, and keep one section per
    active task (`scripts/tasks.py --feat FEAT-NNN` reports the plan, too).

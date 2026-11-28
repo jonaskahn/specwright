@@ -47,8 +47,8 @@ def generate(text: str) -> str:
     if not ids.is_scope(str(fm.get("scope", ""))):
         raise ValueError("story requires a scope of 2..5 uppercase letters")
     sections = markdown.iter_sections(body)
-    if [s.name for s in sections] != schema.STORY_SECTIONS:
-        raise ValueError("story requires twelve sections in canonical order")
+    if not schema.story_section_names([s.name for s in sections]):
+        raise ValueError("story requires the canonical sections in order")
     sec = {s.name: s for s in sections}
     goal = " ".join(sec["Goal"].text.split())
     if not goal or "<" in goal:
@@ -85,6 +85,7 @@ def generate(text: str) -> str:
     trace_text = "\n".join(
         sec[name].text
         for name in ("Goal", "Business rules", "Non-functional", "Open questions", "Identity")
+        if name in sec
     )
     refs = [
         ref.qualified
@@ -100,7 +101,8 @@ def generate(text: str) -> str:
     output = frontmatter.render(
         card_fm,
         f"## Summary\n{summary}\n\n## Links\n"
-        f"- Home: {home}\n- Draft: features/{fm['id']}/{fm['id']}.story.md\n\n## "
+        f"- Home: {home}\n- Draft: features/{fm['id']}/{fm['id']}.story.md\n"
+        f"- DoR: see review/dor.md\n\n## "
         "Trace\n" + (" · ".join(dict.fromkeys(refs)) or "None") + "\n",
     )
     validate_card(output)

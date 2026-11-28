@@ -813,7 +813,7 @@ def story_sections(tooling: dict[str, Any], bo: str, feat_num: str) -> dict[str,
         ),
         "Acceptance criteria": "\n".join(acs),
         "Business rules": (
-            f"- BR: line coverage below {cov}% fails `make test`. Example: "
+            f"- Line coverage below {cov}% fails `make test`. Example: "
             f"{cov - 0.1:.1f}% fails, {cov:.1f}% passes."
         ),
         "Edge cases and error behavior": (
@@ -830,5 +830,5 @@ def story_sections(tooling: dict[str, Any], bo: str, feat_num: str) -> dict[str,
             "- Feature code — reason: each feature has its own story."
         ),
         "Dependencies and relations": "None — the first story of the codebase.",
-        "Open questions": "None",
+        "Open questions": "None — the foundation story has no catalogue source.",
     }

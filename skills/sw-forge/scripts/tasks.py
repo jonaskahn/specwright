@@ -45,14 +45,18 @@ def main(argv=None):
         base = workspace.scope_dir(root, scope)
         path, findings, parsed = check(base, feat)
         print(task_validation.label(base, feat))
-        plan = (
-            task_validation.plan_findings(base, feat)
-            if (paths.plan_file(base, feat)).is_file()
-            else []
-        )
+        plan_path = paths.plan_file(base, feat)
+        if args.mark_ready and not plan_path.is_file():
+            plan = [f"{feat}: implementation plan is missing or empty"]
+        elif plan_path.is_file():
+            plan = task_validation.plan_findings(base, feat)
+        else:
+            plan = []
         for line in findings:
             print(line)
-        if findings:
+        if findings or (args.mark_ready and plan):
+            for line in plan:
+                print(line)
             return 1
         if args.mark_ready:
             parsed.fm["status"] = "ready"

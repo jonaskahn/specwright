@@ -7,11 +7,14 @@ Convert only fields this skill owns; preserve everything else byte for byte.
 | Field | Source |
 | --- | --- |
 | `description` | Draft body, converted by `adf.md_to_adf`. |
-| `summary` | Draft front matter `jira_summary`. |
-| `labels` | Merged, never replaced: draft labels plus `specwright`, `feat:<id>`, `proj:<scope>`. |
+| `summary` | Draft front matter `title` (at most 100 characters). |
+| `labels` | Merged, never replaced: existing labels plus `specwright`, `feat:<id>`, `proj:<scope>`. |
+| `parent` | The epic's Jira key from the registry, planned by `levels_plan`. |
+| `issuetype` | Derived from the level (`Epic`, `Story`, `Sub-task`), overridable in `publish.issue_types`. |
+| `priority` | Derived from story `priority` (`must` High, `should` Medium, `could` Low), overridable in `publish.priority_map`. |
 
-Foreign fields, labels and links stay untouched. Never invent or overwrite `jira_parent`,
-`jira_issuetype`, `jira_priority` or any other remote field.
+These three are derived at publish and are not story keys. Foreign fields, labels and links stay
+untouched. Do not store `jira_summary`, `jira_parent`, `jira_issuetype` or `jira_priority` on the story.
 
 ## Local index writes
 

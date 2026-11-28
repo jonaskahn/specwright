@@ -120,6 +120,7 @@ def _parser():
     split.add_argument("--item", action="append", default=[], help="'Title|alias1,alias2'")
     split.add_argument("--existing", action="append", default=[], help="an already reserved FEAT")
     split.add_argument("--from-register", metavar="GROUP", help="every legacy item of this group")
+    split.add_argument("--proposal", type=Path, help="split JSON from compile_story.py split")
     split.add_argument("--epic", action="append", default=[])
     split.add_argument("--new-epic", default="")
     split.add_argument("--bo", action="append", default=[], help="objectives of the new epic")
@@ -198,6 +199,10 @@ def _build(ctx, args):
         return plan, "reserve-epic", f"{ctx.scope}:{identity}"
     if args.noun == "accept-split":
         items, existing = list(args.item), list(args.existing)
+        if args.proposal:
+            from kitlib import compile as compiler
+
+            items += compiler.proposal_items(json.loads(args.proposal.read_text(encoding="utf-8")))
         if args.from_register:
             more_items, more_existing = recordops.register_group(ctx, args.from_register)
             items += more_items

@@ -931,6 +931,10 @@ def build(root: Path, scope: str | None = None) -> list[Path]:
     root = root.resolve()
     all_scopes = workspace.list_scopes(root)
     targets = [scope] if scope else all_scopes
+    from kitlib import epics
+
+    for item in targets:
+        epics.refresh_features(workspace.scope_dir(root, item))
     changed: list[Path] = []
     for item in targets:
         label = item

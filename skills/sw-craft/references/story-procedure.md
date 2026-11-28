@@ -36,9 +36,13 @@ or the case is an edge case named below. SKILL.md is the default path; kernel ru
    in the `assets:` front matter and in the UI/UX Visuals list (line format in assets/jira-story.md),
    saying which AC or state it shows. Open local images and take UI states from what they show;
    an unclear or missing state becomes a Q record, not an invented state. Quote a link, never
-   fetch it. Lint rules L-066 and L-067 check this. Then fill all twelve sections in template
-   order; write "None — reason" for intentionally empty ones. Write ACs per
-   references/ac-writing.md: at least two with concrete inputs and observable outputs; happy
+   fetch it. Lint rules L-066 and L-067 check this. For a catalogue feature, run
+   `scripts/compile_story.py` before editing: it writes the sections, the coverage map and
+   the open questions. You may rephrase the Goal and answer Q records. Do not add an
+   acceptance criterion, rule or NFR that has no coverage row. A story with no catalogue id
+   is still filled from the template, in section order; write "None — reason" for an
+   intentionally empty section. Write ACs per references/ac-writing.md: at least two, and a
+   catalogue bundle targets 3–7, with concrete inputs and observable outputs; happy
    path, every rule branch, boundaries, enumerated errors. Write each as a bulleted list with
    the keywords in bold (`- **Given** …`, `- **When** …`, `- **Then** …`; layout in that file). AC IDs stay stable; new
    numbers exceed every number used for this FEAT; withdrawn IDs stay as tombstones, for

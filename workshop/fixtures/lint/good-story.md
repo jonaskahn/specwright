@@ -6,10 +6,8 @@ title: Submit a return request
 aliases: []
 status: ready-to-publish
 bo: [BO-001]
-jira_summary: Submit a return request
-jira_labels: [specwright, feat:FEAT-001, proj:REF]
 signoffs:
-  - PO | Mira Chen | 2026-11-10 | https://approval.example/returns/1 | sha256:b6fb589e669545294b6b07d663275dec17db865b49f91abb2ad5d827d62058ce
+  - PO | Mira Chen | 2026-11-10 | https://approval.example/returns/1 | sha256:635df67d3285689a4350d1891ce59836ceefb6ddb4f9d2db9e534ad46a7e530c
 ---
 ## Goal
 As a buyer with a delivered parcel, I want to request a return so that I can recover its price. Business objective: BO-001.
@@ -35,9 +33,9 @@ States: default, empty, loading, error.
 ## Out of scope
 - Automatic reimbursement — reason: inspection determines the amount.
 ## Dependencies and relations
-None
+None — no dependency recorded.
 ## Open questions
-None
+None — no open question.
 ## DoR checklist
 - [x] Observable examples and return window are recorded.
 ## Identity

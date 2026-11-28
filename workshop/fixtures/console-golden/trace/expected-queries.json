@@ -713,10 +713,10 @@
     ],
     [
      "REF:EPIC-001",
-     "in",
-     "member_of",
+     "out",
+     "mentions",
      "REF:FEAT-002",
-     "declared",
+     "mentioned",
      "resolved"
     ],
     [
@@ -818,10 +818,10 @@
     ],
     [
      "REF:EPIC-001",
-     "in",
-     "member_of",
+     "out",
+     "mentions",
      "REF:FEAT-002",
-     "declared",
+     "mentioned",
      "resolved"
     ],
     [
@@ -862,10 +862,10 @@
     ],
     [
      "REF:EPIC-001",
-     "in",
-     "member_of",
+     "out",
+     "mentions",
      "REF:FEAT-002",
-     "declared",
+     "mentioned",
      "resolved"
     ],
     [
@@ -967,10 +967,10 @@
     ],
     [
      "REF:EPIC-001",
-     "in",
-     "member_of",
+     "out",
+     "mentions",
      "REF:FEAT-002",
-     "declared",
+     "mentioned",
      "resolved"
     ],
     [
@@ -1239,10 +1239,10 @@
     ],
     [
      "REF:EPIC-001",
-     "in",
-     "member_of",
+     "out",
+     "mentions",
      "REF:FEAT-002",
-     "declared",
+     "mentioned",
      "resolved"
     ],
     [

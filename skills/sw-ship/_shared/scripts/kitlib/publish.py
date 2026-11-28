@@ -126,7 +126,7 @@ def payload(ctx: Context, fields: dict) -> dict:
     fm, body = frontmatter.split(draft)
     owned = dict(fields)
     owned["description"] = adf.md_to_adf(body)
-    owned["summary"] = str(fm.get("jira_summary"))
+    owned["summary"] = str(fm.get("title") or fm.get("jira_summary") or "")
     labels = set(owned.get("labels") or [])
     labels |= {"specwright", f"feat:{fm['id']}", f"proj:{ctx.scope}"}
     owned["labels"] = sorted(labels)
@@ -253,6 +253,21 @@ def record(ctx: Context, key: str, draft: str) -> None:
 
 
 LEVELS = ("epic", "story", "task")
+DEFAULT_PRIORITY = {"must": "High", "should": "Medium", "could": "Low"}
+
+
+def _priority(base: Path, key: str, manifest: dict) -> str | None:
+    """Jira priority derived from the story. It is not stored on the story."""
+    story = paths.story(base, key.split(":")[-1])
+    if not story.is_file():
+        return None
+    fm = frontmatter.parse(story.read_text(encoding="utf-8")).fm or {}
+    raw = str(fm.get("priority") or "").lower()
+    table = (manifest.get("publish") or {}).get("priority_map") or DEFAULT_PRIORITY
+    value = table.get(raw)
+    return str(value) if value else None
+
+
 # Default Jira issue types per level; a manifest `publish.issue_types` may override them.
 ISSUE_TYPES = {"epic": "Epic", "story": "Story", "task": "Sub-task"}
 
@@ -313,16 +328,18 @@ def levels_plan(base: Path, key: str, level: str, manifest: dict) -> dict:
             }
         )
     elif level == "story":
-        rows.append(
-            {
-                "level": "story",
-                "id": key,
-                "type": types["story"],
-                "action": "update" if _registry_cell(base, key, "Jira key") else "create",
-                "key": _registry_cell(base, key, "Jira key"),
-                "parent": _registry_cell(base, epic, "Jira key") if epic else None,
-            }
-        )
+        row = {
+            "level": "story",
+            "id": key,
+            "type": types["story"],
+            "action": "update" if _registry_cell(base, key, "Jira key") else "create",
+            "key": _registry_cell(base, key, "Jira key"),
+            "parent": _registry_cell(base, epic, "Jira key") if epic else None,
+        }
+        priority = _priority(base, key, manifest)
+        if priority:
+            row["priority"] = priority
+        rows.append(row)
     else:
         tasks_file = paths.tasks_file(base, key.split(":")[-1])
         if not tasks_file.is_file():

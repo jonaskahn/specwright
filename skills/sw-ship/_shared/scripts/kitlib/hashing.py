@@ -38,19 +38,33 @@ def short(value: str, length: int = 12) -> str:
     return value.removeprefix("sha256:")[:length]
 
 
-def stamp(text: str) -> str:
-    """Restamp the `Draft hash:` line in the Identity section after a body edit.
+def _recorded_line(text: str) -> str:
+    match = _DRAFT_HASH.search(text)
+    if not match:
+        return ""
+    return match.group(0).split(":", 1)[1].strip()
 
-    Identity is excluded from the hash, so the result hashes to itself: the operation is
-    idempotent and a second stamp never changes the value.
+
+def stamp(text: str) -> str:
+    """Record the draft hash in front matter, and on a legacy Identity line when one remains.
+
+    Front matter is excluded from the hash, and so is the Identity section, so the result
+    hashes to itself. Removing the DoR section does change the hash; stamp again after that.
     """
-    return _DRAFT_HASH.sub("Draft hash: " + draft_hash(text), text)
+    digest = draft_hash(text)
+    text = _DRAFT_HASH.sub("Draft hash: " + digest, text)
+    if frontmatter.parse(text).fm is None:
+        return text
+    return frontmatter.update(text, {"draft_hash": digest})
 
 
 def needs_stamp(text: str) -> bool:
-    """True when the recorded Draft hash differs from the current draft hash."""
-    match = _DRAFT_HASH.search(text)
-    if not match:
+    """True when the recorded draft hash differs from the current draft hash."""
+    digest = draft_hash(text)
+    recorded = str((frontmatter.parse(text).fm or {}).get("draft_hash") or "")
+    if recorded:
+        return recorded != digest
+    line = _recorded_line(text)
+    if not line:
         return False
-    recorded = match.group(0).split(":", 1)[1].strip()
-    return recorded != draft_hash(text)
+    return line != digest

@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from kitlib import frontmatter, hashing, ids, markdown, paths, rtm, schema
+from kitlib import frontmatter, hashing, ids, markdown, paths, rtm, schema, workspace
 
 APPROVED = ("ready-to-publish", "published", "ready-for-dev", "in-development", "done")
 
@@ -49,6 +49,76 @@ def _visual_findings(base: Path, tid: str, block, layer: str | None, story_visua
             f"({', '.join(sorted(story_visuals))})"
         )
     return out
+
+
+def workspace_root(base: Path):
+    """The spec root that holds base, or None when base is not inside a workspace."""
+    try:
+        return workspace.find_root(base)
+    except workspace.AskUser:
+        return None
+
+
+def _touch_paths(block) -> list[str]:
+    return [
+        item.strip()
+        for item in block.field_line("Touches").split(",")
+        if item.strip() and item.strip().lower() not in ("none", "unknown")
+    ]
+
+
+def _dep_ids(block) -> set[str]:
+    raw = block.field_line("Depends on").strip()
+    if not raw or raw.lower() == "none":
+        return set()
+    return {part.strip() for part in raw.replace(",", " ").split() if part.startswith("TASK-")}
+
+
+def overlap_findings(blocks) -> list[str]:
+    """Two tasks that write the same path must name each other in Depends on."""
+    items = [(tid, _touch_paths(block)) for tid, block in blocks.items()]
+    found = []
+    for index, (tid, touched) in enumerate(items):
+        for other, other_paths in items[index + 1 :]:
+            if not set(touched) & set(other_paths):
+                continue
+            if other not in _dep_ids(blocks[tid]) and tid not in _dep_ids(blocks[other]):
+                found.append(
+                    f"{tid} and {other} touch the same path and neither Depends on the other"
+                )
+    return found
+
+
+def new_path_findings(root: Path, scope: str, blocks) -> list[str]:
+    """`new:<path>` is legal only when a code root is registered and the parent directory exists."""
+    from kitlib import coderoots
+
+    try:
+        registered = coderoots.registered(root, scope)
+        folder = workspace.code_root(root, scope)
+        repo = workspace.code_repo_root(root)
+    except (workspace.WorkspaceError, workspace.AskUser):
+        registered, folder, repo = [], None, None
+    found = []
+    for tid, block in blocks.items():
+        for item in _touch_paths(block):
+            if not item.startswith("new:"):
+                continue
+            parent = Path(item[4:]).parent.as_posix()
+            if parent in ("", "."):
+                parent = item[4:]
+            ok = bool(registered) and folder is not None and repo is not None
+            if ok:
+                try:
+                    target = workspace.safe_join(repo, parent)
+                    ok = target.is_dir() and (target == folder or folder in target.parents)
+                except workspace.WorkspaceError:
+                    ok = False
+            if not ok:
+                found.append(
+                    f"{tid}: Touches {item} needs a registered code root and an existing parent"
+                )
+    return found
 
 
 def check(base: Path, feat: str):
@@ -122,6 +192,10 @@ def check(base: Path, feat: str):
         parsed_id = ids.parse_task(tid)
         if parsed_id is None or parsed_id[0] != number:
             findings.append(f"{tid}: task number does not belong to {feat}")
+    findings += overlap_findings(blocks)
+    root = workspace_root(base)
+    if root is not None:
+        findings += new_path_findings(root, str(parsed.fm.get("scope") or ""), blocks)
     return tasks_path, findings, tp
 
 

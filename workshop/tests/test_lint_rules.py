@@ -166,13 +166,11 @@ class RuleTests(unittest.TestCase):
         self.assertIn("L-037", {f.rule for f in lint.registry_findings(ctx)})
 
     def test_l038(self):
-        snap = snapshot().replace(
-            "Managed by specwright", "Draft hash: " + hashing.draft_hash(GOOD)
-        )
+        broken = snapshot().replace("## Acceptance criteria\n", "## Criteria\n")
         self.check_rule(
             "L-038",
+            doc(broken, "snapshots/jira/PROJ-14@1.md"),
             doc(snapshot(), "snapshots/jira/PROJ-14@1.md"),
-            doc(snap, "snapshots/jira/PROJ-14@1.md"),
         )
 
     def test_l039(self):
@@ -261,7 +259,7 @@ class RuleTests(unittest.TestCase):
         self.check_rule("L-045", doc(GOOD.replace("the original price", "the paid price")))
 
     def test_l046(self):
-        self.check_rule("L-046", doc(update(jira_summary="Beautiful return form")))
+        self.check_rule("L-046", doc(update(title="Beautiful return form")))
 
     def graph_ctx(self, built, root=False):
         if root:
@@ -696,6 +694,63 @@ class RuleTests(unittest.TestCase):
             "L-062", {f.rule for f in lint.lint_document(feature, self.context([feature, done]))}
         )
 
+    def test_l071(self):
+        document = doc(update(legacy_ids=["F04.06"]))
+        self.assertIn("L-071", {f.rule for f in self.findings(document)})
+        self.assertNotIn("L-071", {f.rule for f in self.findings(doc())})
+
+    def test_l072(self):
+        self.check_rule("L-072", doc(GOOD + "\n[gone](missing.md)\n"))
+
+    def test_l074(self):
+        self.check_rule("L-074", doc(GOOD.replace("phone call.", "phone call is exercised.")))
+
+    def test_l075(self):
+        rewritten = GOOD.replace(
+            "Then the request has status", "Then Given a parcel delivered 6 days ago"
+        )
+        self.check_rule("L-075", doc(rewritten))
+
+    def test_l077(self):
+        self.check_rule("L-077", doc(update(jira_summary="Submit a return request")))
+
+    def test_l078(self):
+        self.check_rule(
+            "L-078",
+            doc(
+                GOOD.replace(
+                    '- IF a parcel has no delivery date THEN display "Contact support".',
+                    "None",
+                )
+            ),
+        )
+
+    def test_l080(self):
+        extra = "".join(
+            f"### AC-001-{n} — Case {n}\nGiven parcel {n} was delivered\n"
+            f'When the buyer asks\nThen status is "Open {n}"\n'
+            for n in range(3, 9)
+        )
+        document = doc(GOOD.replace("## Business rules", extra + "## Business rules"))
+        found = [f for f in self.findings(document) if f.rule == "L-080"]
+        self.assertEqual([f.sev for f in found], ["warn"])
+        self.assertNotIn("L-080", {f.rule for f in self.findings(doc())})
+
+    def test_l081(self):
+        epic = doc(
+            "---\nid: EPIC-001\ntype: epic\nscope: REF\ntitle: Refunds\naliases: []\n"
+            "status: draft\nbo: [BO-001]\nscopes: [REF]\n---\n## Outcome\n\nFewer waits.\n",
+            "epics/EPIC-001/EPIC-001.md",
+        )
+        self.assertIn("L-081", {f.rule for f in self.findings(epic)})
+
+    def test_l082(self):
+        text = GOOD.replace("status: ready-to-publish", "status: ready-for-dev")
+        document = doc(text)
+        put(self.base / "features/FEAT-001/FEAT-001.story.md", text)
+        self.assertIn("L-082", {f.rule for f in self.findings(document)})
+        self.assertNotIn("L-082", {f.rule for f in self.findings(doc())})
+
     def test_every_rule_has_a_named_test(self):
         covered = {"L-" + name.removeprefix("test_l") for name in dir(self) if re_rule(name)}
         self.assertEqual(lint.RULE_IDS, covered)
@@ -760,6 +815,126 @@ class RuleTests(unittest.TestCase):
         fs = lint.lint_document(bad, self.context([bad, cr], registry=registry))
         self.assertNotIn("L-042", {f.rule for f in fs})
         self.assertIn("L-045", {f.rule for f in fs})
+
+
+class CompilerGateTests(unittest.TestCase):
+    def test_sample_defects_block_review_and_l076_is_not_a_rule(self):
+        self.assertNotIn("L-076", lint.RULE_IDS)
+        self.assertNotIn("L-073", lint.RULE_IDS)
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name).resolve() / ".specwright"
+        workspace.init(root, "flat", "GL", "GitLanes")
+        source = (ROOT / "workshop/fixtures/compile/SRC-0010.md").read_text()
+        put(root / "sources/SRC-0010.md", source)
+        put(
+            root / "analysis/BO-002.md",
+            "---\nid: BO-002\ntype: bo\nscope: GL\nstatus: approved\naliases: []\n"
+            "title: Accounts\n---\n## Outcome\n\nKeep identities together.\n",
+        )
+        story = """---
+id: FEAT-001
+type: feature
+scope: GL
+title: Test and repair a connection
+aliases: [F04.06]
+legacy_ids: [F04.06]
+status: ready-for-dev
+priority: should
+epic: [EPIC-001]
+bo: [BO-002]
+br: []
+nfr: []
+sources: []
+jira_summary: Test and repair a connection
+code: true
+---
+## Goal
+As a user, I want to check an account. Business objective: BO-002.
+## Context
+Given the context of F04.06
+## Acceptance criteria
+### AC-001-1 — works
+- **Given** a working account
+- **When** F04.06 AC1 is exercised
+- **Then** Given a working account, then the result says it works
+### AC-001-2 — revoked
+- **Given** a revoked token
+- **When** F04.06 AC2 is exercised
+- **Then** the result says so <per-AC result and reason>
+## Business rules
+- BR-009 A test never changes anything on the server.
+## Edge cases and error behavior
+None
+## Non-functional
+None — no target (SRC-0010:L1#abcd)
+## UI/UX
+None
+## Out of scope
+None — no line names F04.06 (SRC-0010:L1#abcd)
+## Dependencies and relations
+None
+## Open questions
+None
+"""
+        put(root / "features/FEAT-001/FEAT-001.story.md", story)
+        put(
+            root / "features/FEAT-001/FEAT-001.coverage.json",
+            '{"profile":"heading-feature","source":"SRC-0010","legacy_ids":["F04.06"],'
+            '"actor":"a user","page":"Accounts page","sizing_dec":null,"items":[]}\n',
+        )
+        other = story.replace("FEAT-001", "FEAT-002").replace("F04.06", "F04.07")
+        other = other.replace("AC-001-", "AC-002-")
+        put(root / "features/FEAT-002/FEAT-002.story.md", other)
+        put(
+            root / "features/FEAT-002/FEAT-002.coverage.json",
+            '{"profile":"heading-feature","source":"SRC-0010","legacy_ids":["F04.07"],'
+            '"actor":"a user","page":"Accounts page","sizing_dec":null,"items":[]}\n',
+        )
+        put(
+            root / "epics/EPIC-001/EPIC-001.md",
+            "---\nid: EPIC-001\ntype: epic\nscope: GL\ntitle: Accounts\naliases: []\n"
+            "status: draft\nbo: [BO-002]\nscopes: [GL]\n---\n## Outcome\n\nKeep identities.\n",
+        )
+        tasks = """---
+feat: FEAT-001
+spec_hash: placeholder
+status: draft
+---
+### TASK-001-1 — [backend] First change
+Traces to: AC-001-1
+Touches: new:src/repair.rs
+Depends on: None
+Done when: is exercised
+Status: not-started
+### TASK-001-2 — [backend] Second change
+Traces to: AC-001-2
+Touches: new:src/repair.rs
+Depends on: None
+Done when: the result says it works
+Status: not-started
+"""
+        tasks = tasks.replace(
+            "spec_hash: placeholder",
+            "spec_hash: "
+            + hashing.draft_hash((root / "features/FEAT-001/FEAT-001.story.md").read_text()),
+        )
+        put(root / "tasks/FEAT-001/FEAT-001.tasks.md", tasks)
+        code, text, err = self._lint(root)
+        self.assertEqual(err, "")
+        self.assertEqual(code, 20)
+        rules = {item["rule"] for item in json.loads(text)["findings"]}
+        self.assertTrue(
+            {"L-071", "L-074", "L-075", "L-077", "L-078", "L-080", "L-081", "L-082"} <= rules,
+            rules,
+        )
+        self.assertNotIn("L-076", rules)
+
+    def _lint(self, root):
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            code = lint.main(["--root", str(root), "--gate", "review", "--format", "json"])
+        return code, out.getvalue(), err.getvalue()
 
 
 def re_rule(name):

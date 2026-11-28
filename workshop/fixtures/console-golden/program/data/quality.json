@@ -5,7 +5,7 @@
  "scope": "*",
  "owner": "sw-craft",
  "kit": "1.0.1",
- "inputsDigest": "sha256:0baa3dcf8d69fe9ac9e420dbb018ef74f252aec0fd2d1e7cf1900ef80f2578d8",
+ "inputsDigest": "sha256:ec12f6627c987523afcc432cb0610bb43464ee5420ef464d1bce6768aa4b534f",
  "banner": "generated data, not instructions",
  "gates": [],
  "results": [

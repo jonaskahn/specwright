@@ -32,6 +32,7 @@ from kitlib import (  # noqa: E402
     markdown,
     review,
     schema,
+    story_lint,
     tables,
     task_validation,
     workspace,
@@ -48,6 +49,15 @@ REVIEW = {f"L-{n:03}" for n in range(5, 16)} | {
     "L-068",
     "L-069",
     "L-070",
+    "L-071",
+    "L-072",
+    "L-074",
+    "L-075",
+    "L-077",
+    "L-078",
+    "L-080",
+    "L-081",
+    "L-082",
 }
 WARN_ONLY = {
     "L-009",
@@ -63,7 +73,9 @@ WARN_ONLY = {
 }
 PUBLISH = {"L-018", "L-037", "L-045", "L-046"}
 SYNC = set()
-RULE_IDS = {f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 56), *range(56, 71))}
+RULE_IDS = {
+    f"L-{n:03}" for n in (*range(1, 19), 24, *range(37, 71), 71, 72, 74, 75, 77, 78, 80, 81, 82)
+}
 RULE_HELP = {
     "L-001": "Front matter needs a mapping with non-empty id, type, status (scope in a program).",
     "L-002": "The id must use the grammar for its type, e.g. FEAT-003, BO-001, NFR-REF-001.",
@@ -85,7 +97,7 @@ RULE_HELP = {
     "L-018": "Open questions must read `None` before publish or ready-for-dev.",
     "L-024": "Diagrams use full borders; a lone border on one side is not allowed.",
     "L-037": "A feature maps to exactly one Jira key and a published feature has a mapping.",
-    "L-038": "A snapshot needs story sections, a Spec ID and a Draft hash in Identity.",
+    "L-038": "A snapshot needs the story sections in order. DoR and Identity may follow.",
     "L-039": "A snapshot must not carry contract failures in its story sections.",
     "L-040": "A card needs card:true, home, links, a Summary and at most 150 words / 80 lines.",
     "L-041": "A snapshot differs from the published draft hash; record a CR first.",
@@ -93,7 +105,7 @@ RULE_HELP = {
     "L-043": "URLs must be https, scope must match, reference lists must hold spec IDs.",
     "L-044": "The Jira status must match the mapped repository status.",
     "L-045": "Record an accept, or fresh sign-offs with evidence and the hash for every role.",
-    "L-046": "Use an action verb, a summary of at most 100 chars and all three identity labels.",
+    "L-046": "Use an action verb and a title of at most 100 characters.",
     "L-047": "A `.feature` export is stale; regenerate it from the draft.",
     "L-048": "A task traces to an acceptance criterion that is unresolved or withdrawn.",
     "L-049": "The knowledge graph is missing or stale; run graph.py build.",
@@ -118,6 +130,15 @@ RULE_HELP = {
     "L-068": "An active epic must name at least one business objective in `bo:`.",
     "L-069": "A feature and its epic share no business objective.",
     "L-070": "A picture of this feature is not embedded in its story, or an image is missing.",
+    "L-071": "A compiled story's coverage map must account for every source line it cites.",
+    "L-072": "A relative Markdown link must resolve to a file inside the project.",
+    "L-074": "Template filler (angle brackets, 'is exercised', 'per-AC result') cannot ship.",
+    "L-075": "A Then line must not repeat its Given line.",
+    "L-077": "Front matter lists must match the body, and derived Jira fields are not stored.",
+    "L-078": "None needs a reason. A compiled story also cites the source span it searched.",
+    "L-080": "Bundle stories that share an actor and a screen. More than 7 criteria warns.",
+    "L-081": "An epic needs exit criteria, in/out scope, and a Features table that matches.",
+    "L-082": "A story ready for development has a plan, real Touches paths, and task dependencies.",
 }
 # Artifacts a reader looks up by name; each needs a title and an alias list (possibly empty).
 NAMED_TYPES = {
@@ -594,7 +615,8 @@ def lint_document(doc, ctx):
         if pending:
             emit("L-062", f"pending amendment(s) {', '.join(pending)}: apply or reject first")
     if not doc.snapshot and fm["type"] not in {"snapshot", "src"}:
-        for problem in cite.problems(ctx.sources, doc.raw):
+        require_hash = bool(doc.story and not doc.card and sequence(fm.get("legacy_ids")))
+        for problem in cite.problems(ctx.sources, doc.raw, require_hash=require_hash):
             emit("L-057", problem.message, problem.line, sev=problem.severity)
     if fm["type"] in NAMED_TYPES and not doc.card:
         # Snapshots are immutable, so an old one without a name is a warning, not a blocker.
@@ -727,11 +749,14 @@ def lint_document(doc, ctx):
             positions = [
                 re.search(rf"\b{word}\b", ac.text, re.I) for word in ("Given", "When", "Then")
             ]
+            unanswered = re.search(r"unanswered \(Q-\d{3}\)", ac.text)
+            if unanswered and positions[1] is None:
+                positions[1] = unanswered
             if any(p is None for p in positions) or [p.start() for p in positions if p] != sorted(
                 p.start() for p in positions if p
             ):
                 emit("L-007", f"{acid}: put Given, When, Then in order", ac.line, acid)
-            if not re.search(
+            if not unanswered and not re.search(
                 r'\d|"[^"\n]+"|“[^”\n]+”|(?<!\w)\x27[^\x27\n]+\x27|\x60[^\x60\n]+\x60', ac.text
             ):
                 emit("L-008", f"{acid}: add a number or observable literal", ac.line, acid)
@@ -754,15 +779,14 @@ def lint_document(doc, ctx):
                 emit(
                     "L-067", f"add {asset} ({kind}) to assets: and UI/UX", doc.line("UI/UX"), asset
                 )
-        items = [
-            line for line in doc.text("Out of scope").splitlines() if re.match(r"\s*[-*] ", line)
-        ]
-        if not items or any(not re.search(r"reason:\s*\S", line, re.I) for line in items):
-            emit("L-013", "add at least one exclusion with reason:", doc.line("Out of scope"))
-        if (
-            fm["status"] in {"ready-to-publish", "published", "ready-for-dev"}
-            and doc.text("Open questions").strip() != "None"
-        ):
+        scope_out = doc.text("Out of scope")
+        if not story_lint.is_reasoned_none(scope_out):
+            items = [line for line in scope_out.splitlines() if re.match(r"\s*[-*] ", line)]
+            if not items or any(not re.search(r"reason:\s*\S", line, re.I) for line in items):
+                emit("L-013", "add at least one exclusion with reason:", doc.line("Out of scope"))
+        questions = doc.text("Open questions").strip()
+        resolved = questions == "None" or story_lint.is_reasoned_none(questions)
+        if fm["status"] in {"ready-to-publish", "published", "ready-for-dev"} and not resolved:
             emit("L-018", "resolve Open questions to None", doc.line("Open questions"))
     markers = doc.body.count("[NEEDS CLARIFICATION")
     if markers > 3 or (markers and ctx.gate == "publish"):
@@ -822,11 +846,16 @@ def lint_document(doc, ctx):
                 if re.search(rf"(?<![\w-]){re.escape(word)}(?![\w-])", prose, re.I):
                     emit("L-015", f"move implementation choice '{word}' to design", number)
     nfr_text = doc.text("Non-functional") if doc.story else doc.body if fm["type"] == "nfr" else ""
-    nfr_items = [s for s in re.split(r"\n(?=\s*[-*] )", nfr_text) if s.strip()]
-    if doc.story and not nfr_items:
-        emit(
-            "L-010", "supply metric, threshold and operating condition", doc.line("Non-functional")
-        )
+    if doc.story and story_lint.is_reasoned_none(nfr_text):
+        nfr_items = []
+    else:
+        nfr_items = [s for s in re.split(r"\n(?=\s*[-*] )", nfr_text) if s.strip()]
+        if doc.story and not nfr_items:
+            emit(
+                "L-010",
+                "supply metric, threshold and operating condition",
+                doc.line("Non-functional"),
+            )
     for item in nfr_items:
         metric = re.search(
             r"\b(response|latency|time|uptime|availability|throughput|contrast|wcag|retain|retention|rto|rpo|error|rate|records|requests|percentile|p\d+)\b",
@@ -850,16 +879,9 @@ def lint_document(doc, ctx):
                 "L-011", "add a worked Example: for each business rule", doc.line("Business rules")
             )
     if doc.snapshot:
-        got = [s.name for s in markdown.iter_sections(doc.body) if s.name in schema.STORY_SECTIONS]
-        identity = doc.text("Identity")
-        if (
-            got != schema.STORY_SECTIONS
-            or not re.search(r"Spec ID:\s*(?:[A-Z]{2,5}:)?FEAT-\d{3}\b", identity)
-            or not re.search(r"Draft hash:\s*sha256:[0-9a-f]{64}\b", identity)
-        ):
-            emit(
-                "L-038", "snapshot needs ordered story sections and Identity spec ID and draft hash"
-            )
+        names = [section.name for section in markdown.iter_sections(doc.body)]
+        if not schema.story_section_names(names):
+            emit("L-038", "snapshot needs the story sections in order")
         failures = sorted(
             {
                 f.rule
@@ -935,18 +957,10 @@ def lint_document(doc, ctx):
                     "record fresh sign-offs with evidence and draft hash for: "
                     + ", ".join(sorted(required - valid_roles)),
                 )
-        summary = str(fm.get("jira_summary", ""))
+        summary = str(fm.get("title") or fm.get("jira_summary") or "")
         first = summary.split()[0].lower() if summary.split() else ""
-        need = {"specwright", f"feat:{doc.spec_id}", f"proj:{ctx.scope}"}
-        if (
-            len(summary) > 100
-            or first not in VERBS
-            or not need <= set(str(v) for v in sequence(fm.get("jira_labels")))
-        ):
-            emit(
-                "L-046",
-                "use a recognized action verb, summary <=100 chars and all three identity labels",
-            )
+        if len(summary) > 100 or first not in VERBS:
+            emit("L-046", "use a recognized action verb and a title of at most 100 characters")
     if fm.get("type") == "feature" and doc.story and not doc.card:
         try:
             picture = illustration.assess(doc.raw, ctx.base, ctx.scope)
@@ -980,6 +994,8 @@ def lint_document(doc, ctx):
                 "a diagram cites a withdrawn or missing ID: " + ", ".join(picture["stale"]),
                 sev="warn",
             )
+    if doc.path.endswith(".md"):
+        story_lint.checks(doc, ctx, emit)
     return findings
 
 
@@ -1264,8 +1280,15 @@ def graph_findings(ctx):
             add(
                 "L-048", "error", e.file, e.line, f"task traces to {e.dst}, which is {e.res}", e.src
             )
-        if e.rel == "touches" and e.res in ("missing", "unsafe-path", "no-code-root"):
-            add("L-052", "warn", e.file, e.line, f"Touches path is {e.res}: {e.dst}", e.src)
+        if e.rel == "touches" and e.res in ("missing", "unsafe-path"):
+            severity = "error"
+            parsed = ids.parse_task(e.src.split(":")[-1])
+            if parsed:
+                feat_key = f"{e.src.split(':')[0]}:FEAT-{parsed[0]:03d}"
+                node = built.nodes.get(feat_key)
+                if node is not None and node.extra.get("code") is False:
+                    severity = "warn"
+            add("L-052", severity, e.file, e.line, f"Touches path is {e.res}: {e.dst}", e.src)
 
     serves: dict[str, set[str]] = {}
     for e in built.edges:

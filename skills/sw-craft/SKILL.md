@@ -60,9 +60,18 @@ Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
    FEAT-NNN`; resume → edit the draft. A published story is never edited in place: open a
    `CR-NNN` instead (`references/change-fix.md`). Visual references: `graph.py neighbors
    FEAT-NNN --dir in --rel supports`; list each ASSET in `assets:` and in UI/UX Visuals with
-   the AC it shows. Fill all twelve sections in template order; empty → `None — <reason>`.
-   ≥ 2 ACs, each Given/When/Then with concrete values; rules with one worked example; NFRs
-   with metric, threshold, load, method; `links:` with ≥ 1 https URL.
+   the AC it shows. A catalogue feature is compiled, not transcribed:
+   `scripts/compile_story.py split` then `record.py accept-split --proposal`, then
+   `scripts/compile_story.py compile` (or `new_story.py --reserved --from --legacy --bo`).
+   An older story is rewritten with `_shared/scripts/fm_migrate.py`. Dependency lines are
+   linked with `_shared/scripts/sw_links.py fix`.
+   Edit the compiler's wording and answer its Q records. Do not add an acceptance criterion,
+   rule or NFR that has no row in `FEAT-NNN.coverage.json`.
+   A story with no catalogue id still starts from `assets/jira-story.md`. Fill the canonical
+   sections in order; empty → `None — <reason>`.
+   ≥ 2 ACs (the sizer bundles a catalogue toward 3–7); each Given/When/Then uses the source's
+   own clauses; rules with one worked example or a Q; NFRs only when the source states one
+   for this feature; `links:` with ≥ 1 https URL.
    `scripts/illustration_check.py FEAT-NNN`; unknowns → Q records; ≤ 3
    `[NEEDS CLARIFICATION: Q-NNN]` markers; `record.py backup features/FEAT-NNN/<file>` before an
    accepted change. `scripts/spec_hash.py --scope-root <project> --stamp FEAT-NNN`;

@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 
-from kitlib import frontmatter, hashing, miniyaml, schema, workspace
+from kitlib import frontmatter, hashing, markdown, miniyaml, schema, workspace
 
 MARKER = re.compile(r"\[sw:approve ([A-Z]{2,5}:FEAT-\d{3}) sha256:([0-9a-f]{12})\]")
 SAFE_URL = re.compile(r"^https://[^\s]+$")
@@ -137,6 +137,49 @@ def promote(draft_path: Path, scope_id: str, manifest: Path, evidence: Evidence)
     return _record(original, result["signoff"], invalidation)
 
 
+def _write_dor(draft_path: Path, text: str) -> None:
+    """Write the readiness checklist beside the story and refuse when a check fails."""
+    _, body = frontmatter.split(text)
+    sections = markdown.sections(body)
+
+    def section(name: str) -> str:
+        return sections[name].text if name in sections else ""
+
+    goal, rules, nfr = section("Goal"), section("Business rules"), section("Non-functional")
+    ui, questions = section("UI/UX"), section("Open questions")
+    ac = markdown.ac_blocks(sections.get("Acceptance criteria"))
+    checks = [
+        ("Goal names a business objective", "BO-" in goal),
+        ("At least two acceptance criteria", len(ac) >= 2),
+        (
+            "Rules have a worked example or an explicit none",
+            "Example:" in rules or rules.strip().lower().startswith("none"),
+        ),
+        (
+            "Non-functional states a measure or an explicit none",
+            any(char.isdigit() for char in nfr) or nfr.strip().lower().startswith("none"),
+        ),
+        (
+            "UI names the four states or an explicit none",
+            all(word in ui.lower() for word in ("default", "empty", "loading", "error"))
+            or ui.strip().lower().startswith("none"),
+        ),
+        (
+            "Open questions are resolved or explicitly none",
+            questions.strip() == "None" or questions.strip().lower().startswith("none"),
+        ),
+        ("Goal has no placeholder brackets", "<" not in goal),
+    ]
+    lines = ["# Definition of ready", ""]
+    lines += [f"- [{'x' if ok else ' '}] {name}" for name, ok in checks]
+    folder = draft_path.parent / "review"
+    folder.mkdir(parents=True, exist_ok=True)
+    (folder / "dor.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    failed = [name for name, ok in checks if not ok]
+    if failed:
+        raise ApprovalError("definition of ready failed: " + ", ".join(failed))
+
+
 def accept(draft_path: Path, scope_id: str, manifest: Path, today: date | None = None) -> str:
     """The owner's plain-words acceptance, bound to the current draft hash.
 
@@ -154,6 +197,7 @@ def accept(draft_path: Path, scope_id: str, manifest: Path, today: date | None =
     report = manifest.parent / ".metadata/lint-report.md"
     if not report.is_file() or "0 blocking error(s)" not in report.read_text(encoding="utf-8"):
         raise ApprovalError("a passing lint gate is required before accepting")
+    _write_dor(draft_path, original)
     invalidation = _guard(manifest, scope_id)
     digest = hashing.short(hashing.draft_hash(original))
     line = f"self | accept | sha256:{digest} | {(today or date.today()).isoformat()}"

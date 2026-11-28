@@ -23,14 +23,20 @@ title and the lines below it; sw-forge never re-numbers, re-scopes or re-layers 
 - `Evidence:` the proof that the task is done, one line: the command and its result, for example
   `make test → 42 passed, exit 0`. Required as soon as `Status: done`; lint flags its absence.
 - `Blocked because:` when `Status: blocked`, one line naming what is missing.
-- `Touches:` a path that resolves against a registered code root (`shop-api/src/...`), or
-  `new:<path>` for a folder the work creates. A path outside every root is a finding.
+- `Touches:` a path that resolves against a registered code root (`shop-api/src/...`).
+  `new:<path>` is allowed only when a code root is registered and the parent directory
+  already exists. Otherwise write `UNKNOWN`. A path outside every root is a finding.
+- A task is one code change with one layer. `Traces to` may name several acceptance
+  criteria. Do not create one backend task and one qa task per criterion.
 - Layer: exactly one of backend, frontend, mobile, devops, data, qa, design, docs (in
-  `schema.TASK_LAYERS`). A criterion that needs more than one layer is one task per layer.
+  `schema.TASK_LAYERS`). Work that spans layers is one task per layer, not one task per criterion.
 - Visuals: the ASSET IDs and `diagrams/` paths the task builds from; required on frontend,
   mobile and design tasks when the story lists a visual.
 - `Traces to:` at least one AC, plus BR or NFR where the rule drives the task.
 - `Done when:` the AC's observable result with concrete values.
-- `Depends on:` task IDs or None. `Stop and ask if:` the condition to stop rather than assume.
+- `Depends on:` task IDs. `None` is legal only when no other task touches the same path.
+  `Stop and ask if:` the condition to stop rather than assume. `Done when` names the
+  criterion's Then value, not a copy of the whole Given/Then sentence.
 - Withdrawn tasks stay as `~~TASK-001-3~~` with a reason; numbers are never reused.
-- Every active AC needs at least one task (`scripts/tasks.py`).
+- Every active AC needs at least one task; one task may cover several. `scripts/tasks.py
+  --mark-ready` refuses until the plan exists.

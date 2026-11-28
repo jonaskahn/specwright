@@ -4,18 +4,41 @@ type: epic
 scope: <SCOPE>
 title: <outcome-led title>
 status: draft
-bo: []           # one or more business objectives this epic serves, e.g. [BO-001]
+bo: []
 scopes: [<SCOPE>]
-depends_on: []   # epics that must be done first, e.g. [EPIC-001]
+depends_on: []
 ---
 
 ## Outcome
 
 <The business outcome this epic groups features under; no interface or technology choices.>
 
+## Done when
+
+<measurable exit criteria, or a Q>
+
+## Scope
+
+**In scope**
+
+- <what this epic includes>
+
+**Out of scope**
+
+- <what it excludes> — reason: <why>
+
 ## Features
 
-<FEAT references linked to this epic, or None until the PO accepts the split.>
+| ID | Title | Priority | Status | Depends on |
+| --- | --- | --- | --- | --- |
+
+## Risks
+
+None — not yet compiled.
+
+## Open questions
+
+None — not yet compiled.
 
 ## Projects involved
 
@@ -24,4 +47,3 @@ depends_on: []   # epics that must be done first, e.g. [EPIC-001]
 ## Jira
 
 <Existing Jira key if the ID registry maps one, else None. An epic is published only when the user ships it.>
-

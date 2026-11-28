@@ -18,9 +18,30 @@ STORY_SECTIONS = [
     "Out of scope",
     "Dependencies and relations",
     "Open questions",
-    "DoR checklist",
-    "Identity",
 ]
+# Older stories and imported Jira snapshots may still carry these after the content sections.
+STORY_OPTIONAL_TAIL = ["DoR checklist", "Identity"]
+
+
+def story_section_names(names: list[str]) -> bool:
+    """True when headings are the content sections, plus an optional DoR and Identity tail."""
+    if names == list(STORY_SECTIONS):
+        return True
+    head = names[: len(STORY_SECTIONS)]
+    tail = names[len(STORY_SECTIONS) :]
+    return head == list(STORY_SECTIONS) and all(name in STORY_OPTIONAL_TAIL for name in tail)
+
+
+# Stored copies of fields publish derives, or a second name for a value that already has a home.
+DROPPED_STORY_KEYS = (
+    "jira_summary",
+    "jira_issuetype",
+    "jira_parent",
+    "jira_labels",
+    "jira_priority",
+    "original_priority",
+    "source_fid",
+)
 
 _CARD_STATUSES = ["draft", "in-review", "approved", "superseded", "withdrawn"]
 

@@ -50,9 +50,13 @@ def create(
     epic: list[str] | None = None,
     idea: list[str] | None = None,
     reserved: str | None = None,
+    source: str | None = None,
+    legacy: str | None = None,
+    bo: str | None = None,
 ) -> Path:
     if not root.is_dir() or (root / "workspace.yaml").exists():
         raise ValueError("scope-root must be an existing, resolved project directory")
+    _ = parent  # publish derives the Jira parent from the epic; it is not stored
     aliases: list[str] = []
     if reserved:
         # A feature reserved earlier (for example from a legacy register) keeps its ID, its
@@ -67,6 +71,23 @@ def create(
             raise ValueError(f"{reserved} already has a story")
         summary = summary or row.value(key, "Title")
         aliases = [a for a in row.value(key, "Aliases").split("|") if a]
+        if source:
+            if not legacy or not bo:
+                raise ValueError("--from needs --legacy and --bo")
+            from kitlib import compile as compiler
+            from kitlib import workspace
+
+            project = workspace.find_root(root) or root
+            epic_id = epic[0] if epic else None
+            return compiler.write_reserved(
+                project,
+                scope,
+                source,
+                [item.strip() for item in legacy.split(",") if item.strip()],
+                reserved,
+                bo,
+                epic_id,
+            )
     if not ids.is_scope(scope) or not summary.strip() or len(summary) > 100 or "\n" in summary:
         raise ValueError(
             "provide an uppercase scope and a single-line summary of 1..100 characters"
@@ -83,7 +104,7 @@ def create(
     original = template.read_text(encoding="utf-8")
     fm, body = frontmatter.split(original)
     if fm is None or [s.name for s in markdown.iter_sections(body)] != schema.STORY_SECTIONS:
-        raise ValueError("template requires front matter and twelve canonical sections")
+        raise ValueError("template requires front matter and the canonical story sections")
     original = original.replace("FEAT-NNN", candidate).replace("AC-NNN-", f"AC-{candidate[5:]}-")
     original = original.replace("<SCOPE>", scope)
     fm, body = frontmatter.split(original)
@@ -95,18 +116,15 @@ def create(
             "title": summary,
             "aliases": aliases,
             "status": "draft",
-            "jira_summary": summary,
-            "jira_issuetype": "Story",
-            "jira_parent": parent,
-            "jira_priority": "Medium",
-            "jira_labels": ["specwright", f"feat:{candidate}", f"proj:{scope}"],
+            "priority": "should",
+            "jira_key": None,
         }
     )
-    for key, refs in (("epic", epic), ("idea", idea)):
-        if refs:
-            fm[key] = list(refs)
-    output = frontmatter.render(fm, body)
-    output = output.replace("<sha256:…>", hashing.draft_hash(output))
+    if epic:
+        fm["epic"] = epic[0] if len(epic) == 1 else list(epic)
+    if idea:
+        fm["idea"] = list(idea)
+    output = hashing.stamp(frontmatter.render(fm, body))
     target = paths.story(root, candidate)
     target.parent.mkdir(parents=True, exist_ok=True)
     # Exclusive creation protects a reservation made by another writer during allocation.
@@ -128,6 +146,11 @@ def main(argv: list[str] | None = None) -> int:
         "--epic", action="append", help="epic this feature belongs to, e.g. REF:EPIC-001"
     )
     parser.add_argument("--idea", action="append", help="idea this feature was shaped from")
+    parser.add_argument(
+        "--from", dest="source", help="SRC id to compile instead of the blank template"
+    )
+    parser.add_argument("--legacy", help="comma-separated source feature ids, e.g. F04.06,F04.07")
+    parser.add_argument("--bo", help="BO-NNN required when compiling from a snapshot")
     args = parser.parse_args(argv)
     try:
         if not args.summary and not args.reserved:
@@ -142,6 +165,9 @@ def main(argv: list[str] | None = None) -> int:
             args.epic,
             args.idea,
             args.reserved,
+            args.source,
+            args.legacy,
+            args.bo,
         )
         print(target)
         waiting = blockers.blocking_questions(

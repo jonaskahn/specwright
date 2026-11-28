@@ -102,6 +102,26 @@ def _plan_section(base: Path, feat: str, tid: str) -> str:
     return section.text.strip() if section else ""
 
 
+def _answered(base: Path, feat: str) -> list[str]:
+    """Answers already recorded for this feature, so a coder does not reopen them."""
+    folder = base / "records"
+    if not folder.is_dir():
+        return []
+    found = []
+    for path in sorted(folder.glob("Q-*.md")):
+        parsed = frontmatter.parse(path.read_text(encoding="utf-8"))
+        fm = parsed.fm or {}
+        if fm.get("status") not in ("answered", "assumed"):
+            continue
+        affects = [str(item).split(":")[-1] for item in fm.get("affects") or []]
+        if feat not in affects:
+            continue
+        match = re.search(r"^## Answer\n+(.+)$", parsed.body or "", re.M)
+        if match:
+            found.append(f"- {fm.get('id')}: {match.group(1).strip()}")
+    return found
+
+
 def _rule_lines(body: str, refs: list[str]) -> list[str]:
     wanted = [r for r in refs if r.startswith(("BR-", "NFR-"))]
     out = []
@@ -148,7 +168,7 @@ def build(base: Path, scope: str, feat: str, draft: bool) -> tuple[list[Path], l
     profile = stack.effective(_root_of(base), scope)
     lock = (profile or {}).get("locked") or {}
     libs = (profile or {}).get("libraries") or {}
-    summary = str(sp.fm.get("jira_summary") or feat)
+    summary = str(sp.fm.get("title") or sp.fm.get("jira_summary") or feat)
     folder = paths.prompts_dir(base, feat)
     folder.mkdir(parents=True, exist_ok=True)
     order = _order(blocks)
@@ -182,6 +202,9 @@ def build(base: Path, scope: str, feat: str, draft: bool) -> tuple[list[Path], l
             )
         rules = _rule_lines(sp.body, refs)
         lines += ["## Rules", *(rules or ["None"]), ""]
+        answered = _answered(base, feat)
+        if answered:
+            lines += ["## Answered questions", *answered, ""]
         plan_detail = _plan_section(base, feat, tid)
         if plan_detail:
             lines += ["## Implementation plan", plan_detail, ""]

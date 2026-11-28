@@ -2,19 +2,23 @@
 id: FEAT-NNN
 type: feature
 scope: <SCOPE>
+title: <verb-first summary>
+aliases: []
+legacy_ids: []
 status: draft
-jira_summary: <verb-first summary>
-jira_issuetype: Story
-jira_parent: None
-jira_labels: []
+priority: should
+release: ""
+epic: null
 bo: []
 br: []
 nfr: []
 sources: []
 assets: []
 links: []
-depends_on: []   # features that must be done first, e.g. [FEAT-001]
-code: true       # false for a documentation-only feature, which skips the foundation gate
+depends_on: []
+code: true
+draft_hash: ""
+jira_key: null
 ---
 
 ## Goal
@@ -23,7 +27,7 @@ As a <role>, I want <capability>, so that <outcome>. Business objective: <BO-ID>
 
 ## Context
 
-<Required content or None with reason.>
+<Required content or None — reason, with a source citation when the story was compiled.>
 
 ## Acceptance criteria
 
@@ -45,7 +49,7 @@ As a <role>, I want <capability>, so that <outcome>. Business objective: <BO-ID>
 
 ## Edge cases and error behavior
 
-<Required content or None with reason.>
+<Required content or None — reason.>
 
 ## Non-functional
 
@@ -53,37 +57,18 @@ As a <role>, I want <capability>, so that <outcome>. Business objective: <BO-ID>
 
 ## UI/UX
 
-<Four UI states (default, empty, loading, error) or None with a reason.>
+<Four UI states (default, empty, loading, error) or None — reason.>
 
 Visuals: <one line per mockup, Figma link, screenshot or diagram, or None — no visual supplied>
-- <ASSET-NNN> (<kind>) — <screen or state it shows, AC-NNN-n> — <assets/ASSET-NNN.png | URL | diagrams/FEAT-NNN.flow.svg>
-![<what the picture shows, AC-NNN-n>](../../diagrams/FEAT-NNN.flow.svg)
 
 ## Out of scope
 
-<Required content or None with reason.>
+<Required content or None — reason.>
 
 ## Dependencies and relations
 
-<Required content or None with reason.>
+<Required content or None — reason.>
 
 ## Open questions
 
-None
-
-## DoR checklist
-
-- [ ] Goal links a BO.
-- [ ] At least two concrete G/W/T criteria, each written as a bulleted list with bold keywords.
-- [ ] BR examples and measurable NFRs.
-- [ ] UI states and exclusions with reasons; every mockup, link or diagram is in `assets:` and the UI/UX Visuals list, and each drawn diagram is embedded as an image.
-- [ ] No unresolved questions or markers.
-- [ ] Dev and QA checks pass for each AC.
-- [ ] Approval recorded through sw-craft (accept, or sign-off under `required`).
-
-## Identity
-
-Spec ID: <SCOPE>:FEAT-NNN · Project: <SCOPE> · Repo card: FEAT-NNN.card.md · Draft hash: <sha256:…> · Managed by
-specwright
-Dev consumer check: <per-AC result and reason>.
-QA consumer check: <per-AC result and reason>.
+None — no gap recorded.
