@@ -45,7 +45,7 @@ for a person: accept the split, accept the story, answer a blocking question.
 │  plans/         how to build it     FEAT-001/FEAT-001.plan.md          │
 │  records/       decisions           Q-001 · DEC-001 · CR-001           │
 │  diagrams/      pictures            FEAT-001.swimlane.svg              │
-│  .metadata/         start here          READ-FIRST.md                      │
+│  .metadata/         start here          READ-FIRST.md                  │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
