@@ -45,7 +45,15 @@ macOS and Linux need `curl` or `wget`, plus `tar`. Windows needs PowerShell and 
 
 On macOS and Linux, one destination is a real copy (preferring `.agents/skills` when it is selected) and other destinations on the same disk become relative symlinks. Windows always copies. Each destination also gets the `sw-*` command wrappers from `commands/`, written into the sibling `commands/` folder (`~/.claude/commands/`, `<project>/.claude/commands/`, …) with `${CLAUDE_PLUGIN_ROOT}/skills/` rewritten to the absolute path of that destination's skills, so `/sw-start`, `/sw-continue` and the rest work outside the plugin. Wrappers are always copies, never symlinks, and a wrapper your own file replaced is refused rather than overwritten. The installer writes skill folders and command wrappers only. It does not write `AGENTS.md`, `CLAUDE.md` or plugin files.
 
-If a selected destination already has a Specwright `sw-*` skill, that folder is removed and the new copy is installed. A same-named folder that is not a Specwright skill stops the install. Run the installer again to update.
+Every selected destination is a clean replacement, not a file overlay: the installer removes
+the entire previous Specwright skill folders, including retired names, stale scripts, caches
+and obsolete command wrappers, then installs only the selected release's files. It stages the
+new release before moving the old entries aside, restores them if installation fails, and
+deletes the backups after success. Symlinks are replaced as links, never recursively deleted
+through their targets. `sw-*` is reserved for Specwright in these install directories: every
+matching file, folder or link is replaced, even if it has no valid `SKILL.md`. Unrelated skills, project
+instructions and `.specwright/` data are untouched. Cleanup applies only to the selected scope
+and destinations; run the installer for each other installation you want to update.
 
 ### Skills CLI
 
@@ -73,6 +81,15 @@ generated `_shared/` copy, so installing a skill on its own works. They always c
 `extended` set of 45 diagram types (`skills/sw-craft` holds the core set; the parked types
 in `extras/sw-craft` extend a package). Only `workshop/tools/package.py` defaults to the
 10-type core profile.
+
+The Skills CLI, plugin manager and manual ZIP uploads control their own update behavior;
+repository code cannot guarantee that those external tools prune retired skill names. For a
+guaranteed clean upgrade of directory installs, rerun `install.sh`, `install.ps1` or the offline
+installer below for the same destinations. When switching away from a CLI/plugin-managed
+install, uninstall that Specwright package through its manager first, then install the new
+copy; do not leave two managers publishing the same skill names. For manual ZIP updates,
+remove the previous Specwright skill folders (including retired skills) before extracting
+the new set; never unzip over old folders. Never delete the whole shared skills directory.
 
 The plugin manifests declare all five public skills and six command wrappers (the five
 skills plus `sw-continue`). Commands carry Claude-specific `${CLAUDE_PLUGIN_ROOT}` paths;
@@ -114,9 +131,11 @@ canonical project skills; Claude Code uses its mirror.
 New projects receive AGENTS.md, equal CLAUDE.md and GEMINI.md copies, and a Copilot
 instruction pointer. Existing instructions are preserved. If a project already has
 instructions, merge the Specwright standing rules manually instead of replacing them.
-Any same-name skill collision stops before skill files are written. To upgrade, back up
-the installation and remove only its `sw-*` folders before reinstalling. Do not install
-duplicate names at user scope; lifecycle, update and removal belong to the `skills` CLI.
+Re-running the offline installer performs the same clean replacement for both project skill
+locations, removes retired Specwright skills and wrappers, and writes current command wrappers.
+Every `sw-*` entry in those skills and commands directories is replaced. New files are staged first; failed skill or
+wrapper writes restore the old install. Existing project instruction files are preserved.
+Do not install duplicate names at user scope.
 
 Then initialize a workspace using the absolute path to the installed script:
 

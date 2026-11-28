@@ -295,7 +295,10 @@ sh migrate.sh /path/to/your/kit-checkout     # replace kit folders; workshop/ an
 sh migrate.sh --flow-auto /path/to/spec-repo # refresh AGENTS.md, switch to automatic hand-off
 ```
 
-It detects the target kind, refuses a folder that is not Specwright, and never deletes spec work.
+It detects the target kind and never deletes spec work. In a skills destination, every `sw-*`
+file, folder or symlink is replaced, including incomplete and retired skills and sibling command
+wrappers. Other names are preserved. For staged upgrades with automatic rollback on copy failure,
+rerun `install.sh`, `install.ps1` or `workshop/tools/install.py` for the same scope and agents.
 
 ### Where the spec lives
 

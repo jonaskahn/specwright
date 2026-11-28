@@ -55,7 +55,7 @@ $script:Detected = @()
 $script:Destinations = @()
 $script:SkillRoot = ''
 $script:CommandsRoot = ''
-$script:Target = ''
+# Target is the script parameter; clearing script:Target here would erase -Target.
 $script:DownloadDir = ''
 
 # Glyphs as code points so `irm | iex` cannot mangle a non-UTF8 decode.
@@ -980,63 +980,101 @@ foreach ($dest in $script:Destinations) {
 	# Every Specwright skill the destination already holds is replaced, not
 	# just the ones this source ships: installing an older ref over a newer one
 	# would otherwise leave both layouts side by side.
-	$existing = @(Get-ChildItem -LiteralPath $dest -Directory -Filter 'sw-*' -Force -ErrorAction SilentlyContinue)
+	$existing = @(Get-ChildItem -LiteralPath $dest -Filter 'sw-*' -Force -ErrorAction SilentlyContinue)
 	foreach ($entry in ($existing | Sort-Object Name)) {
 		$skill = $entry.Name
 		$path = $entry.FullName
-		if (-not (Test-SpecwrightSkill $path $skill)) {
-			Fail 'refusing to replace a folder that is not a Specwright skill' @(
-				$path,
-				"That folder has no matching name: $skill in SKILL.md."
-			)
-		}
 		$reparse = [IO.FileAttributes]::ReparsePoint
 		if (-not ($entry.Attributes -band $reparse)) {
+			$rootPath = [IO.Path]::GetFullPath($script:SkillRoot).TrimEnd('\', '/')
+			if ($rootPath -eq $entry.FullName -or $rootPath.StartsWith($entry.FullName + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
+				Fail 'refusing to delete the skill source' @($path)
+			}
 			# A skill this source does not ship still gets removed; there is no
 			# source folder to compare against, and nothing to protect.
 			$sourcePath = Join-Rel $script:SkillRoot "skills/$skill"
 			if (Test-Path -LiteralPath $sourcePath) {
 				$source = (Resolve-Path -LiteralPath $sourcePath).Path
-				if ($entry.FullName -eq $source) { Fail 'refusing to delete the skill source' @($path) }
+				if ($source -eq $entry.FullName -or $source.StartsWith($entry.FullName + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
+					Fail 'refusing to delete the skill source' @($path)
+				}
 			}
 		}
 		$previous += $path
 	}
 	$cmdDir = Join-Path (Split-Path $dest -Parent) 'commands'
-	foreach ($file in (Get-CommandFiles $cmdDir)) {
-		if (-not (Test-SpecwrightCommand $file.FullName)) {
-			Fail 'refusing to replace a command that is not a Specwright wrapper' @(
-				$file.FullName,
-				'That file does not load a Specwright skill.'
-			)
+	foreach ($file in (Get-ChildItem -LiteralPath $cmdDir -Filter 'sw-*' -Force -ErrorAction SilentlyContinue)) {
+		if (-not ($file.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+			$rootPath = [IO.Path]::GetFullPath($script:SkillRoot).TrimEnd('\', '/')
+			if ($rootPath -eq $file.FullName -or $rootPath.StartsWith($file.FullName + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
+				Fail 'refusing to delete the skill source' @($file.FullName)
+			}
 		}
 		$previous += $file.FullName
 	}
 }
-if ($previous.Count -gt 0) {
-	Write-Note "Replacing $($previous.Count) existing Specwright file(s)"
-	foreach ($path in $previous) {
-		$item = Get-Item -LiteralPath $path -Force
-		if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
-			Remove-Item -LiteralPath $path -Force
-		} else {
-			Remove-Item -LiteralPath $path -Recurse -Force
+# Stage before removal, then move the old entries aside on their own volume.
+# A failed copy restores every previous entry, including links and retired skills.
+$stage = Join-Path ([IO.Path]::GetTempPath()) ("specwright-stage-" + [guid]::NewGuid().ToString('N'))
+$backups = @()
+$newPaths = @()
+$writing = $false
+$committed = $false
+$originalCommandsRoot = $script:CommandsRoot
+function Remove-InstallEntry([string] $Path) {
+	$item = Get-Item -LiteralPath $Path -Force -ErrorAction SilentlyContinue
+	if (-not $item) { return }
+	if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+		Remove-Item -LiteralPath $Path -Force
+	} else {
+		Remove-Item -LiteralPath $Path -Recurse -Force
+	}
+}
+try {
+	New-Item -ItemType Directory -Path (Join-Path $stage 'skills') -Force | Out-Null
+	foreach ($skill in $Skills) {
+		Copy-Item -LiteralPath (Join-Rel $script:SkillRoot "skills/$skill") -Recurse -Destination (Join-Rel $stage "skills/$skill")
+	}
+	if ($script:CommandsRoot) {
+		Copy-Item -LiteralPath $script:CommandsRoot -Recurse -Destination (Join-Path $stage 'commands')
+		$script:CommandsRoot = Join-Path $stage 'commands'
+	}
+	foreach ($dest in $script:Destinations) {
+		foreach ($skill in $Skills) { $newPaths += Join-Path $dest $skill }
+		if ($script:CommandsRoot) {
+			$out = Join-Path (Split-Path $dest -Parent) 'commands'
+			foreach ($file in (Get-CommandFiles $script:CommandsRoot)) { $newPaths += Join-Path $out $file.Name }
 		}
 	}
-	Write-OK 'Removed the previous install'
-}
-
-foreach ($dest in $script:Destinations) {
-	Write-Step "Installing into $dest"
-	New-Item -ItemType Directory -Force -Path $dest | Out-Null
-	foreach ($skill in $Skills) {
-		Copy-Item -Recurse -Path (Join-Rel $script:SkillRoot "skills/$skill") -Destination (Join-Path $dest $skill)
+	Write-Note "Replacing $($previous.Count) existing Specwright file(s)"
+	foreach ($path in $previous) {
+		$backup = Join-Path (Split-Path $path -Parent) ('.specwright-backup-' + [guid]::NewGuid().ToString('N'))
+		Move-Item -LiteralPath $path -Destination $backup
+		$backups += [pscustomobject]@{ Original = $path; Backup = $backup }
 	}
-	Write-OK "Copied $($Skills.Count) skills into $dest"
-	if ($script:CommandsRoot) {
-		$count = Install-Commands $script:CommandsRoot $dest
-		Write-OK "Copied $count command(s) into $(Join-Path (Split-Path $dest -Parent) 'commands')"
+	$writing = $true
+	foreach ($dest in $script:Destinations) {
+		Write-Step "Installing into $dest"
+		New-Item -ItemType Directory -Force -Path $dest | Out-Null
+		foreach ($skill in $Skills) {
+			Copy-Item -LiteralPath (Join-Rel $stage "skills/$skill") -Recurse -Destination (Join-Path $dest $skill)
+		}
+		Write-OK "Copied $($Skills.Count) skills into $dest"
+		if ($script:CommandsRoot) {
+			$count = Install-Commands $script:CommandsRoot $dest
+			Write-OK "Copied $count command(s) into $(Join-Path (Split-Path $dest -Parent) 'commands')"
+		}
 	}
+	$committed = $true
+} catch {
+	$failure = $_
+	if ($writing) { foreach ($path in $newPaths) { Remove-InstallEntry $path } }
+	foreach ($entry in $backups) { Move-Item -LiteralPath $entry.Backup -Destination $entry.Original }
+	throw $failure
+} finally {
+	if ($committed) { foreach ($entry in $backups) { Remove-InstallEntry $entry.Backup } }
+	Remove-InstallEntry $stage
+	$script:CommandsRoot = $originalCommandsRoot
 }
 
 Write-Rule

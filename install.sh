@@ -92,6 +92,24 @@ while [ "$_i" -lt "$INNER" ]; do DASHES="${DASHES}─"; _i=$((_i + 1)); done
 FRAME=0
 FIRST_SECTION=1
 TMP_DIR=""
+INSTALL_WRITING=0
+INSTALL_COMMITTED=0
+
+rollback_install() {
+	[ -f "$TMP_DIR/new-paths" ] || return 0
+	if [ "$INSTALL_WRITING" = 1 ]; then
+		while IFS= read -r _new_path; do
+			rm -rf "$_new_path" || return 1
+		done <"$TMP_DIR/new-paths"
+	fi
+	for _record in "$TMP_DIR"/rollback/*; do
+		[ -f "$_record/moved" ] || continue
+		_original="$(cat "$_record/path")"
+		_backup="$(cat "$_record/backup")"
+		mv "$_backup/item" "$_original" || return 1
+		rmdir "$_backup" || return 1
+	done
+}
 
 vislen() {
 	_s="$(printf '%s' "$1" | sed "s/${ESC}\\[[0-9;]*m//g")"
@@ -337,10 +355,18 @@ die() {
 have() { command -v "$1" >/dev/null 2>&1; }
 
 cleanup() {
+	if [ -n "$TMP_DIR" ] && [ "$INSTALL_COMMITTED" = 0 ]; then
+		if ! rollback_install; then
+			printf 'Could not restore the previous install; recovery records kept at %s\n' "$TMP_DIR" >&2
+			return 1
+		fi
+	fi
 	[ -n "$TMP_DIR" ] && rm -rf "$TMP_DIR"
 	return 0
 }
-trap cleanup EXIT INT TERM
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 # --------------------------------------------------------------- options ----
 
@@ -518,7 +544,9 @@ menu_leave() {
 		stty "$MENU_TTY_STATE" </dev/tty 2>/dev/null || true
 		MENU_TTY_STATE=""
 	fi
-	trap cleanup EXIT INT TERM
+	trap cleanup EXIT
+	trap 'exit 130' INT
+	trap 'exit 143' TERM
 }
 
 read_key() {
@@ -1258,22 +1286,28 @@ is_our_command() {
 
 replace_existing() {
 	: >"$TMP_DIR/old"
+	: >"$TMP_DIR/new-paths"
 	while IFS= read -r _dest; do
+		for _skill in $SKILLS; do
+			printf '%s\n' "$_dest/$_skill" >>"$TMP_DIR/new-paths"
+		done
+		if [ -n "$COMMANDS_SRC" ]; then
+			for _command in "$COMMANDS_SRC"/sw-*.md; do
+				[ -f "$_command" ] || continue
+				printf '%s\n' "$(commands_dir "$_dest")/${_command##*/}" >>"$TMP_DIR/new-paths"
+			done
+		fi
 		# Every Specwright skill the destination already holds is replaced, not
 		# just the ones this source ships: installing an older ref over a newer
 		# one would otherwise leave both layouts side by side.
 		for _path in "$_dest"/sw-*; do
 			[ -e "$_path" ] || [ -L "$_path" ] || continue
 			_skill="${_path##*/}"
-			if ! is_ours "$_skill" "$_path"; then
-				die "refusing to replace a folder that is not a Specwright skill" \
-					"$_path" \
-					"That folder has no matching name: $_skill in SKILL.md."
-			fi
 			if [ -d "$_path" ] && [ ! -L "$_path" ]; then
 				_real="$(cd "$_path" && pwd -P)"
-				case "$_real" in
-				"$SKILL_ROOT"/skills/"$_skill")
+				[ "$_real" != "$SKILL_ROOT/skills/$_skill" ] || die "refusing to delete the skill source" "$_path"
+				case "$SKILL_ROOT/" in
+				"$_real/"*)
 					die "refusing to delete the skill source" "$_path"
 					;;
 				esac
@@ -1282,30 +1316,58 @@ replace_existing() {
 		done
 		_cmd_dir="$(commands_dir "$_dest")"
 		[ -d "$_cmd_dir" ] || continue
-		while IFS= read -r _file; do
-			[ -n "$_file" ] || continue
-			_name="${_file##*/}"
-			if ! is_our_command "$_name" "$_file"; then
-				die "refusing to replace a command that is not a Specwright wrapper" \
-					"$_file" \
-					"That file does not load a Specwright skill."
+		for _file in "$_cmd_dir"/sw-*; do
+			[ -e "$_file" ] || [ -L "$_file" ] || continue
+			if [ -d "$_file" ] && [ ! -L "$_file" ]; then
+				_real="$(cd "$_file" && pwd -P)"
+				case "$SKILL_ROOT/" in
+				"$_real/"*) die "refusing to delete the skill source" "$_file" ;;
+				esac
 			fi
+			[ "$_file" != "$SKILL_ROOT/commands/${_file##*/}" ] || die "refusing to delete the command source" "$_file"
 			printf '%s\n' "$_file" >>"$TMP_DIR/old"
-		done <<EOF
-$(command_files "$_cmd_dir")
-EOF
+		done
 	done <"$TMP_DIR/dests"
-	[ -s "$TMP_DIR/old" ] || return 0
+	# Stage the entire new release before changing any destination. Copies never
+	# merge with a previous install and source read failures cannot delete it.
+	mkdir -p "$TMP_DIR/staged/skills" "$TMP_DIR/rollback"
+	for _stage_skill in $SKILLS; do
+		cp -R "$SKILL_ROOT/skills/$_stage_skill" "$TMP_DIR/staged/skills/$_stage_skill" ||
+			die "could not stage $_stage_skill; previous install unchanged"
+	done
+	if [ -n "$COMMANDS_SRC" ]; then
+		cp -R "$COMMANDS_SRC" "$TMP_DIR/staged/commands" || die "could not stage command wrappers"
+		COMMANDS_SRC="$TMP_DIR/staged/commands"
+	fi
+	SKILL_ROOT="$TMP_DIR/staged"
+	[ -s "$TMP_DIR/old" ] || { INSTALL_WRITING=1; return 0; }
 	_n="$(wc -l <"$TMP_DIR/old" | tr -d ' ')"
 	note "Replacing $_n existing Specwright file(s)"
 	if progress_live; then
 		progress_start "Removing $_n previous file(s)" "$_n"
 	fi
+	_index=0
 	while IFS= read -r _path; do
-		rm -rf "$_path"
+		_index=$((_index + 1))
+		_record="$TMP_DIR/rollback/$_index"
+		mkdir -p "$_record"
+		_backup="$(mktemp -d "$(dirname "$_path")/.specwright-backup.XXXXXX")"
+		printf '%s\n' "$_path" >"$_record/path"
+		printf '%s\n' "$_backup" >"$_record/backup"
+		mv "$_path" "$_backup/item"
+		: >"$_record/moved"
 		progress_tick
 	done <"$TMP_DIR/old"
+	INSTALL_WRITING=1
 	progress_end "Removed the previous install"
+}
+
+commit_install() {
+	INSTALL_COMMITTED=1
+	for _record in "$TMP_DIR"/rollback/*; do
+		[ -f "$_record/backup" ] || continue
+		rm -rf "$(cat "$_record/backup")"
+	done
 }
 
 devof() {
@@ -1554,6 +1616,7 @@ main() {
 		[ -n "$SKILLS" ] || die "no skills in $SOURCE_NAME" "The archive has no skills/sw-*/SKILL.md."
 	fi
 	require_skills "$SKILL_ROOT"
+	SKILL_ROOT="$(cd "$SKILL_ROOT" && pwd -P)"
 	COMMANDS_SRC="$(find_commands "$SKILL_ROOT" || true)"
 	if [ -n "$COMMANDS_SRC" ]; then
 		note "Commands: $(command_files "$COMMANDS_SRC" | wc -l | tr -d ' ') wrappers from $COMMANDS_SRC"
@@ -1563,6 +1626,7 @@ main() {
 	resolve_dests
 	replace_existing
 	install_skills
+	commit_install
 	summary
 	screen_close
 }

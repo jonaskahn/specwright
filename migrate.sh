@@ -16,7 +16,7 @@
 #
 # Old files are moved to .specwright-backup-<target name>-<time>/ beside the target unless
 # --no-backup.
-# A non-Specwright folder named sw-* stops the run before anything changes.
+# In a skills destination, sw-* is reserved: matching files, folders and links are replaced.
 # Exit codes: 0 done (or dry run), 1 refused or aborted, 2 usage.
 set -eu
 
@@ -47,6 +47,7 @@ case "$TARGET" in
   /|"$HOME") echo "error: refusing to migrate into $TARGET; name the skills folder itself" >&2; exit 1 ;;
 esac
 [ "$TARGET" != "$SRC" ] || { echo "error: target is the source folder" >&2; exit 1; }
+case "$SRC/" in "$TARGET/"*) echo "error: target contains the source folder" >&2; exit 1 ;; esac
 
 NEW_VERSION=$(sed -n 's/^KIT_VERSION = "\(.*\)"/\1/p' "$SRC/skills/_shared/scripts/kitlib/schema.py")
 STAMP=$(date +%Y%m%d-%H%M%S)
@@ -57,13 +58,6 @@ PLAN=""
 say() { printf '%s\n' "$*"; }
 plan() { PLAN="$PLAN
 $*"; }
-
-# A folder is Specwright when it carries the kit manifest or a sw- SKILL.md that names the kit.
-is_specwright() {
-  [ -f "$1/_shared/MANIFEST.json" ] && grep -q '"kit_version"' "$1/_shared/MANIFEST.json" && return 0
-  [ -f "$1/SKILL.md" ] && grep -q '^name: sw-' "$1/SKILL.md" && grep -qi 'specwright\|_shared/references' "$1/SKILL.md" && return 0
-  return 1
-}
 
 move_out() {  # remove one path, keeping a backup copy unless --no-backup
   if [ "$BACKUP" -eq 1 ]; then
@@ -102,10 +96,10 @@ case "$KIND" in
   skills)
     OLD=""
     for d in "$TARGET"/sw-*; do
-      [ -d "$d" ] || continue
-      if ! is_specwright "$d"; then
-        echo "error: $d is named like a Specwright skill but is not one; move it and rerun" >&2
-        exit 1
+      [ -e "$d" ] || [ -L "$d" ] || continue
+      if [ ! -L "$d" ] && [ -d "$d" ]; then
+        real=$(CDPATH= cd -- "$d" && pwd -P)
+        [ "$real" != "$SRC/skills/$(basename "$d")" ] || { echo "error: target contains skill sources" >&2; exit 1; }
       fi
       OLD="$OLD $d"
       plan "remove  $(basename "$d")"
@@ -117,6 +111,7 @@ case "$KIND" in
     for d in "$SRC"/skills/sw-*; do
       plan "install $(basename "$d") ($NEW_VERSION)"
     done
+    plan "replace sw-* command entries in $(dirname -- "$TARGET")/commands"
     ;;
   kit)
     for p in skills commands hooks .claude-plugin templates; do
@@ -154,8 +149,27 @@ fi
 # ---- apply ------------------------------------------------------------------------------------
 case "$KIND" in
   skills)
-    for d in $OLD; do move_out "$d"; done
+    for d in "$TARGET"/sw-*; do
+      [ -e "$d" ] || [ -L "$d" ] || continue
+      move_out "$d"
+    done
     for d in "$SRC"/skills/sw-*; do copy_in "$d" "$TARGET/$(basename "$d")"; done
+    COMMANDS="$(dirname -- "$TARGET")/commands"
+    for f in "$COMMANDS"/sw-*; do
+      [ -e "$f" ] || [ -L "$f" ] || continue
+      if [ "$BACKUP" -eq 1 ]; then
+        mkdir -p "$BACKDIR/commands"
+        mv -- "$f" "$BACKDIR/commands/$(basename "$f")"
+      else
+        rm -rf -- "$f"
+      fi
+    done
+    mkdir -p "$COMMANDS"
+    BASE=$(printf '%s' "$TARGET/" | sed 's/[\\&|]/\\&/g')
+    for f in "$SRC"/commands/sw-*.md; do
+      [ -f "$f" ] || continue
+      sed "s|\${CLAUDE_PLUGIN_ROOT}/skills/|$BASE|g" "$f" >"$COMMANDS/$(basename "$f")"
+    done
     CHECK_DIRS="$TARGET"
     ;;
   kit)

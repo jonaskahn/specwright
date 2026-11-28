@@ -7,6 +7,7 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from unittest.mock import patch
 
 TOOLS = Path(__file__).resolve().parent.parent / "tools"
 sys.path.insert(0, str(TOOLS))
@@ -59,7 +60,7 @@ class DistributionTests(unittest.TestCase):
             "Read ../_shared/references/safety.md.\n"
         )
         (self.skill / "LICENSE").write_text("MIT\n")
-        (self.skill / "SKILL.md").write_text("# demo\n")
+        (self.skill / "SKILL.md").write_text("---\nname: sw-start\n---\n# demo\n")
         (self.skill / "scripts" / "run.py").write_text(
             "import sys\nfrom pathlib import Path\n"
             "_here = Path(__file__).resolve().parent\n"
@@ -123,14 +124,64 @@ class DistributionTests(unittest.TestCase):
         self.assertFalse(alias.is_symlink())
         self.assertIn("@AGENTS.md", (self.target / "GEMINI.md").read_text())
 
-    def test_collision_is_rejected_before_any_skill_is_written(self):
+    def test_incomplete_old_skill_is_replaced(self):
         collision = self.target / ".claude" / "skills" / "sw-start"
         collision.mkdir(parents=True)
         (collision / "keep").write_text("important")
-        with self.assertRaises(FileExistsError):
-            installer.install(self.root, self.target)
-        self.assertFalse((self.target / ".agents").exists())
-        self.assertEqual((collision / "keep").read_text(), "important")
+        installer.install(self.root, self.target)
+        self.assertTrue((self.target / ".agents/skills/sw-start/SKILL.md").exists())
+        self.assertFalse((collision / "keep").exists())
+
+    def test_reinstall_removes_stale_and_retired_skills_and_wrappers(self):
+        installer.install(self.root, self.target)
+        for base in (self.target / ".agents", self.target / ".claude"):
+            retired = base / "skills/sw-spec"
+            retired.mkdir()
+            (retired / "SKILL.md").write_text("---\nname: sw-spec\n---\n")
+            (base / "commands").mkdir()
+            (base / "commands/sw-spec.md").write_text(
+                "---\nname: sw-spec\n---\nLoad /old/skills/sw-spec/SKILL.md\n"
+            )
+            (base / "commands/custom.md").write_text("preserve")
+        stale = self.target / ".agents/skills/sw-start/stale.py"
+        stale.write_text("old")
+        report = installer.install(self.root, self.target, copy_mirror=True)
+        self.assertTrue(report["removed"])
+        self.assertFalse(stale.exists())
+        for base in (self.target / ".agents", self.target / ".claude"):
+            self.assertFalse((base / "skills/sw-spec").exists())
+            self.assertFalse((base / "commands/sw-spec.md").exists())
+            self.assertEqual((base / "commands/custom.md").read_text(), "preserve")
+        self.assertFalse(list(self.target.rglob(".specwright-backup-*")))
+
+    def test_failed_upgrade_restores_previous_install(self):
+        installer.install(self.root, self.target)
+        old = self.target / ".agents/skills/sw-start/stale.py"
+        old.write_text("old")
+        copy = installer.shutil.copytree
+
+        def fail(source, destination, *args, **kwargs):
+            if Path(destination) == self.target / ".claude/skills/sw-start":
+                raise OSError("simulated copy failure")
+            return copy(source, destination, *args, **kwargs)
+
+        with (
+            patch.object(installer.shutil, "copytree", side_effect=fail),
+            self.assertRaisesRegex(OSError, "simulated"),
+        ):
+            installer.install(self.root, self.target, copy_mirror=True)
+        self.assertEqual(old.read_text(), "old")
+        self.assertTrue((self.target / ".claude/skills/sw-start").is_symlink())
+        self.assertFalse(list(self.target.rglob(".specwright-backup-*")))
+
+    def test_installer_does_not_remove_its_own_source(self):
+        # A source checkout may sit at the selected install location.
+        source = self.target / ".agents/skills/sw-start"
+        source.mkdir(parents=True)
+        (source / "SKILL.md").write_text("name: sw-start\n")
+        with self.assertRaisesRegex(ValueError, "skill source"):
+            installer._previous(source.parent, source)
+        self.assertTrue((source / "SKILL.md").exists())
 
     def test_zip_contains_one_self_contained_skill(self):
         package.build(self.root, self.output, True)
