@@ -1,19 +1,25 @@
 # Intake, read-back and suggested replies
 
 ## First run (no workspace)
-`start.py` returns `intake`: at most three questions with options and a default, prefilled
-from workspace metadata. Defaults are recommendations only. Ask them in one message.
+`start.py` returns `surface` and `intake`. Read the surface before asking. The current user
+message is the change when it names the work; do not ask them to type it again. Ask at most
+the questions the message and the surface left open, in one message, with options and a
+default. Defaults are recommendations only.
 
-1. Starting point: discover repository docs/plans / selected files or existing items /
-   describe the change first / documents / register or Jira. `context_intake` offers the
-   discovery choice even when `.specwright/` already exists. No initial scan without consent.
+1. Starting point: only when the message does not already name the change. An empty surface
+   (no code, no docs, no README) offers the conversation, documents to import, or a register.
+   It does not offer discover-docs or an existing system. A surface with files names them
+   (README, `docs/`, a code marker) and may offer a scan. `context_intake` uses the same
+   glance. No document-body scan without consent.
 2. How far: spec / review / plan → pass as `--until spec|review|plan` to every `finish.py` call
-   of this run. Default: plan (stories, accepts, tasks, agent prompts).
+   of this run. Skip when the message already says how far. Default recommendation: plan
+   (stories, accepts, tasks, agent prompts).
 3. Stack: detected layers → lock as detected / edit first / no lock. No code → name it now /
-   decide at plan time / no lock.
+   decide at plan time / no lock. Skip when the message already chose.
 
-With an ask-user tool, use tappable options and consequences. Unanswered → leave unresolved;
-do not initialize using guessed answers or run the scan. Continue only independent work.
+With an ask-user tool, use tappable options and consequences. Never a free-text-only question.
+Unanswered → leave unresolved; do not initialize using guessed answers or run the scan.
+Continue only independent work, including shaping a change the user already described.
 
 ## Read-back
 Before a run that writes more than one file, print one line:

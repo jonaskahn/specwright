@@ -97,6 +97,21 @@ class MigrateTests(unittest.TestCase):
         self.assertTrue(paths.story(root, "FEAT-001").is_file())
         self.assertFalse((root / "02-drafts").exists())
 
+    def test_numbered_source_folders_move_under_the_unnumbered_names(self):
+        write(self.base / "00-inbox/SRC-0001--policy.md", "policy\n")
+        write(self.base / "00-inbox/raw/abcd-policy.md", "bytes\n")
+        write(self.base / "01-analysis/ideas/IDEA-refunds.md", "idea\n")
+        write(self.base / "01-analysis/epics/EPIC-001--refunds.md", "epic\n")
+        moved, skipped = migrate.apply(self.base)
+        self.assertEqual(skipped, [])
+        self.assertTrue((self.base / "sources/SRC-0001--policy.md").is_file())
+        self.assertTrue((self.base / "sources/raw/abcd-policy.md").is_file())
+        self.assertTrue((self.base / "analysis/ideas/IDEA-refunds.md").is_file())
+        self.assertTrue((self.base / "epics/EPIC-001/EPIC-001--refunds.md").is_file())
+        self.assertFalse((self.base / "00-inbox").exists())
+        self.assertFalse((self.base / "01-analysis").exists())
+        self.assertGreaterEqual(len(moved), 4)
+
 
 if __name__ == "__main__":
     unittest.main()

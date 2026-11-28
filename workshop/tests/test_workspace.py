@@ -35,8 +35,8 @@ class FlatTests(WorkspaceTestCase):
         self.assertIs(manifest["publish"]["sandbox"], True)
         self.assertEqual(manifest["approvers"][0]["account_id"], "712020:aa11")
         for folder in (
-            "00-inbox",
-            "01-analysis",
+            "sources",
+            "analysis",
             "features",
             "diagrams",
             "records",
@@ -154,8 +154,8 @@ class FlatTests(WorkspaceTestCase):
 
     def test_init_makes_import_and_work_folders_and_ignores_the_work_folder(self):
         self.init_flat()
-        self.assertTrue((self.root / "00-inbox/imports").is_dir())
-        self.assertTrue((self.root / "01-analysis/candidates").is_dir())
+        self.assertTrue((self.root / "sources/imports").is_dir())
+        self.assertTrue((self.root / "analysis/candidates").is_dir())
         self.assertEqual((self.root / ".metadata/work/.gitignore").read_text(), "*\n!.gitignore\n")
         self.assertFalse((self.root / ".metadata/work/.gitkeep").exists())
 
@@ -173,11 +173,11 @@ class FlatTests(WorkspaceTestCase):
         import shutil
 
         shutil.rmtree(self.root / ".metadata/work")
-        shutil.rmtree(self.root / "00-inbox/imports")
+        shutil.rmtree(self.root / "sources/imports")
         plan = workspace.upgrade(self.root, "REF", apply=True)
         self.assertIn("create .metadata/work/", plan)
         self.assertTrue((self.root / ".metadata/work/.gitignore").is_file())
-        self.assertTrue((self.root / "00-inbox/imports/.gitkeep").is_file())
+        self.assertTrue((self.root / "sources/imports/.gitkeep").is_file())
 
     def test_init_refuses_to_overwrite(self):
         self.init_flat()

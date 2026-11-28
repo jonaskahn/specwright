@@ -119,8 +119,8 @@ generator that scans `docs/` should exclude `console/`.
 
 ## Offline fallback
 
-Use the bundled installer when a checkout is air-gapped or a project wants generated
-instruction files:
+Use the bundled installer when a checkout is air-gapped or a project wants the skills
+installed locally:
 
 ```sh
 python3 workshop/tools/install.py --target /absolute/path/to/spec-repo
@@ -132,9 +132,9 @@ It copies the same self-contained skills to `.agents/skills/sw-*` and mirrors th
 diagram types (20); pass `--profile core` for the 10 core types only. Codex, Copilot, Cursor and Gemini can discover the
 canonical project skills; Claude Code uses its mirror.
 
-New projects receive AGENTS.md, equal CLAUDE.md and GEMINI.md copies, and a Copilot
-instruction pointer. Existing instructions are preserved. If a project already has
-instructions, merge the Specwright standing rules manually instead of replacing them.
+The installer does not write `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, or Copilot instruction
+files. An existing project `AGENTS.md` is left untouched. The source-code `AGENTS.md` is
+produced later by the foundation story, for the repository being built.
 Re-running the offline installer performs the same clean replacement for both project skill
 locations, removes retired Specwright skills and wrappers, and writes current command wrappers.
 Every `sw-*` entry in those skills and commands directories is replaced. New files are staged first; failed skill or

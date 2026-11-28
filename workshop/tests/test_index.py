@@ -28,7 +28,7 @@ class IndexTests(WorkflowTestCase):
                 "affects": ["REF:FEAT-001"],
             },
         )
-        reg = self.base / "01-analysis/baseline/register.tsv"
+        reg = self.base / "analysis/baseline/register.tsv"
         reg.parent.mkdir(parents=True, exist_ok=True)
         reg.write_text(REGISTER)
         rtm.registry_upsert(
@@ -46,7 +46,7 @@ class IndexTests(WorkflowTestCase):
 
     def snapshot(self, ident, remote, title):
         self.write(
-            f"00-inbox/{ident}.md",
+            f"sources/{ident}.md",
             {
                 "id": ident,
                 "type": "snapshot",
@@ -106,7 +106,7 @@ class IndexTests(WorkflowTestCase):
 
     def test_read_first_names_the_fixed_reading_order(self):
         text = (self.base / ".metadata/READ-FIRST.md").read_text()
-        order = ["project.yaml", "AGENTS.md", "INDEX.md", "CROSSWALK.tsv", "graph.py board"]
+        order = ["project.yaml", "epics/", "INDEX.md", "CROSSWALK.tsv", "graph.py board"]
         positions = [text.index(item) for item in order]
         self.assertEqual(positions, sorted(positions))
         self.assertIn("do not open folders", text)

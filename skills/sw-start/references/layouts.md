@@ -16,8 +16,8 @@ folders is read as evidence; `graph build` and the quality gate report any other
 
 | Folder | Holds | Owner |
 | --- | --- | --- |
-| `00-inbox/` | `SRC-NNNN--slug.md` snapshots (immutable), `raw/` original bytes, `imports/<batch>/manifest.json` per import batch | sw-craft |
-| `01-analysis/` | `ideas/`, `candidates/` (worker files and `assignment.tsv`), `baseline/` (the legacy register) | sw-craft |
+| `sources/` | `SRC-NNNN--slug.md` snapshots (immutable), `raw/` original bytes, `imports/<batch>/manifest.json` per import batch | sw-craft |
+| `analysis/` | `ideas/`, `candidates/` (worker files and `assignment.tsv`), `baseline/` (the legacy register) | sw-craft |
 | `epics/` | one folder per epic: `EPIC-NNN/EPIC-NNN--slug.md` | sw-craft |
 | `features/` | one folder per feature: `FEAT-NNN.story.md`, `.card.md`, `.feature`, `review/`, `foundation/` | sw-craft |
 | `tasks/` | one folder per feature: `FEAT-NNN.tasks.md`, `prompts/` (derived) | sw-craft writes the tasks, sw-forge the prompts |
@@ -38,17 +38,16 @@ are the way to *find* an item; the folder is what to open once it is named:
     plans/FEAT-001/FEAT-001.plan.md
 
 Pictures stay in `diagrams/FEAT-001.*`; a story embeds one as `../../diagrams/<file>`.
-`workspace.py upgrade` moves a project written with `02-drafts/`, `03-plan/` and
-`01-analysis/epics/` to this layout (dry run first; `--apply` to move).
-
-`AGENTS.md` holds the only copy of the standing rules; `CLAUDE.md` and `GEMINI.md` are one-line
-pointers to it.
+`workspace.py upgrade` moves a project written with `02-drafts/`, `03-plan/`,
+`01-analysis/epics/`, `00-inbox/`, and `01-analysis/` to this layout (dry run first; `--apply`
+to move). `00-inbox/` becomes `sources/`. `01-analysis/` becomes `analysis/`, after epics have
+moved to `epics/`.
 
 ## Rules
 
 - A folder with no git repository gets one, so a spec-only repository works the same way.
 - A program manifest wins over nested project files when resolving the root.
 - Link projects with qualified IDs such as `REF:EPIC-001`.
-- Never write outside `.specwright/` unless asked. Merge the standing rules into
-  an existing AGENTS.md only with the explicit merge option and a yes.
+- Never write outside `.specwright/` unless asked. Do not write Specwright workspace rules
+  into the repository `AGENTS.md`. The source-code `AGENTS.md` comes from the foundation story.
 - `assets/` holds user-provided references; only the assets capability writes there.

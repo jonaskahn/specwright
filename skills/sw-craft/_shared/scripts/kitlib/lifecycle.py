@@ -212,7 +212,7 @@ def feature(base: Path, key: str, status: str = "reserved") -> dict:
 def input_hash(base: Path) -> str:
     """Bind confirmation to current artifacts, decisions and mappings, not a cache."""
     files = []
-    for folder in ("01-analysis", *paths.ITEM_FOLDERS, "records", "snapshots"):
+    for folder in ("analysis", *paths.ITEM_FOLDERS, "records", "snapshots"):
         files.extend(p for p in (base / folder).rglob("*.md") if not p.is_symlink())
     files += [
         base / "project.yaml",

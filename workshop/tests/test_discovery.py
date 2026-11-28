@@ -196,8 +196,35 @@ class DiscoveryTests(unittest.TestCase):
             fresh = start.report(self.repo)
         self.assertTrue(fresh["context_intake"]["consent_required"])
         self.assertEqual(fresh["detected_stack"], {})
+        self.assertFalse(fresh["surface"]["empty"])
+        self.assertIn("package.json", fresh["surface"]["code"])
+        self.assertTrue(
+            any("package.json" in option for option in fresh["context_intake"]["options"])
+        )
+        self.assertEqual(fresh["context_intake"], discovery.offer(fresh["surface"]))
+        empty = self.repo / "blank"
+        empty.mkdir()
+        blank = start.report(empty)
+        self.assertTrue(blank["surface"]["empty"])
+        offered = " ".join(blank["context_intake"]["options"])
+        self.assertNotIn("discover", offered)
+        asked = " ".join(
+            question["q"] + " " + " ".join(question["options"]) for question in blank["intake"]
+        )
+        self.assertNotIn("discover existing", asked)
+        self.assertNotIn("existing system", asked)
+        self.assertIn("no code and no docs", asked)
+        docs = self.repo / "docs"
+        docs.mkdir()
+        (docs / "plan.md").write_text("# Plan\n", encoding="utf-8")
+        documented = start.report(self.repo)
+        self.assertIn("docs", documented["surface"]["docs"])
+        self.assertTrue(any("docs" in option for option in documented["context_intake"]["options"]))
+        self.assertEqual(documented["detected_stack"], {})
         self.init()
-        self.assertEqual(start.report(self.repo)["context_intake"], discovery.offer())
+        self.assertEqual(
+            start.report(self.repo)["context_intake"], discovery.offer(start.glance(self.repo))
+        )
 
     def test_analysis_check_never_accepts_high_confidence_evidence(self):
         code = put(self.repo / "test_refund.py", "assert refund(31) is False\n")
@@ -238,7 +265,7 @@ class DiscoveryTests(unittest.TestCase):
             "| --- | --- | --- | --- | --- | --- | --- |\n"
             "| C-1 | Refund rule | owner | None | missing | low | |\n"
         )
-        target = put(base / "01-analysis/as-is/refund.analysis.md", text)
+        target = put(base / "analysis/as-is/refund.analysis.md", text)
         result = subprocess.run(
             [
                 sys.executable,
@@ -269,4 +296,4 @@ class DiscoveryTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 2)
         self.assertIn("ask the owner", result.stderr)
-        self.assertFalse((self.repo / ".specwright/01-analysis/as-is/refund.analysis.md").exists())
+        self.assertFalse((self.repo / ".specwright/analysis/as-is/refund.analysis.md").exists())

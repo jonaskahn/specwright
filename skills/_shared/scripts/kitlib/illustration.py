@@ -132,7 +132,7 @@ _BEHAVIOUR = (
 _ACTOR_SECTIONS = ("Goal", "Business rules")
 _HANDOFF_SECTIONS = ("Context", "Dependencies and relations")
 _DATA_SECTIONS = _BEHAVIOUR
-_DOC_FOLDERS = ("01-analysis", "epics", "features", "records")
+_DOC_FOLDERS = ("analysis", "epics", "features", "records")
 _STALE_RESOLUTION = {"withdrawn", "unresolved"}
 
 # Longer forms first so "customers" is the customer role, not a truncated stem.

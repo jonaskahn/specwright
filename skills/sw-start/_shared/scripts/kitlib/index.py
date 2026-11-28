@@ -43,7 +43,7 @@ CROSSWALK_COLUMNS = [
 ]
 RELATED = {"q", "dec", "snapshot", "feat", "cr", "amendment"}
 STRUCTURAL = {"mentions", "has_ac", "has_task", "published_as", "last_snapshot", "external_parent"}
-REGISTER = "01-analysis/baseline/register.tsv"
+REGISTER = "analysis/baseline/register.tsv"
 REGISTER_COLUMNS = ["legacy_id", "title", "group", "source_ref"]
 FILES = ("INDEX.md", "index.tsv", "CROSSWALK.tsv", "READ-FIRST.md", "ready.tsv")
 READY_COLUMNS = ["key", "kind", "status", "ready", "blocked_by"]
@@ -287,7 +287,7 @@ def read_first(graph: Graph, label: str) -> str:
             f"{counts} · {open_q} open question(s)",
             "",
             "1. Manifest: project.yaml (approvers, sources, limits, delivery target).",
-            "2. Standing rules: AGENTS.md at the repository root, the only copy.",
+            "2. Work items: epics/, features/, tasks/, and plans/ under this spec root.",
             "3. Master index: .metadata/INDEX.md, or .metadata/index.tsv for scripts.",
             "4. Crosswalk: .metadata/CROSSWALK.tsv maps legacy or external names to records.",
             "5. Status board: graph.py board.",

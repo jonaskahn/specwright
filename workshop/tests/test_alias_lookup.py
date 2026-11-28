@@ -17,7 +17,7 @@ class AliasLookupTests(WorkflowTestCase):
         fields = {"aliases": ["LEG-100", "Refund Flow"], "title": "Refund request"}
         self.draft.write_text(frontmatter.update(text, fields))
         self.add(
-            "00-inbox/SRC-0001.md",
+            "sources/SRC-0001.md",
             {
                 "id": "SRC-0001",
                 "type": "snapshot",

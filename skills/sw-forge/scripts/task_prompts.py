@@ -70,7 +70,7 @@ def _existing(base: Path, feat: str, fm: dict, body: str) -> dict:
         tbody = frontmatter.parse((paths.story(base, target)).read_text(encoding="utf-8")).body
         cited += tbody
     code, tests = [], []
-    for a in sorted((base / "01-analysis" / "as-is").glob("*.analysis.md")):
+    for a in sorted((base / "analysis" / "as-is").glob("*.analysis.md")):
         text = a.read_text(encoding="utf-8")
         afm = frontmatter.parse(text).fm or {}
         rel = a.relative_to(base).as_posix()

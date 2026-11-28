@@ -33,7 +33,7 @@ CONF = {
     "sw-craft": {
         "gate": "review",
         "data": ["sources", "registry", "quality"],
-        "style": ["01-analysis/", "epics/", "features/"],
+        "style": ["analysis/", "epics/", "features/"],
         "status": True,
         "analyze": True,
     },

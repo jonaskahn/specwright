@@ -63,11 +63,11 @@ class InvestParseTests(unittest.TestCase):
 class InvestBoardTests(WorkflowTestCase):
     def setUp(self):
         super().setUp()
-        (self.base / "01-analysis/ideas/IDEA-refunds.md").write_text(BRIEF + TABLE)
-        (self.base / "01-analysis/ideas/IDEA-other.md").write_text(
+        (self.base / "analysis/ideas/IDEA-refunds.md").write_text(BRIEF + TABLE)
+        (self.base / "analysis/ideas/IDEA-other.md").write_text(
             BRIEF.replace("refunds", "other") + "## Proposed FEAT split\n\nnot yet\n"
         )
-        (self.base / "01-analysis/ideas/IDEA-none.md").write_text(BRIEF.replace("refunds", "none"))
+        (self.base / "analysis/ideas/IDEA-none.md").write_text(BRIEF.replace("refunds", "none"))
 
     def run_cli(self, *args):
         return subprocess.run(
@@ -82,8 +82,8 @@ class InvestBoardTests(WorkflowTestCase):
         self.assertTrue(boards["IDEA-other"]["problems"])
 
     def test_cli_check_and_totals(self):
-        good = self.base / "01-analysis/ideas/IDEA-refunds.md"
-        bad = self.base / "01-analysis/ideas/IDEA-other.md"
+        good = self.base / "analysis/ideas/IDEA-refunds.md"
+        bad = self.base / "analysis/ideas/IDEA-other.md"
         self.assertEqual(self.run_cli("check", str(good)).returncode, 0)
         failed = self.run_cli("check", str(bad))
         self.assertEqual(failed.returncode, 1)

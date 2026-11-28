@@ -18,7 +18,7 @@ SNAPSHOT = (
 class CiteTests(WorkflowTestCase):
     def setUp(self):
         super().setUp()
-        (self.base / "00-inbox/SRC-0001.md").write_text(SNAPSHOT)
+        (self.base / "sources/SRC-0001.md").write_text(SNAPSHOT)
         self.sources = cite.Sources(self.base)
 
     def note(self, text, name="records/Q-001.md"):
@@ -67,11 +67,11 @@ class CiteTests(WorkflowTestCase):
         newer = SNAPSHOT.replace("SRC-0001", "SRC-0002").replace(
             "status: raw", "status: raw\nsupersedes: [SRC-0001]"
         )
-        (self.base / "00-inbox/SRC-0002.md").write_text(newer)
+        (self.base / "sources/SRC-0002.md").write_text(newer)
         stale = cite.problems(cite.Sources(self.base), "SRC-0001:L8")
         self.assertEqual([(p.code, p.severity) for p in stale], [("superseded-source", "warn")])
         index_only = SNAPSHOT.replace("status: raw", "status: raw\ncontent_class: index-only")
-        (self.base / "00-inbox/SRC-0003.md").write_text(index_only.replace("SRC-0001", "SRC-0003"))
+        (self.base / "sources/SRC-0003.md").write_text(index_only.replace("SRC-0001", "SRC-0003"))
         weak = cite.problems(cite.Sources(self.base), "SRC-0003:L8")
         self.assertEqual([(p.code, p.severity) for p in weak], [("weak-source", "warn")])
 
@@ -88,7 +88,7 @@ class CiteTests(WorkflowTestCase):
             .replace("SRC-0001", "SRC-0002")
             .replace("Payout needs approval.", "Payout needs sign-off.")
         )
-        (self.base / "00-inbox/SRC-0002.md").write_text(moved)
+        (self.base / "sources/SRC-0002.md").write_text(moved)
         citing = [("a.md", c) for c in cite.find("SRC-0001:L8 and SRC-0001:L10")]
         rows = cite.rebase(self.sources, cite.Sources(self.base), "SRC-0001", "SRC-0002", citing)
         self.assertRegex(rows[0][3], r"^SRC-0002:L9#[0-9a-f]{4}$")
@@ -117,11 +117,11 @@ class CiteTests(WorkflowTestCase):
         self.assertEqual(self.run_cli("quote", "SRC-0001:L99").returncode, 2)
 
     def test_the_old_snapshot_is_left_untouched_by_a_rebase(self):
-        before = (self.base / "00-inbox/SRC-0001.md").read_bytes()
+        before = (self.base / "sources/SRC-0001.md").read_bytes()
         note = self.note("cites SRC-0001:L8\n")
         note_before = note.read_bytes()
-        (self.base / "00-inbox/SRC-0002.md").write_text(SNAPSHOT.replace("SRC-0001", "SRC-0002"))
+        (self.base / "sources/SRC-0002.md").write_text(SNAPSHOT.replace("SRC-0001", "SRC-0002"))
         result = self.run_cli("rebase", "SRC-0001", "SRC-0002")
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual((self.base / "00-inbox/SRC-0001.md").read_bytes(), before)
+        self.assertEqual((self.base / "sources/SRC-0001.md").read_bytes(), before)
         self.assertEqual(note.read_bytes(), note_before)

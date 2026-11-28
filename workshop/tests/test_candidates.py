@@ -15,7 +15,7 @@ class CandidateTests(WorkflowTestCase):
         fm = {"id": ident, "type": "snapshot", "status": "raw", "title": title, "aliases": []}
         fm.update(extra)
         body = "Refunds close after 14 days.\n" + " ".join(["word"] * words) + "\n"
-        (self.base / f"00-inbox/{ident}.md").write_text(frontmatter.render(fm, body))
+        (self.base / f"sources/{ident}.md").write_text(frontmatter.render(fm, body))
 
     def setUp(self):
         super().setUp()

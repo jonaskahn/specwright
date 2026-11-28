@@ -10,8 +10,8 @@
 #   kit checkout a clone of the kit (has skills/sw-start or .claude-plugin/plugin.json).
 #                skills/, commands/, hooks/, .claude-plugin/, templates/ are replaced; top-level
 #                kit files are overwritten; new tests are added; nothing else is touched.
-#   workspace    a spec workspace (project.yaml or workspace.yaml). Nothing is deleted:
-#                AGENTS.md is refreshed with the new standing rules; --flow-auto also sets
+#   workspace    a spec workspace (project.yaml or workspace.yaml). Nothing is deleted and
+#                the repository AGENTS.md is left as it is. --flow-auto sets
 #                governance.flow to auto.
 #
 # Old files are moved to .specwright-backup-<target name>-<time>/ beside the target unless
@@ -77,12 +77,8 @@ copy_in() {  # copy one path from the source, overwriting
 }
 
 # ---- detect the kind --------------------------------------------------------------------------
-RULES_DIR="$TARGET"
 if [ -f "$TARGET/project.yaml" ] || [ -f "$TARGET/workspace.yaml" ]; then
   KIND=workspace
-  # Embedded layout: the rules live at the repository root, one level above .specwright/.
-  [ "$(basename -- "$TARGET")" = ".specwright" ] && [ -f "$(dirname -- "$TARGET")/AGENTS.md" ] \
-    && RULES_DIR=$(dirname -- "$TARGET")
 elif [ -f "$TARGET/.specwright/project.yaml" ] || [ -f "$TARGET/.specwright/workspace.yaml" ]; then
   KIND=workspace
   TARGET="$TARGET/.specwright"
@@ -126,7 +122,7 @@ case "$KIND" in
     done
     ;;
   workspace)
-    plan "refresh $RULES_DIR/AGENTS.md (standing rules of $NEW_VERSION); nothing is deleted"
+    plan "leave the repository AGENTS.md unchanged; nothing is deleted"
     [ "$FLOW" -eq 1 ] && plan "set     governance.flow = auto"
     ;;
 esac
@@ -189,11 +185,6 @@ case "$KIND" in
     CHECK_DIRS="$TARGET/skills"
     ;;
   workspace)
-    if [ -f "$RULES_DIR/AGENTS.md" ]; then
-      cp -- "$RULES_DIR/AGENTS.md" "$RULES_DIR/AGENTS.md.bak-$STAMP"
-      say "kept the old rules in $RULES_DIR/AGENTS.md.bak-$STAMP"
-    fi
-    cp -- "$SRC/skills/sw-start/assets/standing-rules.md" "$RULES_DIR/AGENTS.md"
     if [ "$FLOW" -eq 1 ]; then
       if command -v python3 >/dev/null 2>&1; then
         python3 "$SRC/skills/sw-start/scripts/workspace.py" governance set flow auto --cwd "$TARGET" \
@@ -224,4 +215,4 @@ PY
 else
   say "note: python3 not found; integrity not verified"
 fi
-say "done. Existing workspaces: sh migrate.sh --flow-auto <spec root> refreshes their AGENTS.md."
+say "done. Existing workspaces: sh migrate.sh --flow-auto <spec root> sets automatic hand-off."

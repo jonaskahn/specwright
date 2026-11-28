@@ -1,7 +1,7 @@
 """Existing-baseline helpers: normalize a legacy register, group it and draft one brief per group.
 
 A project that already runs many capabilities under its own IDs starts from a register of them.
-The register becomes `01-analysis/baseline/register.tsv`; every legacy ID is kept as an alias of the
+The register becomes `analysis/baseline/register.tsv`; every legacy ID is kept as an alias of the
 feature that stands for it, so the business's own name always finds the record.
 """
 
@@ -14,8 +14,8 @@ from pathlib import Path
 
 from kitlib import frontmatter, ids
 
-REGISTER = "01-analysis/baseline/register.tsv"
-PROPOSAL = "01-analysis/baseline/split-proposal.tsv"
+REGISTER = "analysis/baseline/register.tsv"
+PROPOSAL = "analysis/baseline/split-proposal.tsv"
 COLUMNS = ("legacy_id", "title", "group", "source_ref")
 SYNONYMS = {
     "legacy_id": ("legacy_id", "legacy id", "id", "key", "code"),
@@ -105,7 +105,7 @@ def sources_for(base: Path, rows: list[dict[str, str]]) -> list[str]:
     wanted = {r["source_ref"].casefold() for r in rows if r.get("source_ref")}
     wanted |= {r["legacy_id"].casefold() for r in rows}
     found = []
-    for path in sorted((base / "00-inbox").glob("SRC-*.md")):
+    for path in sorted((base / "sources").glob("SRC-*.md")):
         fm = frontmatter.parse(path.read_text(encoding="utf-8")).fm or {}
         names = {str(a).casefold() for a in fm.get("aliases") or []}
         names.add(str(fm.get("remote_id", "")).casefold())

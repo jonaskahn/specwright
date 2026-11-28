@@ -9,7 +9,7 @@ or the case is an edge case named below. SKILL.md is the default path; kernel ru
 1. Resolve scope before any write; in a program workspace ask when no explicit scope or
    project path selects it. Run one import at a time per scope. Get consent to retain
    known sensitive originals before importing them.
-2. Convert each file: run scripts/to_md.py <file> --out <project>/00-inbox/ (add
+2. Convert each file: run scripts/to_md.py <file> --out <project>/sources/ (add
    --scope REF in program mode); routes and limits are in references/router.md. Read
    its JSON and stderr. Exit 0 complete or duplicate (cite the existing SRC; do not
    allocate another), 2 bad input or converter failure, 3 unsafe input or consent

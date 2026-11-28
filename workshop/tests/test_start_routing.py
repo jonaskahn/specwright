@@ -37,7 +37,7 @@ class BaselineRoutingTests(unittest.TestCase):
         return start.report(self.root)["scopes_state"][0]
 
     def test_a_stale_graph_names_the_command_that_rebuilds_it(self):
-        (self.root / "01-analysis/ideas/IDEA-001.md").write_text(
+        (self.root / "analysis/ideas/IDEA-001.md").write_text(
             "---\nid: IDEA-001\ntype: idea\ntitle: Late idea\naliases: []\n"
             "status: draft\n---\n# Late\n"
         )
@@ -58,7 +58,7 @@ class BaselineRoutingTests(unittest.TestCase):
         self.assertEqual(item["next"][0], "sw-craft")
         self.assertTrue(item["next"][1].startswith("existing baseline"))
         self.assertIn("bulk_import.py", item["action"])
-        (self.root / "00-inbox/SRC-0001.md").write_text(
+        (self.root / "sources/SRC-0001.md").write_text(
             frontmatter.render({"id": "SRC-0001", "type": "snapshot", "status": "raw"}, "text\n")
         )
         item = self.scope()
@@ -74,7 +74,7 @@ class BaselineRoutingTests(unittest.TestCase):
 
     def test_once_a_brief_exists_the_normal_route_takes_over(self):
         workspace.add_source(self.root, "REF", "wiki", "confluence", "S/Home", "2026-11-01", 4)
-        (self.root / "01-analysis/ideas/IDEA-x.md").write_text(
+        (self.root / "analysis/ideas/IDEA-x.md").write_text(
             frontmatter.render(
                 {"id": "IDEA-x", "type": "idea", "status": "draft", "title": "X", "aliases": []},
                 "## Problem\nx\n",
@@ -145,7 +145,7 @@ class RankingAndPackTests(WorkflowTestCase):
             "| Notify the requester | pass | fail | pass | pass | pass | pass | Prescribed |\n"
         )
         self.write(
-            "01-analysis/ideas/IDEA-refunds.md",
+            "analysis/ideas/IDEA-refunds.md",
             {
                 "id": "IDEA-refunds",
                 "type": "idea",
@@ -217,7 +217,7 @@ class RankingAndPackTests(WorkflowTestCase):
             },
         )
         self.write(
-            "00-inbox/SRC-0001.md",
+            "sources/SRC-0001.md",
             {
                 "id": "SRC-0001",
                 "type": "snapshot",

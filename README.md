@@ -35,9 +35,9 @@ for a person: accept the split, accept the story, answer a blocking question.
 
 ```text
 ┌─ WHERE IT LANDS ───────────────────────────────────────────── FILE MAP ┐
-│  your-repo/   or   your-repo/.specwright/                              │
-│  00-inbox/      frozen sources      SRC-0001--policy.md                │
-│  01-analysis/   problem, evidence   BO-001 · IDEA-refunds              │
+│  your-repo/.specwright/                                                │
+│  sources/       frozen sources      SRC-0001--policy.md                │
+│  analysis/      problem, evidence   BO-001 · IDEA-refunds              │
 │  epics/         outcomes            EPIC-001/EPIC-001.md               │
 │  features/      what to build       FEAT-001/FEAT-001.story.md         │
 │  tasks/         the work            FEAT-001/FEAT-001.tasks.md         │
@@ -282,7 +282,7 @@ python3 workshop/tools/package.py --zip --out dist
 ```
 
 `npx` and the plugin read `skills/` from the repo, all 45 diagram types included. ZIP builds default
-to the 10 core types. The offline installer also writes the project instruction files.
+to the 10 core types. The offline installer copies skills and command wrappers only.
 
 ### Upgrading
 
@@ -292,7 +292,7 @@ From the unzipped new kit:
 sh migrate.sh --dry-run ~/.claude/skills     # see the plan
 sh migrate.sh ~/.claude/skills               # replace old sw-* skills, back them up beside it
 sh migrate.sh /path/to/your/kit-checkout     # replace kit folders; workshop/ and tests stay
-sh migrate.sh --flow-auto /path/to/spec-repo # refresh AGENTS.md, switch to automatic hand-off
+sh migrate.sh --flow-auto /path/to/spec-repo # switch to automatic hand-off
 ```
 
 It detects the target kind and never deletes spec work. In a skills destination, every `sw-*`

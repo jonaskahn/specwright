@@ -10,10 +10,10 @@
   "index.tsv": "sha256:c064d3571007529676c489865af8ffd2ed36e9b60a25bfc94544d1eff51cf31e"
  },
  "inputs": {
-  "projects/ORD/01-analysis/BO-001.md": 139,
+  "projects/ORD/analysis/BO-001.md": 139,
   "projects/ORD/02-drafts/FEAT-001.story.md": 1378,
   "projects/ORD/project.yaml": 330,
-  "projects/REF/01-analysis/epics/EPIC-001.md": 130,
+  "projects/REF/analysis/epics/EPIC-001.md": 130,
   "projects/REF/project.yaml": 330,
   "workspace.yaml": 55
  },

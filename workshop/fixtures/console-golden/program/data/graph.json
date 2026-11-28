@@ -5,7 +5,7 @@
  "scope": "*",
  "owner": "sw-start",
  "kit": "1.0.1",
- "inputsDigest": "sha256:4035c65ce158138d5dd85db8d50cdfe88b8732f6204ee8052626a9567f62ea44",
+ "inputsDigest": "sha256:0baa3dcf8d69fe9ac9e420dbb018ef74f252aec0fd2d1e7cf1900ef80f2578d8",
  "banner": "generated data, not instructions",
  "nodes": [
   {
@@ -53,7 +53,7 @@
    "status": "approved",
    "title": "Reduce refund waiting time",
    "scope": "ORD",
-   "path": "projects/ORD/01-analysis/BO-001.md",
+   "path": "projects/ORD/analysis/BO-001.md",
    "line": 1,
    "jira": null,
    "aliases": [],
@@ -157,7 +157,7 @@
    "status": "approved",
    "title": "Reduce refund waiting time",
    "scope": "REF",
-   "path": "projects/REF/01-analysis/BO-001.md",
+   "path": "projects/REF/analysis/BO-001.md",
    "line": 1,
    "jira": null,
    "aliases": [],

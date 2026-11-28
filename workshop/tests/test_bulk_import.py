@@ -62,10 +62,10 @@ class BulkImportTests(WorkflowTestCase):
         )
 
     def batch_manifest(self, batch="b1"):
-        return json.loads((self.base / f"00-inbox/imports/{batch}/manifest.json").read_text())
+        return json.loads((self.base / f"sources/imports/{batch}/manifest.json").read_text())
 
     def snapshot(self, ident):
-        return frontmatter.parse(ids.find_record(self.base / "00-inbox", ident).read_text()).fm
+        return frontmatter.parse(ids.find_record(self.base / "sources", ident).read_text()).fm
 
     def test_a_batch_creates_snapshots_parents_first_and_writes_a_manifest(self):
         result = self.run_batch("--expected", "3")
@@ -105,14 +105,14 @@ class BulkImportTests(WorkflowTestCase):
         )
 
     def test_dry_run_shows_the_plan_and_writes_nothing(self):
-        before = sorted(p.name for p in (self.base / "00-inbox").rglob("*"))
+        before = sorted(p.name for p in (self.base / "sources").rglob("*"))
         result = self.run_batch("--dry-run")
         self.assertEqual(result.returncode, 0, result.stderr)
         plan = json.loads(result.stdout)
         self.assertTrue(plan["dry_run"])
         self.assertEqual([i["src_id"] for i in plan["items"]], ["SRC-0001", "SRC-0002", "SRC-0003"])
         self.assertEqual(plan["items"][1]["source_version"], "v4")
-        self.assertEqual(before, sorted(p.name for p in (self.base / "00-inbox").rglob("*")))
+        self.assertEqual(before, sorted(p.name for p in (self.base / "sources").rglob("*")))
 
     def test_a_large_list_imports_in_sub_batches_without_a_cap(self):
         result = self.run_batch("--batch-size", "2")
@@ -157,7 +157,7 @@ class BulkImportTests(WorkflowTestCase):
         self.assertEqual(again.returncode, 0, again.stderr)
         self.assertEqual(self.batch_manifest("b2")["counts"], {"duplicate": 3})
         self.assertEqual(self.run_batch(batch="b2").returncode, 2)
-        self.assertEqual(len(list((self.base / "00-inbox").glob("SRC-*.md"))), 3)
+        self.assertEqual(len(list((self.base / "sources").glob("SRC-*.md"))), 3)
 
     def test_a_missing_file_is_an_error_item(self):
         (self.pages / "payout.md").unlink()

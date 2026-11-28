@@ -34,7 +34,7 @@ class Workspace(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.base = Path(self.tmp.name)
-        for d in ("features/FEAT-001", "01-analysis/as-is", ".metadata", "code/src"):
+        for d in ("features/FEAT-001", "analysis/as-is", ".metadata", "code/src"):
             (self.base / d).mkdir(parents=True)
         (self.base / "code/src/S.java").write_text("int W = 10;\n")
         (self.base / ".metadata/id-registry.md").write_text(REGISTRY)
@@ -51,7 +51,7 @@ class Workspace(unittest.TestCase):
 
 class Verify(Workspace):
     def table(self, rows):
-        path = self.base / "01-analysis/as-is/FEAT-003.verify.analysis.md"
+        path = self.base / "analysis/as-is/FEAT-003.verify.analysis.md"
         path.write_text(
             "---\nkind: analysis\nverifies: FEAT-003\ntarget: FEAT-003\nstatus: draft\n---\n\n"
             "## Criteria\n\n| # | Criterion | Intended | Actual | Status | Confidence | Notes |\n"

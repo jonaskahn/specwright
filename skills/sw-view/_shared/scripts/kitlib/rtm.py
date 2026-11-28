@@ -36,7 +36,7 @@ def qualify(value: str, scope: str) -> str:
 
 def documents(base: Path):
     """Imported snapshot text cannot establish local definitions."""
-    for folder in ("00-inbox", "01-analysis", "epics", "features", "records", "snapshots"):
+    for folder in ("sources", "analysis", "epics", "features", "records", "snapshots"):
         for path in sorted((base / folder).rglob("*.md")):
             if "raw" not in path.relative_to(base).parts and not path.is_symlink():
                 parsed = frontmatter.parse(path.read_text(encoding="utf-8"))

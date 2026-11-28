@@ -307,7 +307,7 @@ COMMON = {
     "coverage": ["80", "70", "90"],
     "ci": ["github-actions", "gitlab-ci", "none"],
     "hooks": ["pre-commit (fmt-check + lint)", "none"],
-    "ai_workflow": ["AGENTS.md + CLAUDE.md pointer", "AGENTS.md only", "none"],
+    "ai_workflow": ["AGENTS.md", "none"],
 }
 PRINCIPLES_SOURCE = (
     "https://github.com/multica-ai/andrej-karpathy-skills (CLAUDE.md, guidelines for coding agents)"
@@ -499,7 +499,7 @@ def default_tooling(profile: dict[str, Any] | None) -> dict[str, Any]:
             "coverage": 80,
             "ci": "github-actions",
             "hooks": "pre-commit",
-            "ai_workflow": "agents+claude",
+            "ai_workflow": "AGENTS.md",
         }
     )
     return tooling
@@ -618,9 +618,10 @@ def agents_md(
             "- No new dependency outside the locked stack.",
             "- The report names files changed, tests added and AC IDs satisfied.",
             "",
-            "## Specs",
-            "- Stories, plans and tasks come from Specwright; a task prompt is self-contained.",
-            "- Never edit the spec files; when code and spec disagree, stop and ask.",
+            "## Documentary proof",
+            "- When a task needs proof, read the item named for that task under `.specwright/`:",
+            "  the epic in `epics/`, the story in `features/`, the task in `tasks/`, and the plan in `plans/`.",
+            "- Do not edit those files. When the code and that item disagree, stop and ask.",
             "",
         ]
     )
@@ -711,10 +712,6 @@ def layer_agents_md(tooling: dict[str, Any], layer: str) -> str:
     )
 
 
-def claude_md() -> str:
-    return "# CLAUDE.md\n\n@AGENTS.md\n"
-
-
 def story_sections(tooling: dict[str, Any], bo: str, feat_num: str) -> dict[str, str]:
     """Body sections of the foundation story, AC IDs numbered for the reserved FEAT."""
     cov = int(tooling.get("coverage", 80))
@@ -778,7 +775,8 @@ def story_sections(tooling: dict[str, Any], bo: str, feat_num: str) -> dict[str,
                 "a coding agent opens the repository",
                 "it reads `AGENTS.md`",
                 "it finds the locked stack, the `make` commands, the structure, the working "
-                "principles and the definition of done",
+                "principles, the definition of done, and where to read the epic, story, task "
+                "and plan under `.specwright/`",
             )
         )
     acs.append(
@@ -800,7 +798,6 @@ def story_sections(tooling: dict[str, Any], bo: str, feat_num: str) -> dict[str,
             f"{tooling.get('hooks', 'none')}. Reference files: "
             "`features/FEAT-NNN/foundation/Makefile`, "
             "`features/FEAT-NNN/foundation/AGENTS.md`"
-            + (" and `CLAUDE.md`" if tooling.get("ai_workflow") == "agents+claude" else "")
             + ". Tool versions: current stable from official docs, pinned in the lockfiles."
         ),
         "Acceptance criteria": "\n".join(acs),

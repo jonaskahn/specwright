@@ -2,7 +2,7 @@
 """Plan, check and review candidate extraction done by several workers.
 
 assign    split the snapshots not yet assigned into worker files of about 18,000 words each and
-          record who reads what in 01-analysis/candidates/assignment.tsv
+          record who reads what in analysis/candidates/assignment.tsv
 check     every snapshot assigned once, every citation resolves and cites only the worker's own
           snapshots, counts add up, claims are short summaries
 conflicts same topic, different claim: both citations side by side, before any question is raised

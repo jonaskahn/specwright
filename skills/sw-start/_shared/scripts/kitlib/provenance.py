@@ -50,7 +50,7 @@ def effective(base: Path, src_id: str, fm: dict[str, Any]) -> dict[str, Any]:
 
 def _original_intact(base: Path, fm: dict[str, Any]) -> None:
     digest = str(fm.get("sha256", ""))
-    raws = sorted((base / "00-inbox/raw").glob(digest[:12] + "-*")) if digest else []
+    raws = sorted((base / "sources/raw").glob(digest[:12] + "-*")) if digest else []
     if not raws or not any(hashing.bytes_hash(p.read_bytes()) == digest for p in raws):
         raise ProvenanceError("the original bytes are missing or changed; amend nothing")
 
@@ -66,7 +66,7 @@ def plan(
     """Validate and return `(file, line to append)`; nothing is written."""
     if not ids.matches_type("snapshot", src_id):
         raise ProvenanceError(f"'{src_id}' is not a snapshot ID")
-    path = ids.find_record(base / "00-inbox", src_id)
+    path = ids.find_record(base / "sources", src_id)
     if path is None:
         raise ProvenanceError(f"no snapshot {src_id}")
     fm = frontmatter.parse(path.read_text(encoding="utf-8")).fm or {}

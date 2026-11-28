@@ -30,7 +30,7 @@ URL = ["--evidence-kind", "url", "--evidence-ref", "https://example.test/minutes
 class RecordTests(WorkflowTestCase):
     def setUp(self):
         super().setUp()
-        (self.base / "00-inbox/SRC-0001.md").write_text(SNAPSHOT)
+        (self.base / "sources/SRC-0001.md").write_text(SNAPSHOT)
         self.ctx = recordops.Ctx(self.root, "REF", "sw-craft", today="2026-11-12")
 
     def edit_manifest(self, change):
@@ -58,7 +58,7 @@ class RecordTests(WorkflowTestCase):
         done = self.cli("backup", "features/FEAT-001/FEAT-001.story.md")
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertEqual(len(list((self.base / ".metadata/history").rglob("*.bak"))), 1)
-        refused = self.cli("backup", "00-inbox/SRC-0001.md")
+        refused = self.cli("backup", "sources/SRC-0001.md")
         self.assertEqual(refused.returncode, 2)
         planned = self.cli("backup", "features/FEAT-001/FEAT-001.story.md", "--dry-run")
         self.assertIn("plan:", planned.stdout)

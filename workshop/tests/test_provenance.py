@@ -24,8 +24,8 @@ class ProvenanceTests(WorkflowTestCase):
         super().setUp()
         source = self.root / "policy.txt"
         source.write_text("# Refund policy\n\nRefunds close after 14 days of delivery.\n")
-        to_md.ingest(source, self.base / "00-inbox", scope="REF", source="file:///policy.txt")
-        self.snapshot = ids.find_record(self.base / "00-inbox", "SRC-0001")
+        to_md.ingest(source, self.base / "sources", scope="REF", source="file:///policy.txt")
+        self.snapshot = ids.find_record(self.base / "sources", "SRC-0001")
 
     def amend(self, **fields):
         values = {"source": "wiki:page-77", "remote_url": "https://wiki.example.test/page-77"}
@@ -96,7 +96,7 @@ class ProvenanceTests(WorkflowTestCase):
 
     def test_changed_original_bytes_block_an_amendment(self):
         digest = frontmatter.parse(self.snapshot.read_text(encoding="utf-8")).fm["sha256"]
-        raw = next((self.base / "00-inbox/raw").glob(str(digest)[:12] + "-*"))
+        raw = next((self.base / "sources/raw").glob(str(digest)[:12] + "-*"))
         raw.write_bytes(b"tampered")
         with self.assertRaisesRegex(provenance.ProvenanceError, "original bytes"):
             provenance.plan(self.base, "SRC-0001", {"source": "x"}, "BA | An", "fix")

@@ -1,7 +1,7 @@
 """Candidate extraction by several workers, with one writer per file and checks by program.
 
 A worker reads only the snapshots assigned to it and writes one file, `CAND-NNN--<area>.md`, in
-`01-analysis/candidates/`. The file lists claims in one table with a citation each; workers never
+`analysis/candidates/`. The file lists claims in one table with a citation each; workers never
 write records, registries or each other's files. `assignment.tsv` records who reads what, so a
 script can confirm that every snapshot was read exactly once, every citation resolves and the
 counts add up. Worker claims stay unverified until that check passes or a named person reviews them.
@@ -15,7 +15,7 @@ from pathlib import Path
 
 from kitlib import cite, frontmatter, fsio, ids, tables
 
-FOLDER = "01-analysis/candidates"
+FOLDER = "analysis/candidates"
 ASSIGNMENT = "assignment.tsv"
 HEADER = ["#", "Kind", "Topic", "Claim", "Citation", "Status", "Note"]
 STATUSES = ("raw", "accepted", "rejected", "merged")
@@ -152,7 +152,7 @@ def plan_assignment(
     done = {r["snapshot"] for r in read_assignment(base)}
     headers: dict[str, dict] = {}
     words: dict[str, int] = {}
-    for path in sorted((base / "00-inbox").glob("SRC-*.md")):
+    for path in sorted((base / "sources").glob("SRC-*.md")):
         fm = frontmatter.parse(path.read_text(encoding="utf-8")).fm or {}
         if fm.get("id") and fm.get("status") != "withdrawn":
             headers[str(fm["id"])] = fm
@@ -224,7 +224,7 @@ def check(base: Path) -> list[str]:
     rows = read_assignment(base)
     snapshots = sorted(
         ids.id_from_name(p.name)
-        for p in (base / "00-inbox").glob("SRC-*.md")
+        for p in (base / "sources").glob("SRC-*.md")
         if (frontmatter.parse(p.read_text(encoding="utf-8")).fm or {}).get("status") != "withdrawn"
     )
     counts: dict[str, int] = {}

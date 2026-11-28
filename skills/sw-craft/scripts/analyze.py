@@ -5,7 +5,7 @@
     analyze.py inventory                       light inventory of every root and the docs
     analyze.py area <keyword> [<keyword> ...]  pointers to read for one area (code, tests, docs)
     analyze.py cite <root>/<path> --lines A[-B] a CODE citation for those lines
-    analyze.py new <target> [--title T]        start 01-analysis/as-is/<target>.analysis.md
+    analyze.py new <target> [--title T]        start analysis/as-is/<target>.analysis.md
     analyze.py check <target|file>             validate the gap table; shape, asks, next step
     analyze.py new <FEAT-NNN> --verify         pre-ship check: one row per AC of that change
     analyze.py confirm <target>                after the user confirmed the asked rows
@@ -32,7 +32,7 @@ if str(_shared) not in sys.path:
 
 from kitlib import analysis, coderoots, discovery, fsio, inventory, paths, workspace  # noqa: E402
 
-FOLDER = "01-analysis/as-is"
+FOLDER = "analysis/as-is"
 
 
 def _roots(root, scope) -> dict[str, Path]:
@@ -40,7 +40,7 @@ def _roots(root, scope) -> dict[str, Path]:
 
 
 def _doc_folders(base: Path, roots: dict[str, Path]) -> list[tuple[Path, str]]:
-    out = [(base / "00-inbox", "inbox")]
+    out = [(base / "sources", "inbox")]
     for name, path in roots.items():
         # Root plans/README and non-Markdown docs use the same safe discovery boundary.
         out.extend((p, f"{name}/{p.relative_to(path).as_posix()}") for p in discovery._files(path))

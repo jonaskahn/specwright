@@ -9,7 +9,7 @@
     foundation.py analyze                        what each code folder already has (names only)
     foundation.py draft --feat FEAT-NNN [--bo BO-NNN]
                                                  fill the reserved story; write reference files
-                                                 features/FEAT-NNN/foundation/{Makefile,AGENTS.md,CLAUDE.md}
+                                                 features/FEAT-NNN/foundation/{Makefile,AGENTS.md}
                                                  and <layer>/AGENTS.md when there are several layers
 
 Common: --cwd <project> [--scope S]. Tooling lives in stack.yaml `tooling` (outside the stack
@@ -154,9 +154,6 @@ def main(argv=None):
                 ),
             )
             written.append("AGENTS.md")
-            if tooling.get("ai_workflow") == "agents+claude":
-                fsio.atomic_write(out / "CLAUDE.md", foundation.claude_md())
-                written.append("CLAUDE.md")
             if len(tooling.get("layers") or {}) > 1:
                 for layer in tooling["layers"]:
                     fsio.atomic_write(

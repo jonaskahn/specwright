@@ -48,7 +48,7 @@ def objectives(root: Path, scope: str, values: list[str] | None) -> list[str]:
             if ref.scope not in (None, scope):
                 text = ref.qualified
             else:
-                cards = (root / "01-analysis").rglob("*.md")
+                cards = (root / "analysis").rglob("*.md")
                 if not any(ids.id_from_name(c.name) == ref.id for c in cards):
                     raise ValueError(f"{ref.id} is not a business objective of {scope}")
                 text = ref.id

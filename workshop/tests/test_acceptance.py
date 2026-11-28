@@ -181,7 +181,7 @@ class BaselineAcceptance(unittest.TestCase):
             fm["remote_id"]: fm["id"]
             for fm in (
                 frontmatter.parse(p.read_text()).fm
-                for p in (cls.base / "00-inbox").glob("SRC-*.md")
+                for p in (cls.base / "sources").glob("SRC-*.md")
             )
         }
         # 4. candidates: one worker reads every page; two claims disagree
@@ -312,14 +312,14 @@ class BaselineAcceptance(unittest.TestCase):
 
     def test_1_import_reports_expected_and_received_counts_with_complete_provenance(self):
         self.assertEqual(self.first.returncode, 3)  # one page needed a human decision
-        one = json.loads((self.base / "00-inbox/imports/b1/manifest.json").read_text())
+        one = json.loads((self.base / "sources/imports/b1/manifest.json").read_text())
         self.assertEqual((one["expected_count"], one["received_count"]), (5, 5))
         self.assertEqual(one["counts"], {"created": 4, "refused": 1})
         self.assertEqual(self.second.returncode, 0, self.second.stderr)
-        two = json.loads((self.base / "00-inbox/imports/b2/manifest.json").read_text())
+        two = json.loads((self.base / "sources/imports/b2/manifest.json").read_text())
         self.assertEqual((two["counts"], two["counts_match"]), ({"created": 1}, True))
         self.assertEqual(set(self.snap), {"100", "101", "102", "103", "104"})
-        for path in (self.base / "00-inbox").glob("SRC-*.md"):
+        for path in (self.base / "sources").glob("SRC-*.md"):
             fm = frontmatter.parse(path.read_text()).fm
             for field in (
                 "title",
@@ -334,7 +334,7 @@ class BaselineAcceptance(unittest.TestCase):
             ):
                 self.assertTrue(fm.get(field), f"{path.name} lacks {field}")
         home = frontmatter.parse(
-            next((self.base / "00-inbox").glob(f"{self.snap['100']}--*.md")).read_text()
+            next((self.base / "sources").glob(f"{self.snap['100']}--*.md")).read_text()
         ).fm
         self.assertEqual(home["content_class"], "index-only")
 
@@ -413,8 +413,8 @@ class BaselineAcceptance(unittest.TestCase):
         }
         for path in sorted((self.base / "records").glob("*.md")):
             self.assertIn(f"records/{path.name}", logged)
-        for path in sorted((self.base / "00-inbox").glob("SRC-*.md")):
-            self.assertIn(f"00-inbox/{path.name}", logged)
+        for path in sorted((self.base / "sources").glob("SRC-*.md")):
+            self.assertIn(f"sources/{path.name}", logged)
         self.assertEqual(workspace.stray_folders(self.base), [])
 
     # ---- 7. a new session can work from READ-FIRST and queries alone
@@ -423,7 +423,7 @@ class BaselineAcceptance(unittest.TestCase):
         text = (self.base / ".metadata/READ-FIRST.md").read_text()
         for needle in (
             "project.yaml",
-            "AGENTS.md",
+            "epics/",
             "INDEX.md",
             "CROSSWALK.tsv",
             "graph.py board",

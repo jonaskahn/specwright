@@ -14,7 +14,7 @@ verify before trust, smallest capable model, at most 8 workers at a time) are in
    no registry and no records. Secrets and personal data are already out of the snapshots
    (redacted copies), so a worker never receives raw originals.
 3. **Guard the writes.** Snapshot before launching and verify afterwards as the shared rules say,
-   with one allow-list per worker: `CAND-001=01-analysis/candidates/CAND-001--*`. A worker writes its
+   with one allow-list per worker: `CAND-001=analysis/candidates/CAND-001--*`. A worker writes its
    own candidates file and nothing else; only the lead changes a status or creates a question.
 4. **Reconcile.** Run `candidates.py check`: every snapshot read once, every citation resolves,
    counts add up. Fix a worker's file by sending it back, not by editing it. Worker output stays

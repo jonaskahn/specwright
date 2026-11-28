@@ -18,7 +18,7 @@ from kitlib import frontmatter, ids
 CITATION = re.compile(
     r"(?<![\w-])(?:([A-Z]{2,5}):)?(SRC-\d{4}):L(\d+)(?:-L?(\d+))?(?:#([0-9a-f]{4}))?\b"
 )
-SKIP_PARTS = {"00-inbox", "raw", "graph", ".git", "node_modules"}
+SKIP_PARTS = {"sources", "raw", "graph", ".git", "node_modules"}
 
 
 @dataclass(frozen=True)
@@ -74,7 +74,7 @@ class Sources:
 
     def lines(self, source: str) -> list[str] | None:
         if source not in self._lines:
-            path = ids.find_record(self.base / "00-inbox", source)
+            path = ids.find_record(self.base / "sources", source)
             if path is None or path.is_symlink():
                 self._lines[source] = None
             else:
@@ -90,7 +90,7 @@ class Sources:
     def superseded(self) -> set[str]:
         if self._superseded is None:
             found: set[str] = set()
-            for path in sorted((self.base / "00-inbox").glob("SRC-*.md")):
+            for path in sorted((self.base / "sources").glob("SRC-*.md")):
                 fm = frontmatter.parse(path.read_text(encoding="utf-8")).fm or {}
                 value = fm.get("supersedes") or []
                 found.update(r.id for r in ids.find_refs(str(value)))

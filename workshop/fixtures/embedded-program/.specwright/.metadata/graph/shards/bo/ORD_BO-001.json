@@ -11,7 +11,7 @@
  "key": "ORD:BO-001",
  "kind": "bo",
  "line": 1,
- "path": "projects/ORD/01-analysis/BO-001.md",
+ "path": "projects/ORD/analysis/BO-001.md",
  "status": "approved",
  "title": "Refund access"
 }

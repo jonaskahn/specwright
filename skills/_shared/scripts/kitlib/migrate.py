@@ -8,6 +8,8 @@
     03-plan/FEAT-N.tasks.md         -> tasks/FEAT-N/
     03-plan/prompts/FEAT-N/*        -> tasks/FEAT-N/prompts/
     03-plan/FEAT-N.plan.md          -> plans/FEAT-N/
+    00-inbox/**                     -> sources/**
+    01-analysis/**                  -> analysis/**  (epics already moved above are not moved again)
 
 `plan` lists the moves and changes nothing; `apply` performs them. A destination that already
 exists is never overwritten: the move is reported as a conflict and skipped. Running it twice
@@ -73,6 +75,15 @@ def plan(base: Path) -> list[tuple[Path, Path]]:
         elif len(rel.parts) == 1 and head:
             target = paths.plan_dir if rel.name.endswith(".plan.md") else paths.tasks_dir
             moves.append((path, target(base, head.group(1)) / rel.name))
+    planned = {src for src, _ in moves}
+    for old, new in (
+        (paths.LEGACY_INBOX, paths.SOURCES),
+        (paths.LEGACY_ANALYSIS, paths.ANALYSIS),
+    ):
+        for path in _files(base / old):
+            if path in planned:
+                continue
+            moves.append((path, base / new / path.relative_to(base / old)))
     return moves
 
 
@@ -95,7 +106,14 @@ def apply(base: Path) -> tuple[list[tuple[Path, Path]], list[tuple[Path, Path]]]
             text = dst.read_text(encoding="utf-8")
             if _OLD_LINK in text:
                 dst.write_text(text.replace(_OLD_LINK, _NEW_LINK), encoding="utf-8", newline="")
-    for old in ("_meta", paths.LEGACY_EPICS, paths.LEGACY_DRAFTS, paths.LEGACY_PLAN):
+    for old in (
+        "_meta",
+        paths.LEGACY_EPICS,
+        paths.LEGACY_DRAFTS,
+        paths.LEGACY_PLAN,
+        paths.LEGACY_INBOX,
+        paths.LEGACY_ANALYSIS,
+    ):
         _prune(base / old)
     return moved, skipped
 

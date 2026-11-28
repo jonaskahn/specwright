@@ -28,7 +28,7 @@ class IngestConversionTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
-        self.out = self.root / "project/00-inbox"
+        self.out = self.root / "project/sources"
 
     def source(self, name="source.txt", content="A policy with enough readable business content."):
         path = self.root / name
@@ -59,7 +59,7 @@ class IngestConversionTests(unittest.TestCase):
         registry = tables.parse((self.out.parent / ".metadata/id-registry.md").read_text()).table
         self.assertEqual(len(registry.rows), 1)
         self.assertEqual(
-            registry.get("REF:SRC-0001", "Last snapshot"), "00-inbox/SRC-0001--source.md"
+            registry.get("REF:SRC-0001", "Last snapshot"), "sources/SRC-0001--source.md"
         )
 
     def test_snapshot_is_named_titled_and_logged(self):
@@ -85,7 +85,7 @@ class IngestConversionTests(unittest.TestCase):
         self.assertEqual(registry.get("REF:SRC-0001", "Source ref"), "page-12")
         log = (self.out.parent / ".metadata/write-log.md").read_text()
         self.assertIn("sw-craft | import | REF:SRC-0001", log)
-        self.assertIn("file=00-inbox/SRC-0001--refund-policy.md@", log)
+        self.assertIn("file=sources/SRC-0001--refund-policy.md@", log)
 
     def test_untitled_text_takes_its_file_name(self):
         mod.ingest(self.source("return_rules.txt"), self.out)
@@ -307,11 +307,11 @@ class IngestConversionTests(unittest.TestCase):
             ocr.assert_called_once_with(path.resolve(), 2, "vi")
         self.assertIn("low-text-quality", self.snapshot().fm["warnings"])
         with patch.object(mod, "run", return_value="Pages: 301\nEncrypted: no"):
-            self.assertEqual(self.cli(path, "--out", self.root / "other/00-inbox")[0], 3)
+            self.assertEqual(self.cli(path, "--out", self.root / "other/sources")[0], 3)
         with patch.object(mod, "run", side_effect=subprocess.TimeoutExpired("pdfinfo", 120)):
-            self.assertEqual(self.cli(path, "--out", self.root / "other/00-inbox")[0], 2)
+            self.assertEqual(self.cli(path, "--out", self.root / "other/sources")[0], 2)
         with patch.object(mod, "run", side_effect=ValueError("private converter error")):
-            code, _, stderr = self.cli(path, "--out", self.root / "other/00-inbox")
+            code, _, stderr = self.cli(path, "--out", self.root / "other/sources")
             self.assertEqual(code, 2)
             self.assertNotIn("private converter error", stderr)
 

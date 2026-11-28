@@ -359,8 +359,8 @@ def ingest(
     labels: list[str] | None = None,
 ) -> dict:
     path, out = path.resolve(), out.resolve()
-    if out.name != "00-inbox":
-        raise ValueError("output must be the resolved project's 00-inbox directory")
+    if out.name != "sources":
+        raise ValueError("output must be the resolved project's sources directory")
     if path.stat().st_size > MAX_BYTES:
         raise Refused("input exceeds 50 MB")
     with path.open("rb") as handle:
@@ -456,7 +456,7 @@ def ingest(
     key = ids.qualify(scope, number) if scope else number
     cells = {
         "Kind": "snapshot",
-        "Last snapshot": "00-inbox/" + target.name,
+        "Last snapshot": "sources/" + target.name,
         "State": "raw",
     }
     if remote_id or tracker_key:
@@ -491,7 +491,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("file", type=Path)
     parser.add_argument(
-        "--out", type=Path, required=True, help="resolved project 00-inbox directory"
+        "--out", type=Path, required=True, help="resolved project sources directory"
     )
     parser.add_argument("--scope")
     parser.add_argument("--source")

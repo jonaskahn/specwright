@@ -347,7 +347,7 @@ class PublishWithoutPlanTests(SoloTestCase):
 class RecordTests(SoloTestCase):
     def setUp(self):
         super().setUp()
-        (self.base / "00-inbox/SRC-0001.md").write_text(SNAPSHOT)
+        (self.base / "sources/SRC-0001.md").write_text(SNAPSHOT)
         self.ctx = recordops.Ctx(self.root, "REF", "sw-craft", today="2026-11-12")
 
     def cli(self, *args):

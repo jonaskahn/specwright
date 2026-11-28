@@ -20,37 +20,12 @@ if not (_shared / "kitlib").is_dir():
 if str(_shared) not in sys.path:
     sys.path.insert(0, str(_shared))
 
-from kitlib import fsio, workspace  # noqa: E402
+from kitlib import workspace  # noqa: E402
 
 
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
-    result = workspace.main(argv)
-    if result == 0 and argv and argv[0] == "init":
-        # Shared initialization owns manifests; this wrapper adds portable standing rules.
-        args = workspace._build_parser().parse_args(argv)
-        root = Path(args.root).resolve()
-        source = _here.parent / "assets/standing-rules.md"
-        try:
-            text = source.read_text(encoding="utf-8")
-            # AGENTS.md holds the only copy of the rules; the others point at it.
-            pointer = (
-                "# Project instructions\n\n"
-                "Read and follow AGENTS.md, the only copy of the rules.\n\n@AGENTS.md\n"
-            )
-            for name, content in (
-                ("AGENTS.md", text),
-                ("CLAUDE.md", pointer),
-                ("GEMINI.md", pointer),
-            ):
-                target = root / name
-                if not target.exists():
-                    fsio.atomic_write(target, content)
-                    print(f"  {name}")
-        except OSError as exc:
-            print(f"error: standing rules could not be installed: {exc}", file=sys.stderr)
-            return 2
-    return result
+    return workspace.main(argv)
 
 
 if __name__ == "__main__":

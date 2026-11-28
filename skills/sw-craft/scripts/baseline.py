@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Start from an existing baseline: a legacy register of capabilities the business already runs.
 
-import-register  normalize a legacy register into 01-analysis/baseline/register.tsv
+import-register  normalize a legacy register into analysis/baseline/register.tsv
 propose-grouping group it and list the legacy items that have no feature yet
 reserve          reserve one feature per legacy item of a group, keeping the legacy ID as an alias
 brief            draft one idea brief per group and record the first question: keep each legacy
@@ -166,7 +166,7 @@ def main(argv=None):
             )
         sources = baseline.sources_for(base, items)
         identity, text = baseline.brief_text(scope, args.group, items, features, sources)
-        target = base / "01-analysis/ideas" / (identity + ".md")
+        target = base / "analysis/ideas" / (identity + ".md")
         if target.exists():
             raise baseline.BaselineError(f"{target.name} already exists")
         question = recordops.question_new(

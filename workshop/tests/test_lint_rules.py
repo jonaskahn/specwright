@@ -56,7 +56,7 @@ class RuleTests(unittest.TestCase):
             "docs": documents,
             "gate": "publish",
             "definitions": lint.definitions_for(
-                [*documents, doc(BO, "01-analysis/BO-001.md")], "REF"
+                [*documents, doc(BO, "analysis/BO-001.md")], "REF"
             ),
         }
         defaults.update(kwargs)
@@ -214,13 +214,13 @@ class RuleTests(unittest.TestCase):
     def test_l004_reserved_registry_row_defines_the_feature(self):
         reg = tables.Table(list(schema.REGISTRY_COLUMNS))
         reg.upsert("REF:FEAT-009", {"Kind": "story", "State": "reserved"})
-        defs = lint.definitions_for([doc(), doc(BO, "01-analysis/BO-001.md")], "REF")
+        defs = lint.definitions_for([doc(), doc(BO, "analysis/BO-001.md")], "REF")
         defs |= lint.registry_definitions(reg, "REF")
         ctx = self.context([doc()], definitions=defs)
         text = GOOD + "\nSee FEAT-009 for the payout.\n"
         self.assertNotIn("L-004", {f.rule for f in lint.lint_document(doc(text), ctx)})
         reg.upsert("REF:FEAT-009", {"State": "withdrawn"})
-        defs2 = lint.definitions_for([doc(), doc(BO, "01-analysis/BO-001.md")], "REF")
+        defs2 = lint.definitions_for([doc(), doc(BO, "analysis/BO-001.md")], "REF")
         defs2 |= lint.registry_definitions(reg, "REF")
         ctx = self.context([doc()], definitions=defs2)
         self.assertIn("L-004", {f.rule for f in lint.lint_document(doc(text), ctx)})
@@ -448,7 +448,7 @@ class RuleTests(unittest.TestCase):
         self.check_rule("L-054", doc(GOOD.replace("aliases: []\n", "")))
         self.check_rule("L-054", doc(GOOD.replace("title: Submit a return request\n", "")))
         old_snapshot = snapshot().replace("aliases: []\n", "")
-        found = [f for f in self.findings(doc(old_snapshot, "00-inbox/SRC-0001.md"))]
+        found = [f for f in self.findings(doc(old_snapshot, "sources/SRC-0001.md"))]
         self.assertEqual([f.sev for f in found if f.rule == "L-054"], ["warn"])
 
     def test_l055(self):
@@ -477,13 +477,13 @@ class RuleTests(unittest.TestCase):
         reg.upsert("REF:FEAT-009", {"Aliases": "LEG-200"})
         mapped = self.context([doc(listed)], manifest=manifest, registry=reg)
         self.assertEqual(lint.legacy_findings(mapped), [])
-        snap = doc(snapshot(text), "00-inbox/SRC-0001.md")
+        snap = doc(snapshot(text), "sources/SRC-0001.md")
         self.assertEqual(lint.legacy_findings(self.context([snap], manifest=manifest)), [])
 
     def test_l057(self):
         from kitlib import cite
 
-        inbox = self.base / "00-inbox"
+        inbox = self.base / "sources"
         inbox.mkdir()
         lines = ["---", "id: SRC-0001", "---", "Refunds close after 14 days.", ""]
         (inbox / "SRC-0001.md").write_text("\n".join(lines) + "\n")
@@ -498,7 +498,7 @@ class RuleTests(unittest.TestCase):
             self.check_rule("L-057", doc(GOOD + f"\nSource: {bad_text}\n"), good)
 
     def test_l057_weak_evidence_is_only_a_warning(self):
-        inbox = self.base / "00-inbox"
+        inbox = self.base / "sources"
         inbox.mkdir()
         (inbox / "SRC-0001.md").write_text(
             "---\nid: SRC-0001\ncontent_class: index-only\n---\ntext\n"
@@ -563,16 +563,16 @@ class RuleTests(unittest.TestCase):
         cols = "| Feature | I | N | V | E | S | T | Reason |\n|---|---|---|---|---|---|---|---|\n"
         good = doc(
             head + cols + "| Request | pass | pass | pass | pass | pass | pass | — |\n",
-            "01-analysis/ideas/IDEA-refunds.md",
+            "analysis/ideas/IDEA-refunds.md",
         )
         bad = doc(
             head + cols + "| Request | yes | pass | pass | pass | pass | pass | — |\n",
-            "01-analysis/ideas/IDEA-refunds.md",
+            "analysis/ideas/IDEA-refunds.md",
         )
         self.check_rule("L-063", bad, good)
         plain = doc(
             head.replace("## Proposed FEAT split", "## Problem") + "text\n",
-            "01-analysis/ideas/IDEA-refunds.md",
+            "analysis/ideas/IDEA-refunds.md",
         )
         self.assertNotIn("L-063", {f.rule for f in self.findings(plain)})
 
@@ -775,7 +775,7 @@ class CommandTests(unittest.TestCase):
         self.root = Path(self.tmp.name).resolve() / ".specwright"
         workspace.init(self.root, "flat", "REF", "Returns")
         put(self.root / "features/FEAT-001/FEAT-001.story.md", GOOD)
-        (self.root / "01-analysis/BO-001.md").write_text(BO)
+        (self.root / "analysis/BO-001.md").write_text(BO)
 
     def cli(self, *args):
         out, err = io.StringIO(), io.StringIO()
@@ -843,7 +843,7 @@ class CommandTests(unittest.TestCase):
         workspace.init(self.root, "program", "ORD", "Orders")
         selected = self.root / "projects/REF"
         put(selected / "features/FEAT-001/FEAT-001.story.md", GOOD.replace("BO-001", "ORD:BO-001"))
-        (self.root / "projects/ORD/01-analysis/BO-001.md").write_text(BO.replace("REF", "ORD"))
+        (self.root / "projects/ORD/analysis/BO-001.md").write_text(BO.replace("REF", "ORD"))
         self.assertEqual(self.cli()[0], 2)
         code, text, _ = self.cli("--scope", "REF", "--format", "json")
         self.assertEqual(code, 0, text)
@@ -852,7 +852,7 @@ class CommandTests(unittest.TestCase):
 
     def test_bad_registry_and_invalid_utf8_are_findings(self):
         (self.root / ".metadata/id-registry.md").write_text("| Wrong |\n|---|\n| x |\n")
-        (self.root / "01-analysis/broken.md").write_bytes(b"\xff")
+        (self.root / "analysis/broken.md").write_bytes(b"\xff")
         code, text, _ = self.cli("--format", "json")
         self.assertEqual(code, 20)
         self.assertEqual(sum(f["rule"] == "L-001" for f in json.loads(text)["findings"]), 2)

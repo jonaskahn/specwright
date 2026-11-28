@@ -70,7 +70,7 @@ def _status_counts(folder, pattern):
 def baseline_state(root, scope, base, store, fresh):
     """Where an existing-baseline start stands: sources, snapshots and the legacy register."""
     sources = workspace.source_list(root, scope)
-    snapshots = [p for p in (base / "00-inbox").glob("SRC-*.md") if not p.is_symlink()]
+    snapshots = [p for p in (base / "sources").glob("SRC-*.md") if not p.is_symlink()]
     register = index.read_register(base / baseline.REGISTER)
     mapped = set()
     if fresh:
@@ -116,7 +116,7 @@ def baseline_step(state):
 
 def scope_state(root, scope):
     base = workspace.scope_dir(root, scope)
-    raw = base / "00-inbox/raw"
+    raw = base / "sources/raw"
     sources = (
         sum(1 for p in raw.rglob("*") if p.is_file() and p.name != ".gitkeep")
         if raw.is_dir()
@@ -137,7 +137,7 @@ def scope_state(root, scope):
         "setup": setup_needed(root, scope),
         "scope": scope,
         "sources": sources,
-        "ideas": _status_counts(base / "01-analysis/ideas", "*.md"),
+        "ideas": _status_counts(base / "analysis/ideas", "*.md"),
         "feats": feats,
         "feat_ids": drafts,
         "with_tasks": sorted(tasks),
@@ -191,7 +191,7 @@ def rank(root, scope, board, store):
     base = workspace.scope_dir(root, scope)
     nodes = [n for n in store.nodes() if n["kind"] == "feat"]
     cells = {}
-    for brief in sorted((base / "01-analysis/ideas").glob("*.md")):
+    for brief in sorted((base / "analysis/ideas").glob("*.md")):
         body = frontmatter.parse(brief.read_text(encoding="utf-8")).body
         rows, _ = invest.parse(body) if invest.has_section(body) else ([], [])
         for row in rows:
@@ -405,21 +405,52 @@ def action_for(item):
     return f"run {skill}"
 
 
+def glance(cwd):
+    """Filename-only look at the repository. No file bodies and no stack detection.
+
+    Hidden names are skipped. ``empty`` means no code marker, doc directory, or README.
+    """
+    from kitlib import discovery
+
+    here = Path(cwd).resolve()
+    code, docs, names = [], [], []
+    readme = False
+    if here.is_dir():
+        for child in sorted(here.iterdir(), key=lambda path: path.name.lower()):
+            if child.name.startswith("."):
+                continue
+            if len(names) < 12:
+                names.append(child.name)
+            if child.name in CODE_MARKERS:
+                code.append(child.name)
+            if child.is_dir() and child.name.lower() in discovery.DOC_DIRS:
+                docs.append(child.name)
+            if child.is_file() and child.name.lower().startswith("readme"):
+                readme = True
+    return {
+        "empty": not code and not docs and not readme,
+        "code": code,
+        "docs": docs,
+        "readme": readme,
+        "top_level": names,
+    }
+
+
 def report(cwd, target=None, pack=False):
     from kitlib import discovery
 
     info = workspace.detect(cwd)
-    info["context_intake"] = discovery.offer()
+    seen = glance(cwd)
+    info["surface"] = seen
+    info["context_intake"] = discovery.offer(seen)
     if info["mode"] == "none":
-        here = Path(cwd).resolve()
-        has_code = any((here / m).exists() for m in CODE_MARKERS)
         detected = {}  # Repository content discovery waits for the owner's scan choice.
         return {
             **info,
             "fresh_setup": True,
-            "code_detected": has_code,
+            "code_detected": bool(seen["code"]),
             "detected_stack": detected,
-            "intake": intake_questions(detected),
+            "intake": intake_questions(detected, seen),
             "next": ["sw-start", "set up .specwright/ and then ingest, shape or supply a baseline"],
             "scopes_state": [],
         }
@@ -487,7 +518,7 @@ def code_state(root, scope):
             if r["exists"] and (r["path"] or coderoots._has_build(Path(r["abs"])))
         ],
         "detected": [d["path"] for d in coderoots.detect(root, scope)],
-        "inventory": (base / "01-analysis" / "as-is" / "inventory.md").is_file(),
+        "inventory": (base / "analysis" / "as-is" / "inventory.md").is_file(),
     }
 
 
@@ -505,11 +536,32 @@ def stack_state(root, scope):
     }
 
 
-def intake_questions(detected):
-    """At most three first-run questions; defaults are suggestions, never applied silently."""
-    questions = [
-        {
-            "q": "What do you have to start from?",
+def intake_questions(detected, surface=None):
+    """At most three first-run questions; defaults are suggestions, never applied silently.
+
+    An empty glance drops discover-docs and existing-system options. The user's message, when it
+    already names the change, answers the starting-point question and must not be asked again.
+    """
+    seen = surface or {}
+    if seen.get("empty"):
+        start = {
+            "q": "What should this run use as the idea? Checked the folder: no code and no docs.",
+            "options": [
+                "the change described in this conversation",
+                "documents to import",
+                "an existing register or Jira",
+            ],
+            "default": "the change described in this conversation",
+        }
+    else:
+        found = []
+        if seen.get("readme"):
+            found.append("README")
+        found.extend(seen.get("docs") or [])
+        found.extend(seen.get("code") or [])
+        hint = f" Glance found {', '.join(found[:6])}." if found else ""
+        start = {
+            "q": "What do you have to start from?" + hint,
             "options": [
                 "discover existing repository docs and plans (ask before scanning)",
                 "use selected files or Specwright items",
@@ -519,7 +571,9 @@ def intake_questions(detected):
                 "an existing register or Jira",
             ],
             "default": "an idea in words",
-        },
+        }
+    questions = [
+        start,
         {
             "q": "How far should this run go before it stops for good?",
             "options": [

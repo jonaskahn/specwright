@@ -31,15 +31,43 @@ MAX_ENTRIES = 20000
 MAX_BYTES = inventory.MAX_BYTES
 
 
-def offer() -> dict:
-    """A prompt contract, not permission to inspect a repository."""
-    return {
-        "question": "How should we collect context for this change?",
-        "options": [
+def offer(surface: dict | None = None) -> dict:
+    """A prompt contract, not permission to inspect a repository.
+
+    ``surface`` is a filename glance. It changes the options and does not consent to reading
+    document bodies. An empty folder is not offered a document scan.
+    """
+    seen = surface or {}
+    found: list[str] = []
+    if seen.get("readme"):
+        found.append("README")
+    found.extend(seen.get("docs") or [])
+    found.extend(seen.get("code") or [])
+    if seen.get("empty"):
+        question = "This folder has no code or docs. How should we start?"
+        options = [
+            "use the change described in this conversation",
+            "use selected files or Specwright items",
+            "documents to import",
+        ]
+    elif found:
+        listed = ", ".join(found[:6])
+        question = "How should we collect context for this change?"
+        options = [
+            f"discover repository docs and plans (recommended; glance found {listed})",
+            "use selected files or Specwright items",
+            "describe the change first",
+        ]
+    else:
+        question = "How should we collect context for this change?"
+        options = [
             "discover repository docs and plans (recommended)",
             "use selected files or Specwright items",
             "describe the change first",
-        ],
+        ]
+    return {
+        "question": question,
+        "options": options,
         "unanswered": "do not scan; leave context unresolved",
         "consent_required": True,
         "command": "analyze.py discover --cwd <repository> --confirm-scan",

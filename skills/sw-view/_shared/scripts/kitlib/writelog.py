@@ -178,7 +178,7 @@ def operation(
 SHARED_STATE = frozenset(
     {".metadata/id-registry.md", ".metadata/rtm.md", ".metadata/asset-registry.md"}
 )
-WORKER_OWNED = ("01-analysis/candidates/",)
+WORKER_OWNED = ("analysis/candidates/",)
 
 
 def drift(path: str | Path) -> list[str]:

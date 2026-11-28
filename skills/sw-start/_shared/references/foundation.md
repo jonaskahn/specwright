@@ -24,13 +24,13 @@ prompt relies on `make check` and `AGENTS.md`.
 ## Steps
 1. Only if the owner explicitly selects the displayed defaults: `foundation.py set --defaults`.
    Otherwise save only their choices with `set --layer <l> --build/--format/--lint/--test`,
-   `--coverage N`, `--ci`, `--hooks`, `--ai-workflow agents+claude|agents|none` per answer.
+   `--coverage N`, `--ci`, `--hooks`, `--ai-workflow AGENTS.md|none` per answer.
    Tooling lives in `stack.yaml` under `tooling`, outside the stack lock hash.
 2. Reserve the story with the owner's yes: `record.py accept-split --new-epic "Project
    foundation" --bo BO-NNN --item "Set up project foundation|foundation"` (no BO yet → ask).
 3. `new_story.py --reserved FEAT-NNN`, set `links:`, then `foundation.py draft --feat FEAT-NNN`.
-   It fills the twelve sections and writes reference files: `features/FEAT-NNN/foundation/Makefile`,
-   `AGENTS.md` and (agents+claude) `CLAUDE.md` with `@AGENTS.md`.
+   It fills the twelve sections and writes reference files: `features/FEAT-NNN/foundation/Makefile`
+   and `AGENTS.md`. It does not write `CLAUDE.md` or `GEMINI.md`.
 4. Continue as any story: consumer checks, illustration check, hash, card, finish → review.
 
 ## Rust tooling
@@ -73,7 +73,8 @@ Do not pin tool versions from memory. Verify supported releases and setup before
 ## What the story guarantees
 `make setup | fmt | fmt-check | lint | typecheck | test | build | check`; coverage below the floor
 fails; CI runs `make check` and blocks merges; `AGENTS.md` holds the locked stack, commands,
-structure, working principles and definition of done; structure follows the stack convention.
+structure, working principles, definition of done, and a short pointer to the epic, story,
+task and plan under `.specwright/`; structure follows the stack convention.
 
 ## One root file, small nested files
 The root `AGENTS.md` holds the shared rules: stack, commands, working principles, definition of

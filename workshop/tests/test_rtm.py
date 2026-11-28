@@ -109,7 +109,7 @@ class RtmTests(unittest.TestCase):
         workspace.init(root, "program", "ORD", "Orders")
         ref = root / "projects/REF"
         order = root / "projects/ORD"
-        (order / "01-analysis/BO-001.md").write_text(
+        (order / "analysis/BO-001.md").write_text(
             frontmatter.render({"id": "BO-001", "type": "bo"}, "# Outcome\n")
         )
         put(
@@ -175,7 +175,7 @@ class RegistryColumnTests(unittest.TestCase):
     def test_ingest_owns_snapshot_and_source_ref_only(self):
         cells = {
             "Kind": "snapshot",
-            "Last snapshot": "00-inbox/SRC-0001.md",
+            "Last snapshot": "sources/SRC-0001.md",
             "Source ref": "wiki:12",
         }
         rtm.registry_upsert(self.path, "REF:SRC-0001", cells, "sw-craft")

@@ -1,7 +1,10 @@
 # Resolve gaps without guessing
 
 Read relevant artifacts before asking. Cite what you checked. Ask only about a real
-gap, conflict or preference that the artifacts cannot settle. Record answers in
+gap, conflict or preference that the artifacts cannot settle. The current user message
+and a filename glance count as checked context. A question whose only answer is free
+text is not allowed: give options grounded in that context. If the user already
+described the change, do not ask them to type it again. Record answers in
 question and decision records so the next session does not ask again.
 
 Ask at most five questions at once, everywhere; routing may ask fewer (sw-start asks at

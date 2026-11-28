@@ -11,7 +11,7 @@
  "key": "REF:EPIC-001",
  "kind": "epic",
  "line": 1,
- "path": "projects/REF/01-analysis/epics/EPIC-001.md",
+ "path": "projects/REF/analysis/epics/EPIC-001.md",
  "scopes": [
   "REF",
   "ORD"

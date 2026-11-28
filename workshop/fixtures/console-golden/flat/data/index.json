@@ -10,66 +10,66 @@
  "files": {
   "features.json": {
    "owner": "sw-start",
-   "sha256": "sha256:b7691e258b2eb154f8d6430fdf047f955bd1cfb58d834692fa3548c2902ee99c",
+   "sha256": "sha256:5433354acee9a272952a76950f3c1747f14f7dfb246ceffd781712bf9660ee8b",
    "bytes": 1469,
    "rows": 2,
-   "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
+   "inputsDigest": "sha256:d2b9cdf84d1b81c31963d3c3382fb90a135e20482973638588bf4e392b75f0e3"
   },
   "graph.json": {
    "owner": "sw-start",
-   "sha256": "sha256:5be1cf3ced6b87ebd0cd980f646564b054a73ecf9d43406c0112708855564577",
-   "bytes": 3980,
+   "sha256": "sha256:d26dfb0074de27fc97f830449f4a48b5dbc9afd96656fb770427d33f6b0feb9e",
+   "bytes": 3977,
    "rows": 16,
-   "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
+   "inputsDigest": "sha256:d2b9cdf84d1b81c31963d3c3382fb90a135e20482973638588bf4e392b75f0e3"
   },
   "quality.json": {
    "owner": "sw-craft",
-   "sha256": "sha256:5a4dc4efce679975264fbad7615f8d19a200dfea9c879c0f49cfb930da3b7a79",
+   "sha256": "sha256:c95ffd4651bb9430bf4b589cbffb8910014cd0c1fc14744cbccd11320167bd7a",
    "bytes": 485,
    "rows": 2,
-   "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
+   "inputsDigest": "sha256:d2b9cdf84d1b81c31963d3c3382fb90a135e20482973638588bf4e392b75f0e3"
   },
   "records.json": {
    "owner": "sw-craft",
-   "sha256": "sha256:9d393168abd461c8b10b45b1df6708b973860929d734b9fc478a7c5ecb635922",
+   "sha256": "sha256:06b59855e3b248214b5d404e9899fc8a1b7ae8341d92279a6578fc11b968fcfc",
    "bytes": 768,
    "rows": 2,
-   "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
+   "inputsDigest": "sha256:d2b9cdf84d1b81c31963d3c3382fb90a135e20482973638588bf4e392b75f0e3"
   },
   "registry.json": {
    "owner": "sw-craft",
-   "sha256": "sha256:8e333688241d0e62be3ec94cb0110653b357c2320d940cb626b0c05f8c7bc02c",
+   "sha256": "sha256:d2a8f485f2e9e3b5bca7088e4b498cabdc57ae60da328de376592bb40a84b995",
    "bytes": 2146,
    "rows": 8,
-   "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
+   "inputsDigest": "sha256:d2b9cdf84d1b81c31963d3c3382fb90a135e20482973638588bf4e392b75f0e3"
   },
   "rtm.json": {
    "owner": "sw-forge",
-   "sha256": "sha256:34c1e1346a74639c69799bdd9e92ec4fb2354279e59ba57b4123634a9a8c4472",
+   "sha256": "sha256:20d4bddcedf038511bee27021e7dc1d15fc482ebc66d2ce041a84498e30031ad",
    "bytes": 1974,
    "rows": 8,
-   "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
+   "inputsDigest": "sha256:d2b9cdf84d1b81c31963d3c3382fb90a135e20482973638588bf4e392b75f0e3"
   },
   "scopes.json": {
    "owner": "sw-start",
-   "sha256": "sha256:4491c87002c20d7955d65437866cb690fbeb50cc0a6cfd8c93648f83c2fd38fb",
+   "sha256": "sha256:c295c15e0c345622ed3c2f86dbf4062663d2332a90f5252d447127b8b2b969dd",
    "bytes": 465,
    "rows": 1,
-   "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
+   "inputsDigest": "sha256:d2b9cdf84d1b81c31963d3c3382fb90a135e20482973638588bf4e392b75f0e3"
   },
   "sources.json": {
    "owner": "sw-craft",
-   "sha256": "sha256:c13e9d49cdf1a9d9abcbdcdcdfd28c1267b5c1095971039be3261aea87392cdd",
+   "sha256": "sha256:704c241c6a7569faf4bb17cf289dda361ca768b3eccf6038a3e4525f072baf28",
    "bytes": 282,
    "rows": 0,
-   "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
+   "inputsDigest": "sha256:d2b9cdf84d1b81c31963d3c3382fb90a135e20482973638588bf4e392b75f0e3"
   },
   "tasks.json": {
    "owner": "sw-forge",
-   "sha256": "sha256:95f45225b64ab5c3bf4be902621994dcde41f1500bd98384a9a2bf120415dad6",
+   "sha256": "sha256:7e035000c81041b90a581b6ecd7902461f1138fa36585e4dbedd2e6e78fba2a4",
    "bytes": 280,
    "rows": 0,
-   "inputsDigest": "sha256:31fd2c63220cf527df182deb202571c84ed778f26e9ec585dae6e366996db7e3"
+   "inputsDigest": "sha256:d2b9cdf84d1b81c31963d3c3382fb90a135e20482973638588bf4e392b75f0e3"
   }
  },
  "idleAfterDays": 14,
@@ -78,5 +78,5 @@
  "scopes": [
   "REF"
  ],
- "digest": "sha256:06d1d401c5f67db138b2dd33e487f122ab5cc000e994a6f66ffe4ee2d8419fae"
+ "digest": "sha256:2793c186e5632f132b54a4fd02d1a8cf88186b9e79729e48d4c362232448f33a"
 }

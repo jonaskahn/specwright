@@ -124,11 +124,11 @@ REGISTRY_COLUMNS = [
 ]
 
 SCOPE_DIRS = [
-    "00-inbox/raw",
-    "00-inbox/imports",
-    "01-analysis/ideas",
-    "01-analysis/candidates",
-    "01-analysis/baseline",
+    "sources/raw",
+    "sources/imports",
+    "analysis/ideas",
+    "analysis/candidates",
+    "analysis/baseline",
     "epics",
     "features",
     "tasks",

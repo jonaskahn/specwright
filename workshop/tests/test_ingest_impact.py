@@ -7,7 +7,7 @@ from tests.test_workflow import WorkflowTestCase
 class ImpactTests(WorkflowTestCase):
     def setUp(self):
         super().setUp()
-        self.source = self.base / "00-inbox/SRC-0001.md"
+        self.source = self.base / "sources/SRC-0001.md"
         self.source.write_text(
             frontmatter.render(
                 {"id": "SRC-0001", "type": "snapshot", "scope": "REF", "status": "raw"},

@@ -10,7 +10,7 @@
   "index.tsv": "sha256:09cd7db2b5993be3961f80c97e8f659a79fae29ce8435667638ae15d1c60176d"
  },
  "inputs": {
-  "projects/REF/01-analysis/epics/EPIC-001.md": 130,
+  "projects/REF/analysis/epics/EPIC-001.md": 130,
   "projects/REF/project.yaml": 330,
   "workspace.yaml": 55
  },

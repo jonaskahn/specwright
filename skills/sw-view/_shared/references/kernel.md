@@ -33,13 +33,17 @@ Read once per session. Every sw- skill assumes these rules; no skill repeats the
   `confirm` → one "Continue to X? (Y/n)"; `stop` → ask what is needed; `done` → report.
 - Stop only for a human decision, a blocker or a missing input. Ask at most five questions
   at once, each with evidence, options, consequences and what waits (`stop-and-ask.md`).
-- Never guess intent, identity, scope, business rules, thresholds, dependencies or completion.
-  Defaults are recommendations, not answers. Leave unanswered decisions open; continue only
-  independent work. No automatic assumption or acceptance, even with high-confidence evidence.
+- The current user message is stated intent. A filename glance (names, code markers, doc
+  directories, a README) is context, not a discovery scan. Do not ask the user to retype either.
+  Still never guess identity, scope boundaries, business rules, thresholds, dependencies,
+  completion, or approval. Defaults are recommendations, not answers. Leave unanswered decisions
+  open; continue only independent work. No automatic assumption or acceptance, even with
+  high-confidence evidence.
 - At every state, accept corrections, requests for evidence, scope changes or "leave unresolved".
   Reconfirm decisions when their source evidence changes; silence is never consent.
-- Before initial repository discovery, offer scan / selected files or items / describe first.
-  Scan only after the user's choice; discovery is read-only and never imports or links by itself.
+- Before initial repository discovery, offer scan / selected files or items / describe first,
+  using what the glance found. An empty folder does not get a discover-docs offer. Scan document
+  bodies only after the user's choice; discovery is read-only and never imports or links by itself.
 - Never weaken a rule to make a check pass.
 - Docs-only workspaces do not need Git. Delegate with shared-workspace file ownership, or
   work serially, unless worktree isolation is explicitly needed and supported. After a

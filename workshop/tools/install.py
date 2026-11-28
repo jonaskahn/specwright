@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install the public Specwright skills without overwriting existing rules."""
+"""Install the public Specwright skills and command wrappers. Does not write agent files."""
 
 from __future__ import annotations
 
@@ -36,14 +36,6 @@ def _previous(base: Path, root: Path) -> list[Path]:
     return found
 
 
-def _put_if_absent(path: Path, content: str, created: list[str], target: Path) -> None:
-    if path.exists() or path.is_symlink():
-        return
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding="utf-8")
-    created.append(str(path.relative_to(target)))
-
-
 def install(
     root: Path, target: Path, copy_mirror: bool = False, profile: str = "extended"
 ) -> dict[str, list[str]]:
@@ -63,7 +55,6 @@ def install(
         new_paths.extend(base / source.name for source in sources)
         new_paths.extend(base.parent / "commands" / cmd.name for cmd in command_files)
     created: list[str] = []
-    skipped: list[str] = []
     with tempfile.TemporaryDirectory(prefix="specwright-install-") as raw:
         staging = Path(raw)
         for source in sources:
@@ -113,27 +104,10 @@ def install(
         else:
             for _, backup in backups:
                 shutil.rmtree(backup)
-    rules = (root / "AGENTS.md").read_text(encoding="utf-8")
-    agents = target / "AGENTS.md"
-    if agents.exists() and agents.read_text(encoding="utf-8") != rules:
-        skipped.append("AGENTS.md: existing project instructions preserved")
-    _put_if_absent(agents, rules, created, target)
-    # AGENTS.md is the only copy of the rules; the other agent files point at it.
-    rules_pointer = (
-        "# Project instructions\n\n"
-        "Read and follow AGENTS.md, the only copy of the rules.\n\n@AGENTS.md\n"
-    )
-    for name in ("CLAUDE.md", "GEMINI.md"):
-        existing = target / name
-        if existing.exists():
-            skipped.append(f"{name}: existing instructions preserved")
-        _put_if_absent(existing, rules_pointer, created, target)
-    pointer = "# Project instructions\n\nRead and follow ../AGENTS.md.\n"
-    _put_if_absent(target / ".github" / "copilot-instructions.md", pointer, created, target)
     return {
         "created": created,
         "removed": [str(p.relative_to(target)) for p in previous],
-        "preserved": skipped,
+        "preserved": [],
     }
 
 

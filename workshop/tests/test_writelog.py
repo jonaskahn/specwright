@@ -122,10 +122,10 @@ class OperationTests(unittest.TestCase):
         )
 
     def test_shared_state_and_worker_files_are_not_judged(self):
-        (self.base / "01-analysis/candidates").mkdir(parents=True)
+        (self.base / "analysis/candidates").mkdir(parents=True)
         files = [
             self.base / ".metadata/id-registry.md",
-            self.base / "01-analysis/candidates/CAND-001--x.md",
+            self.base / "analysis/candidates/CAND-001--x.md",
         ]
         with writelog.operation(self.log, "sw-craft", "x", "X") as op:
             for f in files:

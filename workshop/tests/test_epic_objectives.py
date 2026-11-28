@@ -22,7 +22,7 @@ class EpicObjectiveTests(unittest.TestCase):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         self.root = Path(tmp.name)
-        cards = self.root / "01-analysis"
+        cards = self.root / "analysis"
         cards.mkdir()
         for number in ("001", "002"):
             (cards / f"BO-{number}.md").write_text(f"---\nid: BO-{number}\ntype: bo\n---\n")
@@ -45,7 +45,7 @@ class EpicObjectiveTests(unittest.TestCase):
             new_epic.create(self.root, "REF", "Refunds", bo=["BO-009"])
         with self.assertRaisesRegex(ValueError, "not a business objective ID"):
             new_epic.create(self.root, "REF", "Refunds", bo=["FEAT-001"])
-        self.assertEqual(list((self.root / "01-analysis").glob("epics/*")), [])
+        self.assertEqual(list((self.root / "analysis").glob("epics/*")), [])
 
     def test_the_objectives_of_an_existing_epic_can_be_replaced(self):
         path = new_epic.create(self.root, "REF", "Refunds", bo=["BO-001"])

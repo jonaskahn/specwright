@@ -182,7 +182,7 @@ def make_trace(base: Path) -> Path:
     for epic, text in (("EPIC-001", TRACE_EPIC), ("EPIC-002", TRACE_EPIC_BARE)):
         (root / "epics" / epic).mkdir(parents=True)
         (root / "epics" / epic / f"{epic}.md").write_text(text, encoding="utf-8")
-    (root / "01-analysis" / "BO-002.md").write_text(TRACE_BO, encoding="utf-8")
+    (root / "analysis" / "BO-002.md").write_text(TRACE_BO, encoding="utf-8")
     drafts = root / "features"
     first = drafts / "FEAT-001" / "FEAT-001.story.md"
     first.write_text(

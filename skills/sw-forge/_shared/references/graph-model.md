@@ -50,7 +50,7 @@ The same build writes four files next to the graph in .metadata/, never edited b
   `~rel:KEY` for an incoming link.
 - CROSSWALK.tsv: one row per legacy or external item mapping every name it has to its internal key, with
   match = matched, no-feature, no-source, ambiguous or no-register. The legacy register is
-  01-analysis/baseline/register.tsv (legacy_id, title, group, source_ref); without one, features that have aliases
+  analysis/baseline/register.tsv (legacy_id, title, group, source_ref); without one, features that have aliases
   are listed.
 - READ-FIRST.md: the fixed reading order for a new session.
 

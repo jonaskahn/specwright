@@ -185,7 +185,7 @@ def input_files(root: Path, scopes: list[str]) -> list[Path]:
         if base != root:
             out.append(base / workspace.FLAT_MANIFEST)
         for folder, pattern in (
-            ("01-analysis", "*.md"),
+            ("analysis", "*.md"),
             ("epics", "*.md"),
             ("features", "*.md"),
             ("features", "*.feature"),
@@ -195,8 +195,8 @@ def input_files(root: Path, scopes: list[str]) -> list[Path]:
             ("snapshots", "*.md"),
             ("diagrams", "*.json"),
             ("diagrams", "*.svg"),
-            ("01-analysis/baseline", "*.tsv"),
-            ("01-analysis/candidates", "*.tsv"),
+            ("analysis/baseline", "*.tsv"),
+            ("analysis/candidates", "*.tsv"),
         ):
             for path in sorted((base / folder).rglob(pattern)):
                 if path.is_file() and not path.is_symlink():
@@ -205,7 +205,7 @@ def input_files(root: Path, scopes: list[str]) -> list[Path]:
         out.append(base / ".metadata/asset-registry.md")
         out.append(base / ".metadata/lifecycle-pending.json")
         out.extend(sorted((base / ".metadata/provenance").glob("SRC-*.jsonl")))
-        out.extend(p for p in (base / "00-inbox").glob("SRC-*.md") if not p.is_symlink())
+        out.extend(p for p in (base / "sources").glob("SRC-*.md") if not p.is_symlink())
     return sorted({p for p in out if p.is_file()})
 
 

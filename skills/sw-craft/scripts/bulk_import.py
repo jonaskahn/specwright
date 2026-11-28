@@ -4,7 +4,7 @@
 Input is a folder (`--input-dir`) or a tab-separated list (`--list-file`) with a header row and the
 columns path, title, source, source_version, remote_id, parent_id, tracker_key, url, labels (only
 `path` is required). Parents are imported before children and linked as `source_parent`. The
-batch writes 00-inbox/imports/<batch-id>/manifest.json with expected and received counts and one
+batch writes sources/imports/<batch-id>/manifest.json with expected and received counts and one
 status per item.
 
 There is no cap on the total. The list is imported in sub-batches of --batch-size items
@@ -209,7 +209,7 @@ def main(argv: list[str] | None = None) -> int:
             raise BatchError("no workspace; run the sw-start workspace setup first")
         scope = workspace.resolve(root, args.scope, None, cwd, True)
         base = workspace.scope_dir(root, scope)
-        out = base / "00-inbox"
+        out = base / "sources"
         items = order_parents_first(read_items(args.input_dir, args.list_file))
         manifest = workspace.load(base / workspace.FLAT_MANIFEST)
         size = (

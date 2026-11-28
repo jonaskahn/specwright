@@ -66,7 +66,7 @@ def main(argv: list[str] | None = None) -> int:
             ) as op:
                 provenance.append(target, line)
                 op.wrote(target)
-        path = ids.find_record(base / "00-inbox", src_id)
+        path = ids.find_record(base / "sources", src_id)
         if path is None:
             raise provenance.ProvenanceError(f"no snapshot {src_id}")
         fm = frontmatter.parse(path.read_text(encoding="utf-8")).fm or {}

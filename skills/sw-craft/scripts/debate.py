@@ -83,7 +83,7 @@ def _analyses(base: Path, feat: str, fm: dict) -> list[str]:
     texts = [_paths(base, f)["story"] for f in (feat, target) if f]
     cited = " ".join(t.read_text(encoding="utf-8") for t in texts if t.is_file())
     out = []
-    for a in sorted((base / "01-analysis" / "as-is").glob("*.analysis.md")):
+    for a in sorted((base / "analysis" / "as-is").glob("*.analysis.md")):
         rel = a.relative_to(base).as_posix()
         afm = frontmatter.parse(a.read_text(encoding="utf-8")).fm or {}
         if rel in cited or str(afm.get("target", "")).split(":")[-1] in (feat, target):
@@ -153,7 +153,7 @@ def brief(base: Path, feat: str) -> Path:
     if p["card"].is_file():
         files.append(p["card"].relative_to(base).as_posix())
     for s in srcs:
-        files += [x.relative_to(base).as_posix() for x in (base / "00-inbox").glob(f"{s}--*.md")]
+        files += [x.relative_to(base).as_posix() for x in (base / "sources").glob(f"{s}--*.md")]
     if fm.get("changes"):
         t = str(fm["changes"]).split(":")[-1]
         files.append(paths.story(base, t).relative_to(base).as_posix())

@@ -1,6 +1,6 @@
 # Candidate extraction contract
 
-Each worker writes exactly one file, `01-analysis/candidates/CAND-NNN--<area>.md`, created for it by
+Each worker writes exactly one file, `analysis/candidates/CAND-NNN--<area>.md`, created for it by
 `scripts/candidates.py assign`. The script also writes `assignment.tsv`, the record of which worker
 reads which snapshot. Do not create, rename or edit any other file.
 

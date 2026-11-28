@@ -86,7 +86,7 @@ def row_summary(row: dict[str, str]) -> dict[str, int]:
 def board(base: Path) -> list[dict]:
     """Per idea brief: its id, row count, totals per letter and format problems."""
     found = []
-    for path in sorted((base / "01-analysis/ideas").glob("*.md")):
+    for path in sorted((base / "analysis/ideas").glob("*.md")):
         parsed = frontmatter.parse(path.read_text(encoding="utf-8"))
         if not has_section(parsed.body):
             continue

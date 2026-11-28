@@ -15,7 +15,7 @@ Load only when a step in SKILL.md is unclear or a script errors.
   passed after the user's choice; output is paginated, read-only and never an accepted link.
 - Names and pointers only: endpoints (Spring, Nest, Express, FastAPI/Flask, Django, Go, file
   routes), screens (file routes, React/Vue routes, Flutter screens), entities (JPA, Prisma,
-  Django, SQLAlchemy, SQL), tests (names), doc headings (00-inbox, docs folders in roots).
+  Django, SQLAlchemy, SQL), tests (names), doc headings (sources, docs folders in roots).
 - Candidates group names sharing a keyword across kinds. They are a map, not evidence.
 - Large repos: files over 300 KB and generated folders are skipped; at most 20,000 files.
 

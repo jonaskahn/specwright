@@ -105,8 +105,8 @@ class NamingTests(unittest.TestCase):
             (base / ".metadata/id-registry.md").write_text("| REF:FEAT-009 |\n")
             (base / "features/FEAT-001").mkdir(parents=True)
             (base / "features/FEAT-001/FEAT-001.story.md").write_text("~~AC-001-3~~ and DEC-007\n")
-            (base / "00-inbox/raw").mkdir(parents=True)
-            (base / "00-inbox/raw/ignored.md").write_text("Q-999\n")
+            (base / "sources/raw").mkdir(parents=True)
+            (base / "sources/raw/ignored.md").write_text("Q-999\n")
             taken = ids.taken_ids(base)
             for wanted in ("Q-004", "FEAT-009", "FEAT-001", "AC-001-3", "DEC-007"):
                 self.assertIn(wanted, taken)

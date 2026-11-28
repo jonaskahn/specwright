@@ -142,7 +142,7 @@ class BaselineTests(WorkflowTestCase):
         early = self.baseline_cli("brief", "--group", "Refunds")
         self.assertEqual(early.returncode, 2)
         self.assertIn("reserve this group first", early.stderr)
-        (self.base / "00-inbox/SRC-0001.md").write_text(
+        (self.base / "sources/SRC-0001.md").write_text(
             frontmatter.render(
                 {
                     "id": "SRC-0001",
@@ -158,7 +158,7 @@ class BaselineTests(WorkflowTestCase):
         self.baseline_cli("reserve", "--group", "Refunds")
         done = self.baseline_cli("brief", "--group", "Refunds")
         self.assertEqual(done.returncode, 0, done.stderr)
-        brief = self.base / "01-analysis/ideas/IDEA-baseline-refunds.md"
+        brief = self.base / "analysis/ideas/IDEA-baseline-refunds.md"
         parsed = frontmatter.parse(brief.read_text())
         self.assertEqual(parsed.fm["sources"], ["SRC-0001"])
         rows, problems = invest.parse(parsed.body)
@@ -188,7 +188,7 @@ class BaselineTests(WorkflowTestCase):
             [
                 sys.executable,
                 str(leakage),
-                str(self.base / "01-analysis/ideas/IDEA-baseline-refunds.md"),
+                str(self.base / "analysis/ideas/IDEA-baseline-refunds.md"),
             ],
             capture_output=True,
             text=True,
@@ -231,7 +231,7 @@ class BaselineTests(WorkflowTestCase):
 
     def test_the_crosswalk_matches_registered_items_and_lists_the_rest(self):
         self.register()
-        (self.base / "00-inbox/SRC-0001.md").write_text(
+        (self.base / "sources/SRC-0001.md").write_text(
             frontmatter.render(
                 {
                     "id": "SRC-0001",

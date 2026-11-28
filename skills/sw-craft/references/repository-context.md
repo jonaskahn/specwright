@@ -6,14 +6,22 @@ exist yet. Root documents and plans remain read-only; Specwright never moves or 
 
 ## Choose the context path
 
-Ask with options and consequences, unless the user already chose explicitly this session:
-1. Discover repository docs and plans (recommended): read-only inventory, then review candidates.
+Read `surface` from `start.py` before asking. The current user message is the change when it
+names the work; do not ask them to type it again. If the glance shows no code, no docs and no
+README, do not offer discovery. Use that message and ask only a gap it leaves open.
+
+Otherwise ask with options and consequences, naming what the glance found, unless the user
+already chose explicitly this session:
+1. Discover repository docs and plans (recommended when the glance found docs or a README):
+   read-only inventory, then review candidates.
 2. Selected material: user names files, directories or existing Specwright items; no broad scan.
-3. Describe first: ask actor, desired outcome and must-not-change constraints; inspect only the
+3. Describe first: the user's message is the description when it already states the change.
+   Otherwise ask actor, desired outcome and must-not-change constraints; inspect only the
    relevant area after agreeing the scope. Unknown answers stay unknown.
 
 No answer means no scan. The user can request evidence, correct an interpretation, change
 scope or leave a decision unresolved in any phase. Asking is not restricted to initial intake.
+A question with no options, only free text, is not allowed.
 
 ## Discovery and coverage
 

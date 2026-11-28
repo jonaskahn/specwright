@@ -103,6 +103,9 @@ class Foundation(unittest.TestCase):
         locked = foundation.agents_md(t, "Demo", {"backend": "java 21"}, "sha256:abc")
         self.assertIn("locked sha256:abc", locked)
         self.assertIn("andrej-karpathy-skills", locked)
+        self.assertIn("## Documentary proof", locked)
+        self.assertIn("epics/", locked)
+        self.assertIn(".specwright/", locked)
 
     def test_story_sections(self):
         t = foundation.default_tooling(PROFILE)

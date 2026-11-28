@@ -103,26 +103,25 @@ class DistributionTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             package.build(self.root, self.output)
 
-    def test_install_creates_correct_relative_symlink_and_rule_copies(self):
+    def test_install_creates_correct_relative_symlink_and_no_rule_copies(self):
         installer.install(self.root, self.target)
         canonical = self.target / ".agents" / "skills" / "sw-start"
         alias = self.target / ".claude" / "skills" / "sw-start"
         self.assertEqual(alias.resolve(), canonical.resolve())
-        self.assertIn("@AGENTS.md", (self.target / "CLAUDE.md").read_text())
-        self.assertNotEqual(
-            (self.target / "CLAUDE.md").read_bytes(), (self.target / "AGENTS.md").read_bytes()
-        )
-        self.assertTrue((self.target / ".github" / "copilot-instructions.md").exists())
+        for name in ("AGENTS.md", "CLAUDE.md", "GEMINI.md"):
+            self.assertFalse((self.target / name).exists(), name)
+        self.assertFalse((self.target / ".github" / "copilot-instructions.md").exists())
 
-    def test_install_copy_mode_and_preserved_rules(self):
+    def test_install_copy_mode_leaves_an_existing_agents_file(self):
         self.target.mkdir()
         (self.target / "AGENTS.md").write_text("# Existing\n")
         report = installer.install(self.root, self.target, copy_mirror=True)
-        self.assertTrue(report["preserved"])
+        self.assertEqual(report["preserved"], [])
         alias = self.target / ".claude" / "skills" / "sw-start"
         self.assertTrue(alias.is_dir())
         self.assertFalse(alias.is_symlink())
-        self.assertIn("@AGENTS.md", (self.target / "GEMINI.md").read_text())
+        self.assertEqual((self.target / "AGENTS.md").read_text(), "# Existing\n")
+        self.assertFalse((self.target / "GEMINI.md").exists())
 
     def test_incomplete_old_skill_is_replaced(self):
         collision = self.target / ".claude" / "skills" / "sw-start"
@@ -161,7 +160,8 @@ class DistributionTests(unittest.TestCase):
         copy = installer.shutil.copytree
 
         def fail(source, destination, *args, **kwargs):
-            if Path(destination) == self.target / ".claude/skills/sw-start":
+            expected = (self.target / ".claude/skills/sw-start").resolve()
+            if Path(destination).resolve() == expected:
                 raise OSError("simulated copy failure")
             return copy(source, destination, *args, **kwargs)
 

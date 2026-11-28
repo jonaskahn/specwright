@@ -26,9 +26,15 @@ FOUNDATION = "foundation"
 INDEX = "INDEX.md"
 ITEM_META = ".metadata/item.json"
 
+# Imported evidence and analysis live beside the item folders, without a number prefix.
+SOURCES = "sources"
+ANALYSIS = "analysis"
+
 # The folders earlier versions used for the same items; read only by the migration.
 LEGACY_DRAFTS = "02-drafts"
 LEGACY_PLAN = "03-plan"
+LEGACY_INBOX = "00-inbox"
+LEGACY_ANALYSIS = "01-analysis"
 LEGACY_EPICS = "01-analysis/epics"
 
 

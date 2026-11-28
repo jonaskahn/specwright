@@ -16,12 +16,16 @@ Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
 1. `scripts/start.py --cwd <project>`. Begin the reply with `Specwright <kit_version>`.
    Exit 2 → print its reinstall command, stop. Exit 3 → list the choices, ask.
 2. First contact, "help" or "what can you do": print `start.py --brief` (≤ 10 lines).
-3. No workspace (`fresh_setup`): ask the `intake` questions in one message (≤ 3, options,
-   recommendations, never automatic answers; `references/intake.md`). Read back one line ("I will: …"), then
-   `scripts/workspace.py init` with the layout and answers. Map "how far" to `--until`.
+3. No workspace (`fresh_setup`): read `surface` first. If the user's message already names the
+   change, that is the idea; do not ask them to retype it. Ask only the `intake` questions the
+   message and the surface left open (≤ 3, options, recommendations, never automatic answers;
+   `references/intake.md`). An empty surface drops discover-docs and existing-system options.
+   Read back one line ("I will: …"), then `scripts/workspace.py init` with the layout and answers.
+   Map "how far" to `--until`.
 4. Adding or changing a feature in an existing project, with or without `.specwright/`:
-   offer `context_intake` (discover docs/plans / selected files or items / describe first).
-   Ask before scanning; no answer means no scan. On scan consent, load sw-craft and run
+   read `surface` and offer `context_intake`. An empty surface does not offer a document scan;
+   use the user's words. Otherwise the options name what the glance found. Ask before scanning;
+   no answer means no scan. On scan consent, load sw-craft and run
    `../sw-craft/scripts/analyze.py discover --cwd <repository> --confirm-scan` from sw-start.
    Follow `../sw-craft/references/repository-context.md` before drafting or linking anything.
    Existing work is reconciled, not replaced. On resume ask only about new gaps or changed evidence.

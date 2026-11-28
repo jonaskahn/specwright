@@ -38,7 +38,7 @@ def propose(base: Path, source: str, target: str, source_quote: str, claim_quote
         or not source_ref.id.startswith("SRC-")
     ):
         raise ValueError("impact requires a local source snapshot")
-    snapshot = ids.find_record(base / "00-inbox", source_ref.id)
+    snapshot = ids.find_record(base / "sources", source_ref.id)
     if snapshot is None:
         raise ValueError(f"no snapshot file for {source_ref.id}")
     story = paths.story(base, ref.id)
@@ -117,7 +117,7 @@ def backup(base: Path, relative: str) -> Path:
     path = workspace.safe_join(base, relative)
     if path.is_symlink() or not path.is_file():
         raise ValueError("backup requires an existing local artifact")
-    if path.parts[len(base.resolve().parts)] not in ("01-analysis", *paths.ITEM_FOLDERS):
+    if path.parts[len(base.resolve().parts)] not in ("analysis", *paths.ITEM_FOLDERS):
         raise ValueError("only authored artifacts may be revision-backed up")
     data = path.read_bytes()
     digest = hashing.bytes_hash(data)

@@ -173,7 +173,7 @@ def _commits(root: Path, scope: str, given: list[str]) -> list[str]:
 
 
 def _verification(root: Path, scope: str, base: Path, change: str) -> dict:
-    path = base / "01-analysis" / "as-is" / f"{change}.verify.analysis.md"
+    path = base / "analysis" / "as-is" / f"{change}.verify.analysis.md"
     if not path.is_file():
         return {
             "verified": False,
@@ -271,7 +271,7 @@ def finish(base: Path, change: str) -> dict:
 
 def v1(root: Path, scope: str, base: Path, feat: str, target: str) -> dict:
     """Mark a story as version 1 of an existing feature, from a confirmed analysis."""
-    path = base / "01-analysis" / "as-is" / f"{target}.analysis.md"
+    path = base / "analysis" / "as-is" / f"{target}.analysis.md"
     if not path.is_file():
         raise ValueError(f"no analysis {target}")
     afm = frontmatter.parse(path.read_text(encoding="utf-8")).fm or {}

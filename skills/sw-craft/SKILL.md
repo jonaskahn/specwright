@@ -13,7 +13,7 @@ Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
 
 ## Writes
 
-`00-inbox/` snapshots and raw copies, `01-analysis/` (ideas, as-is), `epics/`,
+`sources/` snapshots and raw copies, `analysis/` (ideas, as-is), `epics/`,
 `features/FEAT-NNN/`, `tasks/FEAT-NNN/FEAT-NNN.tasks.md`, `diagrams/`, `records/` and reservations only via
 `_shared/scripts/record.py` (`--dry-run` first), registry rows and RTM columns via scripts.
 
@@ -28,7 +28,7 @@ Rules: `_shared/references/kernel.md` (read once per session). Artifacts follow
    → `_shared/scripts/stack.py detect --write`, show the layers and ask once, lock on yes
    (`_shared/scripts/stack.py lock --confirm <hash shown>`). The story step reads the same profile.
 1. **Intake** (idea text, or files/Jira/email). Resolve scope. Convert with
-   `scripts/to_md.py <file> --out <project>/00-inbox/`; multiple files → `scripts/bulk_import.py
+   `scripts/to_md.py <file> --out <project>/sources/`; multiple files → `scripts/bulk_import.py
    --batch-id <id> --dry-run`, then run. Scan each snapshot: `scripts/secrets_scan.py
    <snapshot>`; exit 1 → redact a copy (`--redact --out`) and ingest it with
    `--redacted-from <sha256>`. Extract candidate facts and conflicts; a conflict becomes a Q

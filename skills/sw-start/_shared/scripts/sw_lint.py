@@ -505,7 +505,7 @@ def lint_document(doc, ctx):
             if rule == "L-012" and ctx.gate == "review":
                 sev = "warn"
             # Imported snapshots are immutable evidence: they are reported but never block a gate.
-            if doc.path.startswith("00-inbox/") and sev == "error":
+            if doc.path.startswith("sources/") and sev == "error":
                 sev = "warn"
             findings.append(
                 Finding(

@@ -415,8 +415,9 @@ def _seed_graph(root: Path, mode: str, scope: str, created: list[str]) -> None:
     # Imported here because the graph builder depends on this module.
     from kitlib import graph
 
+    root = root.resolve()
     for written in graph.build(root, scope):
-        created.append(str(written.relative_to(root)))
+        created.append(str(written.resolve().relative_to(root)))
 
 
 def output_default(root: Path, scope: str) -> str:
