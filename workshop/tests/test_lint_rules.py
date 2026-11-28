@@ -55,9 +55,7 @@ class RuleTests(unittest.TestCase):
         defaults = {
             "docs": documents,
             "gate": "publish",
-            "definitions": lint.definitions_for(
-                [*documents, doc(BO, "analysis/BO-001.md")], "REF"
-            ),
+            "definitions": lint.definitions_for([*documents, doc(BO, "analysis/BO-001.md")], "REF"),
         }
         defaults.update(kwargs)
         return lint.Context(self.base, **defaults)

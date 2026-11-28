@@ -180,8 +180,7 @@ class BaselineAcceptance(unittest.TestCase):
         cls.snap = {
             fm["remote_id"]: fm["id"]
             for fm in (
-                frontmatter.parse(p.read_text()).fm
-                for p in (cls.base / "sources").glob("SRC-*.md")
+                frontmatter.parse(p.read_text()).fm for p in (cls.base / "sources").glob("SRC-*.md")
             )
         }
         # 4. candidates: one worker reads every page; two claims disagree
